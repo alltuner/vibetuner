@@ -1,0 +1,37 @@
+networks:
+  alibey:
+    name: alibey
+  alltuner-network:
+    external: true
+    name: alltuner-network
+
+services:
+  alibey:
+    build:
+      context: .
+      args:
+        VERSION: ${VERSION:-0.0.0}
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+        push: true
+        tags:
+          - alltuner-registry.long-python.ts.net/alibey-frontend:${VERSION}
+          - alltuner-registry.long-python.ts.net/alibey-frontend:latest
+    image: alltuner-registry.long-python.ts.net/alibey-frontend:latest
+    container_name: alibey-frontend
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - alibey
+      - alltuner-network
+    labels:
+      caddy: www.retards.cat
+      caddy.reverse_proxy: "{{upstreams 8000}}"
+      caddy.tls.dns: cloudflare ${CF_API_TOKEN}
+      caddy.log.output: file /var/log/caddy/www.retards.cat.log
+      caddy.log.output.import: log-rotation
+      caddy.import: umami
+      com.centurylinklabs.watchtower.enable: "true"

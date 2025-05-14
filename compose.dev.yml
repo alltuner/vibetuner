@@ -1,0 +1,20 @@
+services:
+  alibey:
+    build: .
+    image: alibey-frontend:dev
+    container_name: alibey-frontend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - .venv/
+        - action: rebuild
+          path: ./uv.lock
+    command: >
+      fastapi dev src/alibey/frontend --host 0.0.0.0 --reload

@@ -1,0 +1,30 @@
+# General
+.env
+
+# Python
+############################################################
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+**/.mypy_cache/
+
+# Virtual environments
+.venv
+
+# Frontend
+############################################################
+node_modules/
+
+# Misc
+############################################################
+.DS_Store
+.git
+
+# App Specific
+############################################################
+frontend/statics/
+src/alibey/_version.py
