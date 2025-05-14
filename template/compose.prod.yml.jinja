@@ -1,0 +1,32 @@
+networks:
+  {{ project_name }}:
+    name: {{ project_name }}
+  alltuner-network:
+    external: true
+    name: alltuner-network
+
+services:
+  {{ project_name }}:
+    build:
+      context: .
+      args:
+        VERSION: ${VERSION:-0.0.0}
+        PYTHON_VERSION: ${PYTHON_VERSION:-{{ python_version }}}
+        ENVIRONMENT: ${ENVIRONMENT:-development}
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+        push: true
+        tags:
+          - alltuner-registry.long-python.ts.net/{{ project_name }}:${VERSION:-0.0.0}
+          - alltuner-registry.long-python.ts.net/{{ project_name }}:latest
+    image: alltuner-registry.long-python.ts.net/{{ project_name }}:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - {{ project_name }}
+      - alltuner-network
+    labels:
+      managed_by: "all-tuner"

@@ -1,0 +1,22 @@
+_subdirectory: template
+
+# Prompt user for project name
+project_name:
+  type: str
+  help: What is the name of your project?
+  default: alltuner-project
+
+project_description:
+  type: str
+  help: What is the description of your project?
+  default: A project that does something useful.
+
+python_version:
+  type: str
+  help: Select your Python version
+  default: "3.13"
+  choices:
+    - "3.10"
+    - "3.11"
+    - "3.12"
+    - "3.13"

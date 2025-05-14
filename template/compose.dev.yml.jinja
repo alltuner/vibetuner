@@ -1,0 +1,22 @@
+services:
+  {{ project_name }}:
+    build:
+      context: .
+      args:
+        VERSION: ${VERSION:-0.0.0}
+        PYTHON_VERSION: ${PYTHON_VERSION:-{{ python_version }}}
+        ENVIRONMENT: ${ENVIRONMENT:-development}
+    image: {{ project_name }}:dev
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - .venv/
+        - action: rebuild
+          path: ./uv.lock

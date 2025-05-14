@@ -1,0 +1,31 @@
+[project]
+name = "{{ project_name }}"
+dynamic = ["version"]
+description = "{{ project_description }}"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+]
+
+[project.scripts]
+{{ project_name }} = "{{ project_name }}.cli:app"
+
+[dependency-groups]
+dev = [
+]
+
+[build-system]
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
+
+[tool.uv-dynamic-versioning]
+fallback-version = "0.0.0"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.hatch.build.hooks.version]
+path = "src/{{ project_name }}/_version.py"
+template = '''
+version = "{version}"
+'''

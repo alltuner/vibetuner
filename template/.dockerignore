@@ -1,0 +1,41 @@
+# General
+.env
+.gitignore
+
+# Python
+############################################################
+# Python-generated files
+**/__pycache__/
+**/*.py[oc]
+build/
+dist/
+wheels/
+**/*.egg-info
+**/.mypy_cache/
+
+# Virtual environments
+.venv/
+
+# Frontend
+############################################################
+node_modules/
+
+# Misc
+############################################################
+**/.DS_Store
+.mise.toml
+.git
+.dockerignore
+.vscode/
+renovate.json
+Dockerfile
+
+# Localization
+############################################################
+locales/*/LC_MESSAGES/messages.mo
+
+# App Specific
+############################################################
+frontend/statics/js/
+frontend/statics/css/
+assets/
