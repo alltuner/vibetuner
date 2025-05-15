@@ -12,16 +12,16 @@ services:
       args:
         VERSION: ${VERSION:-0.0.0}
         PYTHON_VERSION: ${PYTHON_VERSION:-3.13}
+        ENVIRONMENT: ${ENVIRONMENT:-development}
       x-bake:
         platforms:
           - linux/amd64
           - linux/arm64
         push: true
         tags:
-          - alltuner-registry.long-python.ts.net/alibey-frontend:${VERSION}
+          - alltuner-registry.long-python.ts.net/alibey-frontend:${VERSION:-0.0.0}
           - alltuner-registry.long-python.ts.net/alibey-frontend:latest
     image: alltuner-registry.long-python.ts.net/alibey-frontend:latest
-    container_name: alibey-frontend
     restart: unless-stopped
     env_file:
       - .env
