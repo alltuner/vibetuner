@@ -1,7 +1,11 @@
+# syntax=docker/dockerfile:1-labs  # This is required to be able to use --parents
+
+ARG PYTHON_VERSION=3.13
+
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 1: Python Dependencies Cache
 # ────────────────────────────────────────────────────────────────────────────────
-FROM python:3.13-alpine AS python-base
+FROM python:${PYTHON_VERSION}-slim AS python-base
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
@@ -68,22 +72,34 @@ RUN pnpm run build-prod
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 5: Final Image
 # ────────────────────────────────────────────────────────────────────────────────
-FROM python:3.13-alpine AS runtime
+FROM python:${PYTHON_VERSION}-slim AS runtime
 
 WORKDIR /app
 
 COPY --chown=app:app src/ src/
 COPY --chown=app:app frontend/templates/ frontend/templates/
 
-# Copy built frontend static assets
+# Copy Localization files
+COPY --chown=app:app locales/ locales/
+
+# Copy built frontend static assets (JS and CSS bundles)
 COPY --from=frontend-build /app/frontend/statics/ frontend/statics/
+
+# Copy static assets (images, favicons, etc.)
+COPY --chown=app:app frontend/statics/ frontend/statics/
 
 # Copy Python app with installed virtualenv
 COPY --from=python-base --chown=app:app /app/.venv/ .venv/
-COPY --from=python-versioning --chown=app:app /app/src/alibey/_version.py src/alibey/_version.py
+
+# By specifying the --parents flag, we can copy the _version.py files without
+# having to explicityly name the directories, allowing us to reuse this Dockerfile
+COPY --from=python-versioning --chown=app:app --parents /app/src/*/_version.py /
+
+# Copy the python scripts binaries from the built virtualenv
+COPY --from=python-versioning --chown=app:app  /app/.venv/bin/ .venv/bin/
 
 # Make sure the virtualenv binaries come first
-ENV PATH="/app/.venv/bin:$PATH"
+ENV PATH="/app/.venv/bin:$PATH" PYTHONPATH="/app/src"
 
 EXPOSE 8000
 

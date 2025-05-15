@@ -1,3 +1,5 @@
+PYTHON_VERSION := `cat .python-version`
+
 COMPOSE_DEV := "compose.dev.yml"
 COMPOSE_PROD := "compose.prod.yml"
 
@@ -11,11 +13,11 @@ default:
 
 # Runs the dev environment with watch mode and cleans up orphans
 dev:
-    VERSION=dev COMPOSE_BAKE=true docker compose -f {{COMPOSE_DEV}} up --watch --remove-orphans
+    PYTHON_VERSION={{PYTHON_VERSION}} VERSION=dev COMPOSE_BAKE=true docker compose -f {{COMPOSE_DEV}} up --watch --remove-orphans
 
 # Builds the dev image with COMPOSE_BAKE set
 build-dev:
-    VERSION=dev COMPOSE_BAKE=true docker compose -f {{COMPOSE_DEV}} build
+    PYTHON_VERSION={{PYTHON_VERSION}} VERSION=dev COMPOSE_BAKE=true docker compose -f {{COMPOSE_DEV}} build
 
 check-clean:
     @git diff --quiet || (echo "❌ Uncommitted changes found. Commit or stash them before building." && exit 1)
@@ -38,7 +40,7 @@ check-last-commit-tagged:
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 release: check-clean check-unpushed-commits check-last-commit-tagged
-    VERSION={{VERSION}} docker buildx bake -f {{COMPOSE_PROD}} --push
+    PYTHON_VERSION={{PYTHON_VERSION}} VERSION={{VERSION}} docker buildx bake -f {{COMPOSE_PROD}} --push
 
 bump-major:
     @just bump major

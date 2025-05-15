@@ -11,6 +11,7 @@ services:
       context: .
       args:
         VERSION: ${VERSION:-0.0.0}
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.13}
       x-bake:
         platforms:
           - linux/amd64

@@ -32,5 +32,6 @@ Dockerfile
 
 # App Specific
 ############################################################
-frontend/statics/
+frontend/statics/js/
+frontend/statics/css/
 assets/
