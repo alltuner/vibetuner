@@ -1,14 +1,12 @@
 {
   devDependencies: {
-    // Please do not change the following dependencies
-    "@tailwindcss/cli": "^4.1.5",
+    "@tailwindcss/cli": "^4.1.7",
     daisyui: "^5.0.35",
     esbuild: "^0.25.4",
     "htmx-ext-preload": "^2.1.1",
     "htmx.org": "2.0.4",
     "npm-run-all2": "^8.0.2",
-    tailwindcss: "^4.1.5",
-    // Add any other dependencies you need for your project below
+    tailwindcss: "^4.1.7",
   },
   scripts: {
     "dev:css": "tailwindcss -w -i frontend/app.css -o frontend/statics/css/bundle.css",
