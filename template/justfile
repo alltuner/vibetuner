@@ -173,6 +173,8 @@ dump-untranslated DEST:
 [group('scaffolding')]
 update-scaffolding:
     @echo "Updating project scaffolding..."
-    @uvx copier update -A --trust
+    @uvx copier update -A
+    @pnpm i
+    @uv sync
     @echo "Project scaffolding updated."
     @echo "Please review the changes and commit."
