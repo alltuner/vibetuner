@@ -175,4 +175,4 @@ update-scaffolding:
     @echo "Updating project scaffolding..."
     @uvx copier update -A
     @echo "Project scaffolding updated."
-    @echo "Please review the changes and commit
+    @echo "Please review the changes and commit."
