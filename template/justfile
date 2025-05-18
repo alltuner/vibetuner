@@ -168,3 +168,11 @@ dump-untranslated DEST:
         LANG=$(basename ${LANG_DIR} | cut -d/ -f1)
         msgattrib --untranslated ./locales/${LANG}/LC_MESSAGES/messages.po > "{{DEST}}/untranslated_${LANG}.po"
     done
+
+# Update to the latest version of the project scaffolding
+[group('scaffolding')]
+update-scaffolding:
+    @echo "Updating project scaffolding..."
+    @uvx copier -A
+    @echo "Project scaffolding updated."
+    @echo "Please review the changes and commit
