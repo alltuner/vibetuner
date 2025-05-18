@@ -1,19 +1,19 @@
 {
-	"devDependencies": {
-		"@tailwindcss/cli": "^4.1.5",
-		"daisyui": "^5.0.35",
-		"esbuild": "^0.25.4",
-		"htmx-ext-preload": "^2.1.1",
-		"htmx.org": "2.0.4",
-		"npm-run-all": "^4.1.5",
-		"tailwindcss": "^4.1.5"
-	},
-	"scripts": {
-		"dev:css": "tailwindcss -w -i frontend/app.css -o frontend/statics/css/bundle.css",
-		"dev:js": "esbuild --watch frontend/esbuild.js --bundle --sourcemap --outfile=frontend/statics/js/bundle.js",
-		"dev": "run-p dev:*",
-		"build-prod:css": "tailwindcss -i frontend/app.css --minify -o frontend/statics/css/bundle.css",
-		"build-prod:js": "esbuild frontend/esbuild.js --bundle --minify --outfile=frontend/statics/js/bundle.js",
-		"build-prod": "run-p build-prod:*"
-	}
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.5",
+    "daisyui": "^5.0.35",
+    "esbuild": "^0.25.4",
+    "htmx-ext-preload": "^2.1.1",
+    "htmx.org": "2.0.4",
+    "npm-run-all2": "^8.0.2",
+    "tailwindcss": "^4.1.5"
+  },
+  "scripts": {
+    "dev:css": "tailwindcss -w -i frontend/app.css -o frontend/statics/css/bundle.css",
+    "dev:js": "esbuild --watch frontend/esbuild.js --bundle --sourcemap --outfile=frontend/statics/js/bundle.js",
+    "dev": "run-p dev:*",
+    "build-prod:css": "tailwindcss -i frontend/app.css --minify -o frontend/statics/css/bundle.css",
+    "build-prod:js": "esbuild frontend/esbuild.js --bundle --minify --outfile=frontend/statics/js/bundle.js",
+    "build-prod": "run-p build-prod:*"
+  }
 }
