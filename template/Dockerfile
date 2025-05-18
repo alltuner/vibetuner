@@ -76,7 +76,7 @@ FROM frontend-deps-base AS frontend-build
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json5 pnpm-lock.yaml ./
 # Install frontend dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
