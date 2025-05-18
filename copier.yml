@@ -1,4 +1,7 @@
 _subdirectory: template
+_tasks:
+  - uv sync
+  - pnpm i
 
 # Prompt user for project name
 project_name:
