@@ -11,25 +11,13 @@ VERSION := `uvx dunamai from git 2>/dev/null || echo 0.0.0`
 default:
     @just --list
 
-# Runs the dev environment with watch mode and cleans up orphans
-dev:
-    ENVIRONMENT=development \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
-    COMPOSE_BAKE=true \
-    docker compose -f {{COMPOSE_DEV}} up --watch --remove-orphans
-
-# Builds the dev image with COMPOSE_BAKE set
-build-dev:
-    ENVIRONMENT=development \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
-    COMPOSE_BAKE=true \
-    docker compose -f {{COMPOSE_DEV}} build
-
-check-clean:
+[group('Helpers')]
+_check-clean:
     @git diff --quiet || (echo "❌ Uncommitted changes found. Commit or stash them before building." && exit 1)
     @git diff --cached --quiet || (echo "❌ Staged but uncommitted changes found. Commit them before building." && exit 1)
 
-check-unpushed-commits:
+[group('Helpers')]
+_check-unpushed-commits:
     @git fetch origin > /dev/null
     @commits=`git rev-list HEAD ^origin/HEAD --count`; \
     if [ "$commits" -ne 0 ]; then \
@@ -37,31 +25,58 @@ check-unpushed-commits:
         exit 1; \
     fi
 
-check-last-commit-tagged:
+[group('Helpers')]
+_check-last-commit-tagged:
     @if [ -z "$(git tag --points-at HEAD)" ]; then \
         echo "❌ Current commit is not tagged."; \
         echo "   Please checkout a clean tag before building production."; \
         exit 1; \
     fi
 
+# Runs the dev environment with watch mode and cleans up orphans
+[group('Local Development')]
+dev:
+    ENVIRONMENT=development \
+    PYTHON_VERSION={{PYTHON_VERSION}} \
+    COMPOSE_BAKE=true \
+    docker compose -f {{COMPOSE_DEV}} up --watch --remove-orphans
+
+# Builds the dev image with COMPOSE_BAKE set
+[group('CI/CD')]
+build-dev:
+    ENVIRONMENT=development \
+    PYTHON_VERSION={{PYTHON_VERSION}} \
+    COMPOSE_BAKE=true \
+    docker compose -f {{COMPOSE_DEV}} build
+
+
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
-release: check-clean check-unpushed-commits check-last-commit-tagged
+[group('CI/CD')]
+release: _check-clean _check-unpushed-commits _check-last-commit-tagged
     ENVIRONMENT=production \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     VERSION={{VERSION}} \
     docker buildx bake -f {{COMPOSE_PROD}} --push
 
+
+# Bump major version based on the latest tag
+[group('versioning')]
 bump-major:
-    @just bump major
+    @just _semver_bump major
 
+# Bump minor version based on the latest tag
+[group('versioning')]
 bump-minor:
-    @just bump minor
+    @just _semver_bump minor
 
+# Bump patch version based on the latest tag
+[group('versioning')]
 bump-patch:
-    @just bump patch
+    @just _semver_bump patch
 
 # Internal recipe to bump version and create git tag
-bump type: check-clean check-unpushed-commits
+[group('versioning')]
+_semver_bump type: _check-clean _check-unpushed-commits
     #!/usr/bin/env bash
     if ! git tag | grep -q '^v'; then
         echo "No version tags found. Creating initial tag v0.0.1..."
@@ -90,16 +105,21 @@ bump type: check-clean check-unpushed-commits
         echo "To push the tag, run: git push origin $TAG"
     fi
 
-start-branch BRANCH: check-clean check-unpushed-commits
+# Starts a new branch for development
+[group('gitflow')]
+start-branch BRANCH: _check-clean _check-unpushed-commits
     git checkout main
     git pull origin main
     git checkout -b {{BRANCH}}
 
-# Commit changes with a message
+# Adds and commits all changes with a message
+[group('gitflow')]
 commit MESSAGE:
     git add .
     git commit -m "{{MESSAGE}}"
 
+# Create PR for current branch
+[group('gitflow')]
 pr:
     @git push
 
@@ -111,5 +131,40 @@ pr:
 
 
 # Merge PR using squash
+[group('gitflow')]
 merge:
     gh pr merge --squash --delete-branch
+
+
+# Extracts translations from source files
+[group('localization')]
+extract-translations:
+    @uv run pybabel extract -F babel.cfg -o locales/messages.pot ./src
+
+# Creates a new language file for localization
+[group('localization')]
+new-locale LANG:
+    @uv run pybabel init -i locales/messages.pot -d locales -l {{LANG}}
+
+# Updates existing language files for localization
+[group('localization')]
+update-locale-files:
+    @uv run pybabel update -i locales/messages.pot -d locales
+
+# Compiles the language files into binary format
+[group('localization')]
+compile-locales:
+    @uv run pybabel compile -d locales
+
+
+# Dump untranslated strings per language to a given DEST directory
+[group('localization')]
+dump-untranslated DEST:
+    #!/usr/bin/env bash
+
+    mkdir -p {{DEST}}
+
+    for LANG_DIR in locales/??; do
+        LANG=$(basename ${LANG_DIR} | cut -d/ -f1)
+        msgattrib --untranslated ./locales/${LANG}/LC_MESSAGES/messages.po > "{{DEST}}/untranslated_${LANG}.po"
+    done

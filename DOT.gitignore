@@ -24,7 +24,11 @@ node_modules/
 .DS_Store
 .git
 
+# Localization
+############################################################
+locales/*/LC_MESSAGES/messages.mo
+
 # App Specific
 ############################################################
 frontend/statics/
-src/alibey/_version.py
+src/castuner/_version.py

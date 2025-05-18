@@ -10,7 +10,7 @@
 build/
 dist/
 wheels/
-*.egg-info
+**/*.egg-info
 **/.mypy_cache/
 
 # Virtual environments
@@ -29,6 +29,10 @@ node_modules/
 .vscode/
 renovate.json
 Dockerfile
+
+# Localization
+############################################################
+locales/*/LC_MESSAGES/messages.mo
 
 # App Specific
 ############################################################
