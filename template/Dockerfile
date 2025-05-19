@@ -52,7 +52,8 @@ WORKDIR /app
 
 COPY locales/ locales/
 
-RUN uvx --from babel pybabel compile -d locales | true
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uvx --from babel pybabel compile -d locales | true
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 4: Frontend Dependency Builder Base (with PNPM)
