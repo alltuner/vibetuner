@@ -20,11 +20,25 @@ repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.7.5
     hooks:
-      - id: uv-lock
+      - id: uv-sync
+        always_run: true
   - repo: local
     hooks:
       - id: pnpm-install
         name: pnpm install
         entry: pnpm install
         language: system
+        pass_filenames: false
+        always_run: true
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.44.0
+    hooks:
+      - id: markdownlint-fix
+  - repo: local
+    hooks:
+      - id: pyclean
+        name: pyclean
+        entry: pyclean .
+        language: system
+        always_run: true
         pass_filenames: false
