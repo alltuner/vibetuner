@@ -21,3 +21,10 @@ repos:
     rev: 0.7.5
     hooks:
       - id: uv-lock
+  - repo: local
+    hooks:
+      - id: pnpm-install
+        name: pnpm install
+        entry: pnpm install
+        language: system
+        pass_filenames: false
