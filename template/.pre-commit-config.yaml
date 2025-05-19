@@ -17,3 +17,7 @@ repos:
     rev: v5.0.0 # Use the ref you want to point at
     hooks:
       - id: no-commit-to-branch
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.7.5
+    hooks:
+      - id: uv-lock
