@@ -1,8 +1,3 @@
-PYTHON_VERSION := `cat .python-version`
-
-COMPOSE_DEV := "compose.dev.yml"
-COMPOSE_PROD := "compose.prod.yml"
-
 # Gracefully fallback if no tags exist
 LATEST_VERSION_TAG := `git describe --tags --abbrev=0 --match "v*" 2>/dev/null | sed 's/^v//' || echo "0.0.0"`
 VERSION := `uvx dunamai from git 2>/dev/null || echo 0.0.0`
@@ -32,32 +27,6 @@ _check-last-commit-tagged:
         echo "   Please checkout a clean tag before building production."; \
         exit 1; \
     fi
-
-# Runs the dev environment with watch mode and cleans up orphans
-[group('Local Development')]
-dev:
-    ENVIRONMENT=development \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
-    COMPOSE_BAKE=true \
-    docker compose -f {{COMPOSE_DEV}} up --watch --remove-orphans
-
-# Builds the dev image with COMPOSE_BAKE set
-[group('CI/CD')]
-build-dev:
-    ENVIRONMENT=development \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
-    COMPOSE_BAKE=true \
-    docker compose -f {{COMPOSE_DEV}} build
-
-
-# Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
-[group('CI/CD')]
-release: _check-clean _check-unpushed-commits _check-last-commit-tagged
-    ENVIRONMENT=production \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
-    VERSION={{VERSION}} \
-    docker buildx bake -f {{COMPOSE_PROD}} --push
-
 
 # Bump major version based on the latest tag
 [group('versioning')]
@@ -134,47 +103,3 @@ pr:
 [group('gitflow')]
 merge:
     gh pr merge --squash --delete-branch
-
-
-# Extracts translations from source files
-[group('localization')]
-extract-translations:
-    @uv run pybabel extract -F babel.cfg -o locales/messages.pot ./src
-
-# Creates a new language file for localization
-[group('localization')]
-new-locale LANG:
-    @uv run pybabel init -i locales/messages.pot -d locales -l {{LANG}}
-
-# Updates existing language files for localization
-[group('localization')]
-update-locale-files:
-    @uv run pybabel update -i locales/messages.pot -d locales
-
-# Compiles the language files into binary format
-[group('localization')]
-compile-locales:
-    @uv run pybabel compile -d locales
-
-
-# Dump untranslated strings per language to a given DEST directory
-[group('localization')]
-dump-untranslated DEST:
-    #!/usr/bin/env bash
-
-    mkdir -p {{DEST}}
-
-    for LANG_DIR in locales/??; do
-        LANG=$(basename ${LANG_DIR} | cut -d/ -f1)
-        msgattrib --untranslated ./locales/${LANG}/LC_MESSAGES/messages.po > "{{DEST}}/untranslated_${LANG}.po"
-    done
-
-# Update to the latest version of the project scaffolding
-[group('scaffolding')]
-update-scaffolding:
-    @echo "Updating project scaffolding..."
-    @uvx copier update -A
-    @pnpm i
-    @uv sync
-    @echo "Project scaffolding updated."
-    @echo "Please review the changes and commit."
