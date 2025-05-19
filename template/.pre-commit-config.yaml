@@ -21,6 +21,7 @@ repos:
     rev: 0.7.5
     hooks:
       - id: uv-lock
+        always_run: true
   - repo: local
     hooks:
       - id: pnpm-install
@@ -28,7 +29,16 @@ repos:
         entry: pnpm install
         language: system
         pass_filenames: false
+        always_run: true
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.44.0
     hooks:
       - id: markdownlint-fix
+  - repo: local
+    hooks:
+      - id: pyclean
+        name: pyclean
+        entry: pyclean .
+        language: system
+        always_run: true
+        pass_filenames: false
