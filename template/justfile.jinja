@@ -36,6 +36,8 @@ _check-last-commit-tagged:
 # Runs the dev environment with watch mode and cleans up orphans
 [group('Local Development')]
 dev:
+    @pnpm i # Before building the first time, lockfiles will not exist
+    @uv sync # Before building the first time, lockfiles will not exist
     ENVIRONMENT=development \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     COMPOSE_BAKE=true \
@@ -44,6 +46,8 @@ dev:
 # Builds the dev image with COMPOSE_BAKE set
 [group('CI/CD')]
 build-dev:
+    @pnpm i # Before building the first time, lockfiles will not exist
+    @uv sync # Before building the first time, lockfiles will not exist
     ENVIRONMENT=development \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     COMPOSE_BAKE=true \
