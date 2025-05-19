@@ -5,6 +5,13 @@ description = "{{ project_description }}"
 readme = "README.md"
 requires-python = ">={{ python_version }}"
 dependencies = [
+    # These are the base dependencies of AllTuner's blessed stack
+    "loguru>=0.7.3",
+    "pydantic>=2.11.4",
+    "pydantic-settings>=2.9.1",
+    "rich>=14.0.0",
+    "typer-slim[standard]>=0.15.4",
+    # Below this line you can add your dependencies
 ]
 
 [project.scripts]
@@ -19,6 +26,7 @@ scaffolding = [
     "ty>=0.0.0a8",
 ]
 dev = [
+    # Add below this line any dependencies you need for development
 ]
 
 [tool.uv]
