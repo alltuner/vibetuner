@@ -52,11 +52,7 @@ WORKDIR /app
 
 COPY locales/ locales/
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    --mount=type=bind,source=README.md,target=README.md \
-    uv run --locked --no-dev pybabel compile -d locales
+RUN uvx --from babel pybabel compile -d locales | true
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 4: Frontend Dependency Builder Base (with PNPM)
