@@ -3,5 +3,11 @@ set -e
 
 echo "Starting the application..."
 
+if [ "$1" = "shell" ]; then
+    echo "Starting shell..."
+    exec /bin/bash
 #### Add your custom startup commands below this line
 #### End of custom startup commands, do not add anything below
+else
+    exec fastapi dev src/{{ project_name }}/frontend
+fi
