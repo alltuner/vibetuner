@@ -7,6 +7,7 @@ from ._config import (
     settings,
 )
 
+
 __all__ = [
     "STATICS_DIR",
     "TEMPLATES_DIR",
