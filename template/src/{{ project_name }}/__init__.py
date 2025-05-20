@@ -1,4 +1,4 @@
-from ._config import (
+from ._config import (  # noqa: N999
     STATICS_DIR,
     TEMPLATES_DIR,
     __copyright__,
