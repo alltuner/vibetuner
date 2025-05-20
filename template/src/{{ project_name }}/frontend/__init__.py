@@ -1,9 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
-from .._config import STATICS_DIR
+from .. import STATICS_DIR
 from .lifespan import ctx, lifespan
-from .templates import jinja
+from .templates import jinja, templates
+
 
 app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
 app.mount("/static", StaticFiles(directory=STATICS_DIR), name="static")
@@ -12,7 +14,6 @@ app.mount("/static", StaticFiles(directory=STATICS_DIR), name="static")
 @app.get("/")
 @jinja.page("index.html")
 def index() -> None:
-    print(ctx.version)
     """This route serves the index.html template."""
     ...
 
