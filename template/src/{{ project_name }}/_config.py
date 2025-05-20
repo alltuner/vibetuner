@@ -1,9 +1,11 @@
 from pathlib import Path
 from typing import Annotated
 
-from _project import ENV_PREFIX, PROJECT_NAME
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from ._project import ENV_PREFIX, PROJECT_NAME
+
 
 ROOT_PROJECT_DIR: Path = Path(__file__).resolve().parent.parent.parent
 
