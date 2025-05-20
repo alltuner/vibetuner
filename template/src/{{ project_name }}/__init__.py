@@ -1,4 +1,5 @@
 from ._config import (
+    STATICS_DIR,
     TEMPLATES_DIR,
     __copyright__,
     __project_name__,
@@ -7,6 +8,7 @@ from ._config import (
 )
 
 __all__ = [
+    "STATICS_DIR",
     "TEMPLATES_DIR",
     "__copyright__",
     "__project_name__",
