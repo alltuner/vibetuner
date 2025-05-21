@@ -87,6 +87,11 @@ commit MESSAGE:
     git add .
     git commit -m "{{MESSAGE}}"
 
+# Pushes all tags to the remote repository
+[group('gitflow')]
+push-tags:
+    git push --tags
+
 # Create PR for current branch
 [group('gitflow')]
 pr:
