@@ -2,11 +2,13 @@ import inspect
 from functools import partial, wraps
 
 import asyncer
-from _config import __project_name__
-from typer import Typer
+import typer
+
+from ._config import __project_name__
+from ._logging import LogLevel, setup_logging
 
 
-class AsyncTyper(Typer):
+class AsyncTyper(typer.Typer):
     @staticmethod
     def maybe_run_async(decorator, f):
         if inspect.iscoroutinefunction(f):
@@ -29,4 +31,18 @@ class AsyncTyper(Typer):
         return partial(self.maybe_run_async, decorator)
 
 
-app = AsyncTyper(no_args_is_help=True, help=f"{__project_name__} CLI")
+app = AsyncTyper(no_args_is_help=True, help=f"{__project_name__.title()} CLI")
+
+LOG_LEVEL_OPTION = typer.Option(
+    LogLevel.INFO,
+    "--log-level",
+    "-l",
+    case_sensitive=False,
+    help="Set the logging level",
+)
+
+
+@app.callback()
+def callback(log_level: LogLevel | None = LOG_LEVEL_OPTION) -> None:
+    """Initialize logging and other global settings."""
+    setup_logging(level=log_level)
