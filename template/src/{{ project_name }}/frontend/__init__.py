@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .. import STATICS_DIR
 from .lifespan import ctx, lifespan
+from .middleware import middlewares
 from .templates import jinja, templates
 
 
@@ -16,7 +17,13 @@ __all__ = [
     "templates",
 ]
 
-app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(
+    lifespan=lifespan,
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
+    middleware=middlewares,
+)
 app.mount("/static", StaticFiles(directory=STATICS_DIR), name="static")
 
 
