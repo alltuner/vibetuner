@@ -1,0 +1,17 @@
+{
+  "version": 1.5,
+  "provider": {
+    "id": "anthropic",
+    "model": "claude-3-7-sonnet-latest",
+    "prompt": "You're translating text from {source} to {target}."
+  },
+  "locale": {
+    "source": "en",
+    "targets": {{ supported_languages }}
+  },
+  "buckets": {
+    "po": {
+      "include": ["locales/[locale]/LC_MESSAGES/messages.po"]
+    }
+  }
+}
