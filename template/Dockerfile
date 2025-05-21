@@ -93,6 +93,7 @@ WORKDIR /app
 
 COPY --chown=app:app src/ src/
 COPY --chown=app:app frontend/templates/ frontend/templates/
+COPY --chown=app:app frontend/markdown/ frontend/markdown/
 
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
