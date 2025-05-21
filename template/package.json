@@ -6,7 +6,6 @@
     "esbuild": "^0.25.4",
     "htmx-ext-preload": "^2.1.1",
     "htmx.org": "2.0.4",
-    "lingo.dev": "^0.92.12",
     "tailwindcss": "^4.1.7"
   },
   "dependencies": {},
