@@ -52,7 +52,8 @@ WORKDIR /app
 
 COPY locales/ locales/
 
-RUN uvx --from babel pybabel compile -d locales | true
+RUN find locales -mindepth 1 -maxdepth 1 -type d -name '??' 2>/dev/null | grep -q . \
+    && uvx --from babel pybabel compile -d locales || echo "No locales to compile"
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 4: Frontend Dependency Builder Base (with PNPM)
