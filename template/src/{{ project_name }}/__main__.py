@@ -1,4 +1,4 @@
-from _cli import app
+from ._cli import app
 
 
 app()
