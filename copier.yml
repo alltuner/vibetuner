@@ -1,10 +1,29 @@
 _subdirectory: template
 
-# Prompt user for project name
+company_name:
+  type: str
+  help: Your company name
+  placeholder: Company Name, S.L.
+  default: All Tuner Labs, S.L.
+
+author_name:
+  type: str
+  help: Your full name
+  placeholder: FirstName LastName
+
+author_email:
+  type: str
+  help: Your email address
+  placeholder: hello@example.com
+
 project_name:
   type: str
   help: What is the name of your project?
   default: alltuner-project
+  validator: >-
+    {% if not (project_name | regex_search('^[a-z][a-z0-9\-]*[a-z0-9]$')) %}
+    project_name must start with a letter, followed one or more letters, digits or dashes all lowercase ending with a letter or digit.
+    {% endif %}
 
 project_description:
   type: str
@@ -20,3 +39,8 @@ python_version:
     - "3.11"
     - "3.12"
     - "3.13"
+
+supported_languages:
+  type: yaml
+  multiline: true
+  help: List of 2 letter lang codes in JSON format of supported languages (in addition to English)
