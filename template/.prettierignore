@@ -1,2 +1,3 @@
 .venv
 .copier-answers.yml
+pnpm-lock.yaml

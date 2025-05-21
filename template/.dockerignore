@@ -32,7 +32,6 @@ Dockerfile
 
 # Localization
 ############################################################
-i18n.cache
 locales/*/LC_MESSAGES/messages.mo
 
 # App Specific
