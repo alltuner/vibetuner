@@ -6,6 +6,7 @@ from ._config import (
     __version__,
     settings,
 )
+from ._logging import logger
 
 
 __all__ = [
@@ -14,6 +15,7 @@ __all__ = [
     "__copyright__",
     "__project_name__",
     "__version__",
+    "logger",
     "settings",
 ]
 
