@@ -1,8 +1,13 @@
 from fastapi.templating import Jinja2Templates
-from fasthx import Jinja
 
 from .. import TEMPLATES_DIR
 
 
+# Add your functions here
+# Until here
+
+
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
-jinja = Jinja(templates)
+
+# Customize your templates here
+# Until here
