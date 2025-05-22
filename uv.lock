@@ -133,23 +133,6 @@ standard = [
 ]
 
 [[package]]
-name = "fasthx"
-version = "2.3.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "fastapi" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/0a/eb/31589f56aa81e0cf49d06ea8463b6a6e0a74d5699e75e5fcf1f2f250d609/fasthx-2.3.3.tar.gz", hash = "sha256:4fd2f7619b6d9d80d2a24d58df8daf9bf16f587fe383e9cbfb0c5a1f73bab074", size = 18194, upload-time = "2025-05-05T09:26:02.392Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/69/6e/d500006a65bb69adc100dd11f0197606b48935dccc4909a50aee1b6a3b75/fasthx-2.3.3-py3-none-any.whl", hash = "sha256:49609c22a54e591897c4ca6941eadbe2312514c8ad557ac2b37555b5ca424290", size = 18875, upload-time = "2025-05-05T09:26:00.715Z" },
-]
-
-[package.optional-dependencies]
-jinja = [
-    { name = "jinja2" },
-]
-
-[[package]]
 name = "h11"
 version = "0.16.0"
 source = { registry = "https://pypi.org/simple" }
@@ -461,7 +444,6 @@ source = { virtual = "." }
 dev = [
     { name = "asyncer" },
     { name = "fastapi", extra = ["standard"] },
-    { name = "fasthx", extra = ["jinja"] },
     { name = "loguru" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -475,7 +457,6 @@ dev = [
 dev = [
     { name = "asyncer", specifier = ">=0.0.8" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.12" },
-    { name = "fasthx", extras = ["jinja"], specifier = ">=2.3.3" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "pydantic", specifier = ">=2.11.4" },
     { name = "pydantic-settings", specifier = ">=2.9.1" },

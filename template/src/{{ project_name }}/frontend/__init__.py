@@ -4,7 +4,8 @@ from fastapi.staticfiles import StaticFiles
 
 from .. import STATICS_DIR
 from .lifespan import ctx, lifespan
-from .templates import jinja, templates
+from .middleware import middlewares
+from .templates import templates
 
 
 __all__ = [
@@ -16,15 +17,22 @@ __all__ = [
     "templates",
 ]
 
-app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(
+    lifespan=lifespan,
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
+    middleware=middlewares,
+)
 app.mount("/static", StaticFiles(directory=STATICS_DIR), name="static")
 
 
-@app.get("/")
-@jinja.page("index.html")
-def index() -> None:
-    """This route serves the index.html template."""
-    ...
+@app.get("/debug/test", response_class=HTMLResponse)
+def debug_test(request: Request):
+    """This route indicates the app works correctly."""
+    return templates.TemplateResponse(
+        request=request, name="item.html", context={"id": id}
+    )
 
 
 # Add your routes below
