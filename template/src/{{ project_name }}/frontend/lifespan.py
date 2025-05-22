@@ -18,6 +18,8 @@ ctx: AppContext = AppContext()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Add the state here cx.state_x = 'a'
+    # Add below anything that should happen before startup
 
     yield
+
+    # Add below anything that should happen before shutdown
