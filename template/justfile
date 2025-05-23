@@ -182,8 +182,27 @@ dump-untranslated DEST:
 [group('scaffolding')]
 update-scaffolding:
     @echo "Updating project scaffolding..."
-    @uvx copier update -A
+    @uvx copier update -A --trust
     @pnpm i
     @uv sync
     @echo "Project scaffolding updated."
     @echo "Please review the changes and commit."
+
+# Initialize git repo
+[group('initialization')]
+git-init PROJECT:
+    @[ -d .git ] || (git init && git add . && git commit -m "initial commit for {{ PROJECT }}")
+
+[group('initialization')]
+create-github-repo REPO:
+    @gh repo create {{ REPO }} --private -s . --push
+
+# Trust mise
+[group('initialization')]
+mise-trust:
+    @mise trust --show 2>/dev/null | grep -q ': trusted$' || mise trust
+
+# Untrust mise
+[group('initialization')]
+mise-untrust:
+    @mise trust --untrust
