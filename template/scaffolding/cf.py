@@ -1,15 +1,22 @@
-#!/usr/bin/env python3
+#!/usr/bin/env uv run --script --with cloudflare --with click
 
-import argparse
+# vim: filetype=python
+
 import os
 import re
 import sys
+import click
 
 import rich
 from cloudflare import Cloudflare
 
-
 DEST: str = "135.181.131.150"
+
+
+@click.group()
+def cli():
+    """Cloudflare DNS helper"""
+    pass
 
 
 def get_cf_client():
@@ -35,7 +42,10 @@ def is_valid_domain(domain: str) -> bool:
     return bool(re.match(pattern, domain))
 
 
-def add_record(record: str, cf: Cloudflare):
+@cli.command()
+@click.argument("record")
+def add_dns_record(record: str, dest: str = DEST):
+    cf = get_cf_client()
     stem, domain = split_fqdn(record)
 
     if not is_valid_domain(domain):
@@ -64,8 +74,6 @@ def add_record(record: str, cf: Cloudflare):
     if ssl_setting is not None and ssl_setting.value != "strict":
         cf.zones.settings.edit(zone_id=zone.id, setting_id="ssl", value="strict")
 
-    return
-
     if dns_records:
         print("Overlapping record already present, use web interface to remove it")
         rich.print(dns_records)
@@ -76,27 +84,11 @@ def add_record(record: str, cf: Cloudflare):
         zone_id=zone.id,
         type="A",
         name=fqdn,
-        content=DEST,
+        content=dest,
         proxied=True,
         comment="Auto-added by magic",
     )
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Cloudflare DNS helper")
-    subparsers = parser.add_subparsers(dest="command")
-
-    parser_add = subparsers.add_parser("add-record", help="Add a DNS record")
-    parser_add.add_argument("record", help="Record to add")
-
-    args = parser.parse_args()
-
-    if args.command == "add-record":
-        cf = get_cf_client()
-        add_record(args.record, cf)
-    else:
-        parser.print_help()
-
-
 if __name__ == "__main__":
-    main()
+    cli()

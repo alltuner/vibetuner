@@ -66,6 +66,38 @@ github_repo:
     github_repo must contain an org or a username followed by a slash and a repo name
     {% endif %}
 
+setup_fqdn:
+  type: bool
+  help: Do you want to configure a FQDN?
+  default: false
+
+fqdn:
+  type: str
+  placeholder: subdomain.example.com
+  help: What's the fqdn of your website?
+  when: "{{ setup_fqdn }}"
+  validator: >-
+    {% if not (fqdn | regex_search('^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$')) %}
+    fqdn must be a valid fully qualified domain name like subdomain.example.com
+    {% endif %}
+
+setup_cloudflare:
+  type: bool
+  help: Do you want to configure automatically Cloudflare (DNS Record and SSL Mode=strict)?
+  when: "{{ cloudflare_api_key and setup_fqdn }}"
+  default: false
+
+setup_caddy:
+  type: bool
+  help: Do you want to configure Caddy to serve requests?
+  when: "{{ cloudflare_api_key and setup_fqdn }}"
+  default: true
+
+enable_watchtower:
+  type: bool
+  help: Do you want to enable watchtower (containers self-reload on update)?
+  default: true
+
 _tasks:
   - command: [just, mise-trust]
     when: "{{ _copier_operation == 'copy' }}"
@@ -73,3 +105,5 @@ _tasks:
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, create-github-repo, "{{ github_repo }} "]
     when: "{{ use_github_repo and (_copier_operation == 'copy') }}"
+  - command: [just, "-E", ".env", add-dns-record, "{{ fqdn }} "]
+    when: "{{ setup_cloudflare }}"

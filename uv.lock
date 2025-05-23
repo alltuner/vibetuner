@@ -490,14 +490,12 @@ wheels = [
 name = "scaffolding"
 version = "0.1.0"
 source = { virtual = "." }
-dependencies = [
-    { name = "cloudflare" },
-    { name = "rich" },
-]
 
 [package.dev-dependencies]
 dev = [
     { name = "asyncer" },
+    { name = "click" },
+    { name = "cloudflare" },
     { name = "fastapi", extra = ["standard"] },
     { name = "loguru" },
     { name = "pydantic" },
@@ -508,14 +506,12 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "cloudflare", specifier = ">=4.2.0" },
-    { name = "rich", specifier = ">=14.0.0" },
-]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "asyncer", specifier = ">=0.0.8" },
+    { name = "click", specifier = ">=8.1.8" },
+    { name = "cloudflare", specifier = ">=4.2.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.12" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "pydantic", specifier = ">=2.11.4" },

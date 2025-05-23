@@ -29,6 +29,15 @@ services:
       - {{ project_name }}
       - alltuner-network
     labels:
-      managed_by: "all-tuner"
+      managed_by: "all-tuner"{% if enable_watchtower %}
+      com.centurylinklabs.watchtower.enable: "true"{% endif %}{% if setup_caddy %}
+      caddy_0: {{ fqdn }}
+      caddy_0.reverse_proxy: {% raw %}"{{upstreams 8000}}"{% endraw %}
+      caddy_0.tls.dns: cloudflare ${CF_API_TOKEN}
+      caddy_0.log.output: file /var/log/caddy/{{ fqdn }}.log
+      caddy_0.log.output.import: log-rotation
+      caddy_0.import: umami{% endif %}
       # Above this line, nothing should be changed
+      # Below this line, nothing should be changed
+
 # End of file: do not remove this line or add any content below
