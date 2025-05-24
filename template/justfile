@@ -62,6 +62,11 @@ release: _check-clean _check-unpushed-commits _check-last-commit-tagged _update_
     VERSION={{VERSION}} \
     docker buildx bake -f {{COMPOSE_PROD}} --push
 
+# Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
+[group('CI/CD')]
+deploy-latest HOST: release
+    DOCKER_HOST="ssh://{{ HOST }}" docker compose -f {{COMPOSE_PROD}} up -d --remove-orphans
+
 # Bump major version based on the latest tag
 [group('versioning')]
 bump-major:
