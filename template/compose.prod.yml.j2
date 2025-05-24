@@ -22,6 +22,18 @@ services:
           - alltuner-registry.long-python.ts.net/{{ project_name }}:${VERSION:-0.0.0}
           - alltuner-registry.long-python.ts.net/{{ project_name }}:latest
     image: alltuner-registry.long-python.ts.net/{{ project_name }}:latest
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/debug/health')"
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
     restart: unless-stopped
     env_file:
       - .env

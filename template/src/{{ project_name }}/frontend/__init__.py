@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from .. import STATICS_DIR
 from .lifespan import ctx, lifespan
 from .middleware import middlewares
+from .routes import debug as debug
 from .templates import templates
 
 
@@ -25,15 +26,7 @@ app = FastAPI(
     middleware=middlewares,
 )
 app.mount("/static", StaticFiles(directory=STATICS_DIR), name="static")
-
-
-@app.get("/debug/test", response_class=HTMLResponse)
-def debug_test(request: Request):
-    """This route indicates the app works correctly."""
-    return templates.TemplateResponse(
-        request=request, name="item.html", context={"id": id}
-    )
-
+app.include_router(debug.router)
 
 # Add your routes below
 # EOF
