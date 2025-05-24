@@ -19,11 +19,17 @@ author_email:
 project_name:
   type: str
   help: What is the name of your project?
-  default: alltuner-project
+  default: "{{ _folder_name }}"
   validator: >-
     {% if not (project_name | regex_search('^[a-z][a-z0-9\-]*[a-z0-9]$')) %}
     project_name must start with a letter, followed one or more letters, digits or dashes all lowercase ending with a letter or digit.
     {% endif %}
+
+cloudflare_api_key:
+  type: str
+  secret: true
+  default: ""
+  help: The CF API key that will be used for the environment (needs permissions)
 
 project_description:
   type: str
@@ -44,3 +50,60 @@ supported_languages:
   type: yaml
   multiline: true
   help: List of 2 letter lang codes in JSON format of supported languages (in addition to English)
+
+use_github_repo:
+  type: bool
+  help: Do you want to commit to a github repo?
+  default: false
+
+github_repo:
+  type: str
+  help: ORG/repo or USER/repo github repo to create
+  when: "{{ use_github_repo }}"
+  default: "alltuner/{{ project_name }}"
+  validator: >-
+    {% if not (github_repo | regex_search('^[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]/[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]$')) %}
+    github_repo must contain an org or a username followed by a slash and a repo name
+    {% endif %}
+
+setup_fqdn:
+  type: bool
+  help: Do you want to configure a FQDN?
+  default: false
+
+fqdn:
+  type: str
+  placeholder: subdomain.example.com
+  help: What's the fqdn of your website?
+  when: "{{ setup_fqdn }}"
+  validator: >-
+    {% if not (fqdn | regex_search('^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$')) %}
+    fqdn must be a valid fully qualified domain name like subdomain.example.com
+    {% endif %}
+
+setup_cloudflare:
+  type: bool
+  help: Do you want to configure automatically Cloudflare (DNS Record and SSL Mode=strict)?
+  when: "{{ cloudflare_api_key and setup_fqdn }}"
+  default: false
+
+setup_caddy:
+  type: bool
+  help: Do you want to configure Caddy to serve requests?
+  when: "{{ cloudflare_api_key and setup_fqdn }}"
+  default: true
+
+enable_watchtower:
+  type: bool
+  help: Do you want to enable watchtower (containers self-reload on update)?
+  default: true
+
+_tasks:
+  - command: [just, mise-trust]
+    when: "{{ _copier_operation == 'copy' }}"
+  - command: [just, git-init, "{{ project_name }}"]
+    when: "{{ _copier_operation == 'copy' }}"
+  - command: [just, create-github-repo, "{{ github_repo }} "]
+    when: "{{ use_github_repo and (_copier_operation == 'copy') }}"
+  - command: [just, "-E", ".env", add-dns-record, "{{ fqdn }} "]
+    when: "{{ setup_cloudflare }}"

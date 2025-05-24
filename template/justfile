@@ -33,11 +33,14 @@ _check-last-commit-tagged:
         exit 1; \
     fi
 
-# Runs the dev environment with watch mode and cleans up orphans
-[group('Local Development')]
-dev:
+[group('Helpers')]
+_update_local_deps:
     @pnpm i # Before building the first time, lockfiles will not exist
     @uv sync # Before building the first time, lockfiles will not exist
+
+# Runs the dev environment with watch mode and cleans up orphans
+[group('Local Development')]
+dev: _update_local_deps
     ENVIRONMENT=development \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     COMPOSE_BAKE=true \
@@ -45,23 +48,19 @@ dev:
 
 # Builds the dev image with COMPOSE_BAKE set
 [group('CI/CD')]
-build-dev:
-    @pnpm i # Before building the first time, lockfiles will not exist
-    @uv sync # Before building the first time, lockfiles will not exist
+build-dev: _update_local_deps
     ENVIRONMENT=development \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     COMPOSE_BAKE=true \
     docker compose -f {{COMPOSE_DEV}} build
 
-
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
-release: _check-clean _check-unpushed-commits _check-last-commit-tagged
+release: _check-clean _check-unpushed-commits _check-last-commit-tagged _update_local_deps
     ENVIRONMENT=production \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     VERSION={{VERSION}} \
     docker buildx bake -f {{COMPOSE_PROD}} --push
-
 
 # Bump major version based on the latest tag
 [group('versioning')]
@@ -182,8 +181,32 @@ dump-untranslated DEST:
 [group('scaffolding')]
 update-scaffolding:
     @echo "Updating project scaffolding..."
-    @uvx copier update -A
+    @uvx copier update -A --trust
     @pnpm i
     @uv sync
     @echo "Project scaffolding updated."
     @echo "Please review the changes and commit."
+
+# Initialize git repo
+[group('initialization')]
+git-init PROJECT: _update_local_deps
+    @[ -d .git ] || (git init && git add . && git commit -m "initial commit for {{ PROJECT }}" && git tag -a "v0.0.1" -m "Initial version")
+
+[group('initialization')]
+create-github-repo REPO:
+    @gh repo create {{ REPO }} --private -s . --push
+
+# Trust mise
+[group('initialization')]
+mise-trust:
+    @mise trust
+
+# Untrust mise
+[group('initialization')]
+mise-untrust:
+    @mise trust --untrust
+
+# Add DNS record
+[group('initialization')]
+add-dns-record RECORD:
+    @scaffolding/cf.py add-dns-record {{ RECORD }}
