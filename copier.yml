@@ -1,4 +1,5 @@
 _subdirectory: template
+_templates_suffix: .j2
 
 company_name:
   type: str
@@ -98,12 +99,18 @@ enable_watchtower:
   help: Do you want to enable watchtower (containers self-reload on update)?
   default: true
 
+deploy_to_production:
+  type: bool
+  help: Do you want to deploy to production?
+  default: true
+
 _tasks:
   - command: [just, mise-trust]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, git-init, "{{ project_name }}"]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, create-github-repo, "{{ github_repo }} "]
-    when: "{{ use_github_repo and (_copier_operation == 'copy') }}"
   - command: [just, "-E", ".env", add-dns-record, "{{ fqdn }} "]
     when: "{{ setup_cloudflare }}"
+  - command: [just, deploy-latest, durian]
+    when: "{{ deploy_to_production and (_copier_operation == 'copy') }}"
