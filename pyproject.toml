@@ -2,16 +2,20 @@
 name = "scaffolding"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+]
 
 [dependency-groups]
 dev = [
     "asyncer>=0.0.8",
+    "click>=8.1.8",
+    "cloudflare>=4.2.0",
     "fastapi[standard]>=0.115.12",
     "loguru>=0.7.3",
     "pydantic>=2.11.4",
     "pydantic-settings>=2.9.1",
     "rich>=14.0.0",
+    "ruff>=0.11.11",
     "typer-slim[standard]>=0.15.4",
 ]
 

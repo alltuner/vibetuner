@@ -1,2 +1,5 @@
+[env]
+_.file = '.env'
+
 [settings.python]
 uv_venv_auto = true
