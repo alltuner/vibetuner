@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 
-from ... import __version__
-from ..templates import templates
+from ..templates import template_render
 
 
 router = APIRouter(prefix="/debug")
@@ -15,7 +14,4 @@ def health():
 
 @router.get("/version", response_class=HTMLResponse)
 def debug_version(request: Request):
-    return templates.TemplateResponse(
-        "debug/version.html.jinja",
-        {"request": request, "version": __version__},
-    )
+    return template_render("debug/version.html.jinja", request)

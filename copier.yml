@@ -82,6 +82,12 @@ fqdn:
     fqdn must be a valid fully qualified domain name like subdomain.example.com
     {% endif %}
 
+umami_website_id:
+  type: str
+  placeholder: "98357f85-ccdd-4544-aaaa-e57a27e53dde"
+  help: What's the unique ID for Umami analytics?
+  when: "{{ setup_fqdn }}"
+
 setup_cloudflare:
   type: bool
   help: Do you want to configure automatically Cloudflare (DNS Record and SSL Mode=strict)?
