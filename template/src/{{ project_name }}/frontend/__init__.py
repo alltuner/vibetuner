@@ -1,8 +1,8 @@
-import _paths as paths
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from .. import _paths as paths
 from .lifespan import lifespan
 from .middleware import middlewares
 from .routes import debug as debug
