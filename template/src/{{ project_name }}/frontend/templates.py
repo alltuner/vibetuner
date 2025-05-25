@@ -1,13 +1,28 @@
+from typing import Any
+
+from fastapi import Request
 from fastapi.templating import Jinja2Templates
 
-from .. import TEMPLATES_DIR
+from .._context import ctx_dict
+from .._paths import templates as template_path
 
 
 # Add your functions here
 # Until here
 
+templates = Jinja2Templates(directory=template_path)
 
-templates = Jinja2Templates(directory=TEMPLATES_DIR)
+
+def template_render(
+    template: str,
+    request: Request,
+    ctx: dict[str, Any] | None = None,
+):
+    ctx = ctx or {}
+    merged_ctx = {**ctx_dict, "request": request, **ctx}
+
+    return templates.TemplateResponse(template, merged_ctx)
+
 
 # Customize your templates here
 # Until here
