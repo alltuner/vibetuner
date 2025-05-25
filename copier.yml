@@ -116,6 +116,7 @@ _tasks:
   - command: [just, git-init, "{{ project_name }}"]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, create-github-repo, "{{ github_repo }} "]
+    when: "{{ use_github_repo and (_copier_operation == 'copy') }}"
   - command: [just, "-E", ".env", add-dns-record, "{{ fqdn }} "]
     when: "{{ setup_cloudflare }}"
   - command: [just, deploy-latest, durian]
