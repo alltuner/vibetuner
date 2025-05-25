@@ -1,9 +1,9 @@
+import _paths as paths
 from fastapi import FastAPI, HTTPException, Request, Response
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from .. import STATICS_DIR
-from .lifespan import ctx, lifespan
+from .lifespan import lifespan
 from .middleware import middlewares
 from .routes import debug as debug
 from .templates import templates
@@ -14,7 +14,8 @@ __all__ = [
     "Request",
     "Response",
     "HTMLResponse",
-    "ctx",
+    "JSONResponse",
+    "RedirectResponse",
     "templates",
 ]
 
@@ -25,7 +26,7 @@ app = FastAPI(
     openapi_url=None,
     middleware=middlewares,
 )
-app.mount("/static", StaticFiles(directory=STATICS_DIR), name="static")
+app.mount("/static", StaticFiles(directory=paths.statics), name="static")
 app.include_router(debug.router)
 
 # Add your routes below

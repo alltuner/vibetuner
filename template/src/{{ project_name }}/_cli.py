@@ -4,7 +4,7 @@ from functools import partial, wraps
 import asyncer
 import typer
 
-from ._config import __project_name__
+from ._context import ctx
 from ._logging import LogLevel, setup_logging
 
 
@@ -31,7 +31,7 @@ class AsyncTyper(typer.Typer):
         return partial(self.maybe_run_async, decorator)
 
 
-app = AsyncTyper(no_args_is_help=True, help=f"{__project_name__.title()} CLI")
+app = AsyncTyper(no_args_is_help=True, help=f"{ctx.project_name.title()} CLI")
 
 LOG_LEVEL_OPTION = typer.Option(
     LogLevel.INFO,
