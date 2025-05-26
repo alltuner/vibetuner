@@ -3,7 +3,7 @@ from typing import Annotated
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from ._paths import ROOT_PROJECT_DIR
+from . import paths
 from ._project import PROJECT_NAME
 
 
@@ -33,7 +33,7 @@ class Configuration(BaseSettings):
     # No need to change anything Below
 
     model_config = SettingsConfigDict(
-        env_file=ROOT_PROJECT_DIR / ".env",
+        env_file=paths.root / ".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
