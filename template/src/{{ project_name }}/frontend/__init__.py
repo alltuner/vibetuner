@@ -26,6 +26,7 @@ app = FastAPI(
     openapi_url=None,
     middleware=middlewares,
 )
+
 app.mount("/static", StaticFiles(directory=paths.statics), name="static")
 app.include_router(debug.router)
 

@@ -5,10 +5,11 @@
 import os
 import re
 import sys
-import click
 
+import click
 import rich
 from cloudflare import Cloudflare
+
 
 DEST: str = "135.181.131.150"
 
