@@ -13,5 +13,5 @@ elif [ "$ENVIRONMENT" = "production" ]; then
     exec fastapi run src/{{ project_name }}/frontend
 else
     echo "Starting in development mode..."
-    exec fastapi dev src/{{ project_name }}/frontend
+    exec fastapi dev --host 0.0.0.0 src/{{ project_name }}/frontend
 fi

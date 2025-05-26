@@ -41,6 +41,7 @@ _update_local_deps:
 # Runs the dev environment with watch mode and cleans up orphans
 [group('Local Development')]
 dev: _update_local_deps
+    DEBUG=1 \
     ENVIRONMENT=development \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     COMPOSE_BAKE=true \
