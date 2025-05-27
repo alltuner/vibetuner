@@ -13,9 +13,13 @@ dev = [
     "fastapi[standard]>=0.115.12",
     "loguru>=0.7.3",
     "pydantic>=2.11.4",
+    "pydantic-extra-types[pycountry]>=2.10.4",
     "pydantic-settings>=2.9.1",
+    "pyyaml>=6.0.2",
     "rich>=14.0.0",
     "ruff>=0.11.11",
+    "starlette-babel>=1.0.3",
+    "starlette-cramjam>=0.5.0",
     "typer-slim[standard]>=0.15.4",
 ]
 
