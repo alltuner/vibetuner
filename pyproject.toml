@@ -2,11 +2,11 @@
 name = "scaffolding"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = [
-]
+dependencies = []
 
 [dependency-groups]
 dev = [
+    "arel>=0.3.0",
     "asyncer>=0.0.8",
     "click>=8.1.8",
     "cloudflare>=4.2.0",

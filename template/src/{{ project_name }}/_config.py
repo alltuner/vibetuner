@@ -19,6 +19,9 @@ Year = Annotated[int, Field(strict=True, gt=1980, lt=2100)]
 
 
 class Configuration(BaseSettings):
+    # Debug
+    debug: bool = Field(default=False)
+
     # Copyright
     copyright_start: Year | None = None
     copyright_current: Year = 2025
