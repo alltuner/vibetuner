@@ -15,6 +15,7 @@ dependencies = [
     "pydantic-settings>=2.9.1",
     "rich>=14.0.0",
     "starlette-babel>=1.0.3",
+    "starlette-cramjam>=0.5.0",
     "typer-slim[standard]>=0.15.4",
     # Below this line you can add your dependencies
 ]
@@ -33,6 +34,10 @@ scaffolding = [
 dev = [
     # Add below this line any dependencies you need for development
 ]
+
+[build-system]
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
 
 [tool.uv]
 default-groups = ["dev", "scaffolding"]
@@ -55,9 +60,8 @@ extend-select = [
 combine-as-imports = true
 lines-after-imports = 2
 
-[build-system]
-requires = ["hatchling", "uv-dynamic-versioning"]
-build-backend = "hatchling.build"
+[tool.mypy]
+plugins = ['pydantic.mypy']
 
 [tool.uv-dynamic-versioning]
 fallback-version = "0.0.0"
