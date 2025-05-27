@@ -1,8 +1,8 @@
-from fastapi import FastAPI, HTTPException, Request, Response
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 
 from .. import _paths as paths
+from .deps import LangDep as LangDep
 from .lifespan import ctx, lifespan
 from .middleware import middlewares
 from .routes import debug as debug
@@ -10,12 +10,7 @@ from .templates import templates
 
 
 __all__ = [
-    "HTTPException",
     "Request",
-    "Response",
-    "HTMLResponse",
-    "JSONResponse",
-    "RedirectResponse",
     "templates",
 ]
 
@@ -31,7 +26,11 @@ app.mount("/static", StaticFiles(directory=paths.statics), name="static")
 if ctx.DEBUG:
     from .hotreload import hotreload
 
-    app.add_websocket_route("/hot-reload", route=hotreload, name="hot-reload")
+    app.add_websocket_route(
+        "/hot-reload",
+        route=hotreload,  # type: ignore
+        name="hot-reload",
+    )
 
 app.include_router(debug.router)
 
