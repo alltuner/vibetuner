@@ -1,5 +1,5 @@
 from . import _paths as paths
-from ._config import settings
+from ._config import project_settings, settings
 from ._logging import logger
 
 
@@ -7,6 +7,7 @@ __all__ = [
     "logger",
     "paths",
     "settings",
+    "project_settings",
 ]
 
 

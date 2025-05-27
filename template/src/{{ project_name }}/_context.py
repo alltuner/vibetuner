@@ -1,8 +1,13 @@
 from typing import Any
 
+from castuner.core.http import get_http_client
+from castuner.scheduler.jobs import JobPool
+from castuner.search.service import SearchClient
+from httpx import AsyncClient
 from pydantic import BaseModel
+from redis.asyncio import Redis
 
-from ._config import __project_name__, __version__, settings
+from ._config import __version__, project_settings, settings
 
 
 def get_copyright() -> str:
@@ -21,14 +26,24 @@ def get_copyright() -> str:
 
 
 class AppContext(BaseModel):
-    project_name: str = __project_name__
-    version: str = __version__
-    copyright: str = get_copyright()
     DEBUG: bool = settings.debug
 
-    umami_website_id: str = settings.umami_website_id
+    project_name: str = project_settings.project_name
+    version: str = __version__
+    copyright: str = get_copyright()
+
+    default_language: str = project_settings.language
+    supported_languages: set[str] = project_settings.languages
+
+    session_key: str = settings.session_key
+
+    umami_website_id: str = project_settings.umami_website_id
 
     # Add typed state here
+    http: AsyncClient = get_http_client()
+    solr: SearchClient = SearchClient()
+    jobpool: JobPool = JobPool()
+    redis: Redis = Redis.from_url(str(settings.redis_url))
 
     model_config = {"arbitrary_types_allowed": True}
 
