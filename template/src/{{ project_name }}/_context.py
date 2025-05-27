@@ -24,6 +24,7 @@ class AppContext(BaseModel):
     project_name: str = __project_name__
     version: str = __version__
     copyright: str = get_copyright()
+    DEBUG: bool = settings.debug
 
     umami_website_id: str = settings.umami_website_id
 
