@@ -1,11 +1,6 @@
 from typing import Any
 
-from castuner.core.http import get_http_client
-from castuner.scheduler.jobs import JobPool
-from castuner.search.service import SearchClient
-from httpx import AsyncClient
 from pydantic import BaseModel
-from redis.asyncio import Redis
 
 from ._config import __version__, project_settings, settings
 
@@ -40,10 +35,6 @@ class AppContext(BaseModel):
     umami_website_id: str = project_settings.umami_website_id
 
     # Add typed state here
-    http: AsyncClient = get_http_client()
-    solr: SearchClient = SearchClient()
-    jobpool: JobPool = JobPool()
-    redis: Redis = Redis.from_url(str(settings.redis_url))
 
     model_config = {"arbitrary_types_allowed": True}
 
