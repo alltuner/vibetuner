@@ -95,6 +95,8 @@ COPY --chown=app:app src/ src/
 COPY --chown=app:app frontend/templates/ frontend/templates/
 COPY --chown=app:app frontend/markdown/ frontend/markdown/
 
+COPY --chown=app:app .copier-answers.yml ./
+
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
