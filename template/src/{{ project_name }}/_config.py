@@ -23,7 +23,7 @@ class ProjectConfiguration(BaseSettings):
     project_name: str
 
     # Language Related Settings
-    supported_languages: set[LanguageAlpha2] = set()
+    supported_languages: set[LanguageAlpha2] | None = None
     default_language: LanguageAlpha2 = LanguageAlpha2("en")
 
     # Analytics
@@ -32,6 +32,9 @@ class ProjectConfiguration(BaseSettings):
     @property
     def languages(self) -> set[str]:
         """Return the supported languages as a set of strings."""
+        if self.supported_languages is None:
+            return {self.language}
+
         return {
             str(lang) for lang in (*self.supported_languages, self.default_language)
         }
