@@ -28,8 +28,9 @@ def locale_selector(conn: HTTPConnection) -> str | None:
 
 
 shared_translator = get_translator()
-shared_translator.load_from_directories([paths.locales])
-
+if paths.locales.exists() and paths.locales.is_dir():
+    # Load translations from the locales directory
+    shared_translator.load_from_directories([paths.locales])
 
 # Override below this line
 
