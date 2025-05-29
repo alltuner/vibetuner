@@ -49,7 +49,7 @@ dev: _update_local_deps
 # Runs the dev environment locally without Docker
 [group('Local Development')]
 local-dev: _update_local_deps
-    ./start.sh local-dev
+    uvx --from 'python-dotenv[cli]' dotenv -f .env.local run -- ./start.sh local-dev
 
 # Builds the dev image with COMPOSE_BAKE set
 [group('CI/CD')]

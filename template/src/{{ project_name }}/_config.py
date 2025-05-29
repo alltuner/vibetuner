@@ -98,12 +98,7 @@ class Configuration(BaseSettings):
 
     # Add here your configuration variables between this comment and the next one
     # No need to change anything Below
-    model_config = SettingsConfigDict(
-        env_file=paths.root / ".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False,
-        extra="ignore",
-    )
+    model_config = SettingsConfigDict(case_sensitive=False, extra="ignore")
 
 
 settings = Configuration()  # ty: ignore[missing-argument]
