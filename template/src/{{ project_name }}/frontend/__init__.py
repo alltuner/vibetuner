@@ -1,3 +1,5 @@
+import os  # noqa
+
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -6,7 +8,9 @@ from .. import _paths as paths
 from .deps import LangDep as LangDep
 from .lifespan import ctx, lifespan
 from .middleware import middlewares
-from .routes import debug as debug
+from .routes import (
+    debug,
+)
 from .templates import templates
 
 
