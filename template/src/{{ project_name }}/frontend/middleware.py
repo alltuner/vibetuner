@@ -3,14 +3,16 @@ from fastapi.requests import HTTPConnection
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette_babel import (
+    LocaleFromCookie,
     LocaleFromQuery,
     LocaleMiddleware,
     get_translator,
 )
-from starlette_cramjam.middleware import CompressionMiddleware  # type: ignore
+from starlette_compress import CompressMiddleware
+from starlette_htmx.middleware import HtmxMiddleware
 
-from .. import paths
-from .lifespan import ctx
+from .. import paths, settings
+from .._context import ctx
 
 
 def locale_selector(conn: HTTPConnection) -> str | None:
@@ -37,15 +39,20 @@ if paths.locales.exists() and paths.locales.is_dir():
 # Until this line
 
 middlewares: list[Middleware] = [
-    Middleware(CompressionMiddleware),
+    Middleware(CompressMiddleware),
     Middleware(TrustedHostMiddleware),
+    Middleware(HtmxMiddleware),
     Middleware(
         LocaleMiddleware,
         locales=ctx.supported_languages,
         default_locale=ctx.default_language,
-        selectors=[LocaleFromQuery(query_param="l"), locale_selector],
+        selectors=[
+            LocaleFromQuery(query_param="l"),
+            LocaleFromCookie(),
+            locale_selector,
+        ],
     ),
-    Middleware(SessionMiddleware, secret_key=ctx.session_key),
+    Middleware(SessionMiddleware, secret_key=settings.session_key),
     # Add your middleware below this line
 ]
 
