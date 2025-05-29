@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/bundle.css').path }}" />
-    <script src="{{ url_for('static', path='/js/bundle.js').path }}"></script>
+    <link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
+    <script src="{{ url_for('js', path='bundle.js').path }}"></script>
 
-    {% if umami_website_id %}
+    {% if umami_website_id and not DEBUG %}
     <script defer src="/meta.js" data-website-id="{{ umami_website_id }}"></script>{% endif %}
 
     {% block head %}{% endblock %}

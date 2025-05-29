@@ -3,6 +3,11 @@ from typing import Annotated, Optional
 from fastapi import Depends, HTTPException, Request
 
 
+async def require_htmx(request: Request) -> None:
+    if not request.state.htmx:
+        raise HTTPException(status_code=400, detail="HTMX header not found")
+
+
 async def enforce_lang(request: Request, lang: Optional[str] = None):
     if lang is None or lang != request.state.language:
         redirect_url = request.url_for(
