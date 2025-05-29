@@ -1,10 +1,17 @@
+import base64
+import hashlib
 from datetime import datetime
 from functools import cached_property
 from pathlib import Path
 from typing import Annotated
 
 import yaml
-from pydantic import UUID4, Field, SecretStr
+from pydantic import (
+    UUID4,
+    Field,
+    SecretStr,
+    computed_field,
+)
 from pydantic_extra_types.language_code import LanguageAlpha2
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -75,14 +82,23 @@ class Configuration(BaseSettings):
     # Session Key for FastAPI
     session_key: SecretStr = SecretStr("ct-!secret-must-change-me")
 
+    @computed_field  # type: ignore[prop-decorator]
+    @cached_property
+    def v_hash(self) -> str:
+        hash_object = hashlib.sha256(self.version.encode("utf-8"))
+        hash_bytes = hash_object.digest()
+
+        # Convert to base64 and make URL-safe
+        b64_hash = base64.urlsafe_b64encode(hash_bytes).decode("utf-8")
+
+        # Remove padding characters and truncate to desired length
+        url_safe_hash = b64_hash.rstrip("=")[:8]
+
+        return url_safe_hash
+
     # Add here your configuration variables between this comment and the next one
     # No need to change anything Below
-    model_config = SettingsConfigDict(
-        env_file=paths.root / ".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False,
-        extra="ignore",
-    )
+    model_config = SettingsConfigDict(case_sensitive=False, extra="ignore")
 
 
 settings = Configuration()  # ty: ignore[missing-argument]
