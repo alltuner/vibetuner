@@ -9,7 +9,7 @@ from starlette_babel import (
     get_translator,
 )
 from starlette_compress import CompressMiddleware
-from starlette_htmx.middleware import HtmxMiddleware
+from starlette_htmx.middleware import HtmxMiddleware  # type: ignore[import-untyped]
 
 from .. import paths, settings
 from .._context import ctx
