@@ -1,22 +1,18 @@
+from datetime import datetime
+from functools import cached_property
 from pathlib import Path
 from typing import Annotated
 
 import yaml
-from pydantic import Field
+from pydantic import UUID4, Field, SecretStr
 from pydantic_extra_types.language_code import LanguageAlpha2
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from . import paths
+from ._version import version
 
 
-try:
-    from ._version import version  # type: ignore
-except ImportError:
-    version: str = "no_version"
-
-__version__: str = version  # type: ignore
-
-Year = Annotated[int, Field(strict=True, gt=1980, lt=2100)]
+current_year: int = datetime.now().year
 
 
 class ProjectConfiguration(BaseSettings):
@@ -26,10 +22,16 @@ class ProjectConfiguration(BaseSettings):
     supported_languages: set[LanguageAlpha2] | None = None
     default_language: LanguageAlpha2 = LanguageAlpha2("en")
 
-    # Analytics
-    umami_website_id: str = ""
+    # Company Name
+    company_name: str = "All Tuner Labs"
 
-    @property
+    # Copyright
+    copyright_start: Annotated[int, Field(strict=True, gt=1714, lt=2048)] = current_year
+
+    # Analytics
+    umami_website_id: UUID4 | None = None
+
+    @cached_property
     def languages(self) -> set[str]:
         """Return the supported languages as a set of strings."""
         if self.supported_languages is None:
@@ -39,14 +41,20 @@ class ProjectConfiguration(BaseSettings):
             str(lang) for lang in (*self.supported_languages, self.default_language)
         }
 
-    @property
+    @cached_property
     def language(self) -> str:
         """Return the default language as a string."""
         return str(self.default_language)
 
-    # Add here your configuration variables between this comment and the next one
+    @cached_property
+    def copyright(self) -> str:
+        year_part = (
+            f"{self.copyright_start}-{current_year}"
+            if self.copyright_start and self.copyright_start != current_year
+            else str(current_year)
+        )
+        return f"© {year_part}{f' {self.company_name}' if self.company_name else ''}"
 
-    # No need to change anything Below
     model_config = SettingsConfigDict(extra="ignore")
 
 
@@ -59,17 +67,13 @@ project_settings = ProjectConfiguration(
 
 class Configuration(BaseSettings):
     # Debug
-    debug: bool = Field(default=False)
+    debug: bool = False
 
-    # Copyright
-    copyright_start: Year | None = None
-    copyright_current: Year = 2025
-
-    # Company Name
-    company_name: str | None = "All Tuner Labs"
+    # Version
+    version: str = version
 
     # Session Key for FastAPI
-    session_key: str = "ct-!secret"
+    session_key: SecretStr = SecretStr("ct-!secret-must-change-me")
 
     # Add here your configuration variables between this comment and the next one
     # No need to change anything Below
@@ -81,4 +85,4 @@ class Configuration(BaseSettings):
     )
 
 
-settings = Configuration()
+settings = Configuration()  # ty: ignore[missing-argument]

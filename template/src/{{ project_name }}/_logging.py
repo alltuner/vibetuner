@@ -41,7 +41,7 @@ class InterceptHandler(logging.Handler):
 
 
 def setup_logging(
-    level: str | int = LogLevel.INFO,
+    level: str | int | None = LogLevel.INFO,
     log_file: str | Path | None = None,
     rotation: str = "10 MB",
     retention: str = "1 week",
@@ -57,6 +57,9 @@ def setup_logging(
     """
     # Remove default handler
     logger.remove()
+
+    if level is None:
+        level = LogLevel.INFO
 
     # Define format for the logs
     format_string = (
