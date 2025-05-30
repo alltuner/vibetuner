@@ -24,6 +24,7 @@ current_year: int = datetime.now().year
 
 class ProjectConfiguration(BaseSettings):
     project_name: str
+    project_description: str
 
     # Language Related Settings
     supported_languages: set[LanguageAlpha2] | None = None
