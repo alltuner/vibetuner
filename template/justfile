@@ -5,11 +5,19 @@ COMPOSE_PROD := "compose.prod.yml"
 
 # Gracefully fallback if no tags exist
 LATEST_VERSION_TAG := `git describe --tags --abbrev=0 --match "v*" 2>/dev/null | sed 's/^v//' || echo "0.0.0"`
-VERSION := `uvx dunamai from git 2>/dev/null || echo 0.0.0`
+VERSION := `dunamai from git 2>/dev/null || echo 0.0.0`
 
 # List available commands
 default:
     @just --list
+
+[group('Helpers')]
+install-deps:
+    @uv tool install dunamai
+    @uv tool install semver
+    @uv tool install python-dotenv
+    @uv tool install copier
+    @uv tool install babel
 
 [group('Helpers')]
 _check-clean:
@@ -49,7 +57,7 @@ dev: _update_local_deps
 # Runs the dev environment locally without Docker
 [group('Local Development')]
 local-dev: _update_local_deps
-    uvx --from 'python-dotenv[cli]' dotenv -f .env.local run -- ./start.sh local-dev
+    @dotenv -f .env.local run -- ./start.sh local-dev
 
 # Builds the dev image with COMPOSE_BAKE set
 [group('CI/CD')]
@@ -108,7 +116,7 @@ _semver_bump type: _check-clean _check-unpushed-commits
         exit 0
     fi
 
-    NEW_VERSION=$(uvx --from semver pysemver bump {{type}} {{LATEST_VERSION_TAG}})
+    NEW_VERSION=$(pysemver bump {{type}} {{LATEST_VERSION_TAG}})
     if [ -z "$NEW_VERSION" ]; then
         echo "❌ Failed to compute new version. Aborting to avoid invalid tag."
         exit 1
@@ -166,22 +174,22 @@ merge:
 # Extracts translations from source files
 [group('localization')]
 extract-translations:
-    @uv run pybabel extract -F babel.cfg -o locales/messages.pot ./src
+    @pybabel extract -F babel.cfg -o locales/messages.pot ./src
 
 # Creates a new language file for localization
 [group('localization')]
 new-locale LANG:
-    @uv run pybabel init -i locales/messages.pot -d locales -l {{LANG}}
+    @pybabel init -i locales/messages.pot -d locales -l {{LANG}}
 
 # Updates existing language files for localization
 [group('localization')]
 update-locale-files:
-    @uv run pybabel update -i locales/messages.pot -d locales
+    @pybabel update -i locales/messages.pot -d locales
 
 # Compiles the language files into binary format
 [group('localization')]
 compile-locales:
-    @uv run pybabel compile -d locales
+    @pybabel compile -d locales
 
 
 # Dump untranslated strings per language to a given DEST directory
@@ -200,7 +208,7 @@ dump-untranslated DEST:
 [group('scaffolding')]
 update-scaffolding:
     @echo "Updating project scaffolding..."
-    @uvx copier update -A --trust
+    @copier update -A --trust
     @pnpm i
     @uv sync
     @echo "Project scaffolding updated."
