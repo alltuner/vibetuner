@@ -29,12 +29,17 @@ project_name:
     project_name must start with a letter, followed one or more letters, digits or dashes all lowercase ending with a letter or digit.
     {% endif %}
 
+enable_web:
+  type: bool
+  help: Do you want to enable web stuff?
+  default: true
+
 cloudflare_api_key:
   type: str
   placeholder: "XXXXXXXXXX_yyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
-  default: ""
-  when: "{{ not setup_cloudflare }}"
   help: The CF API key that will be used for the environment (needs permissions)
+  default: ""
+  when: "{{ not setup_cloudflare and enable_web }}"
 
 project_description:
   type: str
@@ -75,6 +80,7 @@ setup_fqdn:
   type: bool
   help: Do you want to configure a FQDN?
   default: false
+  when: "{{ enable_web }}"
 
 fqdn:
   type: str
@@ -90,29 +96,31 @@ umami_website_id:
   type: str
   placeholder: "98357f85-ccdd-4544-aaaa-e57a27e53dde"
   help: What's the unique ID for Umami analytics?
-  when: "{{ setup_fqdn }}"
+  when: "{{ enable_web and setup_fqdn }}"
 
 setup_cloudflare:
   type: bool
   help: Do you want to configure automatically Cloudflare (DNS Record and SSL Mode=strict)?
-  when: "{{ cloudflare_api_key and setup_fqdn }}"
   default: false
+  when: "{{ enable_web and cloudflare_api_key and setup_fqdn }}"
 
 setup_caddy:
   type: bool
   help: Do you want to configure Caddy to serve requests?
-  when: "{{ cloudflare_api_key and setup_fqdn }}"
   default: true
+  when: "{{ enable_web and cloudflare_api_key and setup_fqdn }}"
 
 enable_watchtower:
   type: bool
   help: Do you want to enable watchtower (containers self-reload on update)?
   default: true
+  when: "{{ enable_web }}"
 
 deploy_to_production:
   type: bool
   help: Do you want to deploy to production?
   default: true
+  when: "{{ enable_web }}"
 
 _tasks:
   - command: [uv, tool, install, dunamai]
