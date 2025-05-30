@@ -4,8 +4,8 @@ from functools import partial, wraps
 import asyncer
 import typer
 
-from ._config import project_settings
-from ._logging import LogLevel, setup_logging
+from .._config import project_settings
+from .._logging import LogLevel, setup_logging
 
 
 class AsyncTyper(typer.Typer):
