@@ -117,6 +117,16 @@ deploy_to_production:
   default: true
 
 _tasks:
+  - command: [uv, tool, install, dunamai]
+    when: "{{ _copier_phase == 'prompt' }}"
+  - command: [uv, tool, install, semver]
+    when: "{{ _copier_phase == 'prompt' }}"
+  - command: [uv, tool, install, python-dotenv]
+    when: "{{ _copier_phase == 'prompt' }}"
+  - command: [uv, tool, install, copier]
+    when: "{{ _copier_phase == 'prompt' }}"
+  - command: [uv, tool, install, babel]
+    when: "{{ _copier_phase == 'prompt' }}"
   - command: [just, mise-trust]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, git-init, "{{ project_name }}"]
