@@ -125,9 +125,13 @@ _tasks:
     when: "{{ _copier_phase == 'prompt' }}"
   - command: [uv, tool, install, babel]
     when: "{{ _copier_phase == 'prompt' }}"
+  - command: [uv, tool, install, pre-commit]
+    when: "{{ _copier_phase == 'prompt' }}"
   - command: [just, mise-trust]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, git-init, "{{ project_name }}"]
+    when: "{{ _copier_operation == 'copy' }}"
+  - command: [pre-commit]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, create-github-repo, "{{ github_repo }} "]
     when: "{{ _copier_operation == 'copy' and use_github_repo }}"
