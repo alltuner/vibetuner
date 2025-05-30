@@ -44,7 +44,7 @@ middlewares: list[Middleware] = [
     Middleware(HtmxMiddleware),
     Middleware(
         LocaleMiddleware,
-        locales=ctx.supported_languages,
+        locales=list(ctx.supported_languages),
         default_locale=ctx.default_language,
         selectors=[
             LocaleFromQuery(query_param="l"),
@@ -52,7 +52,7 @@ middlewares: list[Middleware] = [
             locale_selector,
         ],
     ),
-    Middleware(SessionMiddleware, secret_key=settings.session_key),
+    Middleware(SessionMiddleware, secret_key=settings.session_key.get_secret_value()),
     # Add your middleware below this line
 ]
 

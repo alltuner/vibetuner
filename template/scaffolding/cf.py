@@ -72,7 +72,7 @@ def add_dns_record(record: str, dest: str = DEST):
     ]
 
     ssl_setting = cf.zones.settings.get(zone_id=zone.id, setting_id="ssl")
-    if ssl_setting is not None and ssl_setting.value != "strict":
+    if ssl_setting is not None and ssl_setting.value != "strict":  # type: ignore
         cf.zones.settings.edit(zone_id=zone.id, setting_id="ssl", value="strict")
 
     if dns_records:
