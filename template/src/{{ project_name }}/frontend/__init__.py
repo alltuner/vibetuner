@@ -1,5 +1,3 @@
-import os  # noqa
-
 from fastapi import FastAPI, Request as Request
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
