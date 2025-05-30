@@ -119,7 +119,7 @@ enable_watchtower:
 deploy_to_production:
   type: bool
   help: Do you want to deploy to production?
-  default: true
+  default: false
   when: "{{ enable_web }}"
 
 _tasks:
@@ -144,6 +144,6 @@ _tasks:
   - command: [just, create-github-repo, "{{ github_repo }} "]
     when: "{{ _copier_operation == 'copy' and use_github_repo }}"
   - command: [just, "-E", ".env", add-dns-record, "{{ fqdn }} "]
-    when: "{{ _copier_operation == 'copy' and setup_cloudflare }}"
+    when: "{{ _copier_operation == 'copy' and setup_cloudflare and enable_web }}"
   - command: [just, deploy-latest, durian]
-    when: "{{ _copier_operation == 'copy' and deploy_to_production }}"
+    when: "{{ _copier_operation == 'copy' and deploy_to_production and enable_web }}"
