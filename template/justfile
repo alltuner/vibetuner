@@ -15,7 +15,7 @@ default:
 install-deps:
     @uv tool install dunamai
     @uv tool install semver
-    @uv tool install python-dotenv
+    @uv tool install "python-dotenv[cli]"
     @uv tool install copier
     @uv tool install babel
     @uv tool install pre-commit
