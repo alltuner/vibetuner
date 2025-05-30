@@ -122,8 +122,8 @@ _tasks:
   - command: [just, git-init, "{{ project_name }}"]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, create-github-repo, "{{ github_repo }} "]
-    when: "{{ use_github_repo and (_copier_operation == 'copy') }}"
+    when: "{{ _copier_operation == 'copy' and use_github_repo }}"
   - command: [just, "-E", ".env", add-dns-record, "{{ fqdn }} "]
-    when: "{{ setup_cloudflare and (_copier_operation == 'copy') }}"
+    when: "{{ _copier_operation == 'copy' and setup_cloudflare }}"
   - command: [just, deploy-latest, durian]
-    when: "{{ deploy_to_production and (_copier_operation == 'copy') }}"
+    when: "{{ _copier_operation == 'copy' and deploy_to_production }}"
