@@ -18,6 +18,7 @@ install-deps:
     @uv tool install python-dotenv
     @uv tool install copier
     @uv tool install babel
+    @uv tool install pre-commit
 
 [group('Helpers')]
 _check-clean:
