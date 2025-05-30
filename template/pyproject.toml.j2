@@ -9,6 +9,7 @@ dependencies = [
     # These are the base dependencies of AllTuner's blessed stack
     "arel>=0.3.0",
     "asyncer>=0.0.8",
+    "click<8.2", # Fixme, remove when the stderr error is fixed
     "fastapi[standard]>=0.115.12",
     "itsdangerous>=2.2.0",
     "loguru>=0.7.3",
@@ -20,7 +21,7 @@ dependencies = [
     "starlette-babel>=1.0.3",
     "starlette-compress>=1.6.0",
     "starlette-htmx>=0.1.1",
-    "typer-slim[standard]>=0.15.4",
+    "typer-slim[standard]>=0.16.0",
     # Below this line you can add your dependencies
 ]
 
