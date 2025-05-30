@@ -33,7 +33,7 @@ project_name:
 cloudflare_api_key:
   type: str
   placeholder: "XXXXXXXXXX_yyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
-  when: "{{ _copier_operation == 'copy' }}"
+  default: ""
   help: The CF API key that will be used for the environment (needs permissions)
 
 project_description:
