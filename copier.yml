@@ -2,6 +2,8 @@ _subdirectory: template
 _templates_suffix: .j2
 _skip_if_exists:
   - .env
+_secret_questions:
+  - cloudflare_api_key
 
 company_name:
   type: str
@@ -30,9 +32,7 @@ project_name:
 
 cloudflare_api_key:
   type: str
-  secret: true
-  placeholder: "Enter your Cloudflare API key"
-  default: ""
+  placeholder: "XXXXXXXXXX_yyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
   when: "{{ _copier_operation == 'copy' }}"
   help: The CF API key that will be used for the environment (needs permissions)
 
