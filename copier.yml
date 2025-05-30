@@ -139,7 +139,7 @@ _tasks:
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, git-init, "{{ project_name }}"]
     when: "{{ _copier_operation == 'copy' }}"
-  - command: [pre-commit]
+  - command: [pre-commit, install]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, create-github-repo, "{{ github_repo }} "]
     when: "{{ _copier_operation == 'copy' and use_github_repo }}"
