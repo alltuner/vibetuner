@@ -1,6 +1,6 @@
 from rich.console import Console
 
-from ._cli import app
+from ._helper import app
 
 
 __all__ = ["app"]
