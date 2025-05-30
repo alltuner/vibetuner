@@ -218,7 +218,7 @@ update-scaffolding:
 # Initialize git repo
 [group('initialization')]
 git-init PROJECT: _update_local_deps
-    @[ -d .git ] || (git init && git add . && git commit -m "initial commit for {{ PROJECT }}" && git tag -a "v0.0.1" -m "Initial version")
+    @[ -d .git ] || (git init && git add . && SKIP=no-commit-to-branch git commit -m "initial commit for {{ PROJECT }}" && git tag -a "v0.0.1" -m "Initial version")
 
 [group('initialization')]
 create-github-repo REPO:
