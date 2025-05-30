@@ -3,8 +3,6 @@ _templates_suffix: .j2
 _skip_if_exists:
   - .env
   - .env.local
-_secret_questions:
-  - cloudflare_api_key
 
 company_name:
   type: str
