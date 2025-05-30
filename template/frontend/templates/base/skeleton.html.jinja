@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ request.state.language }}">
 
 <head>
     <meta charset="UTF-8" />
@@ -15,7 +15,7 @@
     {% block head %}{% endblock %}
 </head>
 
-<body hx-ext="preload" preload="mousedown">
+<body hx-ext="preload" preload="mousedown" class="{{ BODY_CLASS }} font-figtree">
     {% block body %}{% endblock %}
     {% if DEBUG %}{{ hotreload.script(url_for('hot-reload')) | safe }}{% endif %}
     {% block end_of_body %} {% endblock %}
