@@ -1,10 +1,17 @@
 # Gracefully fallback if no tags exist
 LATEST_VERSION_TAG := `git describe --tags --abbrev=0 --match "v*" 2>/dev/null | sed 's/^v//' || echo "0.0.0"`
-VERSION := `uvx dunamai from git 2>/dev/null || echo 0.0.0`
 
 # List available commands
 default:
     @just --list
+
+[group('Helpers')]
+install-deps:
+    @uv tool install dunamai
+    @uv tool install semver
+    @uv tool install python-dotenv
+    @uv tool install copier
+    @uv tool install babel
 
 [group('Helpers')]
 _check-clean:
@@ -55,7 +62,7 @@ _semver_bump type: _check-clean _check-unpushed-commits
         exit 0
     fi
 
-    NEW_VERSION=$(uvx --from semver pysemver bump {{type}} {{LATEST_VERSION_TAG}})
+    NEW_VERSION=$(pysemver bump {{type}} {{LATEST_VERSION_TAG}})
     if [ -z "$NEW_VERSION" ]; then
         echo "❌ Failed to compute new version. Aborting to avoid invalid tag."
         exit 1
