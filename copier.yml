@@ -127,7 +127,7 @@ _tasks:
     when: "{{ _copier_phase == 'prompt' }}"
   - command: [uv, tool, install, semver]
     when: "{{ _copier_phase == 'prompt' }}"
-  - command: [uv, tool, install, python-dotenv]
+  - command: [uv, tool, install, "python-dotenv[cli]"]
     when: "{{ _copier_phase == 'prompt' }}"
   - command: [uv, tool, install, copier]
     when: "{{ _copier_phase == 'prompt' }}"
