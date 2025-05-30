@@ -31,7 +31,6 @@ project_name:
 cloudflare_api_key:
   type: str
   secret: true
-  default: ""
   when: "{{ _copier_operation == 'copy' }}"
   help: The CF API key that will be used for the environment (needs permissions)
 
