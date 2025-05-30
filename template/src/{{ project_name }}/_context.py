@@ -7,6 +7,7 @@ class DataContext(BaseModel):
     DEBUG: bool = settings.debug
 
     project_name: str = project_settings.project_name
+    project_description: str = project_settings.project_description
 
     version: str = settings.version
     v_hash: str = settings.v_hash
