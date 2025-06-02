@@ -35,9 +35,9 @@ project_description:
 
 fqdn:
   type: str
+  help: What's the fqdn of your website? (leaving empty disables all deployment and caddy stuff)
   placeholder: subdomain.example.com
   default: ""
-  help: What's the fqdn of your website?
 
 python_version:
   type: str
@@ -51,8 +51,8 @@ python_version:
 
 supported_languages:
   type: yaml
-  multiline: true
   help: List of 2 letter lang codes in JSON format of supported languages (in addition to English)
+  multiline: true
 
 use_github_repo:
   type: bool
