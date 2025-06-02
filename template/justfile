@@ -214,13 +214,3 @@ git-init PROJECT: _update_local_deps
 [group('initialization')]
 create-github-repo REPO:
     @gh repo create {{ REPO }} --private -s . --push
-
-# Trust mise
-[group('initialization')]
-mise-trust:
-    @mise trust
-
-# Untrust mise
-[group('initialization')]
-mise-untrust:
-    @mise trust --untrust
