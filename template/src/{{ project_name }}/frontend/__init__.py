@@ -1,5 +1,10 @@
-from fastapi import FastAPI, Request as Request
-from fastapi.responses import RedirectResponse
+from fastapi import (
+    FastAPI,
+    Request,
+)
+from fastapi.responses import (
+    RedirectResponse,
+)
 from fastapi.staticfiles import StaticFiles
 
 from .. import _paths as paths
