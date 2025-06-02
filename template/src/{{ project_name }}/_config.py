@@ -2,7 +2,6 @@ import base64
 import hashlib
 from datetime import datetime
 from functools import cached_property
-from pathlib import Path
 from typing import Annotated
 
 import yaml
@@ -23,8 +22,8 @@ current_year: int = datetime.now().year
 
 
 class ProjectConfiguration(BaseSettings):
-    project_name: str
-    project_description: str
+    project_name: str = "default_project"
+    project_description: str = "A default project description."
 
     # Language Related Settings
     supported_languages: set[LanguageAlpha2] | None = None
@@ -66,11 +65,13 @@ class ProjectConfiguration(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore")
 
 
-project_settings = ProjectConfiguration(
-    **yaml.safe_load(
-        Path(paths.root / ".copier-answers.yml").read_text(encoding="utf-8")
+project_settings: ProjectConfiguration = (
+    ProjectConfiguration()
+    if not paths.config_vars.exists()
+    else ProjectConfiguration(
+        **yaml.safe_load(paths.config_vars.read_text(encoding="utf-8"))
     )
-)  # type: ignore[missing-argument]
+)
 
 
 class Configuration(BaseSettings):
