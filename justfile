@@ -6,14 +6,6 @@ default:
     @just --list
 
 [group('Helpers')]
-install-deps:
-    @uv tool install dunamai
-    @uv tool install semver
-    @uv tool install python-dotenv
-    @uv tool install copier
-    @uv tool install babel
-
-[group('Helpers')]
 _check-clean:
     @git diff --quiet || (echo "❌ Uncommitted changes found. Commit or stash them before building." && exit 1)
     @git diff --cached --quiet || (echo "❌ Staged but uncommitted changes found. Commit them before building." && exit 1)
