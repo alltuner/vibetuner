@@ -1,5 +1,3 @@
-_secret_questions:
-  - cloudflare_api_key
 _skip_if_exists:
   - .env
   - .env.local
@@ -35,26 +33,11 @@ project_description:
   help: What is the description of your project?
   default: A project that does something useful.
 
-enable_web:
-  type: bool
-  help: Do you want to enable web stuff?
-  default: true
-
-setup_caddy:
-  type: bool
-  help: Do you want to configure a FQDN in Caddy?
-  default: false
-  when: "{{ enable_web }}"
-
 fqdn:
   type: str
   placeholder: subdomain.example.com
+  default: ""
   help: What's the fqdn of your website?
-  when: "{{ setup_caddy }}"
-  validator: >-
-    {% if not (fqdn | regex_search('^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$')) %}
-    fqdn must be a valid fully qualified domain name like subdomain.example.com
-    {% endif %}
 
 python_version:
   type: str
@@ -90,21 +73,20 @@ enable_watchtower:
   type: bool
   help: Do you want to enable watchtower (containers self-reload on update)?
   default: true
-  when: "{{ enable_web }}"
+  when: "{{ fqdn }}"
 
-deploy:
-  type: bool
-  help: Do you want to deploy to production?
-  when: "{{ enable_web }}"
+deploy_host:
+  type: str
+  help: Host to deploy to production (leave empty to not deploy)
+  default: ""
+  when: "{{ fqdn }}"
 
 _tasks:
-  - command: [just, mise-trust]
-    when: "{{ _copier_operation == 'copy' }}"
   - command: [just, git-init, "{{ project_name }}"]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [pre-commit, install]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, create-github-repo, "{{ github_repo }}"]
     when: "{{ _copier_operation == 'copy' and use_github_repo }}"
-  - command: [just, deploy-latest, durian]
-    when: "{{ _copier_operation == 'copy' and deploy and enable_web }}"
+  - command: [just, deploy-latest, "{{ deploy_host }}"]
+    when: "{{ _copier_operation == 'copy' and deploy_host and fqdn }}"
