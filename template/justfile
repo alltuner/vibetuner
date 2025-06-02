@@ -70,7 +70,7 @@ test-build-prod: _update_local_deps
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
-release: _check-clean _check-unpushed-commits _check-last-commit-tagged _update_local_deps
+release: _check-clean _check-last-commit-tagged _update_local_deps
     ENVIRONMENT=production \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     VERSION={{VERSION}} \
@@ -98,7 +98,7 @@ bump-patch:
 
 # Internal recipe to bump version and create git tag
 [group('versioning')]
-_semver_bump type: _check-clean _check-unpushed-commits
+_semver_bump type: _check-clean
     #!/usr/bin/env bash
     if ! git tag | grep -q '^v'; then
         echo "No version tags found. Creating initial tag v0.0.1..."
