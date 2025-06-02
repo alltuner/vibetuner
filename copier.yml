@@ -57,13 +57,6 @@ fqdn:
     fqdn must be a valid fully qualified domain name like subdomain.example.com
     {% endif %}
 
-cloudflare_api_key:
-  type: str
-  help: Introduce Cloudflare's API key if you want to create the DNS record (needs permissions)
-  default: ""
-  secret: True
-  when: "{{ enable_web }}"
-
 python_version:
   type: str
   help: Select your Python version
@@ -133,7 +126,5 @@ _tasks:
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, create-github-repo, "{{ github_repo }}"]
     when: "{{ _copier_operation == 'copy' and use_github_repo }}"
-  - command: [just, "-E", ".env", add-dns-record, "{{ fqdn }} "]
-    when: "{{ _copier_operation == 'copy' and cloudflare_api_key }}"
   - command: [just, deploy-latest, durian]
     when: "{{ _copier_operation == 'copy' and deploy_to_production and enable_web }}"
