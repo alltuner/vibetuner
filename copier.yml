@@ -39,6 +39,7 @@ cloudflare_api_key:
   placeholder: "XXXXXXXXXX_yyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
   help: The CF API key that will be used for the environment (needs permissions)
   default: ""
+  secret: True
   when: "{{ not setup_cloudflare and enable_web }}"
 
 project_description:
