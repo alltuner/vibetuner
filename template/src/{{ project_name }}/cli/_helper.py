@@ -9,6 +9,10 @@ from .._logging import LogLevel, setup_logging
 
 
 class AsyncTyper(typer.Typer):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("no_args_is_help", True)
+        super().__init__(*args, **kwargs)
+
     @staticmethod
     def maybe_run_async(decorator, f):
         if inspect.iscoroutinefunction(f):
@@ -31,9 +35,7 @@ class AsyncTyper(typer.Typer):
         return partial(self.maybe_run_async, decorator)
 
 
-app = AsyncTyper(
-    no_args_is_help=True, help=f"{project_settings.project_name.title()} CLI"
-)
+app = AsyncTyper(help=f"{project_settings.project_name.title()} CLI")
 
 LOG_LEVEL_OPTION = typer.Option(
     LogLevel.INFO,

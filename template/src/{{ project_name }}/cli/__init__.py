@@ -1,6 +1,9 @@
+import typer as typer
 from rich.console import Console
 
-from ._helper import app
+from ._helper import (
+    app,
+)
 
 
 __all__ = ["app"]
