@@ -233,8 +233,3 @@ mise-trust:
 [group('initialization')]
 mise-untrust:
     @mise trust --untrust
-
-# Add DNS record
-[group('initialization')]
-add-dns-record RECORD:
-    @scaffolding/cf.py add-dns-record {{ RECORD }}
