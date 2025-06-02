@@ -31,22 +31,38 @@ project_name:
     project_name must start with a letter, followed one or more letters, digits or dashes all lowercase ending with a letter or digit.
     {% endif %}
 
+project_description:
+  type: str
+  help: What is the description of your project?
+  default: A project that does something useful.
+
 enable_web:
   type: bool
   help: Do you want to enable web stuff?
   default: true
 
+setup_caddy:
+  type: bool
+  help: Do you want to configure a FQDN in Caddy?
+  default: false
+  when: "{{ enable_web }}"
+
+fqdn:
+  type: str
+  placeholder: subdomain.example.com
+  help: What's the fqdn of your website?
+  when: "{{ setup_caddy }}"
+  validator: >-
+    {% if not (fqdn | regex_search('^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$')) %}
+    fqdn must be a valid fully qualified domain name like subdomain.example.com
+    {% endif %}
+
 cloudflare_api_key:
   type: str
-  help: The CF API key that will be used for the environment (needs permissions)
+  help: Introduce Cloudflare's API key if you want to create the DNS record (needs permissions)
   default: ""
   secret: True
-  when: "{{ not setup_cloudflare and enable_web }}"
-
-project_description:
-  type: str
-  help: What is the description of your project?
-  default: A project that does something useful.
+  when: "{{ enable_web }}"
 
 python_version:
   type: str
@@ -78,39 +94,11 @@ github_repo:
     github_repo must contain an org or a username followed by a slash and a repo name
     {% endif %}
 
-setup_fqdn:
-  type: bool
-  help: Do you want to configure a FQDN?
-  default: false
-  when: "{{ enable_web }}"
-
-fqdn:
-  type: str
-  placeholder: subdomain.example.com
-  help: What's the fqdn of your website?
-  when: "{{ setup_fqdn }}"
-  validator: >-
-    {% if not (fqdn | regex_search('^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$')) %}
-    fqdn must be a valid fully qualified domain name like subdomain.example.com
-    {% endif %}
-
 umami_website_id:
   type: str
   placeholder: "98357f85-ccdd-4544-aaaa-e57a27e53dde"
   help: What's the unique ID for Umami analytics?
-  when: "{{ enable_web and setup_fqdn }}"
-
-setup_cloudflare:
-  type: bool
-  help: Do you want to configure automatically Cloudflare (DNS Record and SSL Mode=strict)?
-  default: false
-  when: "{{ enable_web and cloudflare_api_key and setup_fqdn }}"
-
-setup_caddy:
-  type: bool
-  help: Do you want to configure Caddy to serve requests?
-  default: true
-  when: "{{ enable_web and cloudflare_api_key and setup_fqdn }}"
+  when: "{{ enable_web and setup_caddy }}"
 
 enable_watchtower:
   type: bool
@@ -146,6 +134,6 @@ _tasks:
   - command: [just, create-github-repo, "{{ github_repo }}"]
     when: "{{ _copier_operation == 'copy' and use_github_repo }}"
   - command: [just, "-E", ".env", add-dns-record, "{{ fqdn }} "]
-    when: "{{ _copier_operation == 'copy' and setup_cloudflare and enable_web }}"
+    when: "{{ _copier_operation == 'copy' and cloudflare_api_key }}"
   - command: [just, deploy-latest, durian]
     when: "{{ _copier_operation == 'copy' and deploy_to_production and enable_web }}"
