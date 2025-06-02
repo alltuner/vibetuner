@@ -10,7 +10,6 @@ company_name:
   type: str
   help: Your company name
   placeholder: Company Name, S.L.
-  default: All Tuner Labs, S.L.
 
 author_name:
   type: str
@@ -87,37 +86,18 @@ github_repo:
     github_repo must contain an org or a username followed by a slash and a repo name
     {% endif %}
 
-umami_website_id:
-  type: str
-  placeholder: "98357f85-ccdd-4544-aaaa-e57a27e53dde"
-  help: What's the unique ID for Umami analytics?
-  when: "{{ enable_web and setup_caddy }}"
-
 enable_watchtower:
   type: bool
   help: Do you want to enable watchtower (containers self-reload on update)?
   default: true
   when: "{{ enable_web }}"
 
-deploy_to_production:
+deploy:
   type: bool
   help: Do you want to deploy to production?
-  default: false
   when: "{{ enable_web }}"
 
 _tasks:
-  - command: [uv, tool, install, dunamai]
-    when: "{{ _copier_phase == 'prompt' }}"
-  - command: [uv, tool, install, semver]
-    when: "{{ _copier_phase == 'prompt' }}"
-  - command: [uv, tool, install, "python-dotenv[cli]"]
-    when: "{{ _copier_phase == 'prompt' }}"
-  - command: [uv, tool, install, copier]
-    when: "{{ _copier_phase == 'prompt' }}"
-  - command: [uv, tool, install, babel]
-    when: "{{ _copier_phase == 'prompt' }}"
-  - command: [uv, tool, install, pre-commit]
-    when: "{{ _copier_phase == 'prompt' }}"
   - command: [just, mise-trust]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, git-init, "{{ project_name }}"]
@@ -127,4 +107,4 @@ _tasks:
   - command: [just, create-github-repo, "{{ github_repo }}"]
     when: "{{ _copier_operation == 'copy' and use_github_repo }}"
   - command: [just, deploy-latest, durian]
-    when: "{{ _copier_operation == 'copy' and deploy_to_production and enable_web }}"
+    when: "{{ _copier_operation == 'copy' and deploy and enable_web }}"
