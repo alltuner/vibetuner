@@ -1,8 +1,10 @@
-_subdirectory: template
-_templates_suffix: .j2
+_secret_questions:
+  - cloudflare_api_key
 _skip_if_exists:
   - .env
   - .env.local
+_subdirectory: template
+_templates_suffix: .j2
 
 company_name:
   type: str
@@ -36,7 +38,6 @@ enable_web:
 
 cloudflare_api_key:
   type: str
-  placeholder: "XXXXXXXXXX_yyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
   help: The CF API key that will be used for the environment (needs permissions)
   default: ""
   secret: True
