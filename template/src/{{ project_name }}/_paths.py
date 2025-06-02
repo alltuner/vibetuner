@@ -8,6 +8,9 @@ root = ROOT_PROJECT_DIR
 assets = ROOT_PROJECT_DIR / "assets"
 locales = ROOT_PROJECT_DIR / "locales"
 
+# Config Vars
+config_vars = root / ".copier-answers.yml"
+
 # Frontend paths
 frontend = ROOT_PROJECT_DIR / "frontend"
 templates = frontend / "templates"
