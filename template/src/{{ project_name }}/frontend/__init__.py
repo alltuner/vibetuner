@@ -61,7 +61,13 @@ if ctx.DEBUG:
         name="hot-reload",
     )
 
-app.include_router(debug.router)
 
 # Add your routes below
+# Default routes to be rewritten by the user
+@app.get("/")
+def index(request: Request):
+    return template_render("defaults/index.html.jinja", request)
+
+
+app.include_router(debug.router)
 # EOF
