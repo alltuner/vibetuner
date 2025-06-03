@@ -1,3 +1,4 @@
+{% set redis_enabled = enable_redis or enable_job_queue %}
 [project]
 name = "{{ project_name }}"
 dynamic = ["version"]
@@ -9,6 +10,7 @@ dependencies = [
     # These are the base dependencies of AllTuner's blessed stack
     "arel>=0.3.0",
     "asyncer>=0.0.8",
+{% if enable_mongodb %}"beanie[zstd]>=1.29.0",{% endif %}
     "click<8.2", # Fixme, remove when the stderr error is fixed
     "fastapi[standard]>=0.115.12",
     "itsdangerous>=2.2.0",
@@ -17,7 +19,9 @@ dependencies = [
     "pydantic-extra-types[pycountry]>=2.10.4",
     "pydantic-settings>=2.9.1",
     "pyyaml>=6.0.2",
+{% if redis_enabled %}"redis[hiredis]>=5.3.0",{% endif %}
     "rich>=14.0.0",
+{% if enable_job_queue %}"streaq>=0.2.1",{% endif %}
     "starlette-babel>=1.0.3",
     "starlette-compress>=1.6.0",
     "starlette-htmx>=0.1.1",

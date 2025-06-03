@@ -8,6 +8,8 @@ import yaml
 from pydantic import (
     UUID4,
     Field,
+    MongoDsn,
+    RedisDsn,
     SecretStr,
     computed_field,
 )
@@ -28,6 +30,9 @@ class ProjectConfiguration(BaseSettings):
     # Language Related Settings
     supported_languages: set[LanguageAlpha2] | None = None
     default_language: LanguageAlpha2 = LanguageAlpha2("en")
+
+    mongodb_url: MongoDsn | None = None
+    redis_url: RedisDsn | None = None
 
     # Company Name
     company_name: str = "All Tuner Labs"

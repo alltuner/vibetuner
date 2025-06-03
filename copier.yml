@@ -69,6 +69,36 @@ github_repo:
     github_repo must contain an org or a username followed by a slash and a repo name
     {% endif %}
 
+enable_job_queue:
+  type: bool
+  help: Do you want to enable job queuing?
+  default: false
+
+# Note, this question will only be asked if enable_message_queue is false,
+# because otherwise it will be enabled unconditionally as it is required by the mes
+enable_redis:
+  type: bool
+  help: Do you want to enable Redis?
+  default: false
+  when: "{{ not enable_job_queue }}"
+
+redis_url:
+  type: str
+  help: Redis server URL
+  default: "redis://alltuner-redis.long-python.ts.net:6379/"
+  when: "{{ enable_redis or enable_job_queue }}"
+
+enable_mongodb:
+  type: bool
+  help: Do you want to enable MongoDB?
+  default: false
+
+mongodb_url:
+  type: str
+  help: MongoDB server URL
+  default: "mongodb://root:castuner@alltuner-mongo.long-python.ts.net:27017/"
+  when: "{{ enable_redis or enable_job_queue }}"
+
 enable_watchtower:
   type: bool
   help: Do you want to enable watchtower (containers self-reload on update)?
