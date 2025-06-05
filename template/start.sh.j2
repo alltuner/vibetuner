@@ -9,6 +9,11 @@ if [ "$1" = "shell" ]; then
 elif [ "$1" = "local-dev" ]; then
     echo "Starting in development mode..."
     DEBUG=1 exec fastapi dev --host 0.0.0.0 src/{{ project_name }}/frontend
+{%- if enable_job_queue %}
+elif [ "$1" = "worker" ]; then
+    echo "Starting task worker..."
+    exec streaq {{ project_name }}.tasks.worker.worker
+{%- endif %}
 #### Add your custom startup commands below this line
 #### End of custom startup commands, do not add anything below
 elif [ "$ENVIRONMENT" = "production" ]; then
