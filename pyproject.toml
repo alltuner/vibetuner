@@ -8,6 +8,7 @@ dependencies = []
 dev = [
     "arel>=0.3.0",
     "asyncer>=0.0.8",
+    "beanie[zstd]>=1.29.0",
     "click>=8.1.8",
     "cloudflare>=4.2.0",
     "fastapi[standard]>=0.115.12",
@@ -16,10 +17,12 @@ dev = [
     "pydantic-extra-types[pycountry]>=2.10.4",
     "pydantic-settings>=2.9.1",
     "pyyaml>=6.0.2",
+    "redis[hiredis]>=5.3.0",
     "rich>=14.0.0",
     "ruff>=0.11.11",
     "starlette-babel>=1.0.3",
     "starlette-cramjam>=0.5.0",
+    "streaq>=0.2.1",
     "typer-slim[standard]>=0.15.4",
 ]
 
