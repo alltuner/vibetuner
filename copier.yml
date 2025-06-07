@@ -97,7 +97,7 @@ mongodb_url:
   type: str
   help: MongoDB server URL
   default: "mongodb://root:castuner@alltuner-mongo.long-python.ts.net:27017/"
-  when: "{{ enable_redis or enable_job_queue }}"
+  when: "{{ enable_mongodb }}"
 
 enable_watchtower:
   type: bool
