@@ -65,7 +65,7 @@ if ctx.DEBUG:
 # Add your routes below
 # Default routes to be rewritten by the user
 @app.get("/")
-def index(request: Request):
+def default_index(request: Request):
     return template_render("defaults/index.html.jinja", request)
 
 
