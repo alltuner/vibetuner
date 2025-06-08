@@ -4,9 +4,12 @@ from fastapi import Request
 from fastapi.templating import Jinja2Templates
 from starlette_babel.contrib.jinja import configure_jinja_env
 
-from .._context import data_ctx
 from .._paths import templates as template_path
+from ..context import Context
 from .hotreload import hotreload
+
+
+data_ctx = Context()
 
 
 # Add your functions here

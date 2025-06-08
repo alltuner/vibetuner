@@ -3,7 +3,7 @@ from pydantic import UUID4, BaseModel
 from ._config import project_settings, settings
 
 
-class DataContext(BaseModel):
+class Context(BaseModel):
     DEBUG: bool = settings.debug
 
     project_name: str = project_settings.project_name
@@ -20,13 +20,3 @@ class DataContext(BaseModel):
     umami_website_id: UUID4 | None = project_settings.umami_website_id
 
     model_config = {"arbitrary_types_allowed": True}
-
-
-class AppContext(DataContext):
-    # Add typed state here
-
-    model_config = {"arbitrary_types_allowed": True}
-
-
-data_ctx = DataContext()
-ctx = AppContext()
