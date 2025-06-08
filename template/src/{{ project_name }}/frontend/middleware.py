@@ -12,7 +12,7 @@ from starlette_compress import CompressMiddleware
 from starlette_htmx.middleware import HtmxMiddleware  # type: ignore[import-untyped]
 
 from .. import paths, settings
-from .._context import ctx
+from .context import ctx
 
 
 def locale_selector(conn: HTTPConnection) -> str | None:
