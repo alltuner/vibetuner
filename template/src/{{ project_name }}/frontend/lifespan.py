@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from .._context import ctx
+from .context import ctx
 from .hotreload import hotreload
 
 

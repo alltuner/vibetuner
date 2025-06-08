@@ -6,16 +6,19 @@ from streaq import Worker
 
 
 class Context(BaseModel):
-    """
-    Define the dependencies of your tasks.
-    """
+    # Add the context properties for your tasks below
 
+    # Until here
     model_config = {"arbitrary_types_allowed": True}
 
 
 @asynccontextmanager
 async def lifespan(worker: Worker) -> AsyncIterator[Context]:
-    yield Context()
+    # Add below anything that should happen before startup
+    # Until here
+    yield Context(
+        # Add your context initialization here
+    )
 
-    # async with AsyncClient() as http_client:
-    #    yield Context(http_client)
+    # Add below anything that should happen before shutdown
+    # Until here
