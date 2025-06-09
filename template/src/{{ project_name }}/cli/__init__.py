@@ -2,11 +2,9 @@ import typer as typer
 from rich.console import Console
 
 from ._helper import (
-    app,
+    app as app,
 )
 
-
-__all__ = ["app"]
 
 console = Console()
 
