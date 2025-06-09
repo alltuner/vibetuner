@@ -6,6 +6,22 @@ networks:
     name: alltuner-network
 
 services:
+{%- if enable_job_queue %}
+  {{ project_name }}-worker:
+  image: alltuner-registry.long-python.ts.net/{{ project_name }}:latest
+  restart: unless-stopped
+  env_file:
+    - .env
+  networks:
+    - {{ project_name }}
+    - alltuner-network
+  command: ['worker']
+  labels:
+    managed_by: "all-tuner"
+{%- if enable_watchtower %}
+    com.centurylinklabs.watchtower.enable: "true"
+{%- endif %}
+{%- endif %}
   {{ project_name }}:
     build:
       context: .
@@ -41,14 +57,18 @@ services:
       - {{ project_name }}
       - alltuner-network
     labels:
-      managed_by: "all-tuner"{% if enable_watchtower %}
-      com.centurylinklabs.watchtower.enable: "true"{% endif %}{% if fqdn %}
+      managed_by: "all-tuner"
+{%- if enable_watchtower %}
+      com.centurylinklabs.watchtower.enable: "true"
+{%- endif %}
+{%- if fqdn %}
       caddy_0: {{ fqdn }}
       caddy_0.reverse_proxy: {% raw %}"{{upstreams 8000}}"{% endraw %}
       caddy_0.tls.dns: cloudflare ${CF_API_TOKEN}
       caddy_0.log.output: file /var/log/caddy/{{ fqdn }}.log
       caddy_0.log.output.import: log-rotation
-      caddy_0.import: umami{% endif %}
+      caddy_0.import: umami
+{%- endif %}
       # Above this line, nothing should be changed
       # Below this line, nothing should be changed
 # End of file: do not remove this line or add any content below
