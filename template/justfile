@@ -51,6 +51,11 @@ dev: _update_local_deps
 local-dev: _update_local_deps
     @dotenv -f .env.local run -- ./start.sh local-dev
 
+# Runs the task worker locally without Docker
+[group('Local Development')]
+worker-dev: _update_local_deps
+    @dotenv -f .env.local run -- ./start.sh worker-dev
+
 # Builds the dev image with COMPOSE_BAKE set
 [group('CI/CD')]
 build-dev: _update_local_deps
