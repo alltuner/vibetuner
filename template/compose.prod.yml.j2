@@ -8,18 +8,18 @@ networks:
 services:
 {%- if enable_job_queue %}
   {{ project_name }}-worker:
-  image: alltuner-registry.long-python.ts.net/{{ project_name }}:latest
-  restart: unless-stopped
-  env_file:
-    - .env
-  networks:
-    - {{ project_name }}
-    - alltuner-network
-  command: ['worker']
-  labels:
-    managed_by: "all-tuner"
+    image: alltuner-registry.long-python.ts.net/{{ project_name }}:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - {{ project_name }}
+      - alltuner-network
+    command: ['worker']
+    labels:
+      managed_by: "all-tuner"
 {%- if enable_watchtower %}
-    com.centurylinklabs.watchtower.enable: "true"
+      com.centurylinklabs.watchtower.enable: "true"
 {%- endif %}
 {%- endif %}
   {{ project_name }}:
