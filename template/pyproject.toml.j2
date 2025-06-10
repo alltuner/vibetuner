@@ -10,9 +10,7 @@ dependencies = [
     # These are the base dependencies of AllTuner's blessed stack
     "arel>=0.3.0",
     "asyncer>=0.0.8",
-{%- if enable_mongodb %}
     "beanie[zstd]>=1.29.0",
-{%- endif %}
     # Fixme, remove click's dep when the stderr error is fixed
     "click<8.2",
     "fastapi[standard]>=0.115.12",
