@@ -103,6 +103,11 @@ class Configuration(BaseSettings):
 
         return url_safe_hash
 
+    @cached_property
+    def mongo_dbname(self) -> str:
+        """Extract the database name from the MongoDB URL."""
+        return project_settings.project_name
+
     # Add here your configuration variables between this comment and the next one
     # No need to change anything Below
     model_config = SettingsConfigDict(case_sensitive=False, extra="ignore")

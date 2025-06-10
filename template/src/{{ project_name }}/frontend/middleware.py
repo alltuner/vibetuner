@@ -1,5 +1,7 @@
 from fastapi.middleware import Middleware
 from fastapi.requests import HTTPConnection
+from starlette.authentication import AuthCredentials, AuthenticationBackend
+from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette_babel import (
@@ -13,6 +15,7 @@ from starlette_htmx.middleware import HtmxMiddleware  # type: ignore[import-unty
 
 from .. import paths, settings
 from .context import ctx
+from .oauth import WebUser
 
 
 def locale_selector(conn: HTTPConnection) -> str | None:
@@ -34,10 +37,20 @@ if paths.locales.exists() and paths.locales.is_dir():
     # Load translations from the locales directory
     shared_translator.load_from_directories([paths.locales])
 
+
 # Override below this line
+class AuthBackend(AuthenticationBackend):
+    async def authenticate(
+        self,
+        conn: HTTPConnection,
+    ) -> tuple[AuthCredentials, WebUser] | None:
+        if user := conn.session.get("user"):
+            return (AuthCredentials(["authenticated"]), WebUser.model_validate(user))
+
+        return None
+
 
 # Until this line
-
 middlewares: list[Middleware] = [
     Middleware(CompressMiddleware),
     Middleware(TrustedHostMiddleware),
@@ -53,6 +66,7 @@ middlewares: list[Middleware] = [
         ],
     ),
     Middleware(SessionMiddleware, secret_key=settings.session_key.get_secret_value()),
+    Middleware(AuthenticationMiddleware, backend=AuthBackend()),
     # Add your middleware below this line
 ]
 

@@ -1,4 +1,5 @@
 from fastapi import (
+    Depends as Depends,
     FastAPI,
     Request,
 )
@@ -8,14 +9,21 @@ from fastapi.responses import (
 from fastapi.staticfiles import StaticFiles
 
 from .. import _paths as paths
-from .deps import LangDep as LangDep
+from .deps import (
+    LangDep as LangDep,
+)
 from .lifespan import ctx, lifespan
 from .middleware import middlewares
 from .routes import (
+    auth,
     debug,
 )
 from .templates import template_render as template_render
 
+
+dependencies = [
+    # Add any dependencies that should be available globally
+]
 
 app = FastAPI(
     debug=ctx.DEBUG,
@@ -24,6 +32,7 @@ app = FastAPI(
     redoc_url=None,
     openapi_url=None,
     middleware=middlewares,
+    dependencies=dependencies,
 )
 
 # Static files
@@ -61,10 +70,12 @@ if ctx.DEBUG:
         name="hot-reload",
     )
 
+app.include_router(auth.router)
+
 
 # Add your routes below
 # Default routes to be rewritten by the user
-@app.get("/")
+@app.get("/", name="homepage")
 def default_index(request: Request):
     return template_render("defaults/index.html.jinja", request)
 
