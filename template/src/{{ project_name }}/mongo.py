@@ -1,4 +1,4 @@
-from beanie import Document, init_beanie
+from beanie import Document, View, init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
 from ._config import project_settings, settings
@@ -6,7 +6,7 @@ from .models.oauth import OAuthAccount
 from .models.users import UserModel
 
 
-models: list[type[Document]] = [
+models: list[type[Document] | type[View]] = [
     OAuthAccount,
     UserModel,
     # Custom models
