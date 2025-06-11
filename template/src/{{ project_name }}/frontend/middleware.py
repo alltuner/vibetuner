@@ -1,7 +1,9 @@
+from fastapi import Request, Response
 from fastapi.middleware import Middleware
 from fastapi.requests import HTTPConnection
 from starlette.authentication import AuthCredentials, AuthenticationBackend
 from starlette.middleware.authentication import AuthenticationMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.types import ASGIApp, Receive, Scope, Send
@@ -39,6 +41,19 @@ if paths.locales.exists() and paths.locales.is_dir():
     shared_translator.load_from_directories([paths.locales])
 
 
+class AdjustLangCookieMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response: Response = await call_next(request)
+
+        lang_cookie = request.cookies.get("language")
+        if not lang_cookie or lang_cookie != request.state.language:
+            response.set_cookie(
+                key="language", value=request.state.language, max_age=3600
+            )
+
+        return response
+
+
 class ForwardedProtocolMiddleware:
     def __init__(self, app: ASGIApp):
         self.app = app
@@ -73,7 +88,6 @@ class AuthBackend(AuthenticationBackend):
         return None
 
 
-# Override below this line
 # Until this line
 middlewares: list[Middleware] = [
     Middleware(CompressMiddleware),
@@ -86,10 +100,11 @@ middlewares: list[Middleware] = [
         default_locale=ctx.default_language,
         selectors=[
             LocaleFromQuery(query_param="l"),
-            LocaleFromCookie(),
             locale_selector,
+            LocaleFromCookie(),
         ],
     ),
+    Middleware(AdjustLangCookieMiddleware),
     Middleware(SessionMiddleware, secret_key=settings.session_key.get_secret_value()),
     Middleware(AuthenticationMiddleware, backend=AuthBackend()),
     # Add your middleware below this line
