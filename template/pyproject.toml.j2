@@ -11,7 +11,7 @@ dependencies = [
     "arel>=0.3.0",
     "asyncer>=0.0.8",
     "authlib>=1.5.2",
-    "beanie[zstd]>=1.29.0",
+    "beanie[zstd]>=1.30.0",
     # Fixme, remove click's dep when the stderr error is fixed
     "click~=8.1.0",
     "fastapi[standard]>=0.115.12",
@@ -19,7 +19,7 @@ dependencies = [
     "itsdangerous>=2.2.0",
     "loguru>=0.7.3",
     "pydantic>=2.11.4",
-    "pydantic-extra-types[pycountry]>=2.10.4",
+    "pydantic-extra-types[pycountry]>=2.10.5",
     "pydantic-settings>=2.9.1",
     "pyyaml>=6.0.2",
 {%- if redis_enabled %}
@@ -30,7 +30,7 @@ dependencies = [
     "streaq>=0.2.1",
 {%- endif %}
     "starlette-babel>=1.0.3",
-    "starlette-compress>=1.6.0",
+    "starlette-compress>=1.6.1",
     "starlette-htmx>=0.1.1",
     "typer-slim[standard]>=0.16.0",
     # Below this line you can add your dependencies
@@ -44,12 +44,12 @@ dependencies = [
 scaffolding = [
     # Here we add the dependencies needed for scaffolding
     # You should not add anything in this dependency group
-    "beanie[zstd]>=1.29.0",
     "cloudflare>=4.2.0",
+    "mypy>=1.16.0",
     "redis[hiredis]>=5.3.0",
-    "ruff>=0.11.4",
+    "ruff>=0.11.13",
     "streaq>=0.2.1",
-    "ty>=0.0.0a8",
+    "ty>=0.0.1a9",
 ]
 dev = [
     "types-authlib>=1.5.0.20250608",
