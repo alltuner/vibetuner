@@ -4,6 +4,7 @@ from starlette.authentication import AuthCredentials, AuthenticationBackend
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.types import ASGIApp, Receive, Scope, Send
 from starlette_babel import (
     LocaleFromCookie,
     LocaleFromQuery,
@@ -38,6 +39,29 @@ if paths.locales.exists() and paths.locales.is_dir():
     shared_translator.load_from_directories([paths.locales])
 
 
+class ForwardedProtocolMiddleware:
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    # Based on https://github.com/encode/uvicorn/blob/master/uvicorn/middleware/proxy_headers.py
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "lifespan":
+            return await self.app(scope, receive, send)
+
+        headers = dict(scope["headers"])
+
+        if b"x-forwarded-proto" in headers:
+            x_forwarded_proto = headers[b"x-forwarded-proto"].decode("latin1").strip()
+
+            if x_forwarded_proto in {"http", "https", "ws", "wss"}:
+                if scope["type"] == "websocket":
+                    scope["scheme"] = x_forwarded_proto.replace("http", "ws")
+                else:
+                    scope["scheme"] = x_forwarded_proto
+
+        return await self.app(scope, receive, send)
+
+
 # Override below this line
 class AuthBackend(AuthenticationBackend):
     async def authenticate(
@@ -54,6 +78,7 @@ class AuthBackend(AuthenticationBackend):
 middlewares: list[Middleware] = [
     Middleware(CompressMiddleware),
     Middleware(TrustedHostMiddleware),
+    Middleware(ForwardedProtocolMiddleware),
     Middleware(HtmxMiddleware),
     Middleware(
         LocaleMiddleware,
