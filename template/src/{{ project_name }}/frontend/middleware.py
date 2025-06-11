@@ -62,7 +62,6 @@ class ForwardedProtocolMiddleware:
         return await self.app(scope, receive, send)
 
 
-# Override below this line
 class AuthBackend(AuthenticationBackend):
     async def authenticate(
         self,
@@ -74,6 +73,7 @@ class AuthBackend(AuthenticationBackend):
         return None
 
 
+# Override below this line
 # Until this line
 middlewares: list[Middleware] = [
     Middleware(CompressMiddleware),
