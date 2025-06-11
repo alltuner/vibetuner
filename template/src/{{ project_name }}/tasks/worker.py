@@ -1,5 +1,4 @@
 from streaq import Worker
-from streaq.constants import DEFAULT_QUEUE_NAME
 
 from .._config import project_settings, settings
 from .context import lifespan
@@ -7,6 +6,10 @@ from .context import lifespan
 
 worker = Worker(
     redis_url=str(project_settings.redis_url),
-    queue_name=("debug" if settings.debug else DEFAULT_QUEUE_NAME),
+    queue_name=(
+        project_settings.project_name
+        if not settings.debug
+        else f"debug-{project_settings.project_name}"
+    ),
     worker_lifespan=lifespan,
 )
