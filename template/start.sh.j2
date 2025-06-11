@@ -6,6 +6,9 @@ echo "Starting the application..."
 if [ "$1" = "shell" ]; then
     echo "Starting shell..."
     exec /bin/bash
+elif [ "$1" = "sleep" ]; then
+    echo "Container will sleep forever..."
+    exec sleep 2147483647
 elif [ "$1" = "local-dev" ]; then
     echo "Starting in development mode..."
     DEBUG=1 exec fastapi dev --host 0.0.0.0 src/{{ project_name }}/frontend
