@@ -59,7 +59,7 @@ oauth = OAuth(Config(**oauth_config))
 PROVIDER_IDENTIFIERS = {k: p.identifier for k, p in _PROVIDERS.items()}
 for name, provider in _PROVIDERS.items():
     register_kwargs = {"client_kwargs": provider.client_kwargs, **provider.params}
-    oauth.register(name, **register_kwargs)
+    oauth.register(name, overwrite=False, **register_kwargs)
 
 
 oauth_providers = list(_PROVIDERS.keys())
