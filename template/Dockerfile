@@ -7,7 +7,13 @@ ARG PYTHON_VERSION=3.13
 # ────────────────────────────────────────────────────────────────────────────────
 FROM python:${PYTHON_VERSION}-slim AS python-base
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.7 /uv /uvx /bin/
+
+# Install tools we will use to clean up things later
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends binutils \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Speed up and optimize UV behavior
 ENV UV_COMPILE_BYTECODE=0 \
@@ -43,6 +49,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=README.md,target=README.md \
     uv sync --locked --no-group dev --no-group scaffolding
 
+RUN rm -rf .venv/lib/*/site-packages/*.dist-info \
+    && find .venv -type d -name 'tests' -exec rm -rf {} + \
+    && find .venv -name "*.so" -exec strip {} + 2>/dev/null || true
+
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 3: Localizations
 # ────────────────────────────────────────────────────────────────────────────────
@@ -67,20 +77,28 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # ────────────────────────────────────────────────────────────────────────────────
-# Stage 5: Frontend Build Stage
+# Stage 5: Frontend Dependencies Only (NEW - SPLIT FROM BUILD)
 # ────────────────────────────────────────────────────────────────────────────────
-FROM frontend-deps-base AS frontend-build
+FROM frontend-deps-base AS frontend-deps
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
-# Install frontend dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=pnpm-lock.yaml,target=pnpm-lock.yaml \
     pnpm install --frozen-lockfile
 
-# Copy frontend source code and build it
+# ────────────────────────────────────────────────────────────────────────────────
+# Stage 6: Frontend Build (CHANGED - INHERIT DEPS)
+# ────────────────────────────────────────────────────────────────────────────────
+FROM frontend-deps AS frontend-build
+
+# CHANGE: Dependencies already installed, just copy source and build
 COPY frontend/ frontend/
-RUN pnpm run build-prod
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=pnpm-lock.yaml,target=pnpm-lock.yaml \
+    pnpm run build-prod
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 6: Final Image
@@ -91,39 +109,40 @@ ARG ENVIRONMENT=development
 
 WORKDIR /app
 
-# Copy Python app with installed virtualenv
-COPY --from=python-base --chown=app:app /app/.venv/ .venv/
+# This is more efficient than copying from two different stages
+COPY --from=python-versioning --chown=app:app /app/.venv/ .venv/
 
-# Copy the python scripts binaries from the built virtualenv
-COPY --from=python-versioning --chown=app:app  /app/.venv/bin/ .venv/bin/
 
-# By specifying the --parents flag, we can copy the _version.py files without
-# having to explicityly name the directories, allowing us to reuse this Dockerfile
-COPY --from=python-versioning --chown=app:app --parents /app/src/*/_version.py /
+# OPTIMIZATION: Only copy built assets, not source frontend files
+COPY --from=frontend-build --chown=app:app /app/frontend/statics/css/bundle.css frontend/statics/css/bundle.css
+COPY --from=frontend-build --chown=app:app /app/frontend/statics/js/bundle.js frontend/statics/js/bundle.js
 
-# Copy the .mo files from the locales stage
+# OPTIMIZATION: Copy compiled locales (smaller than source .po files)
 COPY --from=locales --chown=app:app --parents /app/locales/*/LC_MESSAGES/messages.mo /
 
-# Copy ONLY the built bundles
-COPY --from=frontend-build /app/frontend/statics/css/bundle.css frontend/statics/css/bundle.css
-COPY --from=frontend-build /app/frontend/statics/js/bundle.js frontend/statics/js/bundle.js
+# OPTIMIZATION: Copy version files only (much smaller than copying whole build)
+COPY --from=python-versioning --chown=app:app --parents /app/src/*/_version.py /
 
-# Copy static assets (images, favicons, etc.)
+# Copy only essential static assets and templates (not entire frontend/)
 COPY --chown=app:app frontend/statics/ frontend/statics/
-
 COPY --chown=app:app frontend/markdown/ frontend/markdown/
 COPY --chown=app:app frontend/templates/ frontend/templates/
+
+# Copy source code (this will be the main invalidation point)
 COPY --chown=app:app src/ src/
 
+# Copy minimal config files
 COPY --chown=app:app .copier-answers.yml ./
+
 
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 # Make sure the virtualenv binaries come first
-ENV PATH="/app/.venv/bin:$PATH" PYTHONPATH="/app/src"
-
-ENV ENVIRONMENT=${ENVIRONMENT}
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONPATH="/app/src" \
+    ENVIRONMENT=${ENVIRONMENT} \
+    PYTHONDONTWRITEBYTECODE=1
 
 EXPOSE 8000
 
