@@ -22,7 +22,7 @@ ENV UV_COMPILE_BYTECODE=0 \
 
 WORKDIR /app
 
-# Install only runtime dependencies (no dev, no project) to warm the cache
+# Install only runtime dependencies (no dev, no project, no extras) to warm the cache
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
@@ -42,15 +42,14 @@ COPY src/ src/
 ARG VERSION=0.0.0
 ENV UV_DYNAMIC_VERSIONING_BYPASS=$VERSION
 
-# Install project into .venv (still without dev dependencies)
+# Install project into .venv (still without dev dependencies, but now with extras)
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
-    uv sync --locked --no-group dev --no-group scaffolding
+    uv sync --all-extras --locked --no-group dev --no-group scaffolding
 
-RUN rm -rf .venv/lib/*/site-packages/*.dist-info \
-    && find .venv -type d -name 'tests' -exec rm -rf {} + \
+RUN find .venv -type d -name 'tests' -exec rm -rf {} + \
     && find .venv -name "*.so" -exec strip {} + 2>/dev/null || true
 
 # ────────────────────────────────────────────────────────────────────────────────

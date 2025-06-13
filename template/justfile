@@ -36,7 +36,7 @@ _check-last-commit-tagged:
 [group('Helpers')]
 _update_local_deps:
     @pnpm i # Before building the first time, lockfiles will not exist
-    @uv sync # Before building the first time, lockfiles will not exist
+    @uv sync --all-extras # Before building the first time, lockfiles will not exist
 
 # Runs the dev environment with watch mode and cleans up orphans
 [group('Local Development')]
@@ -207,7 +207,7 @@ update-scaffolding:
     @echo "Updating project scaffolding..."
     @copier update -A --trust
     @pnpm i
-    @uv sync
+    @uv sync --all-extras
     @echo "Project scaffolding updated."
     @echo "Please review the changes and commit."
 
