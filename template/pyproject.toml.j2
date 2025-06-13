@@ -33,6 +33,10 @@ dependencies = [
     "starlette-compress>=1.6.1",
     "starlette-htmx>=0.1.1",
     "typer-slim[standard]>=0.16.0",
+]
+
+[project.optional-dependencies]
+base = [
     # Below this line you can add your dependencies
 ]
 
@@ -42,7 +46,7 @@ dependencies = [
 
 [dependency-groups]
 scaffolding = [
-    # Here we add the dependencies needed for scaffolding
+    # These are the development dependencies of AllTuner's blessed stack
     # You should not add anything in this dependency group
     "cloudflare>=4.2.0",
     "mypy>=1.16.0",
@@ -50,11 +54,12 @@ scaffolding = [
     "ruff>=0.11.13",
     "streaq>=0.2.1",
     "ty>=0.0.1a9",
-]
-dev = [
     "types-authlib>=1.5.0.20250608",
     "types-pyyaml>=6.0.12.20250516",
-    # Add below this line any dependencies you need for development
+]
+
+dev = [
+    # Add below this line any dev dependencies you need for development
 ]
 
 [build-system]
