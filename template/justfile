@@ -56,6 +56,13 @@ local-dev: _update_local_deps
 worker-dev: _update_local_deps
     @dotenv -f .env.local run -- ./start.sh worker-dev
 
+# Sync deps
+[group('Local Development')]
+sync: _update_local_deps
+    @echo "Sync deps with project..."
+    @uv sync --all-extras
+    @pnpm i
+
 # Builds the dev image with COMPOSE_BAKE set
 [group('CI/CD')]
 build-dev: _update_local_deps
