@@ -112,9 +112,6 @@ COPY --from=frontend-build --chown=app:app /app/frontend/statics/js/bundle.js fr
 # OPTIMIZATION: Copy compiled locales (smaller than source .po files)
 COPY --from=locales --chown=app:app --parents /app/locales/*/LC_MESSAGES/messages.mo /
 
-# OPTIMIZATION: Copy version files only (much smaller than copying whole build)
-COPY --from=python-versioning --chown=app:app --parents /app/src/*/_version.py /
-
 # Copy only essential static assets and templates (not entire frontend/)
 COPY --chown=app:app frontend/statics/ frontend/statics/
 COPY --chown=app:app frontend/markdown/ frontend/markdown/
@@ -122,6 +119,9 @@ COPY --chown=app:app frontend/templates/ frontend/templates/
 
 # Copy source code (this will be the main invalidation point)
 COPY --chown=app:app src/ src/
+
+# OPTIMIZATION: Copy version files only (much smaller than copying whole build)
+COPY --from=python-versioning --chown=app:app --parents /app/src/*/_version.py /
 
 # Copy minimal config files
 COPY --chown=app:app .copier-answers.yml ./
