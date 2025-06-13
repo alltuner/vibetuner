@@ -49,8 +49,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=README.md,target=README.md \
     uv sync --locked --no-group dev --no-group scaffolding
 
-RUN rm -rf .venv/lib/*/site-packages/*.dist-info \
-    && find .venv -type d -name 'tests' -exec rm -rf {} + \
+RUN find .venv -type d -name 'tests' -exec rm -rf {} + \
     && find .venv -name "*.so" -exec strip {} + 2>/dev/null || true
 
 # ────────────────────────────────────────────────────────────────────────────────
