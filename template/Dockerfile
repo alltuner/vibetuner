@@ -9,12 +9,6 @@ FROM python:${PYTHON_VERSION}-slim AS python-base
 
 COPY --from=ghcr.io/astral-sh/uv:0.7 /uv /uvx /bin/
 
-# Install tools we will use to clean up things later
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends binutils \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
 # Speed up and optimize UV behavior
 ENV UV_COMPILE_BYTECODE=0 \
     UV_LINK_MODE=copy \
@@ -49,8 +43,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=README.md,target=README.md \
     uv sync --all-extras --locked --no-group dev --no-group scaffolding
 
-RUN find .venv -type d -name 'tests' -exec rm -rf {} + \
-    && find .venv -name "*.so" -exec strip {} + 2>/dev/null || true
+RUN find .venv -type d -name 'tests' -exec rm -rf {} +
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 3: Localizations
