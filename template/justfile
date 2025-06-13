@@ -62,7 +62,7 @@ build-dev: _update_local_deps
     ENVIRONMENT=development \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     COMPOSE_BAKE=true \
-    docker compose -f {{COMPOSE_DEV}} build
+    docker compose -f {{COMPOSE_DEV}} build --progress=plain
 
 # Builds a test production image with COMPOSE_BAKE set
 [group('CI/CD')]
