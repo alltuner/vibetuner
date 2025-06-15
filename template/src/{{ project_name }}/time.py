@@ -1,4 +1,7 @@
-from datetime import UTC, datetime
+from datetime import (
+    UTC,
+    datetime,
+)
 from enum import StrEnum, auto
 
 
