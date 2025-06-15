@@ -4,10 +4,10 @@ from beanie import Document
 from beanie.operators import Eq
 from pydantic import Field
 
-from .mixins import TimestampMixIn
+from .mixins import TimeStampMixin
 
 
-class OAuthAccount(Document, TimestampMixIn):
+class OAuthAccount(Document, TimeStampMixin):
     provider: str = Field(
         ...,
         description="OAuth provider name (google, github, twitter, etc.)",
