@@ -1,37 +1,29 @@
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
+from enum import StrEnum, auto
 
 
-def age_in_days(dt: datetime) -> int:
-    # Ensure dt is timezone-aware, if it isn't already
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=UTC)
+class Unit(StrEnum):
+    """Return units for `.age_in()`."""
 
-    return int((datetime.now(UTC) - dt).total_seconds() / 60 / 60 / 24)
+    SECONDS = auto()
+    MINUTES = auto()
+    HOURS = auto()
+    DAYS = auto()
+    WEEKS = auto()
 
-
-def age_in_minutes(dt: datetime) -> int:
-    # Ensure dt is timezone-aware, if it isn't already
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=UTC)
-
-    return int((datetime.now(UTC) - dt).total_seconds() / 60)
-
-
-def age_in_seconds(dt: datetime) -> int:
-    # Ensure dt is timezone-aware, if it isn't already
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=UTC)
-
-    return int((datetime.now(UTC) - dt).total_seconds())
-
-
-def age_in_timedelta(dt: datetime) -> timedelta:
-    # Ensure dt is timezone-aware, if it isn't already
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=UTC)
-
-    return datetime.now(UTC) - dt
+    @property
+    def factor(self) -> int:
+        return {
+            Unit.SECONDS: 1,
+            Unit.MINUTES: 60,
+            Unit.HOURS: 3_600,
+            Unit.DAYS: 86_400,
+            Unit.WEEKS: 604_800,
+        }[self]
 
 
 def now() -> datetime:
     return datetime.now(UTC)
+
+
+# Custom functions below
