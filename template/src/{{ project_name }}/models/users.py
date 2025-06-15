@@ -5,11 +5,11 @@ from beanie import Document
 from beanie.operators import Eq
 from pydantic import Field
 
-from .mixins import TimestampMixIn
+from .mixins import TimeStampMixin
 from .oauth import OAuthAccount
 
 
-class UserModel(Document, TimestampMixIn):
+class UserModel(Document, TimeStampMixin):
     email: Optional[str] = Field(None, description="Primary email address")
     name: Optional[str] = Field(None, description="Display name")
     picture: Optional[str] = Field(None, description="Profile picture URL")
