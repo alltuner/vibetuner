@@ -42,7 +42,8 @@ async def auth_logout(request: Request):
 
 @router.get("/auth/login", response_model=None)
 async def auth_login(
-    request: Request, next: str | None = None
+    request: Request,
+    next: str | None = None,
 ) -> RedirectResponse | HTMLResponse:
     """Display unified login page with all available options"""
     if request.user.is_authenticated:
