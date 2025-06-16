@@ -1,8 +1,27 @@
-from fastapi import APIRouter, Request
-from fastapi.responses import RedirectResponse
+from typing import Annotated
 
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    Form,
+    HTTPException,
+    Request,
+)
+from fastapi.responses import RedirectResponse
+from pydantic import EmailStr
+from starlette.responses import HTMLResponse
+
+from ...models.email_verification import EmailVerificationToken
+from ...models.users import UserModel
+from ...services.email import SESEmailService
 from ..oauth import _create_auth_handler, _create_auth_login_handler, oauth_providers
 from ..templates import template_render
+from . import get_homepage_url
+
+
+def get_ses_service() -> SESEmailService:
+    return SESEmailService()
 
 
 router = APIRouter()
@@ -12,7 +31,83 @@ router = APIRouter()
 async def auth_logout(request: Request):
     request.session.pop("user", None)
 
-    return request.url_for("homepage", lang=request.state.language).path
+    return get_homepage_url(request)
+
+
+@router.get("/auth/email-login", response_model=None)
+async def email_login_form(
+    request: Request, next: str | None = None
+) -> RedirectResponse | HTMLResponse:
+    if request.user.is_authenticated:
+        # If user is already authenticated, redirect to homepage
+        return RedirectResponse(url=get_homepage_url(request), status_code=302)
+
+    """Display email login form"""
+    return template_render(
+        "email_login.html.jinja", request=request, ctx={"next": next}
+    )
+
+
+@router.post("/auth/email-login", response_model=None)
+async def email_login_submit(
+    request: Request,
+    ses_service: Annotated[SESEmailService, Depends(get_ses_service)],
+    background_tasks: BackgroundTasks,
+    email: Annotated[EmailStr, Form()],
+    next: Annotated[str | None, Form()] = None,
+) -> HTMLResponse:
+    """Handle email login form submission"""
+
+    # Create verification token
+    verification_token = await EmailVerificationToken.create_token(email)
+
+    # Build login URL
+    login_url = request.url_for("email_verify", token=verification_token.token)
+    if next:
+        login_url.include_query_params(next=next)
+
+    background_tasks.add_task(
+        ses_service.send_login_email, email=email, login_url=str(login_url)
+    )
+
+    return template_render(
+        "email_sent.html.jinja", request=request, ctx={"email": email}
+    )
+
+
+@router.get(
+    "/auth/email-verify/{token}",
+    response_class=RedirectResponse,
+    status_code=302,
+    response_model=None,
+)
+async def email_verify(
+    request: Request,
+    token: str,
+    next: str | None = None,
+) -> str:
+    """Verify email token and log in user"""
+    # Verify token
+    verification_token = await EmailVerificationToken.verify_token(token)
+    if not verification_token:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+    # Get or create user
+    user = await UserModel.get_by_email(verification_token.email)
+    if not user:
+        # Create new user
+        user = UserModel(
+            email=verification_token.email,
+            # Use email prefix as default name
+            name=verification_token.email.split("@")[0],
+        )
+        await user.insert()
+
+    # Set session
+    request.session["user"] = user.session_dict
+
+    # Redirect
+    return next or get_homepage_url(request)
 
 
 for provider in oauth_providers:
@@ -20,18 +115,27 @@ for provider in oauth_providers:
         f"/auth/{provider}",
         response_class=RedirectResponse,
         name=f"auth_with_{provider}",
+        response_model=None,
     )(_create_auth_handler(provider))
 
     router.get(
         f"/auth/login/{provider}",
         name=f"login_with_{provider}",
+        response_model=None,
     )(_create_auth_login_handler(provider))
 
 
 if oauth_providers:
 
-    @router.get("/auth/login")
-    async def auth_login(request: Request, next: str | None = None):
+    @router.get(
+        "/auth/login",
+        response_model=None,
+    )
+    async def auth_login(
+        request: Request,
+        next: str | None = None,
+        response_model=None,
+    ) -> HTMLResponse:
         # Returns the list of available OAuth providers for login
 
         return template_render(
