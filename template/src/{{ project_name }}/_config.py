@@ -34,8 +34,14 @@ class ProjectConfiguration(BaseSettings):
     mongodb_url: MongoDsn | None = None
     redis_url: RedisDsn | None = None
 
+    # AWS Parameters
+    aws_default_region: str = "eu-central-1"
+
     # Company Name
     company_name: str = "Acme Corp"
+
+    # From Email for transactional emails
+    from_email: str = "no-reply@example.com"
 
     # Copyright
     copyright_start: Annotated[int, Field(strict=True, gt=1714, lt=2048)] = current_year
@@ -88,6 +94,10 @@ class Configuration(BaseSettings):
 
     # Session Key for FastAPI
     session_key: SecretStr = SecretStr("ct-!secret-must-change-me")
+
+    # Amazon Credentials
+    aws_access_key_id: SecretStr | None = None
+    aws_secret_access_key: SecretStr | None = None
 
     @computed_field  # type: ignore[prop-decorator]
     @cached_property
