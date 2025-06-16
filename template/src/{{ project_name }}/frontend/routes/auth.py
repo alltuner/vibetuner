@@ -24,39 +24,52 @@ def get_ses_service() -> SESEmailService:
     return SESEmailService()
 
 
+def logout_user(request: Request):
+    request.session.pop("user", None)
+
+
 router = APIRouter()
 
 
-@router.get("/auth/logout", response_class=RedirectResponse)
+@router.get(
+    "/auth/logout",
+    dependencies=[Depends(logout_user)],
+    response_class=RedirectResponse,
+)
 async def auth_logout(request: Request):
-    request.session.pop("user", None)
-
     return get_homepage_url(request)
 
 
-@router.get("/auth/email-login", response_model=None)
-async def email_login_form(
+@router.get("/auth/login", response_model=None)
+async def auth_login(
     request: Request, next: str | None = None
 ) -> RedirectResponse | HTMLResponse:
+    """Display unified login page with all available options"""
     if request.user.is_authenticated:
         # If user is already authenticated, redirect to homepage
         return RedirectResponse(url=get_homepage_url(request), status_code=302)
 
-    """Display email login form"""
     return template_render(
-        "email_login.html.jinja", request=request, ctx={"next": next}
+        "login.html.jinja",
+        request=request,
+        ctx={
+            "providers": oauth_providers,
+            "next": next,
+            "has_oauth": bool(oauth_providers),
+            "has_email": True,
+        },
     )
 
 
-@router.post("/auth/email-login", response_model=None)
-async def email_login_submit(
+@router.post("/auth/magic-link-login", response_model=None)
+async def send_magic_link(
     request: Request,
     ses_service: Annotated[SESEmailService, Depends(get_ses_service)],
     background_tasks: BackgroundTasks,
     email: Annotated[EmailStr, Form()],
     next: Annotated[str | None, Form()] = None,
 ) -> HTMLResponse:
-    """Handle email login form submission"""
+    """Handle email magic link login form submission"""
 
     # Create verification token
     verification_token = await EmailVerificationToken.create_token(email)
@@ -64,14 +77,14 @@ async def email_login_submit(
     # Build login URL
     login_url = request.url_for("email_verify", token=verification_token.token)
     if next:
-        login_url.include_query_params(next=next)
+        login_url = login_url.include_query_params(next=next)
 
     background_tasks.add_task(
         ses_service.send_login_email, email=email, login_url=str(login_url)
     )
 
     return template_render(
-        "email_sent.html.jinja", request=request, ctx={"email": email}
+        "email_sent.html.jinja", request=request, ctx={"email": email, "next": next}
     )
 
 
@@ -123,26 +136,3 @@ for provider in oauth_providers:
         name=f"login_with_{provider}",
         response_model=None,
     )(_create_auth_login_handler(provider))
-
-
-if oauth_providers:
-
-    @router.get(
-        "/auth/login",
-        response_model=None,
-    )
-    async def auth_login(
-        request: Request,
-        next: str | None = None,
-        response_model=None,
-    ) -> HTMLResponse:
-        # Returns the list of available OAuth providers for login
-
-        return template_render(
-            "auth.html.jinja",
-            request=request,
-            ctx={
-                "providers": oauth_providers,
-                "next": next,
-            },
-        )
