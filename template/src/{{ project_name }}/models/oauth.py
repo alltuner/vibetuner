@@ -31,6 +31,9 @@ class OAuthAccount(Document, TimeStampMixin):
 
     class Settings:
         name = "oauth_accounts"
+        indexes = [
+            [("provider", 1), ("provider_user_id", 1)],
+        ]
 
     @classmethod
     async def get_by_provider_and_id(

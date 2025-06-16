@@ -1,9 +1,12 @@
+from typing import Any
+
 from fastapi import (
     Depends as Depends,
     FastAPI,
     Request,
 )
 from fastapi.responses import (
+    HTMLResponse,
     RedirectResponse,
 )
 from fastapi.staticfiles import StaticFiles
@@ -21,7 +24,7 @@ from .routes import (
 from .templates import template_render as template_render
 
 
-dependencies = [
+dependencies: list[Any] = [
     # Add any dependencies that should be available globally
 ]
 
@@ -75,8 +78,8 @@ app.include_router(auth.router)
 
 # Add your routes below
 # Default routes to be rewritten by the user
-@app.get("/", name="homepage")
-def default_index(request: Request):
+@app.get("/", name="homepage", response_class=HTMLResponse)
+def default_index(request: Request) -> HTMLResponse:
     return template_render("defaults/index.html.jinja", request)
 
 
