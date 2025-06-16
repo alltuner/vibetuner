@@ -1,0 +1,10 @@
+{% extends "base/skeleton.html.jinja" %}
+
+{% block body %}
+<div class="email-sent">
+    <h2>Check your email</h2>
+    <p>We've sent a login link to <strong>{{ email }}</strong></p>
+    <p>Click the link in the email to sign in. The link will expire in 15 minutes.</p>
+    <p>Don't see the email? Check your spam folder.</p>
+</div>
+{% endblock %}
