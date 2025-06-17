@@ -93,9 +93,12 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 # ────────────────────────────────────────────────────────────────────────────────
 FROM frontend-deps AS frontend-build
 
+COPY /templates/frontend/ templates/frontend/
+
 # Copy frontend source code and build production assets
-COPY frontend/ frontend/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    --mount=type=bind,source=config.css,target=config.css \
+    --mount=type=bind,source=config.js,target=config.js \
     --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=pnpm-lock.yaml,target=pnpm-lock.yaml \
     pnpm run build-prod
