@@ -29,7 +29,7 @@ project_slug:
   help: What is the slug (code friendly) of your project?
   default: "{{ _folder_name }}"
   validator: >-
-    {% if not (project_name | regex_search('^[a-z][a-z0-9\-]*[a-z0-9]$')) %}
+    {% if not (project_slug | regex_search('^[a-z][a-z0-9\-]*[a-z0-9]$')) %}
     project_name must start with a letter, followed one or more letters, digits or dashes all lowercase ending with a letter or digit.
     {% endif %}
 
