@@ -24,7 +24,9 @@ current_year: int = datetime.now().year
 
 
 class ProjectConfiguration(BaseSettings):
+    project_slug: str = "default_project"
     project_name: str = "default_project"
+
     project_description: str = "A default project description."
 
     # Language Related Settings
@@ -116,7 +118,7 @@ class Configuration(BaseSettings):
     @cached_property
     def mongo_dbname(self) -> str:
         """Extract the database name from the MongoDB URL."""
-        return project_settings.project_name
+        return project_settings.project_slug
 
     # Add here your configuration variables between this comment and the next one
     # No need to change anything Below

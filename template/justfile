@@ -178,7 +178,7 @@ merge:
 # Extracts translations from source files
 [group('localization')]
 extract-translations:
-    @pybabel extract -F babel.cfg -o locales/messages.pot ./src
+    @uv run pybabel extract -F babel.cfg -o locales/messages.pot .
 
 # Creates a new language file for localization
 [group('localization')]
@@ -187,8 +187,13 @@ new-locale LANG:
 
 # Updates existing language files for localization
 [group('localization')]
-update-locale-files:
+update-locale-files-pybabel:
     @pybabel update -i locales/messages.pot -d locales
+
+# Updates existing language files for localization
+[group('localization')]
+update-locale-files:
+    @find locales -type f -path "*/LC_MESSAGES/messages.po" -exec sh -c 'echo " ↺ {}"; msguniq "{}" -o "{}"; msgmerge --update --backup=none --previous "{}" locales/messages.pot' \;
 
 # Compiles the language files into binary format
 [group('localization')]

@@ -113,18 +113,18 @@ WORKDIR /app
 COPY --from=python-versioning --chown=app:app /app/.venv/ .venv/
 
 # Copy static assets and markdown content (not full frontend source)
-COPY --chown=app:app frontend/statics/ frontend/statics/
-COPY --chown=app:app frontend/markdown/ frontend/markdown/
+COPY --chown=app:app assets/statics/ assets/statics/
+COPY --chown=app:app templates/markdown/ templates/markdown/
 
 # Copy compiled localization files (smaller than source .po files)
 COPY --from=locales --chown=app:app --parents /app/locales/*/LC_MESSAGES/messages.mo /
 
 # Copy template files
-COPY --chown=app:app frontend/templates/ frontend/templates/
+COPY --chown=app:app templates/frontend templates/frontend/
 
 # Copy built frontend assets (CSS and JS bundles)
-COPY --from=frontend-build --chown=app:app /app/frontend/statics/css/bundle.css frontend/statics/css/bundle.css
-COPY --from=frontend-build --chown=app:app /app/frontend/statics/js/bundle.js frontend/statics/js/bundle.js
+COPY --from=frontend-build --chown=app:app /app/assets/statics/css/bundle.css assets/statics/css/bundle.css
+COPY --from=frontend-build --chown=app:app /app/assets/statics/js/bundle.js assets/statics/js/bundle.js
 
 # Copy application source code
 COPY --chown=app:app src/ src/
