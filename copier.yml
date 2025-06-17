@@ -30,7 +30,7 @@ project_slug:
   default: "{{ _folder_name }}"
   validator: >-
     {% if not (project_slug | regex_search('^[a-z][a-z0-9\-]*[a-z0-9]$')) %}
-    project_name must start with a letter, followed one or more letters, digits or dashes all lowercase ending with a letter or digit.
+    project_slug must start with a letter, followed one or more letters, digits or dashes all lowercase ending with a letter or digit.
     {% endif %}
 
 project_description:
@@ -68,7 +68,7 @@ github_repo:
   type: str
   help: ORG/repo or USER/repo github repo to create
   when: "{{ use_github_repo }}"
-  default: "alltuner/{{ project_name }}"
+  default: "alltuner/{{ project_slug }}"
   validator: >-
     {% if not (github_repo | regex_search('^[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]/[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]$')) %}
     github_repo must contain an org or a username followed by a slash and a repo name
@@ -111,7 +111,7 @@ deploy_host:
   when: "{{ fqdn }}"
 
 _tasks:
-  - command: [just, git-init, "{{ project_name }}"]
+  - command: [just, git-init, "{{ project_slug }}"]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [pre-commit, install]
     when: "{{ _copier_operation == 'copy' }}"

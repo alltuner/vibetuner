@@ -1,19 +1,19 @@
 networks:
-  {{ project_name }}:
-    name: {{ project_name }}
+  {{ project_slug }}:
+    name: {{ project_slug }}
   alltuner-network:
     external: true
     name: alltuner-network
 
 services:
 {%- if enable_job_queue %}
-  {{ project_name }}-worker:
-    image: alltuner-registry.long-python.ts.net/{{ project_name }}:latest
+  {{ project_slug }}-worker:
+    image: alltuner-registry.long-python.ts.net/{{ project_slug }}:latest
     restart: unless-stopped
     env_file:
       - .env
     networks:
-      - {{ project_name }}
+      - {{ project_slug }}
       - alltuner-network
     command: ['worker']
     labels:
@@ -22,7 +22,7 @@ services:
       com.centurylinklabs.watchtower.enable: "true"
 {%- endif %}
 {%- endif %}
-  {{ project_name }}:
+  {{ project_slug }}:
     build:
       context: .
       args:
@@ -35,9 +35,9 @@ services:
           - linux/arm64
         push: true
         tags:
-          - alltuner-registry.long-python.ts.net/{{ project_name }}:${VERSION:-0.0.0}
-          - alltuner-registry.long-python.ts.net/{{ project_name }}:latest
-    image: alltuner-registry.long-python.ts.net/{{ project_name }}:latest
+          - alltuner-registry.long-python.ts.net/{{ project_slug }}:${VERSION:-0.0.0}
+          - alltuner-registry.long-python.ts.net/{{ project_slug }}:latest
+    image: alltuner-registry.long-python.ts.net/{{ project_slug }}:latest
     healthcheck:
       test:
         [
@@ -54,7 +54,7 @@ services:
     env_file:
       - .env
     networks:
-      - {{ project_name }}
+      - {{ project_slug }}
       - alltuner-network
     labels:
       managed_by: "all-tuner"
