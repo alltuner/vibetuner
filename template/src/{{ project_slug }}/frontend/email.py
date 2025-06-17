@@ -15,7 +15,8 @@ async def send_magic_link_email(
     project_name = project_settings.project_name
 
     html_body = render_static_template(
-        "email/magic_link.html",
+        "magic_link.html",
+        namespace="email",
         lang=lang,
         context={
             "login_url": str(login_url),
@@ -24,7 +25,8 @@ async def send_magic_link_email(
     )
 
     text_body = render_static_template(
-        "email/magic_link.txt",
+        "magic_link.txt",
+        namespace="email",
         lang=lang,
         context={
             "login_url": str(login_url),
