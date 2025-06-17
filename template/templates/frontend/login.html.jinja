@@ -1,6 +1,6 @@
 {% extends "base/skeleton.html.jinja" %}
 
-{% block title %}Sign In{% endblock %}
+{% block title %}{{ _('Sign In') }}{% endblock %}
 
 {% block body %}
 <div class="min-h-screen bg-gradient-to-br from-primary to-secondary flex items-center justify-center p-4">
@@ -8,8 +8,8 @@
         <div class="card-body">
             <!-- Header -->
             <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-base-content mb-2">Welcome Back</h1>
-                <p class="text-base-content/70">Choose your preferred sign-in method</p>
+                <h1 class="text-3xl font-bold text-base-content mb-2">{{ _('Welcome Back') }}</h1>
+                <p class="text-base-content/70">{{ _('Choose your preferred sign-in method') }}</p>
             </div>
 
             <!-- OAuth Providers -->
@@ -18,7 +18,7 @@
                 {% for provider in providers %}
                 <a href="{{ url_for('login_with_' + provider) }}{% if next %}?next={{ next }}{% endif %}"
                     class="btn btn-outline btn-block justify-start gap-3 hover:btn-primary group transition-all duration-300 hover:scale-[1.02]">
-                    <span>Continue with {{ provider.title() }}</span>
+                    <span>{{ _('Continue with %(provider)s', provider=provider.title()) }}</span>
                 </a>
                 {% endfor %}
             </div>
@@ -26,7 +26,7 @@
 
             <!-- Divider -->
             {% if has_oauth and providers and has_email %}
-            <div class="divider text-base-content/50">OR</div>
+            <div class="divider text-base-content/50">{{ _('OR') }}</div>
             {% endif %}
 
             <!-- Email Magic Link -->
@@ -39,12 +39,12 @@
 
                     <div class="form-control">
                         <label class="label" for="email">
-                            <span class="label-text font-medium">Email Address</span>
+                            <span class="label-text font-medium">{{ _('Email Address') }}</span>
                         </label>
                         <div class="relative">
                             <input type="email" id="email" name="email"
                                 class="input input-bordered w-full pr-12 focus:input-primary transition-all duration-300"
-                                placeholder="Enter your email address" required autocomplete="email">
+                                placeholder="{{ _('Enter your email address') }}" required autocomplete="email">
                             <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                                 <svg class="w-5 h-5 text-base-content/40" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
@@ -62,7 +62,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
-                        <span>Send Magic Link</span>
+                        <span>{{ _('Send Magic Link') }}</span>
                     </button>
 
                     <div class="alert alert-info bg-info/10 border-info/20">
@@ -71,8 +71,8 @@
                                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <div class="text-sm">
-                            <p class="font-medium text-info">No password required!</p>
-                            <p class="text-info/80">We'll send you a secure link to sign in instantly.</p>
+                            <p class="font-medium text-info">{{ _('No password required!') }}</p>
+                            <p class="text-info/80">{{ _('We\'ll send you a secure link to sign in instantly.') }}</p>
                         </div>
                     </div>
                 </form>
