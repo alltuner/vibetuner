@@ -7,6 +7,7 @@ class Context(BaseModel):
     DEBUG: bool = settings.debug
 
     project_name: str = project_settings.project_name
+    project_slug: str = project_settings.project_slug
     project_description: str = project_settings.project_description
 
     version: str = settings.version

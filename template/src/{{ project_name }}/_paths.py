@@ -1,23 +1,23 @@
 from pathlib import Path
 
 
-ROOT_PROJECT_DIR: Path = Path(__file__).resolve().parent.parent.parent
+root: Path = Path(__file__).resolve().parent.parent.parent
 
-# Project paths
-root = ROOT_PROJECT_DIR
-assets = ROOT_PROJECT_DIR / "assets"
-locales = ROOT_PROJECT_DIR / "locales"
+# Locales
+locales = root / "locales"
 
 # Config Vars
 config_vars = root / ".copier-answers.yml"
 
-# Frontend paths
-frontend = ROOT_PROJECT_DIR / "frontend"
-templates = frontend / "templates"
-markdown = frontend / "markdown"
+# Template paths
+templates = root / "templates"
+frontend_templates = templates / "frontend"
+email_templates = templates / "email"
+markdown_templates = templates / "markdown"
 
-# Frontend static paths
-statics = frontend / "statics"
+# Asset paths
+assets = root / "assets"
+statics = assets / "statics"
 css = statics / "css"
 js = statics / "js"
 favicons = statics / "favicons"

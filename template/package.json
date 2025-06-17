@@ -10,11 +10,11 @@
   },
   "dependencies": {},
   "scripts": {
-    "dev:css": "tailwindcss -w -i frontend/app.css -o frontend/statics/css/bundle.css",
-    "dev:js": "esbuild --watch frontend/esbuild.js --bundle --sourcemap --outfile=frontend/statics/js/bundle.js",
+    "dev:css": "tailwindcss -w -i config.css -o assets/statics/css/bundle.css",
+    "dev:js": "esbuild --watch config.js --bundle --sourcemap --outfile=assets/statics/js/bundle.js",
     "dev": "concurrently 'pnpm dev:css' 'pnpm dev:js'",
-    "build-prod:css": "tailwindcss -i frontend/app.css --minify -o frontend/statics/css/bundle.css",
-    "build-prod:js": "esbuild frontend/esbuild.js --bundle --minify --outfile=frontend/statics/js/bundle.js",
+    "build-prod:css": "tailwindcss -i config.css --minify -o assets/statics/css/bundle.css",
+    "build-prod:js": "esbuild config.js --bundle --minify --outfile=assets/statics/js/bundle.js",
     "build-prod": "concurrently 'pnpm build-prod:css' 'pnpm build-prod:js'"
   }
 }

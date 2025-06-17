@@ -35,11 +35,13 @@ Dockerfile
 ############################################################
 locales/*/LC_MESSAGES/messages.mo
 
+# Asset bundles
+assets/statics/css/bundle.css
+assets/statics/js/bundle.js
+assets/statics/js/bundle.js.map
+
 # App Specific
 ############################################################
-frontend/statics/js/
-frontend/statics/css/
-assets/
 
 # Custom ignored patterns
 # (Add any app specific ignored patterns here)
