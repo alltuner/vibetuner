@@ -15,8 +15,9 @@ from starlette.responses import HTMLResponse
 from ...models.email_verification import EmailVerificationToken
 from ...models.users import UserModel
 from ...services.email import SESEmailService
+from ..email import send_magic_link_email
 from ..oauth import _create_auth_handler, _create_auth_login_handler, oauth_providers
-from ..templates import template_render
+from ..templates import render_template
 from . import get_homepage_url
 
 
@@ -50,7 +51,7 @@ async def auth_login(
         # If user is already authenticated, redirect to homepage
         return RedirectResponse(url=get_homepage_url(request), status_code=302)
 
-    return template_render(
+    return render_template(
         "login.html.jinja",
         request=request,
         ctx={
@@ -81,10 +82,14 @@ async def send_magic_link(
         login_url = login_url.include_query_params(next=next)
 
     background_tasks.add_task(
-        ses_service.send_login_email, email=email, login_url=str(login_url)
+        send_magic_link_email,
+        ses_service=ses_service,
+        lang=request.state.language,
+        to_address=email,
+        login_url=str(login_url),
     )
 
-    return template_render(
+    return render_template(
         "email_sent.html.jinja", request=request, ctx={"email": email, "next": next}
     )
 
