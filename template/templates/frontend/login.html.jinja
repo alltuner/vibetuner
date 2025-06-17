@@ -18,7 +18,7 @@
                 {% for provider in providers %}
                 <a href="{{ url_for('login_with_' + provider) }}{% if next %}?next={{ next }}{% endif %}"
                     class="btn btn-outline btn-block justify-start gap-3 hover:btn-primary group transition-all duration-300 hover:scale-[1.02]">
-                    <span>{{ _('Continue with %(provider)s', provider=provider.title()) }}</span>
+                    <span>{{ _('Continue with %(provider)s') | format(provider=provider.title()) }}</span>
                 </a>
                 {% endfor %}
             </div>
