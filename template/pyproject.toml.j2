@@ -1,6 +1,6 @@
 {% set redis_enabled = enable_redis or enable_job_queue %}
 [project]
-name = "{{ project_name }}"
+name = "{{ project_slug }}"
 dynamic = ["version"]
 description = "{{ project_description }}"
 authors = [{ name = "{{ author_name }}", email = "{{ author_email }}" }]
@@ -42,7 +42,7 @@ base = [
 ]
 
 [project.scripts]
-{{ project_name }} = "{{ project_name }}.cli:app"
+{{ project_slug }} = "{{ project_slug }}.cli:app"
 
 
 [dependency-groups]
@@ -100,7 +100,7 @@ fallback-version = "0.0.0"
 source = "uv-dynamic-versioning"
 
 [tool.hatch.build.hooks.version]
-path = "src/{{ project_name }}/_version.py"
+path = "src/{{ project_slug }}/_version.py"
 template = '''
 version = "{version}"
 '''
