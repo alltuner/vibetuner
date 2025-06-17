@@ -1,24 +1,27 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="{{ request.state.language }}">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}{% endblock %}</title>
-
-    <link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
-    <script src="{{ url_for('js', path='bundle.js').path }}"></script>
-
-    {% if umami_website_id and not DEBUG %}
-    <script defer src="/meta.js" data-website-id="{{ umami_website_id }}"></script>{% endif %}
-
-    {% block head %}{% endblock %}
-</head>
-
-<body hx-ext="preload" preload="mousedown" class="{{ BODY_CLASS }} font-figtree">
-    {% block body %}{% endblock %}
-    {% if DEBUG %}{{ hotreload.script(url_for('hot-reload')) | safe }}{% endif %}
-    {% block end_of_body %} {% endblock %}
-</body>
-
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            {% block title %}
+            {% endblock title %}
+        </title>
+        <link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
+        <script src="{{ url_for('js', path='bundle.js').path }}"></script>
+        {% if umami_website_id and not DEBUG %}
+            <script defer src="/meta.js" data-website-id="{{ umami_website_id }}"></script>
+        {% endif %}
+        {% block head %}
+        {% endblock head %}
+    </head>
+    <body hx-ext="preload"
+          preload="mousedown"
+          class="{{ BODY_CLASS }} font-figtree">
+        {% block body %}
+        {% endblock body %}
+        {% if DEBUG %}{{ hotreload.script(url_for('hot-reload') ) | safe }}{% endif %}
+        {% block end_of_body %}
+        {% endblock end_of_body %}
+    </body>
 </html>
