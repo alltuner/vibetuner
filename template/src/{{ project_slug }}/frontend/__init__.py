@@ -1,4 +1,6 @@
-from typing import Any
+from typing import (
+    Any,
+)
 
 from fastapi import (
     Depends as Depends,
