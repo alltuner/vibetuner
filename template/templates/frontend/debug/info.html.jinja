@@ -1,0 +1,101 @@
+{% extends "base/skeleton.html.jinja" %}
+
+{% block title %}Debug Info - {{ project_name }}{% endblock title %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Debug Information</h1>
+
+    <!-- Version Information -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Version Information</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <span class="font-medium text-gray-600">Version:</span>
+                <span class="ml-2 text-gray-800">{{ version }}</span>
+            </div>
+            <div>
+                <span class="font-medium text-gray-600">Version Hash:</span>
+                <span class="ml-2 text-gray-800">{{ v_hash }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Settings -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Project Settings</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <span class="font-medium text-gray-600">Project Name:</span>
+                <span class="ml-2 text-gray-800">{{ project_name }}</span>
+            </div>
+            <div>
+                <span class="font-medium text-gray-600">Project Slug:</span>
+                <span class="ml-2 text-gray-800">{{ project_slug }}</span>
+            </div>
+            <div>
+                <span class="font-medium text-gray-600">Project Description:</span>
+                <span class="ml-2 text-gray-800">{{ project_description }}</span>
+            </div>
+            <div>
+                <span class="font-medium text-gray-600">Copyright:</span>
+                <span class="ml-2 text-gray-800">{{ copyright }}</span>
+            </div>
+            <div>
+                <span class="font-medium text-gray-600">Default Language:</span>
+                <span class="ml-2 text-gray-800">{{ default_language }}</span>
+            </div>
+            <div>
+                <span class="font-medium text-gray-600">Supported Languages:</span>
+                <span class="ml-2 text-gray-800">{{ supported_languages | join(', ') }}</span>
+            </div>
+            <div>
+                <span class="font-medium text-gray-600">Debug Mode:</span>
+                <span class="ml-2 text-gray-800">{{ DEBUG | string | title }}</span>
+            </div>
+            {% if umami_website_id %}
+            <div>
+                <span class="font-medium text-gray-600">Umami Website ID:</span>
+                <span class="ml-2 text-gray-800">{{ umami_website_id }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Request State Language -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Request State</h2>
+        <div>
+            <span class="font-medium text-gray-600">Current Language:</span>
+            <span class="ml-2 text-gray-800">{{ language }}</span>
+        </div>
+    </div>
+
+    <!-- User Cookies -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">User Cookies</h2>
+        {% if cookies %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Cookie Name</th>
+                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for name, value in cookies.items() %}
+                        <tr class="border-b border-gray-200">
+                            <td class="px-4 py-2 text-sm text-gray-800 font-mono">{{ name }}</td>
+                            <td class="px-4 py-2 text-sm text-gray-800 font-mono break-all">{{ value }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-600">No cookies found</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock body %}
