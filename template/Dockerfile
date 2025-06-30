@@ -23,7 +23,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
-    uv sync --locked --no-install-project --no-group dev --no-group scaffolding
+    uv sync --locked --no-install-project --no-group dev
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 2: Install Project with Version Information
@@ -44,7 +44,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
-    uv sync --all-extras --locked --no-group dev --no-group scaffolding
+    uv sync --all-extras --locked --no-group dev
 
 # Clean up test directories to reduce image size
 RUN find .venv -type d -name 'tests' -exec rm -rf {} +

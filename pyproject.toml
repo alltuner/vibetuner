@@ -1,30 +1,17 @@
 [project]
 name = "scaffolding"
-version = "0.1.0"
-requires-python = ">=3.12"
+version = "0.1.1"
+requires-python = ">=3.10"
 dependencies = []
 
 [dependency-groups]
 dev = [
-    "arel>=0.3.0",
-    "asyncer>=0.0.8",
-    "beanie[zstd]>=1.30.0",
-    "click>=8.2.1",
-    "cloudflare>=4.3.1",
-    "fastapi[standard]>=0.115.14",
-    "loguru>=0.7.3",
-    "pydantic>=2.11.7",
-    "pydantic-extra-types[pycountry]>=2.10.5",
-    "pydantic-settings>=2.10.1",
-    "pyyaml>=6.0.2",
-    "redis[hiredis]>=6.2.0",
-    "rich>=14.0.0",
-    "ruff>=0.12.1",
-    "starlette-babel>=1.0.3",
-    "starlette-cramjam>=0.5.0",
-    "streaq>=0.2.1",
-    "typer-slim[standard]>=0.16.0",
+    "prototuner[dev]",
+    # Add below this line any dev dependencies you need for development
 ]
+
+[tool.uv.sources]
+prototuner = { git = "https://github.com/alltuner/prototuner" }
 
 [tool.ruff.lint]
 extend-select = [
