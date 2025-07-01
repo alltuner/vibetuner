@@ -1,20 +1,5 @@
 {
   "devDependencies": {
-    "@tailwindcss/cli": "^4.1.11",
-    "concurrently": "^9.2.0",
-    "daisyui": "^5.0.43",
-    "esbuild": "^0.25.5",
-    "htmx-ext-preload": "^2.1.1",
-    "htmx.org": "2.0.6",
-    "tailwindcss": "^4.1.11"
-  },
-  "dependencies": {},
-  "scripts": {
-    "dev:css": "tailwindcss -w -i config.css -o assets/statics/css/bundle.css",
-    "dev:js": "esbuild --watch config.js --bundle --sourcemap --outfile=assets/statics/js/bundle.js",
-    "dev": "concurrently 'pnpm dev:css' 'pnpm dev:js'",
-    "build-prod:css": "tailwindcss -i config.css --minify -o assets/statics/css/bundle.css",
-    "build-prod:js": "esbuild config.js --bundle --minify --outfile=assets/statics/js/bundle.js",
-    "build-prod": "concurrently 'pnpm build-prod:css' 'pnpm build-prod:js'"
+    "prototuner": "github:alltuner/prototuner"
   }
 }
