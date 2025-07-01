@@ -7,6 +7,9 @@ ARG PYTHON_VERSION=3.13
 # ────────────────────────────────────────────────────────────────────────────────
 FROM python:${PYTHON_VERSION}-slim AS python-base
 
+RUN apt-get update && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install UV package manager from official image
 COPY --from=ghcr.io/astral-sh/uv:0.7 /uv /uvx /bin/
 
