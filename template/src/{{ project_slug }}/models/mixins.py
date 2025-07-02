@@ -30,10 +30,11 @@ class TimeStampMixin(BaseModel):
 
     db_insert_dt: datetime = Field(
         default_factory=lambda: now(),
-        description="First time the document was persisted (UTC).",
+        description="Timestamp when the document was first created and inserted into the database (UTC)",
     )
     db_update_dt: datetime = Field(
-        default_factory=lambda: now(), description="Most recent update time (UTC)."
+        default_factory=lambda: now(),
+        description="Timestamp when the document was last modified or updated (UTC)",
     )
 
     # ── Beanie hooks ────────────────────────────────────────────

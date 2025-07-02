@@ -11,12 +11,16 @@ from .oauth import OAuthAccount
 
 
 class UserModel(Document, TimeStampMixin):
-    email: Optional[str] = Field(None, description="Primary email address")
-    name: Optional[str] = Field(None, description="Display name")
-    picture: Optional[str] = None
+    email: Optional[str] = Field(
+        None, description="Primary email address for authentication and communication"
+    )
+    name: Optional[str] = Field(None, description="User's full display name")
+    picture: Optional[str] = Field(
+        None, description="URL to user's profile picture or avatar"
+    )
     oauth_accounts: List[Link[OAuthAccount]] = Field(
         default_factory=list,
-        description="Linked OAuth accounts",
+        description="Connected OAuth provider accounts (Google, GitHub, etc.)",
     )
 
     class Settings:
