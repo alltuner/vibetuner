@@ -7,7 +7,6 @@
             <h1 class="text-4xl font-bold text-base-content mb-2">Debug Dashboard</h1>
             <p class="text-base-content/70">Development and debugging tools for {{ project_name }}</p>
         </header>
-
         <!-- Debug Tools Grid -->
         <div class="grid md:grid-cols-2 gap-6">
             <!-- System Information -->
@@ -20,13 +19,14 @@
                         </svg>
                         System Information
                     </h2>
-                    <p class="text-base-content/70 mb-4">View application configuration, cookies, and runtime information</p>
+                    <p class="text-base-content/70 mb-4">
+                        View application configuration, cookies, and runtime information
+                    </p>
                     <div class="card-actions justify-end">
-                        <a href="{{ url_for('debug_info') }}" class="btn btn-primary btn-sm">View Details</a>
+                        <a href="{{ url_for("debug_info") }}" class="btn btn-primary btn-sm">View Details</a>
                     </div>
                 </div>
             </div>
-
             <!-- Database Collections -->
             <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow">
                 <div class="card-body">
@@ -39,11 +39,10 @@
                     </h2>
                     <p class="text-base-content/70 mb-4">Explore MongoDB collections and their field schemas</p>
                     <div class="card-actions justify-end">
-                        <a href="{{ url_for('debug_collections') }}" class="btn btn-primary btn-sm">View Schemas</a>
+                        <a href="{{ url_for("debug_collections") }}" class="btn btn-primary btn-sm">View Schemas</a>
                     </div>
                 </div>
             </div>
-
             <!-- Version Information -->
             <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow">
                 <div class="card-body">
@@ -56,11 +55,10 @@
                     </h2>
                     <p class="text-base-content/70 mb-4">Check application version and build information</p>
                     <div class="card-actions justify-end">
-                        <a href="{{ url_for('debug_version') }}" class="btn btn-primary btn-sm">View Version</a>
+                        <a href="{{ url_for("debug_version") }}" class="btn btn-primary btn-sm">View Version</a>
                     </div>
                 </div>
             </div>
-
             <!-- Health Check -->
             <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow">
                 <div class="card-body">
@@ -73,12 +71,11 @@
                     </h2>
                     <p class="text-base-content/70 mb-4">Verify application health and API endpoint status</p>
                     <div class="card-actions justify-end">
-                        <a href="{{ url_for('health') }}" class="btn btn-success btn-sm">Check Health</a>
+                        <a href="{{ url_for("health") }}" class="btn btn-success btn-sm">Check Health</a>
                     </div>
                 </div>
             </div>
         </div>
-
         <!-- Debug Navigation Footer -->
         {% include "debug/components/debug_nav.html.jinja" %}
     </div>
