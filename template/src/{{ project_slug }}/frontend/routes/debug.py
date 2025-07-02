@@ -1,5 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+)
+from fastapi.responses import (
+    HTMLResponse,
+)
 
 from ...mongo import models
 from ..context import ctx
