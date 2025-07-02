@@ -1,11 +1,26 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 
 from ...mongo import models
+from ..context import ctx
 from ..templates import template_render
 
 
-router = APIRouter(prefix="/debug")
+def check_debug_access(request: Request, prod: str | None = None):
+    """Check if debug routes should be accessible."""
+    # Always allow in development mode
+    if ctx.DEBUG:
+        return True
+
+    # In production, require prod=1 parameter
+    if prod == "1":
+        return True
+
+    # Deny access
+    raise HTTPException(status_code=404, detail="Not found")
+
+
+router = APIRouter(prefix="/debug", dependencies=[Depends(check_debug_access)])
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -70,6 +85,18 @@ def _parse_union_types(field_info: dict, union_key: str) -> str:
     return " | ".join(types) if types else union_key
 
 
+def _handle_fallback_type(field_info: dict, field_name: str) -> str:
+    """Handle fallback type inference when no explicit type is provided."""
+    if "properties" in field_info:
+        return "object"
+    elif "items" in field_info:
+        return "array"
+    elif "format" in field_info:
+        return field_info["format"]
+    else:
+        return field_name.split("_")[-1] if "_" in field_name else "any"
+
+
 def _parse_field_type(field_info: dict, field_name: str) -> str:
     """Parse field type from JSON schema field info."""
     field_type = field_info.get("type", "")
@@ -103,21 +130,14 @@ def _parse_field_type(field_info: dict, field_name: str) -> str:
 
     # Fallback type inference
     if not field_type:
-        if "properties" in field_info:
-            return "object"
-        elif "items" in field_info:
-            return "array"
-        elif "format" in field_info:
-            return field_info["format"]
-        else:
-            return field_name.split("_")[-1] if "_" in field_name else "any"
+        return _handle_fallback_type(field_info, field_name)
 
     return field_type
 
 
 def _extract_fields_from_schema(schema: dict) -> list[dict]:
     """Extract field information from JSON schema."""
-    fields = []
+    fields: list[dict] = []
 
     if "properties" not in schema:
         return fields
