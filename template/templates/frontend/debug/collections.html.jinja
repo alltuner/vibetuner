@@ -1,0 +1,72 @@
+{% extends "base/skeleton.html.jinja" %}
+{% block title %}Database Collections Schema - Debug{% endblock %}
+{% block body %}
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-base-content mb-2">Database Collections Schema</h1>
+            <p class="text-base-content/70">Overview of all MongoDB collections and their field schemas</p>
+        </header>
+
+        <!-- Collections Grid -->
+        <div class="grid gap-6">
+            {% for collection in collections %}
+                <div class="card bg-base-100 shadow-xl border border-base-200">
+                    <div class="card-body">
+                        <!-- Collection Header -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h2 class="card-title text-2xl text-primary">{{ collection.name }}</h2>
+                                <p class="text-sm text-base-content/60">Model: {{ collection.model_name }}</p>
+                            </div>
+                            <div class="badge badge-secondary">{{ collection.total_fields }} fields</div>
+                        </div>
+
+                        <!-- Fields Table -->
+                        <div class="overflow-x-auto">
+                            <table class="table table-zebra w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Field Name</th>
+                                        <th class="text-left">Type</th>
+                                        <th class="text-center">Required</th>
+                                        <th class="text-left">Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for field in collection.fields %}
+                                        <tr>
+                                            <td>
+                                                <code class="text-sm bg-base-200 px-2 py-1 rounded">{{ field.name }}</code>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-outline badge-sm">{{ field.type }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                {% if field.required %}
+                                                    <span class="badge badge-error badge-sm">Required</span>
+                                                {% else %}
+                                                    <span class="badge badge-ghost badge-sm">Optional</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if field.description %}
+                                                    <span class="text-sm text-base-content/80">{{ field.description }}</span>
+                                                {% else %}
+                                                    <span class="text-sm text-base-content/40 italic">No description</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Debug Navigation Footer -->
+        {% include "debug/components/debug_nav.html.jinja" %}
+    </div>
+{% endblock body %}
