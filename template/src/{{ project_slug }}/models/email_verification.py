@@ -4,16 +4,17 @@ from typing import Optional, Self
 
 from beanie import Document
 from beanie.operators import Eq, Set
+from pydantic import Field
 
 from ..time import now
 
 
 # Email verification token model
 class EmailVerificationToken(Document):
-    email: str
-    token: str
-    expires_at: datetime
-    used: bool = False
+    email: str = Field(..., description="Email address requesting verification")
+    token: str = Field(..., description="Secure random token for email verification")
+    expires_at: datetime = Field(..., description="Token expiration timestamp")
+    used: bool = Field(False, description="Whether the token has been consumed")
 
     class Settings:
         name = "email_verification_tokens"
@@ -32,7 +33,9 @@ class EmailVerificationToken(Document):
         # Invalidate any existing tokens for this email
         await cls.find(Eq(cls.email, email)).update_many(Set({cls.used: True}))
 
-        verification_token = cls(email=email, token=token, expires_at=expires_at)
+        verification_token = cls(
+            email=email, token=token, expires_at=expires_at, used=False
+        )
 
         return await verification_token.insert()
 

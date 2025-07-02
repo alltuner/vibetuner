@@ -14,19 +14,19 @@ class OAuthAccount(Document, TimeStampMixin):
     )
     provider_user_id: str = Field(
         ...,
-        description="Unique user ID from the OAuth provider",
+        description="Unique user identifier from the OAuth provider",
     )
     email: Optional[str] = Field(
         None,
-        description="Email from OAuth provider",
+        description="Email address retrieved from OAuth provider profile",
     )
     name: Optional[str] = Field(
         None,
-        description="Display name from OAuth provider",
+        description="Full display name retrieved from OAuth provider profile",
     )
     picture: Optional[str] = Field(
         None,
-        description="Profile picture URL",
+        description="Profile picture URL retrieved from OAuth provider",
     )
 
     class Settings:
