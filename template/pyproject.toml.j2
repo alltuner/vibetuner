@@ -24,6 +24,12 @@ dev = [
 requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
 
+[tool.uv]
+cache-keys = [
+    { file = "pyproject.toml" },
+    { git = { commit = true, tags = true } },
+]
+
 [tool.uv.sources]
 prototuner = { git = "https://github.com/alltuner/prototuner" }
 
