@@ -17,6 +17,9 @@ repos:
     hooks:
       - id: uv-sync
         always_run: true
+      - id: uv-lock
+        args: ["--upgrade"]
+        always_run: true
   - repo: local
     hooks:
       - id: pnpm-install
