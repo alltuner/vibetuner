@@ -10,6 +10,12 @@ dev = [
     # Add below this line any dev dependencies you need for development
 ]
 
+[tool.uv]
+cache-keys = [
+    { file = "pyproject.toml" },
+    { git = { commit = true, tags = true } },
+]
+
 [tool.uv.sources]
 prototuner = { git = "https://github.com/alltuner/prototuner" }
 
