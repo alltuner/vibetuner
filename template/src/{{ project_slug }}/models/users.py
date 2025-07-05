@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Any, List, Optional, Self
+from typing import Any, List, Self
 
 from beanie import Document
 from beanie.operators import Eq
@@ -11,12 +11,17 @@ from .oauth import OAuthAccount
 
 
 class UserModel(Document, TimeStampMixin):
-    email: Optional[str] = Field(
-        None, description="Primary email address for authentication and communication"
+    email: str | None = Field(
+        default=None,
+        description="Primary email address for authentication",
     )
-    name: Optional[str] = Field(None, description="User's full display name")
-    picture: Optional[str] = Field(
-        None, description="URL to user's profile picture or avatar"
+    name: str | None = Field(
+        default=None,
+        description="User's full display name",
+    )
+    picture: str | None = Field(
+        default=None,
+        description="URL to user's profile picture or avatar",
     )
     oauth_accounts: List[Link[OAuthAccount]] = Field(
         default_factory=list,
