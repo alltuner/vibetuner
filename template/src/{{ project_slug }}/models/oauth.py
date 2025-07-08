@@ -1,4 +1,4 @@
-from typing import Optional, Self
+from typing import Self
 
 from beanie import Document
 from beanie.operators import Eq
@@ -16,16 +16,16 @@ class OAuthAccount(Document, TimeStampMixin):
         ...,
         description="Unique user identifier from the OAuth provider",
     )
-    email: Optional[str] = Field(
-        None,
+    email: str | None = Field(
+        default=None,
         description="Email address retrieved from OAuth provider profile",
     )
-    name: Optional[str] = Field(
-        None,
+    name: str | None = Field(
+        default=None,
         description="Full display name retrieved from OAuth provider profile",
     )
-    picture: Optional[str] = Field(
-        None,
+    picture: str | None = Field(
+        default=None,
         description="Profile picture URL retrieved from OAuth provider",
     )
 
