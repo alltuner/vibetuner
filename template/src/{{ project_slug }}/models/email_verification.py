@@ -11,10 +11,22 @@ from ..time import now
 
 # Email verification token model
 class EmailVerificationToken(Document):
-    email: str = Field(..., description="Email address requesting verification")
-    token: str = Field(..., description="Secure random token for email verification")
-    expires_at: datetime = Field(..., description="Token expiration timestamp")
-    used: bool = Field(False, description="Whether the token has been consumed")
+    email: str = Field(
+        ...,
+        description="Email address requesting verification",
+    )
+    token: str = Field(
+        ...,
+        description="Secure random token for email verification",
+    )
+    expires_at: datetime = Field(
+        ...,
+        description="Token expiration timestamp",
+    )
+    used: bool = Field(
+        default=False,
+        description="Whether the token has been consumed",
+    )
 
     class Settings:
         name = "email_verification_tokens"
