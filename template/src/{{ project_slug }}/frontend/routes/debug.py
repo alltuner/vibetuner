@@ -10,7 +10,7 @@ from fastapi.responses import (
 
 from ...mongo import models
 from ..context import ctx
-from ..templates import template_render
+from ..templates import render_template
 
 
 def check_debug_access(request: Request, prod: str | None = None):
@@ -32,7 +32,7 @@ router = APIRouter(prefix="/debug", dependencies=[Depends(check_debug_access)])
 
 @router.get("/", response_class=HTMLResponse)
 def debug_index(request: Request):
-    return template_render("debug/index.html.jinja", request)
+    return render_template("debug/index.html.jinja", request)
 
 
 @router.get("/health")
@@ -42,7 +42,7 @@ def health():
 
 @router.get("/version", response_class=HTMLResponse)
 def debug_version(request: Request):
-    return template_render("debug/version.html.jinja", request)
+    return render_template("debug/version.html.jinja", request)
 
 
 @router.get("/info", response_class=HTMLResponse)
@@ -53,7 +53,7 @@ def debug_info(request: Request):
     # Get language from request state
     language = getattr(request.state, "language", "Not set")
 
-    return template_render(
+    return render_template(
         "debug/info.html.jinja", request, {"cookies": cookies, "language": language}
     )
 
@@ -189,6 +189,6 @@ def debug_collections(request: Request):
     """Debug endpoint to display MongoDB collection schemas."""
     collections_info = [_get_collection_info(model) for model in models]
 
-    return template_render(
+    return render_template(
         "debug/collections.html.jinja", request, {"collections": collections_info}
     )

@@ -23,7 +23,7 @@ from .routes import (
     auth,
     debug,
 )
-from .templates import template_render as template_render
+from .templates import render_template
 
 
 dependencies: list[Any] = [
@@ -82,7 +82,7 @@ app.include_router(auth.router)
 # Default routes to be rewritten by the user
 @app.get("/", name="homepage", response_class=HTMLResponse)
 def default_index(request: Request) -> HTMLResponse:
-    return template_render("defaults/index.html.jinja", request)
+    return render_template("defaults/index.html.jinja", request)
 
 
 app.include_router(debug.router)
