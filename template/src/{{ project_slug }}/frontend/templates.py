@@ -37,9 +37,6 @@ def render_template(
     return templates.TemplateResponse(template, merged_ctx, **kwargs)
 
 
-# FIXME: This is kept like this for compatibility with the old codebase.
-template_render = render_template
-
 jinja_env.globals.update({"DEBUG": data_ctx.DEBUG})
 jinja_env.globals.update({"hotreload": hotreload})
 
