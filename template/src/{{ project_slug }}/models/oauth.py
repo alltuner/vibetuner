@@ -7,7 +7,7 @@ from pydantic import Field
 from .mixins import TimeStampMixin
 
 
-class OAuthAccount(Document, TimeStampMixin):
+class OAuthAccountModel(Document, TimeStampMixin):
     provider: str = Field(
         ...,
         description="OAuth provider name (google, github, twitter, etc.)",
