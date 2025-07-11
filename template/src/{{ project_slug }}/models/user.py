@@ -6,8 +6,8 @@ from beanie.operators import Eq
 from pydantic import Field
 
 from ..mongo_types import Link
-from . import OAuthAccountModel
 from .mixins import TimeStampMixin
+from .oauth import OAuthAccountModel
 
 
 class UserModel(Document, TimeStampMixin):

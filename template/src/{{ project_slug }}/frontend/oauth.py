@@ -7,7 +7,8 @@ from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 from starlette.authentication import BaseUser
 
-from ..models import OAuthAccountModel, UserModel
+from ..models.oauth import OAuthAccountModel
+from ..models.user import UserModel
 from .routes import get_homepage_url
 
 
