@@ -8,7 +8,7 @@ from fastapi.responses import (
     HTMLResponse,
 )
 
-from ...mongo import models
+from ...models import MODELS
 from ..context import ctx
 from ..templates import render_template
 
@@ -187,7 +187,7 @@ def _get_collection_info(model) -> dict:
 @router.get("/collections", response_class=HTMLResponse)
 def debug_collections(request: Request):
     """Debug endpoint to display MongoDB collection schemas."""
-    collections_info = [_get_collection_info(model) for model in models]
+    collections_info = [_get_collection_info(model) for model in MODELS]
 
     return render_template(
         "debug/collections.html.jinja", request, {"collections": collections_info}
