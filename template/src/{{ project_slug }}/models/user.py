@@ -6,8 +6,8 @@ from beanie.operators import Eq
 from pydantic import Field
 
 from ..mongo_types import Link
+from . import OAuthAccountModel
 from .mixins import TimeStampMixin
-from .oauth import OAuthAccount
 
 
 class UserModel(Document, TimeStampMixin):
@@ -23,7 +23,7 @@ class UserModel(Document, TimeStampMixin):
         default=None,
         description="URL to user's profile picture or avatar",
     )
-    oauth_accounts: List[Link[OAuthAccount]] = Field(
+    oauth_accounts: List[Link[OAuthAccountModel]] = Field(
         default_factory=list,
         description="Connected OAuth provider accounts (Google, GitHub, etc.)",
     )

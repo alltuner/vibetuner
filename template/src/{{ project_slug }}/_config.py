@@ -8,6 +8,7 @@ import yaml
 from pydantic import (
     UUID4,
     Field,
+    HttpUrl,
     MongoDsn,
     RedisDsn,
     SecretStr,
@@ -100,6 +101,13 @@ class Configuration(BaseSettings):
     # Amazon Credentials
     aws_access_key_id: SecretStr | None = None
     aws_secret_access_key: SecretStr | None = None
+
+    # R2 Related Settings
+    r2_default_bucket_name: str | None = None
+    r2_bucket_endpoint_url: HttpUrl | None = None
+    r2_access_key: SecretStr | None = None
+    r2_secret_key: SecretStr | None = None
+    r2_default_region: str = "auto"
 
     @computed_field  # type: ignore[prop-decorator]
     @cached_property

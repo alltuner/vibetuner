@@ -10,7 +10,7 @@ from ..time import now
 
 
 # Email verification token model
-class EmailVerificationToken(Document):
+class EmailVerificationTokenModel(Document):
     email: str = Field(
         ...,
         description="Email address requesting verification",
