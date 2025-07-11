@@ -6,8 +6,7 @@ import boto3
 from botocore.config import Config
 
 from .._config import settings
-from ..models import BlobModel
-from ..models.blob import BlobStatus
+from ..models.blob import BlobModel, BlobStatus
 
 
 S3_SERVICE_NAME: Literal["s3"] = "s3"
