@@ -2,7 +2,8 @@ from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
 from ._config import project_settings, settings
-from .models import MODELS
+from .models.app import APP_MODELS
+from .models.core import CORE_MODELS
 
 
 # Include here any custom things that need to be done after model definitions
@@ -17,4 +18,4 @@ async def init_models() -> None:
         compressors=["zstd"],
     )[settings.mongo_dbname]
 
-    await init_beanie(database=mongo_db, document_models=MODELS)
+    await init_beanie(database=mongo_db, document_models=CORE_MODELS + APP_MODELS)
