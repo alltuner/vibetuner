@@ -2,8 +2,8 @@ import mimetypes
 from pathlib import Path
 from typing import Literal
 
-import boto3
-from botocore.config import Config
+import aioboto3
+from aiobotocore.config import AioConfig
 
 from .._config import settings
 from ..models.blob import BlobModel, BlobStatus
@@ -16,7 +16,7 @@ DEFAULT_CONTENT_TYPE: str = "application/octet-stream"
 class BlobService:
     def __init__(
         self,
-        s3_client=None,
+        session: aioboto3.Session | None = None,
         default_bucket: str | None = None,
     ) -> None:
         if (
@@ -27,16 +27,15 @@ class BlobService:
             raise ValueError(
                 "R2 bucket endpoint URL, access key, and secret key must be set in settings."
             )
-        self.s3_client = s3_client or boto3.client(
-            service_name=S3_SERVICE_NAME,
-            endpoint_url=str(settings.r2_bucket_endpoint_url),
+        self.session = session or aioboto3.Session(
             aws_access_key_id=settings.r2_access_key.get_secret_value(),
             aws_secret_access_key=settings.r2_secret_key.get_secret_value(),
             region_name=settings.r2_default_region,
-            config=Config(
-                request_checksum_calculation="when_required",
-                response_checksum_validation="when_required",
-            ),
+        )
+        self.endpoint_url = str(settings.r2_bucket_endpoint_url)
+        self.config = AioConfig(
+            request_checksum_calculation="when_required",
+            response_checksum_validation="when_required",
         )
 
         if not default_bucket:
@@ -74,12 +73,17 @@ class BlobService:
             raise ValueError("Blob ID must be set before uploading to R2.")
 
         try:
-            self.s3_client.put_object(
-                Bucket=bucket,
-                Key=blob.full_path,
-                Body=body,
-                ContentType=content_type,
-            )
+            async with self.session.client(
+                service_name=S3_SERVICE_NAME,
+                endpoint_url=self.endpoint_url,
+                config=self.config,
+            ) as s3_client:
+                await s3_client.put_object(
+                    Bucket=bucket,
+                    Key=blob.full_path,
+                    Body=body,
+                    ContentType=content_type,
+                )
             blob.status = BlobStatus.UPLOADED
         except Exception:
             blob.status = BlobStatus.ERROR
@@ -131,12 +135,16 @@ class BlobService:
         if not blob:
             raise ValueError(f"Blob not found: {key}")
 
-        response = self.s3_client.get_object(
-            Bucket=blob.bucket,
-            Key=blob.full_path,
-        )
-
-        return response["Body"].read()
+        async with self.session.client(
+            service_name=S3_SERVICE_NAME,
+            endpoint_url=self.endpoint_url,
+            config=self.config,
+        ) as s3_client:
+            response = await s3_client.get_object(
+                Bucket=blob.bucket,
+                Key=blob.full_path,
+            )
+            return await response["Body"].read()
 
     async def delete_object(self, key: str) -> None:
         """Delete an object from the R2 bucket"""
