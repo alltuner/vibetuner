@@ -7,8 +7,7 @@ from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 from starlette.authentication import BaseUser
 
-from ..models.oauth import OAuthAccount
-from ..models.users import UserModel
+from ..models import OAuthAccountModel, UserModel
 from .routes import get_homepage_url
 
 
@@ -75,7 +74,7 @@ async def _handle_user_account(
 ) -> UserModel:
     """Handle user account creation or OAuth linking."""
     # Check if OAuth account already exists
-    oauth_account = await OAuthAccount.get_by_provider_and_id(
+    oauth_account = await OAuthAccountModel.get_by_provider_and_id(
         provider=provider,
         provider_user_id=identifier,
     )
@@ -110,7 +109,7 @@ async def _link_oauth_account(
     picture: str,
 ) -> None:
     """Link OAuth account to existing user."""
-    oauth_account = OAuthAccount(
+    oauth_account = OAuthAccountModel(
         provider=provider,
         provider_user_id=identifier,
         email=email,
@@ -127,7 +126,7 @@ async def _create_new_user_with_oauth(
 ) -> UserModel:
     """Create new user account with OAuth linking."""
     # Create user account
-    oauth_account = OAuthAccount(
+    oauth_account = OAuthAccountModel(
         provider=provider,
         provider_user_id=identifier,
         email=email,

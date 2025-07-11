@@ -12,8 +12,7 @@ from fastapi.responses import RedirectResponse
 from pydantic import EmailStr
 from starlette.responses import HTMLResponse
 
-from ...models.email_verification import EmailVerificationToken
-from ...models.users import UserModel
+from ...models import EmailVerificationTokenModel, UserModel
 from ...services.email import SESEmailService
 from ..email import send_magic_link_email
 from ..oauth import _create_auth_handler, _create_auth_login_handler, oauth_providers
@@ -74,7 +73,7 @@ async def send_magic_link(
     """Handle email magic link login form submission"""
 
     # Create verification token
-    verification_token = await EmailVerificationToken.create_token(email)
+    verification_token = await EmailVerificationTokenModel.create_token(email)
 
     # Build login URL
     login_url = request.url_for("email_verify", token=verification_token.token)
@@ -107,7 +106,7 @@ async def email_verify(
 ) -> str:
     """Verify email token and log in user"""
     # Verify token
-    verification_token = await EmailVerificationToken.verify_token(token)
+    verification_token = await EmailVerificationTokenModel.verify_token(token)
     if not verification_token:
         raise HTTPException(status_code=400, detail="Invalid or expired token")
 
