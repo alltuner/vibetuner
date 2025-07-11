@@ -12,7 +12,8 @@ from fastapi.responses import RedirectResponse
 from pydantic import EmailStr
 from starlette.responses import HTMLResponse
 
-from ...models import EmailVerificationTokenModel, UserModel
+from ...models.email_verification import EmailVerificationTokenModel
+from ...models.user import UserModel
 from ...services.email import SESEmailService
 from ..email import send_magic_link_email
 from ..oauth import _create_auth_handler, _create_auth_login_handler, oauth_providers
