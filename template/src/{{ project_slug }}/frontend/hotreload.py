@@ -1,6 +1,6 @@
 import arel
 
-from .. import paths
+from ..core import paths
 
 
 hotreload = arel.HotReload(
