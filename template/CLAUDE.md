@@ -74,9 +74,9 @@ just bump-major              # Increment major version (0.1.0 → 1.0.0)
 #### Core Application
 
 - **`__main__.py`**: CLI entry point, run with `python -m [project_slug]`
-- **`_config.py`**: Application configuration using Pydantic Settings
-- **`_paths.py`**: Static asset and template path management
-- **`_logging.py`**: Centralized logging configuration
+- **`config.py`**: Application configuration using Pydantic Settings
+- **`paths.py`**: Static asset and template path management
+- **`logging.py`**: Centralized logging configuration
 - **`_version.py`**: Dynamic version management from git tags
 
 #### Web Application (`frontend/`)
@@ -154,7 +154,7 @@ just bump-major              # Increment major version (0.1.0 → 1.0.0)
 
 ### Authentication System
 
-- **OAuth Flow**: Configured providers in `_config.py`, handled in `routes/auth.py`
+- **OAuth Flow**: Configured providers in `config.py`, handled in `routes/auth.py`
 - **Magic Links**: Passwordless login via email, tokens in `models/email_verification.py`  
 - **User Sessions**: FastAPI session middleware with secure cookies
 - **Protected Routes**: Use `get_current_user` dependency from `frontend/deps.py`
@@ -230,7 +230,7 @@ pytest -k "test_login"           # Run tests matching pattern
 
 ### Adding OAuth Providers
 
-1. Update `_config.py` with provider configuration
+1. Update `config.py` with provider configuration
 2. Add provider-specific logic in `frontend/routes/auth.py`
 3. Update login template with new provider button
 
@@ -273,6 +273,7 @@ When job queue is enabled:
 This section should be updated with any project-specific information, custom configurations, or special considerations for your application.
 
 # important-instruction-reminders
+
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.

@@ -16,8 +16,7 @@ from starlette_babel import (
 from starlette_compress import CompressMiddleware
 from starlette_htmx.middleware import HtmxMiddleware  # type: ignore[import-untyped]
 
-from .. import settings
-from ..core import paths
+from ..core import paths, settings
 from .context import ctx
 from .oauth import WebUser
 
