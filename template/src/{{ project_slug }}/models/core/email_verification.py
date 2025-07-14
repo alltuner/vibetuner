@@ -6,7 +6,7 @@ from beanie import Document
 from beanie.operators import Eq, Set
 from pydantic import Field
 
-from ..time import now
+from ...time import now
 
 
 # Email verification token model

@@ -6,7 +6,8 @@ import aioboto3
 from aiobotocore.config import AioConfig
 
 from .._config import settings
-from ..models.blob import BlobModel, BlobStatus
+from ..models.core import BlobModel
+from ..models.core.blob import BlobStatus
 
 
 S3_SERVICE_NAME: Literal["s3"] = "s3"
