@@ -1,6 +1,6 @@
-from . import _paths as paths
 from ._config import project_settings, settings
 from ._logging import logger
+from .core import paths
 
 
 __all__ = [
