@@ -1,14 +1,13 @@
 from typing import Optional
 
 from authlib.integrations.base_client.errors import OAuthError
-from authlib.integrations.starlette_client import OAuth
+from authlib.integrations.starlette_client import OAuth  # ty: ignore[unresolved-import]
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 from starlette.authentication import BaseUser
 
-from ..models.oauth import OAuthAccountModel
-from ..models.user import UserModel
+from ..models.core import OAuthAccountModel, UserModel
 from .routes import get_homepage_url
 
 

@@ -8,13 +8,9 @@ from fastapi.responses import (
     HTMLResponse,
 )
 
-from ...models.app import APP_MODELS
-from ...models.core import CORE_MODELS
+from ...models import MODELS
 from ..context import ctx
 from ..templates import render_template
-
-
-MODELS = CORE_MODELS + APP_MODELS
 
 
 def check_debug_access(request: Request, prod: str | None = None):
