@@ -13,7 +13,7 @@ from fastapi.responses import (
 )
 from fastapi.staticfiles import StaticFiles
 
-from .. import _paths as paths
+from ..core import paths
 from .deps import (
     LangDep as LangDep,
 )
