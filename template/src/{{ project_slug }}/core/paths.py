@@ -1,8 +1,8 @@
 from pathlib import Path
 
 
-root: Path = Path(__file__).resolve().parent.parent.parent
-fallback_path = "default"
+root: Path = Path(__file__).resolve().parent.parent.parent.parent
+fallback_path = "defaults"
 
 
 def to_template_path_list(path: Path) -> list[Path]:
