@@ -1,5 +1,4 @@
-import paths
-
+from . import paths
 from .config import project_settings, settings
 from .logging import logger
 
