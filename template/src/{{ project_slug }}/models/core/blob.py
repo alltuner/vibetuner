@@ -1,6 +1,5 @@
 import hashlib
 from enum import StrEnum
-from functools import cached_property
 from typing import Self
 
 from beanie import Document
@@ -43,7 +42,7 @@ class BlobModel(Document, TimeStampMixin):
     )
     size: int = Field(..., description="Size of the object in bytes")
 
-    @cached_property
+    @property
     def full_path(self) -> str:
         """Get the full path of the blob in the bucket."""
         if self.namespace:

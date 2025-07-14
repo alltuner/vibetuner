@@ -5,7 +5,7 @@ from beanie import Document
 from beanie.operators import Eq
 from pydantic import Field
 
-from ..mongo_types import Link
+from . import Link
 from .mixins import TimeStampMixin
 from .oauth import OAuthAccountModel
 
