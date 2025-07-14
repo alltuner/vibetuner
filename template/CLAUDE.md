@@ -69,14 +69,15 @@ just bump-major              # Increment major version (0.1.0 → 1.0.0)
 
 ## Application Architecture
 
-### Backend Structure (`src/[project_name]/`)
+### Backend Structure (`src/[project_slug]/`)
 
 #### Core Application
 
-- **`__main__.py`**: CLI entry point, run with `python -m [project_name]`
+- **`__main__.py`**: CLI entry point, run with `python -m [project_slug]`
 - **`_config.py`**: Application configuration using Pydantic Settings
 - **`_paths.py`**: Static asset and template path management
 - **`_logging.py`**: Centralized logging configuration
+- **`_version.py`**: Dynamic version management from git tags
 
 #### Web Application (`frontend/`)
 
@@ -97,17 +98,22 @@ just bump-major              # Increment major version (0.1.0 → 1.0.0)
 
 #### Services (`services/`)
 
-- **`email.py`**: Email sending via AWS SES
+- **`email.py`**: Email sending via AWS SES (if configured)
 
 #### Background Jobs (`tasks/`)
 
-- **`worker.py`**: Streaq task worker setup
+- **`worker.py`**: Streaq task worker setup (if job queue enabled)
 - **`context.py`**: Task execution context and dependencies
 
 #### Database Integration
 
 - **`mongo.py`**: MongoDB connection with Motor async driver
 - **`mongo_types.py`**: Custom MongoDB type definitions
+
+#### CLI Commands (`cli/`)
+
+- **`__init__.py`**: CLI command registration
+- Custom commands can be added here
 
 ### Frontend Structure
 
@@ -116,6 +122,7 @@ just bump-major              # Increment major version (0.1.0 → 1.0.0)
 - **`frontend/base/skeleton.html.jinja`**: Base HTML layout with HTMX
 - **`frontend/defaults/index.html.jinja`**: Homepage template
 - **`frontend/login.html.jinja`**: Authentication page
+- **`email/`**: Email templates for transactional emails
 
 #### Static Assets (`assets/statics/`)
 
@@ -140,8 +147,8 @@ just bump-major              # Increment major version (0.1.0 → 1.0.0)
 
 ### Adding New Features
 
-1. **Routes**: Add new endpoints in `src/[project]/frontend/routes/`
-2. **Models**: Define data models in `src/[project]/models/`
+1. **Routes**: Add new endpoints in `src/[project_slug]/frontend/routes/`
+2. **Models**: Define data models in `src/[project_slug]/models/`
 3. **Templates**: Create Jinja2 templates in `templates/frontend/`
 4. **Styles**: Use Tailwind classes, extend in `config.css` if needed
 
@@ -154,7 +161,9 @@ just bump-major              # Increment major version (0.1.0 → 1.0.0)
 
 ### Background Jobs  
 
-- **Define tasks**: Add functions to `src/[project]/tasks/`
+When job queue is enabled:
+
+- **Define tasks**: Add functions to `src/[project_slug]/tasks/`
 - **Queue jobs**: Use Streaq client to enqueue from route handlers
 - **Process jobs**: `just worker-dev` runs worker locally
 - **Monitor**: Check Redis for job status and results
@@ -180,15 +189,16 @@ just bump-major              # Increment major version (0.1.0 → 1.0.0)
 - **`ENVIRONMENT`**: `development` or `production`
 - **`DEBUG`**: Enable debug mode and endpoints
 - **`DATABASE_URL`**: MongoDB connection string
-- **`REDIS_URL`**: Redis connection for job queue
+- **`REDIS_URL`**: Redis connection for job queue (if enabled)
 - **`SECRET_KEY`**: Session encryption key
-- **`AWS_*`**: AWS SES credentials for email
+- **`AWS_*`**: AWS credentials for services (if configured)
 
 ### Configuration Files
 
 - **`.env`**: Default environment variables (committed)
 - **`.env.local`**: Local overrides (not committed)
 - **`config.yaml`**: Optional YAML configuration file
+- **`.copier-answers.yml`**: Project metadata and configuration
 
 ## Testing
 
@@ -214,18 +224,21 @@ pytest -k "test_login"           # Run tests matching pattern
 
 - **Process**: `just release` → `just deploy-latest [HOST]`
 - **Requirements**: Tagged commit, clean working directory
+- **Auto-updates**: Watchtower integration (if enabled)
 
 ## Common Tasks
 
 ### Adding OAuth Providers
 
 1. Update `_config.py` with provider configuration
-2. Add provider-specific logic in `frontend/oauth.py`
+2. Add provider-specific logic in `frontend/routes/auth.py`
 3. Update login template with new provider button
 
 ### Adding Background Jobs
 
-1. Define task function in `src/[project]/tasks/`
+When job queue is enabled:
+
+1. Define task function in `src/[project_slug]/tasks/`
 2. Import and register in `tasks/__init__.py`
 3. Queue from routes using `get_streaq_client()`
 4. Handle results and errors appropriately
@@ -246,8 +259,21 @@ pytest -k "test_login"           # Run tests matching pattern
 
 ## Technology Stack
 
+- **Python**: 3.13+ with modern async support
 - **FastAPI**: Latest stable version with async support
 - **MongoDB**: Compatible with Motor async driver
 - **HTMX**: Version 2.x for modern web interactions  
 - **Tailwind CSS**: Version 4.x with DaisyUI components
 - **Docker**: Multi-stage builds for production optimization
+- **uv**: Fast Python package manager
+- **Prototuner**: Base framework providing common utilities
+
+## Project-Specific Notes
+
+This section should be updated with any project-specific information, custom configurations, or special considerations for your application.
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
