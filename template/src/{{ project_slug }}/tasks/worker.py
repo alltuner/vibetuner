@@ -1,6 +1,6 @@
 from streaq import Worker
 
-from .._config import project_settings, settings
+from ..core import project_settings, settings
 from .context import lifespan
 
 
