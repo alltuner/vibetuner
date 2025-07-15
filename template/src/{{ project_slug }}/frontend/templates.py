@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import HTMLResponse
 from starlette_babel.contrib.jinja import configure_jinja_env
 
-from ..core import Context
+from ..core.context import Context
 from ..core.paths import frontend_templates
 from ..core.templates import render_static_template
 from .hotreload import hotreload

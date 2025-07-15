@@ -1,6 +1,6 @@
 from pydantic import UUID4, BaseModel
 
-from . import project_settings, settings
+from .config import project_settings, settings
 
 
 class Context(BaseModel):
