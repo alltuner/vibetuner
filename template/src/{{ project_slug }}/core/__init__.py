@@ -2,7 +2,7 @@ from . import paths, templates
 from .config import project_settings, settings
 from .context import Context
 from .logging import logger
-from .version import version
+from .versioning import version
 
 
 __all__ = [
