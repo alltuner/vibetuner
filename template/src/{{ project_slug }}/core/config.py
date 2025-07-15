@@ -17,8 +17,7 @@ from pydantic import (
 from pydantic_extra_types.language_code import LanguageAlpha2
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from . import paths
-from ._version import version
+from . import paths, version
 
 
 current_year: int = datetime.now().year
