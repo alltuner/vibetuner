@@ -6,10 +6,10 @@ fallback_path = "defaults"
 
 
 def to_template_path_list(path: Path) -> list[Path]:
-    template_paths = [path]
-    template_paths.append(path / fallback_path)
-
-    return template_paths
+    return [
+        path,
+        path / fallback_path,
+    ]
 
 
 # Locales
