@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from starlette.authentication import BaseUser
 
 from ..models.core import OAuthAccountModel, UserModel
-from .routes import get_homepage_url
+from .default_routes import get_homepage_url
 
 
 DEFAULT_AVATAR_IMAGE = "/statics/img/logo-icon.svg"
