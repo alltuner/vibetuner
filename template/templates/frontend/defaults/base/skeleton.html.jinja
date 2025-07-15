@@ -16,10 +16,18 @@
         {% endblock head %}
     </head>
     <body hx-ext="preload" preload="mousedown" class="{{ BODY_CLASS }} font-figtree">
+        {% block start_of_body %}
+        {% endblock start_of_body %}
+
+        {% include 'base/header.html.jinja' %}
+
         {% block body %}
         {% endblock body %}
+
         {% include 'base/footer.html.jinja' %}
+
         {% if DEBUG %}{{ hotreload.script(url_for('hot-reload') ) | safe }}{% endif %}
+
         {% block end_of_body %}
         {% endblock end_of_body %}
     </body>
