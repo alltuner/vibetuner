@@ -11,7 +11,7 @@ elif [ "$1" = "sleep" ]; then
     exec sleep 2147483647
 elif [ "$1" = "local-dev" ]; then
     echo "Starting in development mode..."
-    DEBUG=1 exec fastapi dev --host 0.0.0.0 src/{{ project_slug }}/frontend
+    DEBUG=1 exec uvicorn {{ project_slug }}.frontend:app --host 0.0.0.0 --reload --reload-dir src/{{ project_slug }} --reload-dir templates/frontend --reload-include '*.py' --reload-include '*.html.jinja'
 {%- if enable_job_queue %}
 elif [ "$1" = "worker" ]; then
     echo "Starting task worker..."
