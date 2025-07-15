@@ -2,7 +2,7 @@ from pydantic import EmailStr
 from starlette_babel import gettext_lazy as _
 
 from ..core.config import project_settings
-from ..services.email import SESEmailService
+from ..services.core.email import SESEmailService
 from .templates import render_static_template
 
 
