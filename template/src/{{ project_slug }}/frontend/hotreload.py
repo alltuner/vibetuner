@@ -9,5 +9,5 @@ hotreload = arel.HotReload(
         arel.Path(str(paths.css)),
         arel.Path(str(paths.templates)),
     ],
-    reconnect_interval=5,
+    reconnect_interval=2,
 )
