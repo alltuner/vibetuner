@@ -6,7 +6,9 @@ from fastapi.staticfiles import StaticFiles
 
 from ..core import paths
 from .default_routes import auth, debug
-from .deps import LangDep as LangDep
+from .deps import (
+    LangDep as LangDep,
+)
 from .lifespan import ctx, lifespan
 from .middleware import middlewares
 from .routes import app_router
