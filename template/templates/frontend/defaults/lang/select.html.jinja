@@ -1,0 +1,4 @@
+{% for code, language in locale_names.items() %}
+    <option value="{{ url_for('set_language', lang=code).path }}"
+            {% if code==current_language %}disabled selected{% endif %}>{{ language }}</option>
+{% endfor %}
