@@ -2,7 +2,7 @@ from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
 from ..models import MODELS
-from . import project_settings, settings
+from .config import project_settings, settings
 
 
 # Include here any custom things that need to be done after model definitions

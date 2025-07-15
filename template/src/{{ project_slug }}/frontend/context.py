@@ -1,4 +1,4 @@
-from ..core import Context
+from ..core.context import Context
 
 
 class AppContext(Context):

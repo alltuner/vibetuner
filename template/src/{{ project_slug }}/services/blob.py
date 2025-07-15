@@ -5,7 +5,7 @@ from typing import Literal
 import aioboto3
 from aiobotocore.config import AioConfig
 
-from ..core import settings
+from ..core.config import settings
 from ..models.core import BlobModel
 from ..models.core.blob import BlobStatus
 
