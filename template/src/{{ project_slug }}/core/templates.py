@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
-from .core.paths import templates as default_template_path
+from ..core.paths import templates as default_template_path
 
 
 def render_static_template(
