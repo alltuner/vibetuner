@@ -8,7 +8,8 @@
       "Bash(ls:*)",
       "Bash(mkdir:*)",
       "Bash(ruff format:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": []
   }
