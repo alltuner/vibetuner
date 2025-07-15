@@ -1,28 +1,15 @@
-from typing import (
-    Any,
-)
+from typing import Any
 
-from fastapi import (
-    Depends as Depends,
-    FastAPI,
-    Request,
-)
-from fastapi.responses import (
-    HTMLResponse,
-    RedirectResponse,
-)
+from fastapi import Depends as Depends, FastAPI, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from ..core import paths
-from .deps import (
-    LangDep as LangDep,
-)
+from .default_routes import auth, debug
+from .deps import LangDep as LangDep
 from .lifespan import ctx, lifespan
 from .middleware import middlewares
-from .routes import (
-    auth,
-    debug,
-)
+from .routes import app_router
 from .templates import render_template
 
 
@@ -79,6 +66,9 @@ app.include_router(auth.router)
 
 
 # Add your routes below
+app.include_router(app_router)
+
+
 # Default routes to be rewritten by the user
 @app.get("/", name="homepage", response_class=HTMLResponse)
 def default_index(request: Request) -> HTMLResponse:
