@@ -82,23 +82,52 @@ just bump-major              # Increment major version (0.1.0 → 1.0.0)
 #### Web Application (`frontend/`)
 
 - **`__init__.py`**: FastAPI app setup, static file mounting, middleware
-- **`routes/`**: HTTP route handlers
-  - `auth.py`: OAuth and magic link authentication
-  - `debug.py`: Development debugging endpoints
-- **`templates.py`**: Jinja2 template rendering utilities
+- **`context.py`**: Frontend context management
 - **`deps.py`**: Dependency injection for route handlers
+- **`email.py`**: Email-related frontend utilities
+- **`hotreload.py`**: Development hot reload functionality
+- **`lifespan.py`**: Application lifespan management
 - **`middleware.py`**: Request/response processing middleware
+- **`oauth.py`**: OAuth authentication handlers
+- **`templates.py`**: Jinja2 template rendering utilities
+
+**Application Routes** (add your custom routes here):
+
+- **`routes/`**: Add your application-specific route handlers here
+- Example: `routes/api.py`, `routes/dashboard.py`, etc.
+
+**Core Routes** (`default_routes/` - **DO NOT MODIFY**):
+
+- **`auth.py`**: OAuth and magic link authentication
+- **`debug.py`**: Development debugging endpoints
 
 #### Data Layer (`models/`)
 
+**Application Models** (add your custom models here):
+
+- Add your application-specific models directly in `models/` directory
+- Example: `models/posts.py`, `models/products.py`, etc.
+
+**Core Models** (`models/core/` - **DO NOT MODIFY**):
+
 - **`user.py`**: User model with OAuth account linking
-- **`oauth.py`**: OAuth provider account management
+- **`oauth.py`**: OAuth provider account management  
 - **`email_verification.py`**: Magic link email authentication tokens
 - **`mixins.py`**: Reusable model components (timestamps, etc.)
+- **`blob.py`**: File storage and blob management
+- **`types.py`**: Common type definitions
 
 #### Services (`services/`)
 
+**Application Services** (add your custom services here):
+
+- Add your application-specific services directly in `services/` directory
+- Example: `services/notifications.py`, `services/payments.py`, etc.
+
+**Core Services** (`services/core/` - **DO NOT MODIFY**):
+
 - **`email.py`**: Email sending via AWS SES (if configured)
+- **`blob.py`**: File storage and blob management services
 
 #### Background Jobs (`tasks/`)
 
@@ -119,10 +148,23 @@ just bump-major              # Increment major version (0.1.0 → 1.0.0)
 
 #### Templates (`templates/`)
 
-- **`frontend/base/skeleton.html.jinja`**: Base HTML layout with HTMX
-- **`frontend/defaults/index.html.jinja`**: Homepage template
-- **`frontend/login.html.jinja`**: Authentication page
-- **`email/`**: Email templates for transactional emails
+**Application Templates** (add your custom templates here):
+
+- Add your application-specific templates directly in `templates/frontend/`
+- Example: `templates/frontend/dashboard.html.jinja`, `templates/frontend/profile.html.jinja`, etc.
+
+**Core Templates** (`templates/frontend/defaults/` - **DO NOT MODIFY**):
+
+- **`base/skeleton.html.jinja`**: Base HTML layout with HTMX
+- **`base/footer.html.jinja`**: Common footer component
+- **`index.html.jinja`**: Homepage template
+- **`login.html.jinja`**: Authentication page
+- **`email_sent.html.jinja`**: Email confirmation page
+- **`debug/`**: Development debugging templates
+
+**Email Templates**:
+
+- **`email/default/`**: Default email templates for transactional emails
 
 #### Static Assets (`assets/statics/`)
 
@@ -147,15 +189,18 @@ just bump-major              # Increment major version (0.1.0 → 1.0.0)
 
 ### Adding New Features
 
-1. **Routes**: Add new endpoints in `src/[project_slug]/frontend/routes/`
-2. **Models**: Define data models in `src/[project_slug]/models/`
-3. **Templates**: Create Jinja2 templates in `templates/frontend/`
-4. **Styles**: Use Tailwind classes, extend in `config.css` if needed
+1. **Routes**: Add new endpoints in `src/[project_slug]/frontend/routes/` (NOT in `default_routes/`)
+2. **Models**: Define data models in `src/[project_slug]/models/` (NOT in `models/core/`)
+3. **Services**: Create business logic in `src/[project_slug]/services/` (NOT in `services/core/`)
+4. **Templates**: Create Jinja2 templates in `templates/frontend/` (NOT in `templates/frontend/defaults/`)
+5. **Styles**: Use Tailwind classes, extend in `config.css` if needed
+
+**Important**: Never modify files in `core/` or `defaults/` directories - these are managed by the scaffolding.
 
 ### Authentication System
 
-- **OAuth Flow**: Configured providers in `config.py`, handled in `routes/auth.py`
-- **Magic Links**: Passwordless login via email, tokens in `models/email_verification.py`  
+- **OAuth Flow**: Configured providers in `core/config.py`, handled in `default_routes/auth.py`
+- **Magic Links**: Passwordless login via email, tokens in `models/core/email_verification.py`  
 - **User Sessions**: FastAPI session middleware with secure cookies
 - **Protected Routes**: Use `get_current_user` dependency from `frontend/deps.py`
 
@@ -230,8 +275,8 @@ pytest -k "test_login"           # Run tests matching pattern
 
 ### Adding OAuth Providers
 
-1. Update `config.py` with provider configuration
-2. Add provider-specific logic in `frontend/routes/auth.py`
+1. Update `core/config.py` with provider configuration
+2. Add provider-specific logic in `frontend/default_routes/auth.py` (or extend via custom routes)
 3. Update login template with new provider button
 
 ### Adding Background Jobs
