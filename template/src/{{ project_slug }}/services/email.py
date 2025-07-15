@@ -2,7 +2,7 @@ from typing import Literal
 
 import boto3
 
-from ..core import project_settings, settings
+from ..core.config import project_settings, settings
 
 
 SES_SERVICE_NAME: Literal["ses"] = "ses"
