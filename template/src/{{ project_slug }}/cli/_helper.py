@@ -4,7 +4,7 @@ from functools import partial, wraps
 import asyncer
 import typer
 
-from ..core import project_settings
+from ..core.config import project_settings
 from ..core.logging import LogLevel, setup_logging
 
 
