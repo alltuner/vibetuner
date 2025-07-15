@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from ..mongo import init_models
+from ..core.mongo import init_models
 from .context import ctx
 from .hotreload import hotreload
 
