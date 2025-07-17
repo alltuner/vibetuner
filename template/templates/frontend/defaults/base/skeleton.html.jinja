@@ -12,6 +12,8 @@
         {% if umami_website_id and not DEBUG %}
             <script defer src="/meta.js" data-website-id="{{ umami_website_id }}"></script>
         {% endif %}
+        {% include "base/favicons.html.jinja" %}
+        {% include "base/opengraph.html.jinja" %}
         {% block head %}
         {% endblock head %}
     </head>
