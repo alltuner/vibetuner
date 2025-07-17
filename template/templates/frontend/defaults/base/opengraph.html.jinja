@@ -1,0 +1,7 @@
+{% set page_title = self.title() if self.title is defined else project_name.title() %}
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="{{ page_title }}" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="{{ request.url }}" />
+<meta property="og:description" content="{{ project_description }}" />
+<meta property="og:title" content="{{ page_title }}" />
