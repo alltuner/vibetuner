@@ -52,6 +52,9 @@ class ProjectConfiguration(BaseSettings):
     # Analytics
     umami_website_id: UUID4 | None = None
 
+    # Fully Qualified Domain Name
+    fqdn: str | None = None
+
     @cached_property
     def languages(self) -> set[str]:
         """Return the supported languages as a set of strings."""

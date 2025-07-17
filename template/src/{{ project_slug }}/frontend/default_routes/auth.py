@@ -28,19 +28,20 @@ def logout_user(request: Request):
     request.session.pop("user", None)
 
 
-router = APIRouter()
+router = APIRouter(prefix="/auth")
 
 
 @router.get(
-    "/auth/logout",
+    "/logout",
     dependencies=[Depends(logout_user)],
     response_class=RedirectResponse,
+    status_code=307,
 )
 async def auth_logout(request: Request):
     return get_homepage_url(request)
 
 
-@router.get("/auth/login", response_model=None)
+@router.get("/login", response_model=None)
 async def auth_login(
     request: Request,
     next: str | None = None,
@@ -62,7 +63,7 @@ async def auth_login(
     )
 
 
-@router.post("/auth/magic-link-login", response_model=None)
+@router.post("/magic-link-login", response_model=None)
 async def send_magic_link(
     request: Request,
     ses_service: Annotated[SESEmailService, Depends(get_ses_service)],
@@ -94,7 +95,7 @@ async def send_magic_link(
 
 
 @router.get(
-    "/auth/email-verify/{token}",
+    "/email-verify/{token}",
     response_class=RedirectResponse,
     status_code=302,
     response_model=None,
@@ -130,14 +131,14 @@ async def email_verify(
 
 for provider in oauth_providers:
     router.get(
-        f"/auth/{provider}",
+        f"/provider/{provider}",
         response_class=RedirectResponse,
         name=f"auth_with_{provider}",
         response_model=None,
     )(_create_auth_handler(provider))
 
     router.get(
-        f"/auth/login/{provider}",
+        f"/login/provider/{provider}",
         name=f"login_with_{provider}",
         response_model=None,
     )(_create_auth_login_handler(provider))
