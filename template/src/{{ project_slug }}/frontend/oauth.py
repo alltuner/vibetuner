@@ -5,13 +5,14 @@ from authlib.integrations.starlette_client import OAuth  # ty: ignore[unresolved
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
+from pydantic_extra_types.language_code import LanguageAlpha2
 from starlette.authentication import BaseUser
 
 from ..models.core import OAuthAccountModel, UserModel
 from .default_routes import get_homepage_url
 
 
-DEFAULT_AVATAR_IMAGE = "/statics/img/logo-icon.svg"
+DEFAULT_AVATAR_IMAGE = "/statics/img/user-avatar.png"
 
 
 class WebUser(BaseUser, BaseModel):
@@ -19,7 +20,12 @@ class WebUser(BaseUser, BaseModel):
     name: str
     email: str
     picture: Optional[str] = Field(
-        default=DEFAULT_AVATAR_IMAGE, description="URL to the user's avatar image"
+        default=DEFAULT_AVATAR_IMAGE,
+        description="URL to the user's avatar image",
+    )
+    language: Optional[LanguageAlpha2] = Field(
+        default=None,
+        description="Preferred language for the user",
     )
 
     @property

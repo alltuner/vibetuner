@@ -20,4 +20,6 @@ class Context(BaseModel):
 
     umami_website_id: UUID4 | None = project_settings.umami_website_id
 
+    fqdn: str | None = project_settings.fqdn
+
     model_config = {"arbitrary_types_allowed": True}
