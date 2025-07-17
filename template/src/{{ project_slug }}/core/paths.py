@@ -12,6 +12,23 @@ def to_template_path_list(path: Path) -> list[Path]:
     ]
 
 
+def fallback_static_default(static_type: str, file_name: str) -> Path:
+    """Return a fallback path for a file."""
+
+    paths_to_check = [
+        statics / static_type / file_name,
+        statics / fallback_path / static_type / file_name,
+    ]
+
+    for path in paths_to_check:
+        if path.exists():
+            return path
+
+    raise FileNotFoundError(
+        f"Could not find {file_name} in any of the fallback paths: {paths_to_check}"
+    )
+
+
 # Locales
 locales = root / "locales"
 

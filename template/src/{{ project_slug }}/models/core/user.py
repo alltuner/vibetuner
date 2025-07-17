@@ -4,6 +4,7 @@ from typing import Any, List, Self
 from beanie import Document
 from beanie.operators import Eq
 from pydantic import Field
+from pydantic_extra_types.language_code import LanguageAlpha2
 
 from . import Link
 from .mixins import TimeStampMixin
@@ -27,6 +28,10 @@ class UserModel(Document, TimeStampMixin):
         default_factory=list,
         description="Connected OAuth provider accounts (Google, GitHub, etc.)",
     )
+    language: LanguageAlpha2 | None = Field(
+        default=None,
+        description="Preferred language for the user",
+    )
 
     class Settings:
         name = "users"
@@ -38,6 +43,7 @@ class UserModel(Document, TimeStampMixin):
             "name": self.name,
             "email": self.email,
             "picture": self.picture,
+            "language": self.language,
         }
 
     @classmethod
