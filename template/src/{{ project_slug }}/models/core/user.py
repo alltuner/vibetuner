@@ -3,12 +3,39 @@ from typing import Any, List, Self
 
 from beanie import Document
 from beanie.operators import Eq
-from pydantic import Field
+from pydantic import BaseModel, Field
 from pydantic_extra_types.language_code import LanguageAlpha2
 
 from . import Link
 from .mixins import TimeStampMixin
 from .oauth import OAuthAccountModel
+
+
+class UserSettings(BaseModel):
+    """User settings for the application.
+
+    This class holds the default settings for the user, such as language and theme.
+    It can be extended to include more user-specific settings in the future.
+    """
+
+    language: LanguageAlpha2 | None = Field(
+        default=None,
+        description="Preferred language for the user",
+    )
+
+    @cached_property
+    def session_dict(self) -> dict[str, Any]:
+        """Return a dictionary representation of the user settings for session storage.
+
+        Make sure to only include fields that are necessary for the session.
+        """
+        return self.model_dump(
+            exclude_none=True,
+            exclude_unset=True,
+            include={
+                "language",
+            },
+        )
 
 
 class UserModel(Document, TimeStampMixin):
@@ -28,22 +55,26 @@ class UserModel(Document, TimeStampMixin):
         default_factory=list,
         description="Connected OAuth provider accounts (Google, GitHub, etc.)",
     )
-    language: LanguageAlpha2 | None = Field(
-        default=None,
-        description="Preferred language for the user",
+
+    user_settings: UserSettings = Field(
+        default_factory=UserSettings,
+        description="User-specific settings for the application",
     )
 
     class Settings:
         name = "users"
+        keep_nulls = False
 
     @cached_property
     def session_dict(self) -> dict[str, Any]:
         return {
             "id": str(self.id),
-            "name": self.name,
-            "email": self.email,
-            "picture": self.picture,
-            "language": self.language,
+            **self.model_dump(
+                exclude_none=True,
+                exclude_unset=True,
+                include={"name", "email", "picture"},
+            ),
+            "settings": self.user_settings.session_dict,
         }
 
     @classmethod

@@ -1,16 +1,28 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from starlette.authentication import requires
+
+from ...models.core import UserModel
+from ..templates import render_template
 
 
 router = APIRouter(prefix="/user")
 
 
 @router.get("/")
-def user(request: Request):
+@requires("authenticated", redirect="auth_login")
+async def user_profile(request: Request) -> HTMLResponse:
     """User profile endpoint."""
-    return {"message": "User profile endpoint is under construction."}
+    user = await UserModel.get(request.user.id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
 
-
-@router.post("/save")
-def update_user(request: Request):
-    """User profile update endpoint."""
-    return {"message": "User profile update endpoint is under construction."}
+    await user.fetch_link("oauth_accounts")
+    return render_template(
+        "user/profile.html.jinja",
+        request,
+        {"user": user},
+    )
