@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from ..core import paths
-from .default_routes import auth, debug, language, meta
+from .default_routes import auth, debug, language, meta, user
 from .deps import (
     LangDep as LangDep,
 )
@@ -66,6 +66,7 @@ if ctx.DEBUG:
 
 app.include_router(meta.router)
 app.include_router(auth.router)
+app.include_router(user.router)
 app.include_router(language.router)
 
 
