@@ -55,8 +55,8 @@ class BlobService:
         bucket: str | None = None,
         namespace: str | None = None,
         original_filename: str | None = None,
-    ) -> None:
-        """Put an object into the R2 bucket"""
+    ) -> BlobModel:
+        """Put an object into the R2 bucket and return the blob model"""
 
         bucket = bucket or self.default_bucket
 
@@ -91,18 +91,20 @@ class BlobService:
         finally:
             await blob.save()
 
+        return blob
+
     async def put_object_with_extension(
         self,
         body: bytes,
         extension: str,
         bucket: str | None = None,
         namespace: str | None = None,
-    ) -> None:
+    ) -> BlobModel:
         """Put an object into the R2 bucket with content type guessed from extension"""
         content_type, _ = mimetypes.guess_type(f"file.{extension.lstrip('.')}")
         content_type = content_type or DEFAULT_CONTENT_TYPE
 
-        await self.put_object(body, content_type, bucket, namespace)
+        return await self.put_object(body, content_type, bucket, namespace)
 
     async def put_file(
         self,
@@ -110,7 +112,7 @@ class BlobService:
         content_type: str | None = None,
         bucket: str | None = None,
         namespace: str | None = None,
-    ) -> None:
+    ) -> BlobModel:
         """Put a file from filesystem into the R2 bucket"""
         file_path = Path(file_path)
 
@@ -122,7 +124,7 @@ class BlobService:
             content_type, _ = mimetypes.guess_type(str(file_path))
             content_type = content_type or DEFAULT_CONTENT_TYPE
 
-        await self.put_object(
+        return await self.put_object(
             file_path.read_bytes(),
             content_type,
             bucket,
