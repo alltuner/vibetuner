@@ -8,7 +8,7 @@ networks:
 services:
 {%- if enable_job_queue %}
   {{ project_slug }}-worker:
-    image: alltuner-registry.long-python.ts.net/{{ project_slug }}:latest
+    image: alltuner-docker-registry.long-python.ts.net/{{ project_slug }}:latest
     restart: unless-stopped
     env_file:
       - .env
@@ -35,9 +35,9 @@ services:
           - linux/arm64
         push: true
         tags:
-          - alltuner-registry.long-python.ts.net/{{ project_slug }}:${VERSION:-0.0.0}
-          - alltuner-registry.long-python.ts.net/{{ project_slug }}:latest
-    image: alltuner-registry.long-python.ts.net/{{ project_slug }}:latest
+          - alltuner-docker-registry.long-python.ts.net/{{ project_slug }}:${VERSION:-0.0.0}
+          - alltuner-docker-registry.long-python.ts.net/{{ project_slug }}:latest
+    image: alltuner-docker-registry.long-python.ts.net/{{ project_slug }}:latest
     healthcheck:
       test:
         [
