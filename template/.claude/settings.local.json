@@ -7,7 +7,6 @@
       "Bash(git push:*)",
       "Bash(ls:*)",
       "Bash(mkdir:*)",
-      "Bash(mypy:*)",
       "Bash(ruff format:*)",
       "Bash(tree:*)",
       "mcp__ide__getDiagnostics",
