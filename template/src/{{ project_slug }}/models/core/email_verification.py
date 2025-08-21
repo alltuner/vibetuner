@@ -54,14 +54,14 @@ class EmailVerificationTokenModel(Document):
     @classmethod
     async def verify_token(cls, token: str) -> Optional[Self]:
         """Verify and consume a token"""
-        verification_token = await cls.find_one(
+        verification_token: Optional[Self] = await cls.find_one(
             Eq(cls.token, token), Eq(cls.used, False)
         )
 
         if not verification_token:
             return None
 
-        if verification_token.expires_at < datetime.utcnow():
+        if verification_token.expires_at < now():
             return None
 
         # Mark token as used
