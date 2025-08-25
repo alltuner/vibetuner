@@ -3,13 +3,16 @@ from fastapi import (
     Depends,
     HTTPException,
     Request,
+    Response,
 )
 from fastapi.responses import (
     HTMLResponse,
+    RedirectResponse,
 )
 
 from ...models import MODELS
 from ..context import ctx
+from ..deps import MAGIC_COOKIE_NAME
 from ..templates import render_template
 
 
@@ -38,6 +41,29 @@ def debug_index(request: Request):
 @router.get("/health")
 def health():
     return {"ping": "ok"}
+
+
+@router.get("/magic")
+def set_magic_cookie(response: Response):
+    """Set the magic access cookie."""
+    response = RedirectResponse(url="/", status_code=302)
+    response.set_cookie(
+        key=MAGIC_COOKIE_NAME,
+        value="granted",
+        httponly=True,
+        secure=not ctx.DEBUG,  # Only secure in production
+        samesite="lax",
+        max_age=86400 * 30,  # 30 days
+    )
+    return response
+
+
+@router.get("/no-magic")
+def remove_magic_cookie(response: Response):
+    """Remove the magic access cookie."""
+    response = RedirectResponse(url="/", status_code=302)
+    response.delete_cookie(key=MAGIC_COOKIE_NAME)
+    return response
 
 
 @router.get("/version", response_class=HTMLResponse)
