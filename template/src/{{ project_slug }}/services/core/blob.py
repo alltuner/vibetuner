@@ -1,3 +1,9 @@
+"""Blob storage service for file uploads to S3 or R2.
+
+WARNING: This is a scaffolding-managed file. DO NOT MODIFY directly.
+To extend blob functionality, create wrapper services in the parent services directory.
+"""
+
 import mimetypes
 from pathlib import Path
 from typing import Literal
