@@ -127,6 +127,7 @@ COPY --from=locales --chown=app:app --parents /app/locales/*/LC_MESSAGES/message
 
 # Copy template files
 COPY --chown=app:app templates/frontend templates/frontend/
+COPY --chown=app:app templates/email templates/email/
 
 # Copy built frontend assets (CSS and JS bundles)
 COPY --from=frontend-build --chown=app:app /app/assets/statics/css/bundle.css assets/statics/css/bundle.css
