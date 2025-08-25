@@ -24,3 +24,18 @@ async def enforce_lang(request: Request, lang: Optional[str] = None):
 
 
 LangDep = Annotated[str, Depends(enforce_lang)]
+
+
+MAGIC_COOKIE_NAME = "magic_access"
+
+
+def require_magic_cookie(request: Request) -> None:
+    """Dependency to check if the magic access cookie is present."""
+    if MAGIC_COOKIE_NAME not in request.cookies:
+        raise HTTPException(status_code=403, detail="Access forbidden")
+
+    if request.cookies[MAGIC_COOKIE_NAME] != "granted":
+        raise HTTPException(status_code=403, detail="Access forbidden")
+
+
+MagicCookieDep = Depends(require_magic_cookie)
