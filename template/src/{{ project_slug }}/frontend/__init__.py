@@ -8,6 +8,7 @@ from ..core import paths
 from .default_routes import auth, debug, language, meta, user
 from .deps import (
     LangDep as LangDep,
+    MagicCookieDep as MagicCookieDep,
 )
 from .lifespan import ctx, lifespan
 from .middleware import middlewares
