@@ -1,3 +1,9 @@
+"""OAuth account model for third-party authentication providers.
+
+WARNING: This is a scaffolding-managed file. DO NOT MODIFY directly.
+Manages OAuth provider accounts (Google, GitHub, etc.) linked to users.
+"""
+
 from typing import Self
 
 from beanie import Document

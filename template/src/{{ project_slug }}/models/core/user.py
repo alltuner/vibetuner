@@ -1,3 +1,9 @@
+"""Core user model for authentication and user management.
+
+WARNING: This is a scaffolding-managed file. DO NOT MODIFY directly.
+Extend functionality by creating custom models that reference or extend these models.
+"""
+
 from functools import cached_property
 from typing import Any, List, Self
 
