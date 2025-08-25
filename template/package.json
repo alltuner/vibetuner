@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.12",
-    "concurrently": "^9.2.0",
+    "concurrently": "^9.2.1",
     "daisyui": "^5.0.50",
     "esbuild": "^0.25.9",
     "htmx-ext-preload": "^2.1.1",
