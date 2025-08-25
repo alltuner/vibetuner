@@ -38,11 +38,6 @@ def debug_index(request: Request):
     return render_template("debug/index.html.jinja", request)
 
 
-@router.get("/health")
-def health():
-    return {"ping": "ok"}
-
-
 @router.get("/magic")
 def set_magic_cookie(response: Response):
     """Set the magic access cookie."""
