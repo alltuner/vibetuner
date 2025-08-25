@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from ..core import paths
-from .default_routes import auth, debug, language, meta, user
+from .default_routes import auth, debug, health, language, meta, user
 from .deps import (
     LangDep as LangDep,
     MagicCookieDep as MagicCookieDep,
@@ -82,4 +82,5 @@ def default_index(request: Request) -> HTMLResponse:
 
 
 app.include_router(debug.router)
+app.include_router(health.router)
 # EOF
