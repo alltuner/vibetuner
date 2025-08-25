@@ -1,3 +1,9 @@
+"""Reusable model mixins for common functionality.
+
+WARNING: This is a scaffolding-managed file. DO NOT MODIFY directly.
+Provides timestamp tracking and other common model behaviors.
+"""
+
 from datetime import datetime, timedelta
 from enum import StrEnum
 from typing import Self

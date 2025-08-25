@@ -1,3 +1,9 @@
+"""Blob storage model for file uploads and management.
+
+WARNING: This is a scaffolding-managed file. DO NOT MODIFY directly.
+Manages file metadata for S3 or local storage backends.
+"""
+
 import hashlib
 from enum import StrEnum
 from typing import Self

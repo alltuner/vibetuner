@@ -1,3 +1,9 @@
+"""Email verification model for magic link authentication.
+
+WARNING: This is a scaffolding-managed file. DO NOT MODIFY directly.
+Handles passwordless authentication via email verification tokens.
+"""
+
 import secrets
 from datetime import datetime, timedelta
 from typing import Optional, Self
