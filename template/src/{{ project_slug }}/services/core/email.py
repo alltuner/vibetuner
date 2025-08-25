@@ -1,7 +1,14 @@
+"""Email service for sending transactional emails via AWS SES.
+
+WARNING: This is a scaffolding-managed file. DO NOT MODIFY directly.
+To extend email functionality, create wrapper services in the parent services directory.
+"""
+
 from typing import Literal
 
 import boto3
 
+# Note: Import path is correct when template is rendered ({{ project_slug }} replaced)
 from ...core.config import project_settings, settings
 
 

@@ -18,11 +18,22 @@ This is a modern Python web application built with AllTuner's blessed stack:
 
 ### Development
 
+**IMPORTANT**: For local development without Docker, run BOTH:
+
 ```bash
-just dev                     # Run full dev environment with Docker + hot reload
-just local-dev              # Run locally without Docker (requires .env.local)
-just worker-dev              # Run task worker locally (if job queue enabled)
-just sync                    # Sync all dependencies (Python + Node.js)
+# Terminal 1: Watch and build frontend assets
+pnpm dev
+
+# Terminal 2: Run FastAPI server  
+just local-dev
+```
+
+Or use Docker (all-in-one):
+
+```bash
+just dev                     # Full dev environment with hot reload
+just worker-dev              # Task worker (if job queue enabled)
+just sync                    # Sync all dependencies
 ```
 
 ### Frontend Assets
@@ -66,6 +77,19 @@ just bump-patch              # Increment patch version (0.1.0 → 0.1.1)
 just bump-minor              # Increment minor version (0.1.0 → 0.2.0)  
 just bump-major              # Increment major version (0.1.0 → 1.0.0)
 ```
+
+## Package Management
+
+Use **uv exclusively** for Python dependencies:
+
+```bash
+uv add package-name         # Install a package
+uv remove package-name      # Remove a package
+uv sync                     # Sync all dependencies
+uv run python -m {{ project_slug }}  # Run the application
+```
+
+Never use pip, poetry, or conda directly.
 
 ## Application Architecture
 
@@ -245,17 +269,6 @@ When job queue is enabled:
 - **`config.yaml`**: Optional YAML configuration file
 - **`.copier-answers.yml`**: Project metadata and configuration
 
-## Testing
-
-### Running Tests
-
-```bash
-# Check pyproject.toml for specific test configuration
-# Common patterns:
-pytest tests/                    # Run all tests
-pytest tests/test_auth.py        # Run specific test file
-pytest -k "test_login"           # Run tests matching pattern
-```
 
 ## Deployment
 
@@ -270,6 +283,69 @@ pytest -k "test_login"           # Run tests matching pattern
 - **Process**: `just release` → `just deploy-latest [HOST]`
 - **Requirements**: Tagged commit, clean working directory
 - **Auto-updates**: Watchtower integration (if enabled)
+
+## Localization (i18n)
+
+### How It Works
+
+The app uses Babel for internationalization with Jinja2 integration:
+
+1. **Translatable strings** marked with `_()` in Python or `{% trans %}` in templates
+2. **Language files** in `locales/[lang]/LC_MESSAGES/messages.po`
+3. **User language** detected from browser or user preference
+4. **Fallback** to English if translation missing
+
+### Translation Workflow
+
+```bash
+# 1. Extract all translatable strings
+just extract-translations
+
+# 2. Update existing language files
+just update-locale-files
+
+# 3. Translate strings in .po files
+edit locales/es/LC_MESSAGES/messages.po
+
+# 4. Compile for runtime
+just compile-locales
+```
+
+### Adding New Language
+
+```bash
+just new-locale fr          # Add French support
+edit locales/fr/LC_MESSAGES/messages.po
+just compile-locales
+```
+
+### In Templates
+
+```jinja
+{# Simple translation #}
+<h1>{% trans %}Welcome{% endtrans %}</h1>
+
+{# With variables #}
+{% trans user=user.name %}
+Hello {{ user }}!
+{% endtrans %}
+
+{# Pluralization #}
+{% trans count=items|length %}
+You have {{ count }} item.
+{% pluralize %}
+You have {{ count }} items.
+{% endtrans %}
+```
+
+### In Python Code
+
+```python
+from starlette_babel import gettext_lazy as _
+
+message = _("Operation completed")
+error = _("Invalid input: %(details)s") % {"details": error_details}
+```
 
 ## Common Tasks
 
@@ -316,6 +392,75 @@ When job queue is enabled:
 ## Project-Specific Notes
 
 This section should be updated with any project-specific information, custom configurations, or special considerations for your application.
+
+## Code Style Guidelines
+
+### Python Code Style
+
+- **Type hints**: Always use type hints for function parameters and returns
+- **Async/await**: Use async functions for all database operations and I/O
+- **Docstrings**: Only add when explaining complex logic (avoid obvious docstrings)
+- **Imports**: Group as stdlib → third-party → local, alphabetically sorted
+- **Naming**: snake_case for functions/variables, PascalCase for classes
+- **Line length**: 88 characters (Black formatter default)
+
+### Frontend Patterns
+
+- **HTMX**: Prefer server-side rendering with HTMX over complex JavaScript
+- **Tailwind**: Use utility classes, avoid custom CSS
+- **DaisyUI**: Use pre-built components when available
+- **Templates**: Use Jinja2 inheritance, avoid duplication
+
+### Consistency Rules
+
+```python
+# ✅ GOOD: Type hints, async, clear naming
+async def get_user_by_email(email: str) -> User | None:
+    return await User.find_one(User.email == email)
+
+# ❌ BAD: No types, sync DB call, poor naming
+def get_usr(e):
+    return User.find_one(User.email == e)  # Wrong: sync call
+```
+
+### Import Organization
+
+```python
+# Standard library
+from datetime import datetime
+from typing import Optional
+
+# Third-party packages
+from beanie import Document
+from fastapi import APIRouter, Depends
+from pydantic import Field
+
+# Local imports
+from ..core.config import settings
+from ..models import User
+from ..services.email import send_email
+```
+
+## Protected Files and Directories
+
+**NEVER MODIFY** these scaffolding-managed locations:
+
+- `src/{{ project_slug }}/core/` - Core utilities
+- `src/{{ project_slug }}/models/core/` - Core models
+- `src/{{ project_slug }}/services/core/` - Core services
+- `src/{{ project_slug }}/frontend/default_routes/` - Core routes
+- `templates/frontend/defaults/` - Default templates
+
+To extend or customize:
+1. **Models**: Add to `models/` directory
+2. **Services**: Add to `services/` directory
+3. **Routes**: Add to `frontend/routes/` directory
+4. **Templates**: Override in `templates/frontend/` (without `defaults/`)
+
+If core functionality is insufficient:
+1. Document the limitation clearly
+2. Suggest workarounds or extensions
+3. Recommend filing issue with scaffolding repo
 
 # important-instruction-reminders
 
