@@ -269,7 +269,6 @@ When job queue is enabled:
 - **`config.yaml`**: Optional YAML configuration file
 - **`.copier-answers.yml`**: Project metadata and configuration
 
-
 ## Deployment
 
 ### Docker Deployment
@@ -452,19 +451,23 @@ from ..services.email import send_email
 - `templates/frontend/defaults/` - Default templates
 
 To extend or customize:
+
 1. **Models**: Add to `models/` directory
 2. **Services**: Add to `services/` directory
 3. **Routes**: Add to `frontend/routes/` directory
 4. **Templates**: Override in `templates/frontend/` (without `defaults/`)
 
 If core functionality is insufficient:
+
 1. Document the limitation clearly
 2. Suggest workarounds or extensions
 3. Recommend filing issue with scaffolding repo
 
-# important-instruction-reminders
+## Important Instruction Reminder
 
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
 NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+
+## Custom project instructions
