@@ -12,6 +12,7 @@ build/
 dist/
 wheels/
 **/*.egg-info
+.mypy_cache/
 
 # Virtual environments
 .venv/
@@ -27,6 +28,7 @@ node_modules/
 .git
 .dockerignore
 .vscode/
+.markdownlint.json
 renovate.json
 Dockerfile
 
