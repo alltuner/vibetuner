@@ -61,7 +61,7 @@ async def list_users():
     try:
         users = await User.find_all().to_list()
         for user in users:
-            print(f"{user.email} - {user.created_at}")
+            print(f"{user.email} - {user.db_insert_dt}")
     finally:
         await close_mongo()
 ```
