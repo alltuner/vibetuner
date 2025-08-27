@@ -84,7 +84,7 @@ def _extract_ref_name(ref: str) -> str:
     return ref.split("/")[-1]
 
 
-def _parse_array_type(field_info: dict) -> str:
+def _parse_array_type(field_info: dict, field_name: str = "") -> str:
     """Parse array field type from JSON schema."""
     if "items" not in field_info:
         return "array[object]"
@@ -92,25 +92,133 @@ def _parse_array_type(field_info: dict) -> str:
     items = field_info["items"]
     items_type = items.get("type", "")
 
-    if items_type == "object" and "$ref" in items:
+    # Handle union types in arrays (anyOf, oneOf)
+    if "anyOf" in items:
+        union_types = _parse_union_types(items, "anyOf", field_name)
+        return f"array[{union_types}]"
+    elif "oneOf" in items:
+        union_types = _parse_union_types(items, "oneOf", field_name)
+        return f"array[{union_types}]"
+    # Handle object references
+    elif items_type == "object" and "$ref" in items:
         ref_name = _extract_ref_name(items["$ref"])
         return f"array[{ref_name}]"
     elif "$ref" in items:
         ref_name = _extract_ref_name(items["$ref"])
         return f"array[{ref_name}]"
+    # Handle nested arrays
+    elif items_type == "array":
+        nested_array_type = _parse_array_type(items, field_name)
+        return f"array[{nested_array_type}]"
     else:
         return f"array[{items_type or 'object'}]"
 
 
-def _parse_union_types(field_info: dict, union_key: str) -> str:
+def _is_beanie_link_schema(option: dict) -> bool:
+    """Check if this schema represents a Beanie Link."""
+    if option.get("type") != "object":
+        return False
+
+    properties = option.get("properties", {})
+    required = option.get("required", [])
+
+    # Beanie Link has id and collection properties
+    return (
+        "id" in properties
+        and "collection" in properties
+        and "id" in required
+        and "collection" in required
+        and len(properties) == 2
+    )
+
+
+def _infer_link_target_from_field_name(field_name: str) -> str:
+    """Infer the target model type from field name patterns."""
+    # Common patterns for field names that reference other models
+    patterns = {
+        "oauth_accounts": "OAuthAccountModel",
+        "accounts": "AccountModel",
+        "users": "UserModel",
+        "user": "UserModel",
+        "stations": "StationModel",
+        "station": "StationModel",
+        "rundowns": "RundownModel",
+        "rundown": "RundownModel",
+        "fillers": "FillerModel",
+        "filler": "FillerModel",
+        "voices": "VoiceModel",
+        "voice": "VoiceModel",
+        "blobs": "BlobModel",
+        "blob": "BlobModel",
+    }
+
+    # Direct lookup
+    if field_name in patterns:
+        return patterns[field_name]
+
+    # Try singular/plural conversions
+    if field_name.endswith("s"):
+        singular = field_name[:-1]
+        if singular in patterns:
+            return patterns[singular]
+
+    # Pattern-based inference (field_name -> FieldNameModel)
+    if "_" in field_name:
+        # Convert snake_case to PascalCase
+        parts = field_name.split("_")
+        model_name = "".join(word.capitalize() for word in parts) + "Model"
+        return model_name
+    else:
+        # Simple case: field_name -> FieldNameModel
+        return field_name.capitalize() + "Model"
+
+
+def _process_union_option(option: dict) -> tuple[str | None, bool]:
+    """Process a single union option, return (type_name, is_link)."""
+    if "type" in option:
+        if _is_beanie_link_schema(option):
+            return None, True
+        else:
+            return option["type"], False
+    elif "$ref" in option:
+        ref_name = _extract_ref_name(option["$ref"])
+        return ref_name, False
+    elif "const" in option:
+        return f"'{option['const']}'", False
+    else:
+        if option.get("type") == "object" and option.get("additionalProperties"):
+            return None, False  # Skip generic objects from Links
+        return "object", False
+
+
+def _parse_union_types(field_info: dict, union_key: str, field_name: str = "") -> str:
     """Parse union types (anyOf, oneOf) from JSON schema."""
     types = []
+    has_link = False
+
     for option in field_info[union_key]:
-        if "type" in option:
-            types.append(option["type"])
-        elif "$ref" in option:
-            types.append(_extract_ref_name(option["$ref"]))
-    return " | ".join(types) if types else union_key
+        type_name, is_link = _process_union_option(option)
+        if is_link:
+            has_link = True
+        elif type_name:
+            types.append(type_name)
+
+    if not types:
+        return union_key
+
+    # Add Link indicator with inferred target type
+    if has_link:
+        if field_name:
+            target_type = _infer_link_target_from_field_name(field_name)
+            return f"Link[{target_type}]"
+        else:
+            return f"Link[{types[0] if types else 'object'}]"
+
+    # If we have many types, show count to keep display clean
+    if len(types) > 4:
+        return f"{len(types)} types"
+
+    return " | ".join(types)
 
 
 def _handle_fallback_type(field_info: dict, field_name: str) -> str:
@@ -131,7 +239,7 @@ def _parse_field_type(field_info: dict, field_name: str) -> str:
 
     # Handle array types
     if field_type == "array":
-        return _parse_array_type(field_info)
+        return _parse_array_type(field_info, field_name)
 
     # Handle object references
     if "$ref" in field_info:
@@ -139,10 +247,10 @@ def _parse_field_type(field_info: dict, field_name: str) -> str:
 
     # Handle union types
     if "anyOf" in field_info:
-        return _parse_union_types(field_info, "anyOf")
+        return _parse_union_types(field_info, "anyOf", field_name)
 
     if "oneOf" in field_info:
-        return _parse_union_types(field_info, "oneOf")
+        return _parse_union_types(field_info, "oneOf", field_name)
 
     # Handle inheritance
     if "allOf" in field_info:
@@ -163,6 +271,35 @@ def _parse_field_type(field_info: dict, field_name: str) -> str:
     return field_type
 
 
+def _get_extra_field_info(field_info: dict) -> dict:
+    """Extract additional field metadata."""
+    extra = {}
+
+    # Add constraints if present
+    if "minimum" in field_info:
+        extra["min"] = field_info["minimum"]
+    if "maximum" in field_info:
+        extra["max"] = field_info["maximum"]
+    if "minLength" in field_info:
+        extra["min_length"] = field_info["minLength"]
+    if "maxLength" in field_info:
+        extra["max_length"] = field_info["maxLength"]
+    if "pattern" in field_info:
+        extra["pattern"] = field_info["pattern"]
+    if "format" in field_info:
+        extra["format"] = field_info["format"]
+    if "default" in field_info:
+        extra["default"] = field_info["default"]
+    if "enum" in field_info:
+        enum_values = field_info["enum"]
+        if len(enum_values) <= 5:
+            extra["enum"] = enum_values
+        else:
+            extra["enum_count"] = len(enum_values)
+
+    return extra
+
+
 def _extract_fields_from_schema(schema: dict) -> list[dict]:
     """Extract field information from JSON schema."""
     fields: list[dict] = []
@@ -174,6 +311,7 @@ def _extract_fields_from_schema(schema: dict) -> list[dict]:
         field_type = _parse_field_type(field_info, field_name)
         field_description = field_info.get("description", "")
         required = field_name in schema.get("required", [])
+        extra_info = _get_extra_field_info(field_info)
 
         fields.append(
             {
@@ -181,6 +319,7 @@ def _extract_fields_from_schema(schema: dict) -> list[dict]:
                 "type": field_type,
                 "required": required,
                 "description": field_description,
+                "extra": extra_info,
             }
         )
 
