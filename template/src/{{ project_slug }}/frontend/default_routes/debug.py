@@ -360,7 +360,11 @@ async def debug_users(request: Request):
     from ...models.core import UserModel
 
     users = await UserModel.find_all().to_list()
-    current_user_id = request.session.get("user", {}).get("id") if isinstance(request.session.get("user"), dict) else request.session.get("user")
+    current_user_id = (
+        request.session.get("user", {}).get("id")
+        if isinstance(request.session.get("user"), dict)
+        else request.session.get("user")
+    )
 
     return render_template(
         "debug/users.html.jinja",
@@ -389,7 +393,9 @@ async def debug_impersonate_user(request: Request, user_id: str):
         "name": user.name or "Unknown",
         "email": user.email or "no-email@example.com",
         "picture": user.picture or "/statics/img/user-avatar.png",
-        "language": user.user_settings.language if user.user_settings.language else None
+        "language": user.user_settings.language
+        if user.user_settings.language
+        else None,
     }
     request.session["user"] = user_session_data
 
