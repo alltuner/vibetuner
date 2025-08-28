@@ -49,8 +49,8 @@ class ItemService:
     async def create_item(self, item_data: ItemCreate, user: User) -> Item:
         item = Item(
             **item_data.model_dump(),
-            owner_id=user.id,
-            created_at=datetime.utcnow()
+            owner_id=user.id
+            # TimeStampMixin automatically sets db_insert_dt and db_update_dt
         )
         await item.insert()
         return item
