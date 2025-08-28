@@ -85,7 +85,10 @@ class AuthBackend(AuthenticationBackend):
     ) -> tuple[AuthCredentials, WebUser] | None:
         if user := conn.session.get("user"):
             try:
-                return (AuthCredentials(["authenticated"]), WebUser.model_validate(user))
+                return (
+                    AuthCredentials(["authenticated"]),
+                    WebUser.model_validate(user),
+                )
             except Exception:
                 # Clear corrupted session data and continue unauthenticated
                 conn.session.pop("user", None)
