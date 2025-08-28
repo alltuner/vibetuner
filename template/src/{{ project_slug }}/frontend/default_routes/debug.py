@@ -352,3 +352,67 @@ def debug_collections(request: Request):
     return render_template(
         "debug/collections.html.jinja", request, {"collections": collections_info}
     )
+
+
+@router.get("/users", response_class=HTMLResponse)
+async def debug_users(request: Request):
+    """Debug endpoint to list and impersonate users."""
+    from ...models.core import UserModel
+
+    users = await UserModel.find_all().to_list()
+    current_user_id = request.session.get("user", {}).get("id") if isinstance(request.session.get("user"), dict) else request.session.get("user")
+
+    return render_template(
+        "debug/users.html.jinja",
+        request,
+        {"users": users, "current_user_id": current_user_id},
+    )
+
+
+@router.post("/impersonate/{user_id}")
+async def debug_impersonate_user(request: Request, user_id: str):
+    """Impersonate a user by setting their ID in the session."""
+    # Double check debug mode for security
+    if not ctx.DEBUG:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from ...models.core import UserModel
+
+    # Verify user exists
+    user = await UserModel.get(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Set full user session data (as expected by WebUser)
+    user_session_data = {
+        "id": str(user.id),
+        "name": user.name or "Unknown",
+        "email": user.email or "no-email@example.com",
+        "picture": user.picture or "/statics/img/user-avatar.png",
+        "language": user.user_settings.language if user.user_settings.language else None
+    }
+    request.session["user"] = user_session_data
+
+    return RedirectResponse(url="/", status_code=302)
+
+
+@router.post("/stop-impersonation")
+async def debug_stop_impersonation(request: Request):
+    """Stop impersonating and clear user session."""
+    # Double check debug mode for security
+    if not ctx.DEBUG:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    request.session.pop("user", None)
+    return RedirectResponse(url="/debug/users", status_code=302)
+
+
+@router.get("/clear-session")
+async def debug_clear_session(request: Request):
+    """Clear all session data to fix corrupted sessions."""
+    # Double check debug mode for security
+    if not ctx.DEBUG:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    request.session.clear()
+    return RedirectResponse(url="/debug/users?cleared=1", status_code=302)

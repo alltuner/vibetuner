@@ -37,8 +37,8 @@ class Product(Document, TimeStampMixin):
 
 Use `TimeStampMixin` for automatic timestamps:
 
-- `created_at` - Set on creation
-- `updated_at` - Updated on save
+- `db_insert_dt` - Set on creation (UTC)
+- `db_update_dt` - Updated on save (UTC)
 
 ## Queries
 

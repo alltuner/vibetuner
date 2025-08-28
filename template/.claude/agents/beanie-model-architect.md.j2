@@ -119,7 +119,7 @@ just lint                 # Run project linting (if available)
 - Follow the project's established patterns from CLAUDE.md
 - Consider how models will be used by FastAPI services
 - Ensure models are async-friendly for Motor/Beanie operations
-- Models with TimeStampMixin automatically get created_at/updated_at fields
+- Models with TimeStampMixin automatically get db_insert_dt/db_update_dt fields (UTC timestamps)
 
 When you encounter ambiguous requirements, proactively ask for clarification about:
 
