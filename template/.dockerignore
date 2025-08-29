@@ -3,6 +3,8 @@
 .env.local
 .gitignore
 
+.playwright_mcp/
+
 # Python
 ############################################################
 # Python-generated files
