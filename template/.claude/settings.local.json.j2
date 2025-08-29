@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Bash(curl:*)",
       "Bash(find:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
@@ -10,14 +11,21 @@
       "Bash(ls:*)",
       "Bash(mkdir:*)",
       "Bash(pnpm dev)",
-      "Bash(python -m ruff check:*)",
       "Bash(python:*)",
+      "Bash(rg:*)",
       "Bash(ruff check:*)",
       "Bash(ruff format:*)",
       "Bash(time python:*)",
       "Bash(tree:*)",
       "Bash(uv:*)",
       "mcp__ide__getDiagnostics",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_hover",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_wait_for",
       "Bash({{ project_slug }}:*)"
     ],
     "deny": []
