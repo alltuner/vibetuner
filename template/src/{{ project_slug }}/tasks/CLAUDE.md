@@ -74,3 +74,14 @@ job_id = await streaq.enqueue(my_task, arg1, arg2)
 status = await streaq.get_job_status(job_id)
 result = await streaq.get_job_result(job_id)
 ```
+
+### Redis MCP Integration
+
+Claude Code has access to the **Redis MCP server** for debugging and monitoring:
+
+- Monitor job queues and task status
+- Inspect cache keys and values
+- Debug background job processing issues
+- View Redis data structures directly
+
+This is automatically connected to your project's Redis instance.
