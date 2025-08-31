@@ -230,6 +230,43 @@ This project includes **Playwright MCP integration** for web testing:
 - For testing **authenticated routes**, you may need to authenticate in the test browser window first
 - The testing tool can interact with forms, click buttons, and verify page content
 
+### Available MCP Servers
+
+This project comes with several **MCP (Model Context Protocol) servers** pre-configured for Claude Code:
+
+#### Database Servers
+
+- **MongoDB MCP**: Direct database operations and queries
+  - Access collections, run queries, and manage documents
+  - Automatically connected to your project's MongoDB instance
+  - Use for database debugging and data exploration
+
+- **Redis MCP**: Cache and queue operations  
+  - Monitor cache keys, job queues, and Redis data
+  - Automatically connected to your Redis instance
+  - Useful for debugging background jobs and caching issues
+
+#### Cloud Services (if using Cloudflare)
+
+- **Cloudflare Docs MCP**: Access Cloudflare documentation
+  - Query Cloudflare Workers, Pages, and other service docs
+  - Helpful when deploying to Cloudflare infrastructure
+
+- **Cloudflare Bindings MCP**: Manage Cloudflare bindings
+  - Configure KV namespaces, Durable Objects, R2 buckets
+  - Useful for Cloudflare Workers integration
+
+- **Cloudflare Observability MCP**: Monitor Cloudflare services
+  - Access logs, metrics, and analytics
+  - Debug production issues on Cloudflare
+
+#### Testing Tools
+
+- **Playwright MCP**: Browser automation and testing
+  - Interact with your running application
+  - Test user flows, forms, and UI interactions
+  - Verify page content and behavior
+
 ### Adding New Features
 
 1. **Routes**: Add new endpoints in `src/[project_slug]/frontend/routes/` (NOT in `default_routes/`)

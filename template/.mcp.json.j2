@@ -1,0 +1,42 @@
+{
+  "mcpServers": {
+    "cloudflare": {
+			"command": "npx",
+			"args": ["mcp-remote", "https://docs.mcp.cloudflare.com/sse"]
+		},
+		"cloudflare-bindings": {
+			"command": "npx",
+			"args": ["mcp-remote", "https://bindings.mcp.cloudflare.com/sse"]
+		},
+		"cloudflare-observability": {
+			"command": "npx",
+			"args": ["mcp-remote", "https://observability.mcp.cloudflare.com/sse"]
+		},
+    "mongodb": {
+      "command": "npx",
+      "args": [
+        "mongo-mcp",
+        "{{ mongoUri }}{{ project_slug }}?authSource=admin"
+      ]
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--browser=chromium"
+      ],
+      "env": {}
+    },
+    "Redis MCP Server": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/redis/mcp-redis.git",
+        "redis-mcp-server",
+        "--url",
+        "{{ redis_url }}/0"
+      ]
+    }
+  }
+}
