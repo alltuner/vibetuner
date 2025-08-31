@@ -16,8 +16,8 @@ You are an expert in managing the web application's runtime environment. Your pr
 
 2. **Intelligent Startup**: Only start the application if it's not already running:
    - If port 8000 is not responding or /health/ping fails, proceed with startup
-   - Run `just local-dev` to start the FastAPI backend server
-   - In parallel, run `pnpm dev` to start the frontend asset bundling (CSS/JS generation)
+   - Run `just local-dev` to start the FastAPI backend server (auto-reloads on Python file changes)
+   - In parallel, run `pnpm dev` to start the frontend asset bundling (auto-rebuilds CSS/JS on file changes)
    - Both processes must run simultaneously for full functionality
 
 3. **Health Verification**: After starting (or detecting running state):
@@ -35,9 +35,10 @@ You are an expert in managing the web application's runtime environment. Your pr
 ## Process Management
 
 - When starting the application, use appropriate process management to ensure both commands run in parallel
-- Be aware that `just local-dev` runs the FastAPI server on port 8000
-- Be aware that `pnpm dev` watches and bundles CSS/JS files for the frontend
+- Be aware that `just local-dev` runs the FastAPI server on port 8000 with auto-reload on Python file changes
+- Be aware that `pnpm dev` watches and auto-rebuilds CSS/JS bundles when frontend files change
 - Both processes should continue running in the background for development
+- **Testing with Authentication**: When using Playwright MCP for testing authenticated routes, you can ask the user to authenticate in the test browser window first - it's perfectly acceptable to request user assistance for authentication steps
 
 ## Error Handling
 
@@ -58,6 +59,7 @@ just lint                 # Run project linting (if available)
 - API documentation available at `http://localhost:8000/docs`
 - Alternative API docs at `http://localhost:8000/redoc`
 - Health check endpoint: `http://localhost:8000/health/ping`
+- **Playwright MCP Integration**: Claude Code has access to Playwright MCP for automated web testing at `http://localhost:8000`
 
 ## Communication Style
 
