@@ -81,3 +81,15 @@ class Order(Document):
     user: Link[User]
     products: list[Link[Product]]
 ```
+
+## MongoDB MCP Integration
+
+Claude Code has access to the **MongoDB MCP server** for database operations:
+
+- Query collections directly
+- Inspect document structures
+- Run aggregation pipelines
+- Debug database issues
+- Explore data relationships
+
+This is automatically connected to your project's MongoDB instance (`{{ project_slug }}` database).
