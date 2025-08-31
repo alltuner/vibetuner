@@ -21,12 +21,14 @@ This is a modern Python web application built with AllTuner's blessed stack:
 **IMPORTANT**: For local development without Docker, run BOTH:
 
 ```bash
-# Terminal 1: Watch and build frontend assets
+# Terminal 1: Watch and build frontend assets (auto-rebuilds CSS/JS on changes)
 pnpm dev
 
-# Terminal 2: Run FastAPI server  
+# Terminal 2: Run FastAPI server (auto-reloads on Python file changes)
 just local-dev
 ```
+
+The webserver automatically picks up Python code changes without manual restart.
 
 Or use Docker (all-in-one):
 
@@ -39,7 +41,7 @@ just sync                    # Sync all dependencies
 ### Frontend Assets
 
 ```bash
-pnpm dev                     # Watch mode for CSS/JS compilation
+pnpm dev                     # Watch mode - auto-rebuilds CSS/JS bundles on file changes
 pnpm build-prod             # Production build for CSS/JS
 ```
 
@@ -59,6 +61,14 @@ just extract-translations    # Extract translatable strings from code
 just update-locale-files     # Update existing translation files
 just compile-locales         # Compile translations for runtime
 just new-locale LANG         # Add support for new language
+```
+
+### Code Quality & Formatting
+
+```bash
+ruff check .                 # Check for linting issues
+ruff format .                # Format Python code (run after any code changes)
+ruff check --fix .           # Auto-fix linting issues where possible
 ```
 
 ### Git Workflow
@@ -208,8 +218,17 @@ Never use pip, poetry, or conda directly.
 ### Starting Development
 
 1. **Environment setup**: Copy `.env.example` to `.env.local` and configure
-2. **Start services**: `just dev` (Docker) or `just local-dev` (local)
-3. **Asset watching**: `pnpm dev` in separate terminal for CSS/JS changes
+2. **Start services**: `just dev` (Docker) or `just local-dev` (local - auto-reloads on changes)
+3. **Asset watching**: `pnpm dev` in separate terminal for CSS/JS auto-rebuilding
+
+### Testing the Application
+
+This project includes **Playwright MCP integration** for web testing:
+
+- The app runs on `http://localhost:8000` when using `just local-dev`
+- Claude Code has access to a Playwright MCP tool for automated testing
+- For testing **authenticated routes**, you may need to authenticate in the test browser window first
+- The testing tool can interact with forms, click buttons, and verify page content
 
 ### Adding New Features
 
@@ -402,6 +421,7 @@ This section should be updated with any project-specific information, custom con
 - **Imports**: Group as stdlib → third-party → local, alphabetically sorted
 - **Naming**: snake_case for functions/variables, PascalCase for classes
 - **Line length**: 88 characters (Black formatter default)
+- **Auto-formatting**: ALWAYS run `ruff format .` after making Python code changes to ensure consistent formatting
 
 ### Frontend Patterns
 
@@ -463,11 +483,20 @@ If core functionality is insufficient:
 2. Suggest workarounds or extensions
 3. Recommend filing issue with scaffolding repo
 
-## Important Instruction Reminder
+## Claude Code Instructions
 
-Do what has been asked; nothing more, nothing less.
-NEVER create files unless they're absolutely necessary for achieving your goal.
-ALWAYS prefer editing an existing file to creating a new one.
-NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+**IMPORTANT**: When working on this project, follow these mandatory guidelines:
+
+### Code Quality Enforcement
+- **ALWAYS run `ruff format .` immediately after making any Python code changes**
+- This ensures consistent code formatting across the project
+- Use `ruff check --fix .` to auto-fix linting issues when possible
+- These commands are pre-approved and can be run without asking
+
+### File Management Rules
+- Do what has been asked; nothing more, nothing less
+- NEVER create files unless they're absolutely necessary for achieving your goal
+- ALWAYS prefer editing an existing file to creating a new one
+- NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User
 
 ## Custom project instructions
