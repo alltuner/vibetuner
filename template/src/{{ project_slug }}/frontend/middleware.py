@@ -36,6 +36,35 @@ def locale_selector(conn: HTTPConnection) -> str | None:
     return None
 
 
+def user_preference_selector(conn: HTTPConnection) -> str | None:
+    """
+    Selects the locale based on authenticated user's language preference from session.
+    This takes priority over all other locale selectors to avoid database queries.
+    """
+    # Check if session is available in scope
+    if "session" not in conn.scope:
+        return None
+
+    session = conn.scope["session"]
+    if not session:
+        return None
+
+    user_data = session.get("user")
+    if not user_data:
+        return None
+
+    # Get language preference from user settings stored in session
+    user_settings = user_data.get("settings")
+    if not user_settings:
+        return None
+
+    language = user_settings.get("language")
+    if language and isinstance(language, str) and len(language) == 2:
+        return language.lower()
+
+    return None
+
+
 shared_translator = get_translator()
 if paths.locales.exists() and paths.locales.is_dir():
     # Load translations from the locales directory
@@ -103,6 +132,7 @@ middlewares: list[Middleware] = [
     Middleware(TrustedHostMiddleware),
     Middleware(ForwardedProtocolMiddleware),
     Middleware(HtmxMiddleware),
+    Middleware(SessionMiddleware, secret_key=settings.session_key.get_secret_value()),
     Middleware(
         LocaleMiddleware,
         locales=list(ctx.supported_languages),
@@ -110,11 +140,11 @@ middlewares: list[Middleware] = [
         selectors=[
             LocaleFromQuery(query_param="l"),
             locale_selector,
+            user_preference_selector,
             LocaleFromCookie(),
         ],
     ),
     Middleware(AdjustLangCookieMiddleware),
-    Middleware(SessionMiddleware, secret_key=settings.session_key.get_secret_value()),
     Middleware(AuthenticationMiddleware, backend=AuthBackend()),
     # Add your middleware below this line
 ]
