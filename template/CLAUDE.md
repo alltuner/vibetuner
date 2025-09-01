@@ -30,6 +30,8 @@ just local-dev
 
 The webserver automatically picks up Python code changes without manual restart.
 
+**Tip**: Use the `web-app-runner` agent to automatically start both processes correctly in parallel. This agent checks if the app is already running and starts it only if needed.
+
 Or use Docker (all-in-one):
 
 ```bash
@@ -223,12 +225,50 @@ Never use pip, poetry, or conda directly.
 
 ### Testing the Application
 
+#### Prerequisites for Testing
+
+**CRITICAL**: Before running any tests, ensure BOTH services are running:
+
+```bash
+# Terminal 1: Frontend asset watching and auto-rebuilding
+pnpm dev
+
+# Terminal 2: FastAPI backend server
+just local-dev
+```
+
+Both processes MUST be running simultaneously for the application to work properly:
+
+- Without `pnpm dev`: CSS and JavaScript changes won't be reflected
+- Without `just local-dev`: The backend server won't be available
+
+#### Automated Testing with Playwright MCP
+
 This project includes **Playwright MCP integration** for web testing:
 
 - The app runs on `http://localhost:8000` when using `just local-dev`
-- Claude Code has access to a Playwright MCP tool for automated testing
-- For testing **authenticated routes**, you may need to authenticate in the test browser window first
+- Claude Code has access to a Playwright MCP tool for automated browser testing
 - The testing tool can interact with forms, click buttons, and verify page content
+- **Note**: There's a `web-app-runner` agent available that knows how to properly start both `pnpm dev` and `just local-dev` in parallel for testing
+
+#### Handling Authentication During Testing
+
+**IMPORTANT**: When testing authenticated routes:
+
+1. **403 Forbidden Errors**: If you encounter a 403 error during testing, this means authentication is required
+2. **Authentication Process**:
+   - Claude will need to pause and ask you to authenticate in the test browser window
+   - This is expected behavior - simply log in when prompted
+   - Once authenticated, Claude can continue testing protected routes
+3. **Session Persistence**: The authentication session will persist for the duration of the test run
+
+Example workflow:
+
+```text
+Claude: "I'm getting a 403 error. Please authenticate in the browser window so I can continue testing."
+User: [Logs in via OAuth or magic link in the browser]
+Claude: "Thank you! I can now access the protected routes and continue testing."
+```
 
 ### Available MCP Servers
 
@@ -525,12 +565,14 @@ If core functionality is insufficient:
 **IMPORTANT**: When working on this project, follow these mandatory guidelines:
 
 ### Code Quality Enforcement
+
 - **ALWAYS run `ruff format .` immediately after making any Python code changes**
 - This ensures consistent code formatting across the project
 - Use `ruff check --fix .` to auto-fix linting issues when possible
 - These commands are pre-approved and can be run without asking
 
 ### File Management Rules
+
 - Do what has been asked; nothing more, nothing less
 - NEVER create files unless they're absolutely necessary for achieving your goal
 - ALWAYS prefer editing an existing file to creating a new one
