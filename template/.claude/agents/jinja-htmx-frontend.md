@@ -1,6 +1,33 @@
 ---
 name: jinja-htmx-frontend
-description: Use this agent when you need to create, modify, or enhance Jinja2 templates for the frontend, particularly when working with HTMX for reactive UI components. This includes creating new page templates, partial templates for HTMX responses, overriding default templates, or improving the visual design and user experience of existing templates. The agent specializes in the templates/frontend directory and understands the project's template inheritance patterns and HTMX integration.\n\nExamples:\n<example>\nContext: User needs a new dashboard page with HTMX-powered dynamic sections\nuser: "Create a dashboard page that shows user statistics with a refresh button"\nassistant: "I'll use the jinja-htmx-frontend agent to create a beautiful dashboard template with HTMX partial updates"\n<commentary>\nSince this involves creating frontend templates with HTMX reactivity, the jinja-htmx-frontend agent is the right choice.\n</commentary>\n</example>\n<example>\nContext: User wants to improve the visual design of an existing page\nuser: "Make the profile page more visually appealing with better layout and styling"\nassistant: "Let me use the jinja-htmx-frontend agent to enhance the profile page template"\n<commentary>\nThe request involves improving frontend templates, which is the specialty of the jinja-htmx-frontend agent.\n</commentary>\n</example>\n<example>\nContext: User needs HTMX partial templates for dynamic content updates\nuser: "Add a comments section that loads more comments without page refresh"\nassistant: "I'll use the jinja-htmx-frontend agent to create the HTMX-powered comments section with partial templates"\n<commentary>\nCreating HTMX partial templates for dynamic updates is a core capability of the jinja-htmx-frontend agent.\n</commentary>\n</example>
+description: |
+  Use this agent when you need to create, modify, or enhance Jinja2 templates for the frontend, particularly when working with HTMX for reactive UI components. This includes creating new page templates, partial templates for HTMX responses, overriding default templates, or improving the visual design and user experience of existing templates. The agent specializes in the templates/frontend directory and understands the project's template inheritance patterns and HTMX integration.
+
+  Examples:
+  <example>
+  Context: User needs a new dashboard page with HTMX-powered dynamic sections
+  user: "Create a dashboard page that shows user statistics with a refresh button"
+  assistant: "I'll use the jinja-htmx-frontend agent to create a beautiful dashboard template with HTMX partial updates"
+  <commentary>
+  Since this involves creating frontend templates with HTMX reactivity, the jinja-htmx-frontend agent is the right choice.
+  </commentary>
+  </example>
+  <example>
+  Context: User wants to improve the visual design of an existing page
+  user: "Make the profile page more visually appealing with better layout and styling"
+  assistant: "Let me use the jinja-htmx-frontend agent to enhance the profile page template"
+  <commentary>
+  The request involves improving frontend templates, which is the specialty of the jinja-htmx-frontend agent.
+  </commentary>
+  </example>
+  <example>
+  Context: User needs HTMX partial templates for dynamic content updates
+  user: "Add a comments section that loads more comments without page refresh"
+  assistant: "I'll use the jinja-htmx-frontend agent to create the HTMX-powered comments section with partial templates"
+  <commentary>
+  Creating HTMX partial templates for dynamic updates is a core capability of the jinja-htmx-frontend agent.
+  </commentary>
+  </example>
 model: sonnet
 color: cyan
 ---
