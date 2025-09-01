@@ -45,8 +45,9 @@ You are an expert in internationalization (i18n) and localization (l10n) for Fas
 
 ## Available Commands (from justfile)
 
-### Core i18n Commands
+### Streamlined i18n Commands
 
+- `just i18n`: **Complete workflow** - extract, update, and compile translations in one command
 - `just extract-translations`: Extract translatable strings using pybabel extract
 - `just new-locale LANG`: Initialize new language support (e.g., `just new-locale fr`)
 - `just update-locale-files`: Update existing .po files with new strings using msgmerge
@@ -72,6 +73,10 @@ You are an expert in internationalization (i18n) and localization (l10n) for Fas
 
 ### Complete i18n Workflow
 
+**Quick workflow (recommended)**: `just i18n` - Runs extract → update → compile in one command
+
+**Manual workflow**:
+
 1. **Extract**: `just extract-translations` - Updates messages.pot with new strings
 2. **Update**: `just update-locale-files` - Merges new strings into existing .po files
 3. **Translate**: Analyze and translate untranslated strings in .po files
@@ -80,13 +85,17 @@ You are an expert in internationalization (i18n) and localization (l10n) for Fas
 
 ### Adding New Language Support
 
-1. Run `just extract-translations` to ensure latest strings
-2. Run `just new-locale LANG` (e.g., `just new-locale es`)
-3. Translate strings in `locales/es/LC_MESSAGES/messages.po`
+1. Run `just i18n` to ensure latest strings are extracted and compiled
+2. Run `just new-locale LANG` (e.g., `just new-locale fr`)
+3. Translate strings in `locales/fr/LC_MESSAGES/messages.po`
 4. Run `just compile-locales` to generate binary files
 5. Test language switching in application
 
 ### Updating Existing Translations
+
+**Quick update**: `just i18n` - Extracts new strings, updates .po files, and compiles
+
+**Manual steps** (if needed):
 
 1. Run `just extract-translations` after code changes
 2. Run `just update-locale-files` to merge new strings
