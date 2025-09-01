@@ -387,17 +387,8 @@ async def debug_impersonate_user(request: Request, user_id: str):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Set full user session data (as expected by WebUser)
-    user_session_data = {
-        "id": str(user.id),
-        "name": user.name or "Unknown",
-        "email": user.email or "no-email@example.com",
-        "picture": user.picture or "/statics/img/user-avatar.png",
-        "language": user.user_settings.language
-        if user.user_settings.language
-        else None,
-    }
-    request.session["user"] = user_session_data
+    # Set full user session data (using the proper session_dict method)
+    request.session["user"] = user.session_dict
 
     return RedirectResponse(url="/", status_code=302)
 
