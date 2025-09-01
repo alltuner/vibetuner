@@ -175,6 +175,11 @@ merge:
     gh pr merge --squash --delete-branch
 
 
+# Complete i18n workflow: extract, update, and compile translations
+[group('localization')]
+i18n: extract-translations update-locale-files compile-locales
+    @echo "✓ Complete i18n workflow finished"
+
 # Extracts translations from source files
 [group('localization')]
 extract-translations:
@@ -183,12 +188,7 @@ extract-translations:
 # Creates a new language file for localization
 [group('localization')]
 new-locale LANG:
-    @pybabel init -i locales/messages.pot -d locales -l {{LANG}}
-
-# Updates existing language files for localization
-[group('localization')]
-update-locale-files-pybabel:
-    @pybabel update -i locales/messages.pot -d locales
+    @uv run pybabel init -i locales/messages.pot -d locales -l {{LANG}}
 
 # Updates existing language files for localization
 [group('localization')]
@@ -198,8 +198,7 @@ update-locale-files:
 # Compiles the language files into binary format
 [group('localization')]
 compile-locales:
-    @pybabel compile -d locales
-
+    @uv run pybabel compile -d locales
 
 # Dump untranslated strings per language to a given DEST directory
 [group('localization')]
