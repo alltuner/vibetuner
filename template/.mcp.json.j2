@@ -2,7 +2,10 @@
   "mcpServers": {
     "cloudflare": {
       "command": "npx",
-      "args": ["mcp-remote", "https://docs.mcp.cloudflare.com/sse"]
+      "args": [
+        "mcp-remote",
+        "https://docs.mcp.cloudflare.com/sse"
+      ]
     },
     "mongodb": {
       "command": "npx",
@@ -16,7 +19,7 @@
       "command": "npx",
       "args": [
         "@playwright/mcp@latest",
-        "--browser=chromium"
+        "--browser=edge"
       ],
       "env": {}
     },
@@ -27,7 +30,7 @@
         "git+https://github.com/redis/mcp-redis.git",
         "redis-mcp-server",
         "--url",
-        "{{ redis_url }}/0"
+        "{{ redis_url }}0"
       ]
     }
   }
