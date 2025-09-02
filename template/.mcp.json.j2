@@ -19,7 +19,8 @@
       "command": "npx",
       "args": [
         "@playwright/mcp@latest",
-        "--browser=msedge"
+        "--browser=${PLAYWRIGHT_BROWSER:-msedge}",
+        "--user-data-dir=./.playwright-mcp/session"
       ],
       "env": {}
     },

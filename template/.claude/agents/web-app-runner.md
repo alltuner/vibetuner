@@ -140,10 +140,18 @@ just local-dev 8080
 just local-dev 8081
 ```
 
+**Playwright Profile Isolation**: Browser sessions are automatically isolated per project:
+
+- **Project-local sessions**: Playwright stores session data in `./.playwright-mcp/session/`
+- **Automatic isolation**: Each project directory gets its own browser profile
+- **Persistent authentication**: Login state persists across Claude Code sessions within the same project
+- **Optional browser selection**: Set `PLAYWRIGHT_BROWSER=chromium` to change browser (default: `msedge`)
+
 **Testing Strategy**:
 
-- Each port gets its own isolated session
-- Authentication state is separate per port
+- Each port gets its own isolated session  
+- Each project directory has its own persistent browser profile
+- Authentication state is separate per project (automatically)
 - Database state is shared (same MongoDB instance)
 - Frontend assets are shared (same pnpm process)
 
