@@ -14,6 +14,14 @@ from pydantic import BaseModel, Field
 from ...core.time import Unit, now
 
 
+class FromIDMixin(BaseModel):
+    @classmethod
+    async def from_id(cls, id: str) -> Self | None:
+        doc = await cls.get(id)
+
+        return doc if doc else None
+
+
 class Since(StrEnum):
     """Reference moment for age calculations."""
 

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AllTuner Scaffolding - Complete Overview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .feature-card { transition: all 0.3s ease; }
+        .feature-card:hover { transform: translateY(-4px); }
+        .flow-line { stroke-dasharray: 5,5; animation: dash 2s linear infinite; }
+        @keyframes dash { to { stroke-dashoffset: -10; } }
+        .tech-badge { background: linear-gradient(45deg, #4f46e5, #7c3aed); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Hero Section -->
+    <div class="gradient-bg text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-5xl font-bold mb-6">AllTuner Scaffolding</h1>
+                <p class="text-xl mb-8 opacity-90">Modern Python Web Application Template</p>
+                <div class="flex justify-center space-x-6 text-sm">
+                    <span class="bg-white/20 px-4 py-2 rounded-full">FastAPI + MongoDB</span>
+                    <span class="bg-white/20 px-4 py-2 rounded-full">HTMX + Tailwind</span>
+                    <span class="bg-white/20 px-4 py-2 rounded-full">Docker Ready</span>
+                    <span class="bg-white/20 px-4 py-2 rounded-full">OAuth + Magic Link</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Architecture Overview -->
+    <div class="max-w-7xl mx-auto py-16 px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">System Architecture</h2>
+        
+        <!-- High-Level Architecture Diagram -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                <!-- Frontend Layer -->
+                <div class="text-center">
+                    <div class="bg-blue-100 rounded-lg p-6 mb-4">
+                        <i data-lucide="monitor" class="w-12 h-12 text-blue-600 mx-auto mb-3"></i>
+                        <h3 class="text-xl font-semibold text-blue-800 mb-2">Frontend Layer</h3>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <div class="tech-badge text-white px-3 py-1 rounded-full text-xs">HTMX</div>
+                            <div class="tech-badge text-white px-3 py-1 rounded-full text-xs">Tailwind CSS</div>
+                            <div class="tech-badge text-white px-3 py-1 rounded-full text-xs">DaisyUI</div>
+                            <div class="tech-badge text-white px-3 py-1 rounded-full text-xs">Jinja2</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Application Layer -->
+                <div class="text-center">
+                    <div class="bg-green-100 rounded-lg p-6 mb-4">
+                        <i data-lucide="server" class="w-12 h-12 text-green-600 mx-auto mb-3"></i>
+                        <h3 class="text-xl font-semibold text-green-800 mb-2">Application Layer</h3>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <div class="tech-badge text-white px-3 py-1 rounded-full text-xs">FastAPI</div>
+                            <div class="tech-badge text-white px-3 py-1 rounded-full text-xs">Pydantic</div>
+                            <div class="tech-badge text-white px-3 py-1 rounded-full text-xs">OAuth + Magic Link</div>
+                            <div class="tech-badge text-white px-3 py-1 rounded-full text-xs">Background Tasks</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Layer -->
+                <div class="text-center">
+                    <div class="bg-purple-100 rounded-lg p-6 mb-4">
+                        <i data-lucide="database" class="w-12 h-12 text-purple-600 mx-auto mb-3"></i>
+                        <h3 class="text-xl font-semibold text-purple-800 mb-2">Data Layer</h3>
+                        <div class="space-y-2 text-sm text-gray-600">
+                            <div class="tech-badge text-white px-3 py-1 rounded-full text-xs">MongoDB</div>
+                            <div class="tech-badge text-white px-3 py-1 rounded-full text-xs">Beanie ODM</div>
+                            <div class="tech-badge text-white px-3 py-1 rounded-full text-xs">Redis</div>
+                            <div class="tech-badge text-white px-3 py-1 rounded-full text-xs">Motor Driver</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connection Arrows -->
+            <div class="flex justify-center mt-8">
+                <svg class="w-full h-24">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                                refX="0" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#6b7280" />
+                        </marker>
+                    </defs>
+                    <line x1="20%" y1="50%" x2="80%" y2="50%" stroke="#6b7280" 
+                          stroke-width="2" marker-end="url(#arrowhead)" class="flow-line"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Key Features Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <!-- Copier Template System -->
+            <div class="feature-card bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center mb-4">
+                    <i data-lucide="copy" class="w-8 h-8 text-indigo-600 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Copier Template</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Interactive project generation with customizable options</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                    <li>• Project name and slug validation</li>
+                    <li>• Company and author configuration</li>
+                    <li>• Python version selection (3.10-3.13)</li>
+                    <li>• Optional features (job queue, deployment)</li>
+                    <li>• Multi-language support</li>
+                </ul>
+            </div>
+
+            <!-- FastAPI Backend -->
+            <div class="feature-card bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center mb-4">
+                    <i data-lucide="zap" class="w-8 h-8 text-green-600 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">FastAPI Backend</h3>
+                </div>
+                <p class="text-gray-600 mb-4">High-performance async Python web framework</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                    <li>• Automatic OpenAPI documentation</li>
+                    <li>• Type hints validation</li>
+                    <li>• Async/await support</li>
+                    <li>• Middleware for auth and CORS</li>
+                    <li>• Health checks and monitoring</li>
+                </ul>
+            </div>
+
+            <!-- Authentication System -->
+            <div class="feature-card bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center mb-4">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-blue-600 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Dual Authentication</h3>
+                </div>
+                <p class="text-gray-600 mb-4">OAuth providers + passwordless magic links</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                    <li>• OAuth integration ready</li>
+                    <li>• Magic link email auth</li>
+                    <li>• User account linking</li>
+                    <li>• Session management</li>
+                    <li>• Protected routes</li>
+                </ul>
+            </div>
+
+            <!-- HTMX Frontend -->
+            <div class="feature-card bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center mb-4">
+                    <i data-lucide="mouse-pointer-click" class="w-8 h-8 text-purple-600 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">HTMX Frontend</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Modern reactive UI without complex JavaScript</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                    <li>• AJAX requests with HTML</li>
+                    <li>• Real-time updates</li>
+                    <li>• Form handling</li>
+                    <li>• Progressive enhancement</li>
+                    <li>• Tailwind + DaisyUI styling</li>
+                </ul>
+            </div>
+
+            <!-- Docker Deployment -->
+            <div class="feature-card bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center mb-4">
+                    <i data-lucide="container" class="w-8 h-8 text-cyan-600 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Docker Ready</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Production-ready containerization</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                    <li>• Multi-stage Dockerfile</li>
+                    <li>• Development and production configs</li>
+                    <li>• Health checks</li>
+                    <li>• Watchtower auto-updates</li>
+                    <li>• Caddy reverse proxy</li>
+                </ul>
+            </div>
+
+            <!-- Background Jobs -->
+            <div class="feature-card bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center mb-4">
+                    <i data-lucide="cpu" class="w-8 h-8 text-orange-600 mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Background Tasks</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Redis-powered job queue with Streaq</p>
+                <ul class="text-sm text-gray-500 space-y-1">
+                    <li>• Async task processing</li>
+                    <li>• Email sending</li>
+                    <li>• Scheduled jobs</li>
+                    <li>• Worker management</li>
+                    <li>• Task monitoring</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Project Structure Diagram -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Generated Project Structure</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- File Structure -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-700">Directory Layout</h4>
+                    <div class="font-mono text-sm text-gray-600 space-y-1">
+                        <div>📁 <span class="text-blue-600">src/{{ project_slug }}/</span></div>
+                        <div class="ml-4">📁 <span class="text-green-600">frontend/</span> - Web routes & templates</div>
+                        <div class="ml-8">📄 routes/auth.py - Authentication</div>
+                        <div class="ml-8">📄 routes/meta.py - Health & meta</div>
+                        <div class="ml-4">📁 <span class="text-purple-600">models/</span> - Database models</div>
+                        <div class="ml-8">📄 users.py - User & OAuth models</div>
+                        <div class="ml-4">📁 <span class="text-orange-600">core/</span> - Core utilities</div>
+                        <div class="ml-8">📄 config.py - Pydantic settings</div>
+                        <div class="ml-8">📄 mongo.py - Database connection</div>
+                        <div class="ml-4">📁 <span class="text-cyan-600">tasks/</span> - Background jobs</div>
+                        <div class="ml-8">📄 worker.py - Job worker</div>
+                        <div class="ml-4">📁 <span class="text-red-600">cli/</span> - Command line interface</div>
+                        <div class="ml-4">📁 <span class="text-yellow-600">services/</span> - Business logic</div>
+                        <div class="ml-8">📄 email.py - Email service</div>
+                        <div>📁 <span class="text-indigo-600">templates/</span> - Jinja2 templates</div>
+                        <div class="ml-4">📄 base/skeleton.html.jinja</div>
+                        <div>📁 <span class="text-pink-600">assets/</span> - Static files</div>
+                    </div>
+                </div>
+
+                <!-- Configuration Files -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-700">Configuration Files</h4>
+                    <div class="space-y-4">
+                        <div class="bg-white p-3 rounded border-l-4 border-blue-500">
+                            <div class="font-semibold text-gray-800">pyproject.toml</div>
+                            <div class="text-sm text-gray-600">Python dependencies, project metadata</div>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-4 border-green-500">
+                            <div class="font-semibold text-gray-800">Dockerfile</div>
+                            <div class="text-sm text-gray-600">Multi-stage container build</div>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-4 border-purple-500">
+                            <div class="font-semibold text-gray-800">compose.*.yml</div>
+                            <div class="text-sm text-gray-600">Development and production docker-compose</div>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-4 border-orange-500">
+                            <div class="font-semibold text-gray-800">justfile</div>
+                            <div class="text-sm text-gray-600">Task runner commands</div>
+                        </div>
+                        <div class="bg-white p-3 rounded border-l-4 border-cyan-500">
+                            <div class="font-semibold text-gray-800">package.json</div>
+                            <div class="text-sm text-gray-600">Frontend dependencies, build scripts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Workflow -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+            <h3 class="text-2xl font-bold text-gray-800 mb-8 text-center">Development Workflow</h3>
+            
+            <!-- Workflow Steps -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="play-circle" class="w-8 h-8 text-blue-600"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-2">1. Generate Project</h4>
+                    <p class="text-sm text-gray-600">copier copy . /path/to/project</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="code" class="w-8 h-8 text-green-600"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-2">2. Start Development</h4>
+                    <p class="text-sm text-gray-600">just dev (Docker) or just local-dev</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="palette" class="w-8 h-8 text-purple-600"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-2">3. Frontend Assets</h4>
+                    <p class="text-sm text-gray-600">pnpm dev (watch mode)</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="rocket" class="w-8 h-8 text-orange-600"></i>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-2">4. Deploy</h4>
+                    <p class="text-sm text-gray-600">just release (production)</p>
+                </div>
+            </div>
+
+            <!-- Command Reference -->
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-700">Development Commands</h4>
+                    <div class="space-y-2 font-mono text-sm">
+                        <div class="bg-white p-2 rounded"><span class="text-blue-600">just dev</span> - Docker development</div>
+                        <div class="bg-white p-2 rounded"><span class="text-blue-600">just local-dev</span> - Local development</div>
+                        <div class="bg-white p-2 rounded"><span class="text-blue-600">just sync</span> - Sync dependencies</div>
+                        <div class="bg-white p-2 rounded"><span class="text-blue-600">pnpm dev</span> - Watch CSS/JS</div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-700">Build & Deploy</h4>
+                    <div class="space-y-2 font-mono text-sm">
+                        <div class="bg-white p-2 rounded"><span class="text-green-600">just build-dev</span> - Development build</div>
+                        <div class="bg-white p-2 rounded"><span class="text-green-600">just test-build-prod</span> - Test production</div>
+                        <div class="bg-white p-2 rounded"><span class="text-green-600">just release</span> - Production release</div>
+                        <div class="bg-white p-2 rounded"><span class="text-green-600">pnpm build-prod</span> - Frontend assets</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Stack Details -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+            <h3 class="text-2xl font-bold text-gray-800 mb-8 text-center">Technology Stack Details</h3>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Backend Stack -->
+                <div>
+                    <h4 class="text-xl font-semibold mb-6 text-gray-800 flex items-center">
+                        <i data-lucide="server" class="w-6 h-6 mr-2 text-green-600"></i>
+                        Backend Technologies
+                    </h4>
+                    <div class="space-y-4">
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                                <span class="font-semibold">FastAPI</span>
+                            </div>
+                            <p class="text-sm text-gray-600 ml-6">Modern Python web framework with automatic API docs, async support, and type validation</p>
+                        </div>
+                        
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                                <span class="font-semibold">MongoDB + Beanie</span>
+                            </div>
+                            <p class="text-sm text-gray-600 ml-6">NoSQL database with async ODM for Python, providing flexible document storage</p>
+                        </div>
+                        
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                                <span class="font-semibold">Redis + Streaq</span>
+                            </div>
+                            <p class="text-sm text-gray-600 ml-6">In-memory data store for caching and background job processing</p>
+                        </div>
+                        
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
+                                <span class="font-semibold">Pydantic</span>
+                            </div>
+                            <p class="text-sm text-gray-600 ml-6">Data validation and settings management using Python type annotations</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Frontend Stack -->
+                <div>
+                    <h4 class="text-xl font-semibold mb-6 text-gray-800 flex items-center">
+                        <i data-lucide="monitor" class="w-6 h-6 mr-2 text-blue-600"></i>
+                        Frontend Technologies
+                    </h4>
+                    <div class="space-y-4">
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <div class="w-3 h-3 bg-indigo-500 rounded-full mr-3"></div>
+                                <span class="font-semibold">HTMX</span>
+                            </div>
+                            <p class="text-sm text-gray-600 ml-6">Access AJAX, WebSockets and Server Sent Events directly in HTML without writing JavaScript</p>
+                        </div>
+                        
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <div class="w-3 h-3 bg-cyan-500 rounded-full mr-3"></div>
+                                <span class="font-semibold">Tailwind CSS</span>
+                            </div>
+                            <p class="text-sm text-gray-600 ml-6">Utility-first CSS framework for rapid UI development</p>
+                        </div>
+                        
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <div class="w-3 h-3 bg-pink-500 rounded-full mr-3"></div>
+                                <span class="font-semibold">DaisyUI</span>
+                            </div>
+                            <p class="text-sm text-gray-600 ml-6">Component library built on Tailwind CSS with semantic class names</p>
+                        </div>
+                        
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                                <span class="font-semibold">Jinja2</span>
+                            </div>
+                            <p class="text-sm text-gray-600 ml-6">Powerful templating engine for Python with inheritance and macros</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Options -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+            <h3 class="text-2xl font-bold text-gray-800 mb-8 text-center">Scaffolding Configuration Options</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="border border-gray-200 rounded-lg p-6">
+                    <h4 class="font-semibold text-lg mb-4 text-gray-800">Project Settings</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li>✓ Project name and slug</li>
+                        <li>✓ Company and author info</li>
+                        <li>✓ Project description</li>
+                        <li>✓ Python version (3.10-3.13)</li>
+                        <li>✓ FQDN for deployment</li>
+                    </ul>
+                </div>
+                
+                <div class="border border-gray-200 rounded-lg p-6">
+                    <h4 class="font-semibold text-lg mb-4 text-gray-800">Features</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li>✓ Background job queue (optional)</li>
+                        <li>✓ GitHub repository setup</li>
+                        <li>✓ Multi-language support</li>
+                        <li>✓ Watchtower auto-updates</li>
+                        <li>✓ Production deployment</li>
+                    </ul>
+                </div>
+                
+                <div class="border border-gray-200 rounded-lg p-6">
+                    <h4 class="font-semibold text-lg mb-4 text-gray-800">Infrastructure</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li>✓ MongoDB connection URL</li>
+                        <li>✓ Redis server configuration</li>
+                        <li>✓ Docker deployment setup</li>
+                        <li>✓ Environment configuration</li>
+                        <li>✓ Health monitoring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Getting Started Guide -->
+        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl shadow-lg p-8">
+            <h3 class="text-2xl font-bold mb-6 text-center">Getting Started</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h4 class="text-xl font-semibold mb-4">Quick Start</h4>
+                    <div class="bg-black/20 rounded-lg p-4 font-mono text-sm space-y-2">
+                        <div># Install Copier</div>
+                        <div class="text-green-300">pip install copier</div>
+                        <div></div>
+                        <div># Generate new project</div>
+                        <div class="text-green-300">copier copy . /path/to/new-project</div>
+                        <div></div>
+                        <div># Start development</div>
+                        <div class="text-green-300">cd /path/to/new-project</div>
+                        <div class="text-green-300">just dev</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-xl font-semibold mb-4">What You Get</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 mr-3 text-green-300"></i>
+                            Production-ready FastAPI application
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 mr-3 text-green-300"></i>
+                            Modern HTMX frontend with Tailwind
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 mr-3 text-green-300"></i>
+                            Docker containerization
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 mr-3 text-green-300"></i>
+                            Authentication system
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 mr-3 text-green-300"></i>
+                            Background task processing
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 mr-3 text-green-300"></i>
+                            Internationalization support
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        // Add some interactive elements
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+            });
+        });
+    </script>
+</body>
+</html>
