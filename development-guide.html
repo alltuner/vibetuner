@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AllTuner Scaffolding - Development Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .nav-link { transition: all 0.3s ease; }
+        .nav-link:hover { transform: translateX(4px); }
+        .nav-link.active { background: linear-gradient(45deg, #4f46e5, #7c3aed); color: white; }
+        .code-example { background: #1a1a1a; border-radius: 0.5rem; overflow: hidden; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .file-tree { font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace; }
+        .folder-icon { color: #3b82f6; }
+        .file-icon { color: #10b981; }
+        .example-card { transition: all 0.3s ease; }
+        .example-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <div class="gradient-bg text-white py-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Development Guide</h1>
+                    <p class="text-white/80">Complete guide to working with scaffolded projects</p>
+                </div>
+                <div class="text-sm bg-white/20 px-4 py-2 rounded-full">
+                    FastAPI + HTMX + MongoDB
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Navigation Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-lg p-6 sticky top-8">
+                    <h3 class="font-semibold text-gray-800 mb-4">Guide Sections</h3>
+                    <nav class="space-y-2">
+                        <button onclick="showSection('getting-started')" class="nav-link active w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i data-lucide="play-circle" class="w-4 h-4 inline mr-2"></i>Getting Started
+                        </button>
+                        <button onclick="showSection('project-structure')" class="nav-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i data-lucide="folder-tree" class="w-4 h-4 inline mr-2"></i>Project Structure
+                        </button>
+                        <button onclick="showSection('routes')" class="nav-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i data-lucide="route" class="w-4 h-4 inline mr-2"></i>Creating Routes
+                        </button>
+                        <button onclick="showSection('templates')" class="nav-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i data-lucide="file-text" class="w-4 h-4 inline mr-2"></i>Templates & UI
+                        </button>
+                        <button onclick="showSection('models')" class="nav-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i data-lucide="database" class="w-4 h-4 inline mr-2"></i>Database Models
+                        </button>
+                        <button onclick="showSection('authentication')" class="nav-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i data-lucide="shield-check" class="w-4 h-4 inline mr-2"></i>Authentication
+                        </button>
+                        <button onclick="showSection('htmx')" class="nav-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i data-lucide="mouse-pointer-click" class="w-4 h-4 inline mr-2"></i>HTMX Frontend
+                        </button>
+                        <button onclick="showSection('background-jobs')" class="nav-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i data-lucide="cpu" class="w-4 h-4 inline mr-2"></i>Background Jobs
+                        </button>
+                        <button onclick="showSection('deployment')" class="nav-link w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            <i data-lucide="rocket" class="w-4 h-4 inline mr-2"></i>Deployment
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-3">
+                <!-- Getting Started Section -->
+                <div id="getting-started" class="section active">
+                    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i data-lucide="play-circle" class="w-6 h-6 mr-3 text-blue-600"></i>
+                            Getting Started
+                        </h2>
+                        
+                        <div class="space-y-6">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-blue-800 mb-3">Quick Start</h3>
+                                <div class="code-example">
+                                    <pre class="p-4"><code class="language-bash"># 1. Generate new project
+copier copy . /path/to/new-project
+
+# 2. Navigate to project
+cd /path/to/new-project
+
+# 3. CRITICAL: Start BOTH processes for development
+# Terminal 1: Frontend asset watching
+pnpm dev
+
+# Terminal 2: Backend server
+just local-dev</code></pre>
+                                </div>
+                                <div class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                                    <p class="text-yellow-800 font-medium">⚠️ Both processes are required:</p>
+                                    <ul class="text-yellow-700 text-sm mt-2 ml-4 space-y-1">
+                                        <li>• <code>pnpm dev</code> - Watches and rebuilds CSS/JS on changes</li>
+                                        <li>• <code>just local-dev</code> - Runs FastAPI server with hot-reload</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="example-card bg-gray-50 rounded-lg p-6">
+                                    <h4 class="font-semibold text-gray-800 mb-3">Essential Commands</h4>
+                                    <div class="space-y-2 text-sm font-mono">
+                                        <div class="flex justify-between"><span class="text-blue-600">just --list</span> <span class="text-gray-600">List commands</span></div>
+                                        <div class="flex justify-between"><span class="text-blue-600">just sync</span> <span class="text-gray-600">Sync dependencies</span></div>
+                                        <div class="flex justify-between"><span class="text-blue-600">just build-dev</span> <span class="text-gray-600">Build development image</span></div>
+                                        <div class="flex justify-between"><span class="text-green-600">ruff format .</span> <span class="text-gray-600">Format code</span></div>
+                                    </div>
+                                </div>
+
+                                <div class="example-card bg-gray-50 rounded-lg p-6">
+                                    <h4 class="font-semibold text-gray-800 mb-3">Testing Setup</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex items-center text-green-600">
+                                            <i data-lucide="check" class="w-4 h-4 mr-2"></i>
+                                            Playwright MCP integration
+                                        </div>
+                                        <div class="flex items-center text-green-600">
+                                            <i data-lucide="check" class="w-4 h-4 mr-2"></i>
+                                            Browser automation ready
+                                        </div>
+                                        <div class="flex items-center text-green-600">
+                                            <i data-lucide="check" class="w-4 h-4 mr-2"></i>
+                                            Authentication flow testing
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Structure Section -->
+                <div id="project-structure" class="section">
+                    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i data-lucide="folder-tree" class="w-6 h-6 mr-3 text-purple-600"></i>
+                            Project Structure
+                        </h2>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- File Tree -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="font-semibold text-gray-800 mb-4">Directory Layout</h3>
+                                <div class="file-tree text-sm text-gray-600">
+                                    <div class="space-y-1">
+                                        <div><i data-lucide="folder" class="folder-icon w-4 h-4 inline mr-1"></i> <span class="font-medium">src/{{ project_slug }}/</span></div>
+                                        <div class="ml-6"><i data-lucide="folder" class="folder-icon w-4 h-4 inline mr-1"></i> <span class="text-blue-600">frontend/</span> - Web routes & UI</div>
+                                        <div class="ml-10"><i data-lucide="folder" class="folder-icon w-4 h-4 inline mr-1"></i> routes/ - <span class="text-green-600">Your custom routes</span></div>
+                                        <div class="ml-10"><i data-lucide="folder" class="folder-icon w-4 h-4 inline mr-1"></i> default_routes/ - Core routes</div>
+                                        <div class="ml-10"><i data-lucide="file-code" class="file-icon w-4 h-4 inline mr-1"></i> templates.py</div>
+                                        <div class="ml-10"><i data-lucide="file-code" class="file-icon w-4 h-4 inline mr-1"></i> deps.py</div>
+                                        <div class="ml-6"><i data-lucide="folder" class="folder-icon w-4 h-4 inline mr-1"></i> <span class="text-purple-600">models/</span> - Database models</div>
+                                        <div class="ml-10"><i data-lucide="file-code" class="file-icon w-4 h-4 inline mr-1"></i> <span class="text-green-600">your_models.py</span></div>
+                                        <div class="ml-10"><i data-lucide="folder" class="folder-icon w-4 h-4 inline mr-1"></i> core/ - Core models</div>
+                                        <div class="ml-6"><i data-lucide="folder" class="folder-icon w-4 h-4 inline mr-1"></i> <span class="text-orange-600">services/</span> - Business logic</div>
+                                        <div class="ml-10"><i data-lucide="file-code" class="file-icon w-4 h-4 inline mr-1"></i> <span class="text-green-600">your_services.py</span></div>
+                                        <div class="ml-10"><i data-lucide="folder" class="folder-icon w-4 h-4 inline mr-1"></i> core/ - Core services</div>
+                                        <div class="ml-6"><i data-lucide="folder" class="folder-icon w-4 h-4 inline mr-1"></i> <span class="text-cyan-600">tasks/</span> - Background jobs</div>
+                                        <div class="ml-6"><i data-lucide="folder" class="folder-icon w-4 h-4 inline mr-1"></i> <span class="text-red-600">cli/</span> - CLI commands</div>
+                                        <div><i data-lucide="folder" class="folder-icon w-4 h-4 inline mr-1"></i> <span class="font-medium">templates/frontend/</span></div>
+                                        <div class="ml-6"><i data-lucide="file-code" class="file-icon w-4 h-4 inline mr-1"></i> <span class="text-green-600">your_templates.html.jinja</span></div>
+                                        <div class="ml-6"><i data-lucide="folder" class="folder-icon w-4 h-4 inline mr-1"></i> defaults/ - Core templates</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Key Principles -->
+                            <div class="space-y-6">
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <h4 class="font-semibold text-green-800 mb-2">✅ Add Your Code Here</h4>
+                                    <ul class="text-green-700 text-sm space-y-1">
+                                        <li>• <code>frontend/routes/</code> - Your route handlers</li>
+                                        <li>• <code>models/</code> - Your data models</li>
+                                        <li>• <code>services/</code> - Your business logic</li>
+                                        <li>• <code>templates/frontend/</code> - Your UI templates</li>
+                                    </ul>
+                                </div>
+
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                    <h4 class="font-semibold text-red-800 mb-2">❌ Never Modify</h4>
+                                    <ul class="text-red-700 text-sm space-y-1">
+                                        <li>• <code>core/</code> directories - Scaffolding managed</li>
+                                        <li>• <code>default_routes/</code> - Authentication & debug</li>
+                                        <li>• <code>templates/frontend/defaults/</code> - Core UI</li>
+                                        <li>• <code>models/core/</code> - User & auth models</li>
+                                    </ul>
+                                </div>
+
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <h4 class="font-semibold text-blue-800 mb-2">🔄 Override Pattern</h4>
+                                    <p class="text-blue-700 text-sm mb-2">To customize core templates:</p>
+                                    <div class="font-mono text-xs text-blue-600">
+                                        <div>From: templates/frontend/defaults/base/footer.html.jinja</div>
+                                        <div>To: templates/frontend/base/footer.html.jinja</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Routes Section -->
+                <div id="routes" class="section">
+                    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i data-lucide="route" class="w-6 h-6 mr-3 text-green-600"></i>
+                            Creating Routes
+                        </h2>
+
+                        <div class="space-y-8">
+                            <!-- Basic Route Example -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Basic Route Handler</h3>
+                                <div class="code-example mb-4">
+                                    <pre class="p-4"><code class="language-python"># src/your_project/frontend/routes/dashboard.py
+from fastapi import APIRouter, Depends, Request
+from ..deps import get_current_user
+from ..templates import render_template
+
+router = APIRouter()
+
+@router.get("/dashboard")
+async def dashboard(
+    request: Request, 
+    user = Depends(get_current_user)
+):
+    return render_template(
+        "dashboard.html.jinja",
+        request,
+        {"user": user, "stats": await get_user_stats(user)}
+    )</code></pre>
+                                </div>
+                                <div class="bg-blue-50 border border-blue-200 rounded p-4">
+                                    <h4 class="font-medium text-blue-800 mb-2">Key Points:</h4>
+                                    <ul class="text-blue-700 text-sm space-y-1">
+                                        <li>• Place in <code>frontend/routes/</code> directory</li>
+                                        <li>• Use <code>get_current_user</code> for authentication</li>
+                                        <li>• <code>render_template()</code> handles context automatically</li>
+                                        <li>• Template gets: request, DEBUG, user, stats</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- API Route Example -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">API Routes with HTMX</h3>
+                                <div class="code-example mb-4">
+                                    <pre class="p-4"><code class="language-python"># src/your_project/frontend/routes/api.py
+from fastapi import APIRouter, Depends, Form, HTTPException
+from fastapi.responses import HTMLResponse
+from typing import Annotated
+from ..deps import get_current_user
+from ..templates import render_template
+from ...models import Task
+
+router = APIRouter(prefix="/api")
+
+@router.post("/tasks")
+async def create_task(
+    request: Request,
+    title: Annotated[str, Form()],
+    description: Annotated[str, Form()],
+    user = Depends(get_current_user)
+) -> HTMLResponse:
+    # Create the task
+    task = Task(
+        title=title,
+        description=description,
+        user_id=user.id
+    )
+    await task.insert()
+    
+    # Return partial template for HTMX
+    return render_template(
+        "partials/task_item.html.jinja",
+        request,
+        {"task": task}
+    )</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Route Registration -->
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-yellow-800 mb-4">Registering Routes</h3>
+                                <div class="code-example mb-4">
+                                    <pre class="p-4"><code class="language-python"># src/your_project/frontend/__init__.py
+from fastapi import FastAPI
+
+# Import your route modules
+from .routes import dashboard, api, products
+
+def create_app() -> FastAPI:
+    app = FastAPI()
+    
+    # Register your routers
+    app.include_router(dashboard.router, tags=["dashboard"])
+    app.include_router(api.router, tags=["api"])
+    app.include_router(products.router, prefix="/products", tags=["products"])
+    
+    return app</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Common Patterns -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="example-card bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-800 mb-3">Protected Routes</h4>
+                                    <div class="code-example">
+                                        <pre class="p-3 text-sm"><code class="language-python">@router.get("/admin")
+async def admin_panel(
+    request: Request,
+    user = Depends(get_current_user)
+):
+    if not user.is_admin:
+        raise HTTPException(403)
+    return render_template(...)</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="example-card bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-800 mb-3">Optional Auth</h4>
+                                    <div class="code-example">
+                                        <pre class="p-3 text-sm"><code class="language-python">from ..deps import get_current_user_optional
+
+@router.get("/public")
+async def public_page(
+    request: Request,
+    user = Depends(get_current_user_optional)
+):
+    # user might be None</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Templates Section -->
+                <div id="templates" class="section">
+                    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i data-lucide="file-text" class="w-6 h-6 mr-3 text-blue-600"></i>
+                            Templates & UI
+                        </h2>
+
+                        <div class="space-y-8">
+                            <!-- Base Template Structure -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Base Template Structure</h3>
+                                <div class="code-example mb-4">
+                                    <pre class="p-4"><code class="language-html">&lt;!-- templates/frontend/dashboard.html.jinja --&gt;
+{% extends "base/skeleton.html.jinja" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+&lt;div class="container mx-auto px-4 py-8"&gt;
+    &lt;div class="flex justify-between items-center mb-8"&gt;
+        &lt;h1 class="text-3xl font-bold text-gray-800"&gt;
+            Welcome back, {{ user.name }}!
+        &lt;/h1&gt;
+        &lt;div class="badge badge-primary"&gt;{{ stats.total_tasks }} tasks&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="grid grid-cols-1 md:grid-cols-3 gap-6"&gt;
+        &lt;div class="card bg-base-100 shadow-xl"&gt;
+            &lt;div class="card-body"&gt;
+                &lt;h2 class="card-title"&gt;Recent Tasks&lt;/h2&gt;
+                &lt;div id="tasks-container"&gt;
+                    {% for task in user.recent_tasks %}
+                        {% include "partials/task_item.html.jinja" %}
+                    {% endfor %}
+                &lt;/div&gt;
+                &lt;div class="card-actions justify-end"&gt;
+                    &lt;button hx-get="/tasks/new" hx-target="#task-modal" 
+                            class="btn btn-primary"&gt;Add Task&lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+{% endblock %}</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Partial Templates -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Partial Templates for HTMX</h3>
+                                <div class="code-example mb-4">
+                                    <pre class="p-4"><code class="language-html">&lt;!-- templates/frontend/partials/task_item.html.jinja --&gt;
+&lt;div class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
+     id="task-{{ task.id }}"&gt;
+    &lt;div class="flex items-center space-x-3"&gt;
+        &lt;input type="checkbox" 
+               class="checkbox checkbox-primary"
+               hx-patch="/api/tasks/{{ task.id }}/toggle"
+               hx-target="#task-{{ task.id }}"
+               {% if task.completed %}checked{% endif %}&gt;
+        &lt;div&gt;
+            &lt;h4 class="font-medium 
+                     {% if task.completed %}line-through text-gray-500{% endif %}"&gt;
+                {{ task.title }}
+            &lt;/h4&gt;
+            &lt;p class="text-sm text-gray-600"&gt;{{ task.description }}&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="flex space-x-2"&gt;
+        &lt;button hx-get="/tasks/{{ task.id }}/edit" 
+                hx-target="#task-modal"
+                class="btn btn-sm btn-ghost"&gt;Edit&lt;/button&gt;
+        &lt;button hx-delete="/api/tasks/{{ task.id }}" 
+                hx-target="#task-{{ task.id }}"
+                hx-swap="outerHTML"
+                hx-confirm="Delete this task?"
+                class="btn btn-sm btn-error"&gt;Delete&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Template Features -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Available Context</h3>
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                        <div class="text-sm text-blue-700 space-y-2">
+                                            <div><code class="bg-blue-100 px-2 py-1 rounded">request</code> - FastAPI Request object</div>
+                                            <div><code class="bg-blue-100 px-2 py-1 rounded">DEBUG</code> - Debug mode flag</div>
+                                            <div><code class="bg-blue-100 px-2 py-1 rounded">user</code> - Current authenticated user</div>
+                                            <div><code class="bg-blue-100 px-2 py-1 rounded">hotreload</code> - Development hot-reload</div>
+                                            <div><code class="bg-blue-100 px-2 py-1 rounded">APP_NAME</code> - Application name</div>
+                                            <div><code class="bg-blue-100 px-2 py-1 rounded">VERSION</code> - App version</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Template Filters</h3>
+                                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                        <div class="text-sm text-green-700 space-y-2">
+                                            <div><code class="bg-green-100 px-2 py-1 rounded">{{ date | timeago }}</code> - "2 hours ago"</div>
+                                            <div><code class="bg-green-100 px-2 py-1 rounded">{{ date | format_date }}</code> - "Jan 15, 2024"</div>
+                                            <div><code class="bg-green-100 px-2 py-1 rounded">{{ text | markdown }}</code> - Render markdown</div>
+                                            <div><code class="bg-green-100 px-2 py-1 rounded">{{ _("Text") }}</code> - Internationalization</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Template Override -->
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-yellow-800 mb-4">Customizing Core Templates</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <h4 class="font-medium text-yellow-700 mb-2">Override Footer:</h4>
+                                        <div class="code-example">
+                                            <pre class="p-3 text-sm"><code class="language-html">&lt;!-- Copy from: --&gt;
+templates/frontend/defaults/base/footer.html.jinja
+
+&lt;!-- To: --&gt;
+templates/frontend/base/footer.html.jinja</code></pre>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-yellow-700 mb-2">Your version will be used automatically!</h4>
+                                        <div class="text-sm text-yellow-600">
+                                            <p>The template system checks your custom templates first, then falls back to defaults.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Models Section -->
+                <div id="models" class="section">
+                    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i data-lucide="database" class="w-6 h-6 mr-3 text-purple-600"></i>
+                            Database Models
+                        </h2>
+
+                        <div class="space-y-8">
+                            <!-- Basic Model -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Creating Models</h3>
+                                <div class="code-example mb-4">
+                                    <pre class="p-4"><code class="language-python"># src/your_project/models/task.py
+from datetime import datetime
+from typing import Optional
+from beanie import Document, PydanticObjectId
+from pydantic import Field
+
+class Task(Document):
+    title: str
+    description: Optional[str] = None
+    completed: bool = False
+    user_id: PydanticObjectId
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
+    due_date: Optional[datetime] = None
+    priority: str = "medium"  # low, medium, high
+    tags: list[str] = []
+
+    class Settings:
+        name = "tasks"  # MongoDB collection name
+        indexes = [
+            "user_id",
+            "completed",
+            "due_date",
+            [("user_id", 1), ("completed", 1)]  # Compound index
+        ]
+
+    # Custom methods
+    async def mark_completed(self):
+        self.completed = True
+        self.updated_at = datetime.utcnow()
+        await self.save()
+
+    @classmethod
+    async def get_user_tasks(cls, user_id: PydanticObjectId, completed: bool = False):
+        return await cls.find(
+            cls.user_id == user_id,
+            cls.completed == completed
+        ).sort(-cls.created_at).to_list()</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Model Registration -->
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-blue-800 mb-4">Register Your Models</h3>
+                                <div class="code-example mb-4">
+                                    <pre class="p-4"><code class="language-python"># src/your_project/core/mongo.py
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
+
+# Import your models
+from ..models.task import Task
+from ..models.product import Product
+from ..models.order import Order
+
+async def init_database(database_url: str):
+    client = AsyncIOMotorClient(database_url)
+    
+    await init_beanie(
+        database=client.get_default_database(),
+        document_models=[
+            # Core models (already registered)
+            # Your models
+            Task,
+            Product, 
+            Order,
+        ]
+    )</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Advanced Patterns -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-800 mb-3">Model with Relations</h4>
+                                    <div class="code-example">
+                                        <pre class="p-3 text-sm"><code class="language-python">from beanie import Link
+from .user import User
+
+class Order(Document):
+    user: Link[User]  # Reference
+    items: list[dict]
+    total: float
+    
+    async def get_user_name(self):
+        await self.user.fetch()
+        return self.user.name</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-800 mb-3">Mixins & Inheritance</h4>
+                                    <div class="code-example">
+                                        <pre class="p-3 text-sm"><code class="language-python">from ..models.core.mixins import TimeStampMixin
+
+class Product(Document, TimeStampMixin):
+    name: str
+    price: float
+    category: str
+    
+    # TimeStampMixin adds:
+    # created_at, updated_at</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Query Examples -->
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-green-800 mb-4">Common Query Patterns</h3>
+                                <div class="code-example">
+                                    <pre class="p-4"><code class="language-python"># In your route handlers
+async def get_tasks(user_id: PydanticObjectId):
+    # Find all incomplete tasks for user
+    tasks = await Task.find(
+        Task.user_id == user_id,
+        Task.completed == False
+    ).sort(-Task.created_at).to_list()
+    
+    # Find tasks due this week
+    week_from_now = datetime.utcnow() + timedelta(days=7)
+    due_soon = await Task.find(
+        Task.user_id == user_id,
+        Task.due_date <= week_from_now,
+        Task.completed == False
+    ).to_list()
+    
+    # Aggregation pipeline
+    stats = await Task.aggregate([
+        {"$match": {"user_id": user_id}},
+        {"$group": {
+            "_id": "$completed",
+            "count": {"$sum": 1}
+        }}
+    ]).to_list()
+    
+    return {"tasks": tasks, "due_soon": due_soon, "stats": stats}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Authentication Section -->
+                <div id="authentication" class="section">
+                    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i data-lucide="shield-check" class="w-6 h-6 mr-3 text-blue-600"></i>
+                            Authentication
+                        </h2>
+
+                        <div class="space-y-8">
+                            <!-- Using Authentication -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Using Authentication</h3>
+                                <div class="code-example mb-4">
+                                    <pre class="p-4"><code class="language-python"># In your routes
+from ..deps import get_current_user, get_current_user_optional
+
+@router.get("/protected")
+async def protected_route(
+    request: Request,
+    user = Depends(get_current_user)  # Requires login
+):
+    return render_template("protected.html.jinja", request, {"user": user})
+
+@router.get("/public")
+async def public_route(
+    request: Request,
+    user = Depends(get_current_user_optional)  # Optional
+):
+    # user might be None
+    context = {"is_authenticated": user is not None}
+    if user:
+        context["user"] = user
+    return render_template("public.html.jinja", request, context)</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Authentication Flow -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Built-in Auth Features</h3>
+                                    <div class="space-y-4">
+                                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                            <h4 class="font-medium text-blue-800 mb-2">OAuth Providers</h4>
+                                            <ul class="text-blue-700 text-sm space-y-1">
+                                                <li>• Google, GitHub, etc.</li>
+                                                <li>• Automatic account creation</li>
+                                                <li>• Account linking support</li>
+                                                <li>• Provider configuration in settings</li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                            <h4 class="font-medium text-green-800 mb-2">Magic Link Email</h4>
+                                            <ul class="text-green-700 text-sm space-y-1">
+                                                <li>• Passwordless authentication</li>
+                                                <li>• Secure token generation</li>
+                                                <li>• Automatic user creation</li>
+                                                <li>• Email template customization</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">User Model</h3>
+                                    <div class="code-example">
+                                        <pre class="p-4"><code class="language-python"># User model (read-only reference)
+class User(Document):
+    email: str
+    name: str
+    avatar_url: Optional[str] = None
+    is_active: bool = True
+    
+    # OAuth accounts
+    oauth_accounts: list[OAuthAccount] = []
+    
+    # Session data
+    def session_dict(self) -> dict:
+        return {
+            "id": str(self.id),
+            "email": self.email,
+            "name": self.name,
+            "avatar_url": self.avatar_url
+        }
+    
+    @classmethod
+    async def get_by_email(cls, email: str):
+        return await cls.find_one(cls.email == email)</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Login Templates -->
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-yellow-800 mb-4">Customizing Login UI</h3>
+                                <div class="code-example">
+                                    <pre class="p-4"><code class="language-html">&lt;!-- Override templates/frontend/defaults/login.html.jinja --&gt;
+&lt;!-- Copy to: templates/frontend/login.html.jinja --&gt;
+
+{% extends "base/skeleton.html.jinja" %}
+
+{% block title %}{{ _("Sign In") }}{% endblock %}
+
+{% block body %}
+&lt;div class="min-h-screen flex items-center justify-center"&gt;
+    &lt;div class="card w-96 bg-base-100 shadow-xl"&gt;
+        &lt;div class="card-body"&gt;
+            &lt;h2 class="card-title justify-center"&gt;{{ _("Welcome") }}&lt;/h2&gt;
+            
+            &lt;!-- OAuth providers --&gt;
+            {% if has_oauth and providers %}
+                {% for provider in providers %}
+                    &lt;a href="{{ url_for('login_with_' + provider) }}"
+                       class="btn btn-outline"&gt;
+                        {{ _("Continue with %(provider)s") | format(provider=provider.title()) }}
+                    &lt;/a&gt;
+                {% endfor %}
+            {% endif %}
+            
+            &lt;!-- Magic link form --&gt;
+            {% if has_email %}
+                &lt;form method="post" action="{{ url_for('send_magic_link') }}"&gt;
+                    &lt;input type="email" name="email" class="input input-bordered" required&gt;
+                    &lt;button type="submit" class="btn btn-primary"&gt;
+                        {{ _("Send Magic Link") }}
+                    &lt;/button&gt;
+                &lt;/form&gt;
+            {% endif %}
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+{% endblock %}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HTMX Section -->
+                <div id="htmx" class="section">
+                    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i data-lucide="mouse-pointer-click" class="w-6 h-6 mr-3 text-purple-600"></i>
+                            HTMX Frontend
+                        </h2>
+
+                        <div class="space-y-8">
+                            <!-- HTMX Basics -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">HTMX Patterns</h3>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div>
+                                        <h4 class="font-medium text-gray-700 mb-3">Basic Interactions</h4>
+                                        <div class="code-example">
+                                            <pre class="p-3 text-sm"><code class="language-html">&lt;!-- GET request --&gt;
+&lt;button hx-get="/api/data" hx-target="#content"&gt;
+    Load Data
+&lt;/button&gt;
+
+&lt;!-- POST form --&gt;
+&lt;form hx-post="/api/tasks" hx-target="#task-list"&gt;
+    &lt;input name="title" required&gt;
+    &lt;button type="submit"&gt;Add Task&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;!-- DELETE with confirmation --&gt;
+&lt;button hx-delete="/api/tasks/123" 
+        hx-target="#task-123" 
+        hx-swap="outerHTML"
+        hx-confirm="Are you sure?"&gt;
+    Delete
+&lt;/button&gt;</code></pre>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 class="font-medium text-gray-700 mb-3">Advanced Features</h4>
+                                        <div class="code-example">
+                                            <pre class="p-3 text-sm"><code class="language-html">&lt;!-- Polling --&gt;
+&lt;div hx-get="/api/status" 
+     hx-trigger="every 2s"
+     hx-target="this"&gt;
+    Status: Loading...
+&lt;/div&gt;
+
+&lt;!-- Lazy loading --&gt;
+&lt;div hx-get="/api/lazy-content" 
+     hx-trigger="revealed"
+     hx-target="this"&gt;
+    &lt;div class="loading"&gt;Loading...&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Input validation --&gt;
+&lt;input hx-post="/api/validate-email" 
+       hx-trigger="change delay:500ms"
+       hx-target="#email-feedback"&gt;</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Real Example: Task Manager -->
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-blue-800 mb-4">Complete Example: Task Manager</h3>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <h4 class="font-medium text-blue-700 mb-2">Route Handler</h4>
+                                        <div class="code-example">
+                                            <pre class="p-3 text-sm"><code class="language-python">@router.post("/api/tasks")
+async def create_task(
+    request: Request,
+    title: Annotated[str, Form()],
+    user = Depends(get_current_user)
+):
+    task = Task(title=title, user_id=user.id)
+    await task.insert()
+    
+    return render_template(
+        "partials/task_item.html.jinja",
+        request,
+        {"task": task}
+    )</code></pre>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 class="font-medium text-blue-700 mb-2">Template with HTMX</h4>
+                                        <div class="code-example">
+                                            <pre class="p-3 text-sm"><code class="language-html">&lt;div class="task-container"&gt;
+    &lt;form hx-post="/api/tasks" 
+          hx-target="#task-list" 
+          hx-swap="afterbegin"
+          class="mb-4"&gt;
+        &lt;div class="flex space-x-2"&gt;
+            &lt;input name="title" 
+                   class="input input-bordered flex-1" 
+                   placeholder="New task..." required&gt;
+            &lt;button type="submit" class="btn btn-primary"&gt;Add&lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/form&gt;
+
+    &lt;div id="task-list"&gt;
+        {% for task in tasks %}
+            {% include "partials/task_item.html.jinja" %}
+        {% endfor %}
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- HTMX + Tailwind -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <h4 class="font-medium text-green-800 mb-3">Loading States</h4>
+                                    <div class="code-example">
+                                        <pre class="p-3 text-sm"><code class="language-html">&lt;button hx-post="/api/action" 
+        class="btn btn-primary"
+        hx-indicator="#spinner"&gt;
+    Submit
+&lt;/button&gt;
+
+&lt;div id="spinner" 
+     class="htmx-indicator loading loading-spinner"&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+.htmx-request .htmx-indicator {
+    display: inline;
+}
+&lt;/style&gt;</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                                    <h4 class="font-medium text-orange-800 mb-3">Error Handling</h4>
+                                    <div class="code-example">
+                                        <pre class="p-3 text-sm"><code class="language-html">&lt;div hx-post="/api/action"
+     hx-target="#result"
+     hx-on="htmx:responseError: 
+            document.getElementById('error')
+                    .style.display='block'"&gt;
+    &lt;button class="btn"&gt;Submit&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;div id="error" 
+     class="alert alert-error hidden"&gt;
+    Something went wrong!
+&lt;/div&gt;</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Background Jobs Section -->
+                <div id="background-jobs" class="section">
+                    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i data-lucide="cpu" class="w-6 h-6 mr-3 text-orange-600"></i>
+                            Background Jobs
+                        </h2>
+
+                        <div class="space-y-8">
+                            <!-- Job Definition -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Creating Background Tasks</h3>
+                                <div class="code-example mb-4">
+                                    <pre class="p-4"><code class="language-python"># src/your_project/tasks/email_tasks.py
+from streaq import Task
+from ..services.email import send_email
+from ..models import User
+
+@Task
+async def send_welcome_email(user_id: str):
+    """Send welcome email to new user"""
+    user = await User.get(user_id)
+    if user:
+        await send_email(
+            to=user.email,
+            subject="Welcome to Our App!",
+            template="emails/welcome.html",
+            context={"user": user}
+        )
+
+@Task  
+async def process_data_export(user_id: str, export_type: str):
+    """Generate and email data export"""
+    user = await User.get(user_id)
+    
+    # Generate export file
+    export_data = await generate_export(user, export_type)
+    file_path = await save_export_file(export_data, user_id)
+    
+    # Send download link
+    await send_email(
+        to=user.email,
+        subject="Your data export is ready",
+        template="emails/export_ready.html",
+        context={
+            "user": user,
+            "download_url": f"/exports/{file_path}"
+        }
+    )</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Queuing Jobs -->
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-blue-800 mb-4">Queuing Jobs from Routes</h3>
+                                <div class="code-example">
+                                    <pre class="p-4"><code class="language-python"># In your route handlers
+from ..deps import get_streaq_client
+from ..tasks.email_tasks import send_welcome_email, process_data_export
+
+@router.post("/register")
+async def register_user(
+    request: Request,
+    email: Annotated[str, Form()],
+    streaq = Depends(get_streaq_client)
+):
+    # Create user
+    user = User(email=email, name=email.split("@")[0])
+    await user.insert()
+    
+    # Queue welcome email job
+    await streaq.enqueue(send_welcome_email, str(user.id))
+    
+    return render_template("welcome.html.jinja", request, {"user": user})
+
+@router.post("/export-data")  
+async def request_export(
+    request: Request,
+    export_type: Annotated[str, Form()],
+    user = Depends(get_current_user),
+    streaq = Depends(get_streaq_client)
+):
+    # Queue export job (runs in background)
+    await streaq.enqueue(
+        process_data_export,
+        str(user.id), 
+        export_type
+    )
+    
+    return render_template(
+        "export_queued.html.jinja", 
+        request, 
+        {"export_type": export_type}
+    )</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Job Monitoring -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <h4 class="font-medium text-green-800 mb-3">Running Workers</h4>
+                                    <div class="code-example">
+                                        <pre class="p-3 text-sm"><code class="language-bash"># Development
+just worker-dev
+
+# Production
+just worker-prod
+
+# Multiple workers
+just worker-prod --workers 4</code></pre>
+                                    </div>
+                                    <div class="text-green-700 text-sm mt-2">
+                                        Workers process jobs from the Redis queue automatically.
+                                    </div>
+                                </div>
+
+                                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                                    <h4 class="font-medium text-purple-800 mb-3">Job Status UI</h4>
+                                    <div class="code-example">
+                                        <pre class="p-3 text-sm"><code class="language-html">&lt;!-- Show job status with polling --&gt;
+&lt;div id="job-status" 
+     hx-get="/api/jobs/{{ job_id }}/status"
+     hx-trigger="every 1s"
+     hx-swap="innerHTML"&gt;
+    Checking status...
+&lt;/div&gt;</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Advanced Patterns -->
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-yellow-800 mb-4">Advanced Job Patterns</h3>
+                                <div class="code-example">
+                                    <pre class="p-4"><code class="language-python"># Scheduled jobs
+from datetime import datetime, timedelta
+
+@Task
+async def daily_report():
+    """Send daily reports to all admin users"""
+    admins = await User.find(User.is_admin == True).to_list()
+    
+    for admin in admins:
+        report_data = await generate_daily_report()
+        await send_email(
+            to=admin.email,
+            subject=f"Daily Report - {datetime.now().strftime('%Y-%m-%d')}",
+            template="emails/daily_report.html",
+            context={"admin": admin, "data": report_data}
+        )
+
+# Queue scheduled job
+@router.post("/admin/schedule-reports")
+async def schedule_daily_reports(
+    request: Request,
+    user = Depends(get_current_user),
+    streaq = Depends(get_streaq_client)
+):
+    if not user.is_admin:
+        raise HTTPException(403)
+    
+    # Schedule for tomorrow at 9 AM
+    tomorrow_9am = datetime.now().replace(
+        hour=9, minute=0, second=0
+    ) + timedelta(days=1)
+    
+    await streaq.enqueue_at(daily_report, tomorrow_9am)
+    
+    return {"status": "scheduled"}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deployment Section -->
+                <div id="deployment" class="section">
+                    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i data-lucide="rocket" class="w-6 h-6 mr-3 text-red-600"></i>
+                            Deployment
+                        </h2>
+
+                        <div class="space-y-8">
+                            <!-- Development vs Production -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                                    <h3 class="text-lg font-semibold text-blue-800 mb-4">Development</h3>
+                                    <div class="code-example mb-4">
+                                        <pre class="p-3 text-sm"><code class="language-bash"># Local development
+pnpm dev          # Watch CSS/JS
+just local-dev    # FastAPI server
+
+# Docker development  
+just dev          # All-in-one container
+
+# Worker (if enabled)
+just worker-dev   # Background jobs</code></pre>
+                                    </div>
+                                    <div class="text-blue-700 text-sm">
+                                        <p><strong>Features:</strong></p>
+                                        <ul class="mt-1 ml-4 space-y-1">
+                                            <li>• Hot reload for Python</li>
+                                            <li>• Asset watching</li>
+                                            <li>• Debug endpoints enabled</li>
+                                            <li>• Detailed error pages</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+                                    <h3 class="text-lg font-semibold text-green-800 mb-4">Production</h3>
+                                    <div class="code-example mb-4">
+                                        <pre class="p-3 text-sm"><code class="language-bash"># Build and test production build
+just test-build-prod
+
+# Release (requires git tag)
+just release
+
+# Deploy to server
+just deploy-latest [HOST]</code></pre>
+                                    </div>
+                                    <div class="text-green-700 text-sm">
+                                        <p><strong>Features:</strong></p>
+                                        <ul class="mt-1 ml-4 space-y-1">
+                                            <li>• Multi-stage Docker build</li>
+                                            <li>• Optimized static assets</li>
+                                            <li>• Health checks</li>
+                                            <li>• Auto-updates (Watchtower)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Docker Configuration -->
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Docker Setup</h3>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div>
+                                        <h4 class="font-medium text-gray-700 mb-3">Development Compose</h4>
+                                        <div class="code-example">
+                                            <pre class="p-3 text-sm"><code class="language-yaml"># compose.dev.yml (generated)
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+    depends_on:
+      - mongodb
+      - redis</code></pre>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 class="font-medium text-gray-700 mb-3">Production Compose</h4>
+                                        <div class="code-example">
+                                            <pre class="p-3 text-sm"><code class="language-yaml"># compose.prod.yml (generated)
+services:
+  app:
+    image: your-app:latest
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=production
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    depends_on:
+      - mongodb
+      - redis
+  
+  caddy:
+    image: caddy:2
+    restart: unless-stopped</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Environment Configuration -->
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-yellow-800 mb-4">Environment Variables</h3>
+                                <div class="code-example">
+                                    <pre class="p-4"><code class="language-bash"># .env.local (not committed)
+ENVIRONMENT=development
+DEBUG=true
+SECRET_KEY=your-secret-key
+
+# Database
+DATABASE_URL=mongodb://localhost:27017/yourapp
+REDIS_URL=redis://localhost:6379
+
+# Email (if configured)  
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+AWS_REGION=us-east-1
+SES_FROM_EMAIL=noreply@yourdomain.com
+
+# OAuth (if configured)
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- Deployment Checklist -->
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-red-800 mb-4">Production Deployment Checklist</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <h4 class="font-medium text-red-700 mb-2">Before Deployment</h4>
+                                        <ul class="text-red-600 text-sm space-y-1">
+                                            <li>☐ Set ENVIRONMENT=production</li>
+                                            <li>☐ Set DEBUG=false</li>
+                                            <li>☐ Configure secure SECRET_KEY</li>
+                                            <li>☐ Set up production database</li>
+                                            <li>☐ Configure email service (if needed)</li>
+                                            <li>☐ Set up OAuth providers (if needed)</li>
+                                        </ul>
+                                    </div>
+
+                                    <div>
+                                        <h4 class="font-medium text-red-700 mb-2">After Deployment</h4>
+                                        <ul class="text-red-600 text-sm space-y-1">
+                                            <li>☐ Test authentication flows</li>
+                                            <li>☐ Verify database connections</li>
+                                            <li>☐ Check background job processing</li>
+                                            <li>☐ Test email sending</li>
+                                            <li>☐ Monitor logs for errors</li>
+                                            <li>☐ Set up monitoring/alerting</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked nav link
+            event.target.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        // Initialize Prism syntax highlighting
+        document.addEventListener('DOMContentLoaded', (event) => {
+            if (typeof Prism !== 'undefined') {
+                Prism.highlightAll();
+            }
+        });
+    </script>
+</body>
+</html>
