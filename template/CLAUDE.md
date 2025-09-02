@@ -36,6 +36,8 @@ Or use Docker (all-in-one):
 
 ```bash
 just dev                     # Full dev environment with hot reload
+just local-dev               # Run locally on port 8000 (default)  
+just local-dev 8080          # Run locally on specific port (8080-8089 for dev instances)
 just worker-dev              # Task worker (if job queue enabled)
 just sync                    # Sync all dependencies
 ```

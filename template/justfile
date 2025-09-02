@@ -48,8 +48,8 @@ dev: _update_local_deps
 
 # Runs the dev environment locally without Docker
 [group('Local Development')]
-local-dev: _update_local_deps
-    @dotenv -f .env.local run -- ./start.sh local-dev
+local-dev PORT="8000": _update_local_deps
+    @PORT={{PORT}} dotenv -f .env.local run -- ./start.sh local-dev
 
 # Runs the task worker locally without Docker
 [group('Local Development')]
