@@ -13,7 +13,7 @@ from beanie.operators import Eq, Set
 from pydantic import Field
 
 from ...core.time import now
-from . import FromIDMixin
+from .mixins import FromIDMixin
 
 
 # Email verification token model
