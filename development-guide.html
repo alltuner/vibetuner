@@ -596,16 +596,58 @@ class Order(Document):
                                 <div class="bg-gray-50 rounded-lg p-4">
                                     <h4 class="font-semibold text-gray-800 mb-3">Mixins & Inheritance</h4>
                                     <div class="code-example">
-                                        <pre class="p-3 text-sm"><code class="language-python">from ..models.core.mixins import TimeStampMixin
+                                        <pre class="p-3 text-sm"><code class="language-python">from ..models.core.mixins import TimeStampMixin, FromIDMixin
 
-class Product(Document, TimeStampMixin):
+class Product(Document, TimeStampMixin, FromIDMixin):
     name: str
     price: float
     category: str
     
     # TimeStampMixin adds:
-    # created_at, updated_at</code></pre>
+    # db_insert_dt, db_update_dt, age methods
+    
+    # FromIDMixin adds:
+    # from_id(id: str) -> Product | None</code></pre>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- FromIDMixin Usage -->
+                            <div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-4">Using FromIDMixin in Routes</h3>
+                                <div class="code-example mb-4">
+                                    <pre class="p-4"><code class="language-python"># Route handler using FromIDMixin
+@router.get("/tasks/{task_id}")
+async def get_task(
+    request: Request,
+    task_id: str,
+    user = Depends(get_current_user)
+):
+    # Safe document lookup - returns None if not found
+    task = await Task.from_id(task_id)
+    if not task:
+        raise HTTPException(404, "Task not found")
+    
+    # Check ownership
+    if task.user_id != user.id:
+        raise HTTPException(403, "Not your task")
+    
+    return render_template("task_detail.html.jinja", request, {"task": task})
+
+# Compared to Beanie's get() which raises DocumentNotFound exception
+@router.get("/tasks/{task_id}/unsafe")  
+async def get_task_unsafe(task_id: str):
+    try:
+        task = await Task.get(task_id)  # Raises exception if not found
+        return task
+    except DocumentNotFound:
+        raise HTTPException(404, "Task not found")</code></pre>
+                                </div>
+                                <div class="bg-purple-100 rounded p-4">
+                                    <p class="text-purple-700 text-sm">
+                                        <strong>Benefits:</strong> FromIDMixin's <code>from_id()</code> returns <code>None</code> instead of raising exceptions, 
+                                        making route error handling cleaner and more explicit.
+                                    </p>
                                 </div>
                             </div>
 
