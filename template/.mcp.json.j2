@@ -20,7 +20,8 @@
       "args": [
         "@playwright/mcp@latest",
         "--browser=${PLAYWRIGHT_BROWSER:-msedge}",
-        "--user-data-dir=./.playwright-mcp/session"
+        "--user-data-dir=./.playwright-mcp/session",
+        "--isolated"
       ],
       "env": {}
     },
