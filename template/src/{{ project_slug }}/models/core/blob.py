@@ -11,7 +11,7 @@ from typing import Self
 from beanie import Document
 from pydantic import Field
 
-from . import FromIDMixin, TimeStampMixin
+from .mixins import FromIDMixin, TimeStampMixin
 
 
 class BlobStatus(StrEnum):
