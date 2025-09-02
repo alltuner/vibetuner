@@ -9,8 +9,9 @@ from .user import UserModel
 
 
 __all__ = [
-    "TimeStampMixin",
+    "FromIDMixin",
     "Link",
+    "TimeStampMixin",
 ]
 
 CORE_MODELS: list[type[Document] | type[View]] = [
