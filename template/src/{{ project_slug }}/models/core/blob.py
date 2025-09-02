@@ -11,7 +11,7 @@ from typing import Self
 from beanie import Document
 from pydantic import Field
 
-from .mixins import TimeStampMixin
+from . import FromIDMixin, TimeStampMixin
 
 
 class BlobStatus(StrEnum):
@@ -21,7 +21,7 @@ class BlobStatus(StrEnum):
     ERROR = "error"
 
 
-class BlobModel(Document, TimeStampMixin):
+class BlobModel(Document, TimeStampMixin, FromIDMixin):
     status: BlobStatus = Field(
         default=BlobStatus.PENDING,
         description="Status of the blob indicating if it is pending, uploaded, or deleted",
