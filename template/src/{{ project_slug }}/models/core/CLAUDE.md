@@ -48,13 +48,9 @@ If a core feature is missing:
 ## Available Mixins
 
 ### TimeStampMixin
+
 - Adds automatic `db_insert_dt` and `db_update_dt` timestamps
 - Provides age calculation methods: `age()`, `age_in()`, `is_older_than()`
-
-### FromIDMixin  
-- Adds `from_id(id: str)` class method for safe document retrieval
-- Returns `None` if document not found, instead of raising exception
-- Useful for route handlers where missing documents should return 404
 
 ## How to Work Around Limitations
 
