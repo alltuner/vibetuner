@@ -53,27 +53,6 @@ class Product(Document, TimeStampMixin):
     # Plus age calculation helpers: age(), age_in(), is_older_than()
 ```
 
-### FromIDMixin  
-
-Use `FromIDMixin` for convenient document retrieval by ID:
-
-- `from_id(id: str)` - Safe document lookup that returns `None` if not found
-
-```python
-from .core.mixins import FromIDMixin, TimeStampMixin
-
-class Product(Document, TimeStampMixin, FromIDMixin):
-    name: str
-    price: float
-
-# Usage in routes/services
-async def get_product(product_id: str):
-    product = await Product.from_id(product_id)
-    if not product:
-        raise HTTPException(404, "Product not found")
-    return product
-```
-
 ## Queries
 
 ```python
