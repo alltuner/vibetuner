@@ -42,19 +42,15 @@ If a core feature is missing:
 - `oauth.py` - OAuth provider accounts
 - `email_verification.py` - Magic link tokens
 - `blob.py` - File storage metadata
-- `mixins.py` - Reusable model components (TimeStampMixin, FromIDMixin)
+- `mixins.py` - Reusable model components (TimeStampMixin)
 - `types.py` - Shared type definitions
 
 ## Available Mixins
 
 ### TimeStampMixin
+
 - Adds automatic `db_insert_dt` and `db_update_dt` timestamps
 - Provides age calculation methods: `age()`, `age_in()`, `is_older_than()`
-
-### FromIDMixin  
-- Adds `from_id(id: str)` class method for safe document retrieval
-- Returns `None` if document not found, instead of raising exception
-- Useful for route handlers where missing documents should return 404
 
 ## How to Work Around Limitations
 
