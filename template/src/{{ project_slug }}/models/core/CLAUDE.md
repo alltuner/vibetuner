@@ -42,7 +42,7 @@ If a core feature is missing:
 - `oauth.py` - OAuth provider accounts
 - `email_verification.py` - Magic link tokens
 - `blob.py` - File storage metadata
-- `mixins.py` - Reusable model components (TimeStampMixin, FromIDMixin)
+- `mixins.py` - Reusable model components (TimeStampMixin)
 - `types.py` - Shared type definitions
 
 ## Available Mixins
