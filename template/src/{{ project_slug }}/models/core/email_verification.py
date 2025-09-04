@@ -13,11 +13,10 @@ from beanie.operators import Eq, Set
 from pydantic import Field
 
 from ...core.time import now
-from .mixins import FromIDMixin
 
 
 # Email verification token model
-class EmailVerificationTokenModel(Document, FromIDMixin):
+class EmailVerificationTokenModel(Document):
     email: str = Field(
         ...,
         description="Email address requesting verification",
