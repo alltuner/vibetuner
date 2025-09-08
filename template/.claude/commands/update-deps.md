@@ -30,6 +30,7 @@ Now I'll commit the updated dependency files:
 Based on the changes, I'll create a commit with an appropriate message summarizing the dependency updates.
 
 This will:
+
 - `uv lock --upgrade` → Update Python dependency versions in uv.lock
 - `uv sync` → Synchronize the virtual environment with updated dependencies  
 - `pnpm up` → Update all Node.js packages to latest versions
@@ -38,6 +39,7 @@ This will:
 - `git commit` → Commit with a descriptive message about the dependency updates
 
 **Files that get committed:**
+
 - `uv.lock` - Updated Python dependency versions
 - `pnpm-lock.yaml` - Updated Node.js dependency versions  
 - `pyproject.toml` - If dependency constraints were updated
