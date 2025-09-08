@@ -1,27 +1,25 @@
 {
   "permissions": {
     "allow": [
+      "Bash(cat:*)",
       "Bash(curl:*)",
+      "Bash(djlint:*)",
+      "Bash(echo:*)",
       "Bash(find:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(just compile-locales)",
-      "Bash(just extract-translations:*)",
-      "Bash(just i18n:*)",
-      "Bash(just local-dev)",
-      "Bash(just new-locale:*)",
-      "Bash(just update-locale-files:*)",
-      "Bash(just worker-dev)",
+      "Bash(git:*)",
+      "Bash(grep:*)",
+      "Bash(just:*)",
       "Bash(ls:*)",
+      "Bash(markdownlint:*)",
       "Bash(mkdir:*)",
       "Bash(msgattrib:*)",
       "Bash(msgfmt:*)",
       "Bash(nc:*)",
-      "Bash(pnpm dev)",
+      "Bash(pnpm:*)",
       "Bash(python:*)",
       "Bash(rg:*)",
       "Bash(ruff:*)",
+      "Bash(sed:*)",
       "Bash(time:*)",
       "Bash(tree:*)",
       "Bash(ty:*)",
@@ -53,17 +51,29 @@
       "Read(/var/folders/**/TemporaryItems/NSIRD_screencaptureui_*/**)",
       "WebFetch(domain:beanie-odm.dev)",
       "WebFetch(domain:daisyui.com)",
+      "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:fastapi.tiangolo.com)",
+      "WebFetch(domain:llm.datasette.io)",
+      "WebFetch(domain:open-meteo.com)",
       "WebFetch(domain:tailwindcss.com)",
       "WebFetch(domain:localhost)",
-      "WebSearch",
-      "Bash(for port in {8080..8089})",
-      "Bash(do echo:*)",
-      "Bash(done)",
-      "Bash({{ project_slug }}:*)"
+      "WebSearch"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
   },
-  "enableAllProjectMcpServers": true
+  "enableAllProjectMcpServers": true,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/format-files.sh"
+          }
+        ]
+      }
+    ]
+  }
 }
