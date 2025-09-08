@@ -13,12 +13,14 @@ Let me show you what each command does:
 !for file in /Users/dpoblador/repos/scaffolding/template/.claude/commands/*.md; do echo ""; echo "## /$(basename "$file" .md)"; grep "^description:" "$file" | sed 's/description: //'; done
 
 **Usage:**
+
 - Type `/` followed by any command name (e.g., `/dev`, `/commit`, `/deploy`)
 - Some commands take arguments (e.g., `/deploy papaya`, `/release-patch feature-name`)
 - Commands with `<required>` arguments must include the parameter
 - Commands with `[optional]` arguments can be used with or without parameters
 
 **Quick Reference:**
+
 - **Development**: `/dev` - Start development environment
 - **Code Quality**: `/format` - Format and lint all code  
 - **Git Operations**: `/commit`, `/commit-all` - Smart commit with generated messages
