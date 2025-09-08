@@ -12,36 +12,16 @@ repos:
     rev: v6.0.0
     hooks:
       - id: no-commit-to-branch
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.8.14
-    hooks:
-      - id: uv-sync
-        always_run: true
-      - id: uv-lock
-        args: ["--upgrade"]
-        always_run: true
   - repo: local
     hooks:
-      - id: pnpm-install
-        name: pnpm install
-        entry: pnpm install
-        language: system
-        pass_filenames: false
-        always_run: true
-  - repo: local
-    hooks:
-      - id: pyclean
-        name: pyclean
-        entry: uvx pyclean .
-        language: system
-        always_run: true
-        pass_filenames: false
-  - repo: local
-    hooks:
-      - id: ty-check
-        name: ty-check
+      - id: djlint
+        name: djlint
+        entry: djlint --reformat
         language: python
-        entry: ty check
-        pass_filenames: false
-        args: [--python=.venv/]
-        additional_dependencies: [ty]
+        files: \.html\.jinja$
+        additional_dependencies: [djlint]
+      - id: markdownlint
+        name: markdownlint
+        entry: pnpm markdownlint --fix
+        language: system
+        files: \.md$

@@ -2,10 +2,11 @@
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.13",
     "concurrently": "^9.2.1",
-    "daisyui": "^5.1.7",
+    "daisyui": "^5.1.8",
     "esbuild": "^0.25.9",
     "htmx-ext-preload": "^2.1.1",
     "htmx.org": "2.0.6",
+    "markdownlint-cli": "^0.45.0",
     "tailwindcss": "^4.1.13"
   },
   "dependencies": {},
