@@ -13,11 +13,14 @@ This will:
 
 Let me execute the release workflow:
 
-!just bump-minor && just pr
+!just pr && just merge && just bump-minor && just push-tags && just start-branch current-scaffolding
 
 This workflow:
-- `just bump-minor` → Increments minor version and creates git tag
-- `just pr` → Pushes current branch and creates GitHub pull request
+- `just pr` → Create and push pull request
+- `just merge` → Merge the pull request 
+- `just bump-minor` → Increment minor version and create git tag
+- `just push-tags` → Push tags to remote
+- `just start-branch current-scaffolding` → Start new current-scaffolding branch
 
 **Perfect for:** New features, template enhancements, dependency updates
 
