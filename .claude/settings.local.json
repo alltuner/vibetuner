@@ -5,8 +5,10 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(ruff format:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(mkdir:*)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   }
 }
