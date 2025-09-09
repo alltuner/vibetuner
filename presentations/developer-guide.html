@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AllTuner Scaffolding - Developer Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'bounce-in': 'bounceIn 1s ease-out',
+                        'pulse-slow': 'pulse 3s infinite'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        bounceIn: {
+                            '0%': { transform: 'scale(0.3)', opacity: '0' },
+                            '50%': { transform: 'scale(1.05)', opacity: '0.8' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text; 
+        }
+        .code-block { 
+            background: #1a202c; 
+            color: #e2e8f0; 
+            border-radius: 0.5rem; 
+            padding: 1rem; 
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; 
+            font-size: 0.875rem;
+            overflow-x: auto;
+        }
+        .guide-card { 
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        }
+        .guide-card:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
+        }
+        .feature-card {
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            border-left-color: #667eea;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        .command-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        .warning-card {
+            border-left: 4px solid #f59e0b;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+        .protected-card {
+            border-left: 4px solid #dc2626;
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+        }
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            margin: 3rem 0;
+        }
+        .toc {
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+        .toc a {
+            transition: all 0.2s ease;
+        }
+        .toc a:hover {
+            color: #667eea;
+            padding-left: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-md shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">AT</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold gradient-text">AllTuner Scaffolding - Developer Guide</h1>
+                        <p class="text-sm text-gray-600">Complete development workflow and best practices</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-lg font-bold text-purple-600">Time to Productivity < 5 Minutes</div>
+                    <div class="text-sm text-gray-500">From scaffolding to first feature</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid lg:grid-cols-4 gap-8">
+            
+            <!-- Table of Contents -->
+            <aside class="lg:col-span-1">
+                <div class="toc bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="font-bold text-gray-800 mb-4">📚 Guide Contents</h3>
+                    <nav class="space-y-2 text-sm">
+                        <a href="#quick-start" class="block text-gray-600 hover:text-blue-600">🚀 Quick Start</a>
+                        <a href="#commands" class="block text-gray-600 hover:text-blue-600">⚡ Essential Commands</a>
+                        <a href="#architecture" class="block text-gray-600 hover:text-blue-600">🏗️ Architecture</a>
+                        <a href="#development" class="block text-gray-600 hover:text-blue-600">💻 Development Workflow</a>
+                        <a href="#features" class="block text-gray-600 hover:text-blue-600">✨ Adding Features</a>
+                        <a href="#testing" class="block text-gray-600 hover:text-blue-600">🧪 Testing</a>
+                        <a href="#authentication" class="block text-gray-600 hover:text-blue-600">🔐 Authentication</a>
+                        <a href="#localization" class="block text-gray-600 hover:text-blue-600">🌍 Localization</a>
+                        <a href="#deployment" class="block text-gray-600 hover:text-blue-600">🚀 Deployment</a>
+                        <a href="#debugging" class="block text-gray-600 hover:text-blue-600">🐛 Debugging</a>
+                        <a href="#best-practices" class="block text-gray-600 hover:text-blue-600">📋 Best Practices</a>
+                        <a href="#troubleshooting" class="block text-gray-600 hover:text-blue-600">🔧 Troubleshooting</a>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="lg:col-span-3 space-y-12">
+                
+                <!-- Quick Start -->
+                <section id="quick-start" class="animate-fade-in">
+                    <div class="bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-lg p-8">
+                        <h2 class="text-3xl font-bold mb-6">🚀 Quick Start (5 Minutes to Running App)</h2>
+                        <div class="grid lg:grid-cols-2 gap-8">
+                            <div class="code-block bg-black/30">
+                                <div class="text-gray-200 text-sm mb-2"># 1. Generate your project</div>
+                                <div>uvx copier copy scaffolding my-awesome-app</div>
+                                <div class="text-gray-200 text-sm mt-3 mb-1"># 2. Navigate and start development</div>
+                                <div>cd my-awesome-app</div>
+                                <div>just dev</div>
+                                <div class="text-gray-200 text-sm mt-3 mb-1"># 3. Access your app</div>
+                                <div>open http://localhost:8000</div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold mb-4">What Just Happened?</h3>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center"><span class="w-2 h-2 bg-white rounded-full mr-3"></span>Project scaffolded with your preferences</li>
+                                    <li class="flex items-center"><span class="w-2 h-2 bg-white rounded-full mr-3"></span>Dependencies installed with uv</li>
+                                    <li class="flex items-center"><span class="w-2 h-2 bg-white rounded-full mr-3"></span>Docker containers started</li>
+                                    <li class="flex items-center"><span class="w-2 h-2 bg-white rounded-full mr-3"></span>Database initialized</li>
+                                    <li class="flex items-center"><span class="w-2 h-2 bg-white rounded-full mr-3"></span>Frontend assets compiled</li>
+                                    <li class="flex items-center"><span class="w-2 h-2 bg-white rounded-full mr-3"></span>Hot reload enabled</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Essential Commands -->
+                <section id="commands" class="space-y-8">
+                    <h2 class="text-3xl font-bold gradient-text">⚡ Essential Commands</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4 text-green-600">🏃 Development</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just dev</code>
+                                        <span class="text-sm text-gray-600">Full Docker environment</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just local-dev</code>
+                                        <span class="text-sm text-gray-600">Local development server</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just worker-dev</code>
+                                        <span class="text-sm text-gray-600">Background job worker</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just sync</code>
+                                        <span class="text-sm text-gray-600">Sync dependencies</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4 text-blue-600">🎨 Frontend Assets</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">pnpm dev</code>
+                                        <span class="text-sm text-gray-600">Watch CSS/JS with hot reload</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">pnpm build-prod</code>
+                                        <span class="text-sm text-gray-600">Production asset build</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4 text-purple-600">🌍 Localization</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just extract-translations</code>
+                                        <span class="text-sm text-gray-600">Extract i18n strings</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just new-locale es</code>
+                                        <span class="text-sm text-gray-600">Add Spanish support</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just compile-locales</code>
+                                        <span class="text-sm text-gray-600">Compile translations</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4 text-orange-600">🚀 Deployment</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just build-dev</code>
+                                        <span class="text-sm text-gray-600">Development image</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just test-build-prod</code>
+                                        <span class="text-sm text-gray-600">Test production build</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just release</code>
+                                        <span class="text-sm text-gray-600">Build & push production</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just deploy-latest HOST</code>
+                                        <span class="text-sm text-gray-600">Deploy to production</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4 text-red-600">🔧 Quality & Git</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">ruff format .</code>
+                                        <span class="text-sm text-gray-600">Format Python code</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">ruff check .</code>
+                                        <span class="text-sm text-gray-600">Check code quality</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just pr</code>
+                                        <span class="text-sm text-gray-600">Create pull request</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just bump-patch</code>
+                                        <span class="text-sm text-gray-600">Version bump</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4 text-indigo-600">📦 Dependencies</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">uv add package</code>
+                                        <span class="text-sm text-gray-600">Add dependency</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">uv sync</code>
+                                        <span class="text-sm text-gray-600">Install dependencies</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">uv run python -m myapp</code>
+                                        <span class="text-sm text-gray-600">Run application</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="section-divider"></div>
+
+                <!-- Architecture -->
+                <section id="architecture" class="space-y-8">
+                    <h2 class="text-3xl font-bold gradient-text">🏗️ Application Architecture</h2>
+                    
+                    <div class="bg-white rounded-lg p-6 shadow-lg">
+                        <h3 class="text-xl font-bold mb-4">📁 Project Structure</h3>
+                        <div class="code-block">
+                            <pre>my-project/
+├── src/myproject/
+│   ├── core/                    # 🔒 DO NOT MODIFY - Scaffolding managed
+│   │   ├── config.py           # Pydantic settings
+│   │   ├── mongo.py            # Database connection
+│   │   ├── paths.py            # Static asset paths
+│   │   └── templates.py        # Template utilities
+│   ├── models/
+│   │   ├── core/               # 🔒 DO NOT MODIFY - Core models
+│   │   └── your_models.py      # ✅ Add your models here
+│   ├── services/
+│   │   ├── core/               # 🔒 DO NOT MODIFY - Core services
+│   │   └── your_services.py    # ✅ Add your services here
+│   ├── frontend/
+│   │   ├── default_routes/     # 🔒 DO NOT MODIFY - Core routes
+│   │   ├── routes/             # ✅ Add your routes here
+│   │   ├── deps.py             # Dependency injection
+│   │   └── __init__.py         # FastAPI app setup
+│   └── tasks/                  # Background jobs
+├── templates/frontend/
+│   ├── defaults/               # 🔒 DO NOT MODIFY - Core templates
+│   └── your_templates.html.jinja # ✅ Add your templates here
+└── assets/statics/             # Compiled CSS/JS assets</pre>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="protected-card rounded-lg p-6">
+                            <h3 class="text-lg font-bold text-red-800 mb-3">🔒 Protected Files (DO NOT MODIFY)</h3>
+                            <ul class="text-sm text-red-700 space-y-1">
+                                <li>• <code>src/myproject/core/</code> - Core utilities</li>
+                                <li>• <code>src/myproject/models/core/</code> - Core models</li>
+                                <li>• <code>src/myproject/services/core/</code> - Core services</li>
+                                <li>• <code>src/myproject/frontend/default_routes/</code> - Core routes</li>
+                                <li>• <code>templates/frontend/defaults/</code> - Default templates</li>
+                            </ul>
+                        </div>
+                        <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
+                            <h3 class="text-lg font-bold text-green-800 mb-3">✅ Your Development Areas</h3>
+                            <ul class="text-sm text-green-700 space-y-1">
+                                <li>• <code>models/</code> - Your data models</li>
+                                <li>• <code>services/</code> - Your business logic</li>
+                                <li>• <code>frontend/routes/</code> - Your API endpoints</li>
+                                <li>• <code>templates/frontend/</code> - Your templates</li>
+                                <li>• <code>tasks/</code> - Your background jobs</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="section-divider"></div>
+
+                <!-- Development Workflow -->
+                <section id="development" class="space-y-8">
+                    <h2 class="text-3xl font-bold gradient-text">💻 Development Workflow</h2>
+                    
+                    <div class="warning-card rounded-lg p-6">
+                        <h3 class="text-lg font-bold text-yellow-800 mb-3">⚠️ CRITICAL: Development Environment Setup</h3>
+                        <p class="text-sm text-yellow-700 mb-3">For local development, you MUST run BOTH processes simultaneously:</p>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-white/50 rounded p-3">
+                                <div class="text-xs font-bold text-yellow-800 mb-1">Terminal 1:</div>
+                                <code class="command-badge">pnpm dev</code>
+                                <div class="text-xs text-yellow-700 mt-1">Watches and builds CSS/JS on changes</div>
+                            </div>
+                            <div class="bg-white/50 rounded p-3">
+                                <div class="text-xs font-bold text-yellow-800 mb-1">Terminal 2:</div>
+                                <code class="command-badge">just local-dev</code>
+                                <div class="text-xs text-yellow-700 mt-1">Runs FastAPI server with auto-reload</div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-yellow-700 mt-3"><strong>Tip:</strong> Use the 'web-app-runner' Claude Code agent to start both automatically!</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🔄 Hot Reload Features</h3>
+                                <ul class="space-y-3 text-sm">
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                        <span><strong>Python:</strong> Auto-reloads on .py file changes</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                        <span><strong>CSS:</strong> Live updates via Tailwind watch</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                                        <span><strong>JS:</strong> esbuild hot module replacement</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                                        <span><strong>Templates:</strong> Jinja2 auto-reload in debug</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🎯 Development Ports</h3>
+                                <div class="space-y-3 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>FastAPI App</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded">:8000</code>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Dev Instance 1</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded">:8080</code>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Dev Instance 2</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded">:8081</code>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Background Worker</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded">N/A</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🤖 Claude Code Integration</h3>
+                                <ul class="space-y-3 text-sm">
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3 mt-1.5"></span>
+                                        <div>
+                                            <strong>Web App Runner Agent:</strong><br>
+                                            <span class="text-gray-600">Automatically detects and starts both pnpm dev and just local-dev</span>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3 mt-1.5"></span>
+                                        <div>
+                                            <strong>Playwright MCP:</strong><br>
+                                            <span class="text-gray-600">Browser automation for testing user flows</span>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-1.5"></span>
+                                        <div>
+                                            <strong>Database MCPs:</strong><br>
+                                            <span class="text-gray-600">MongoDB and Redis operations for debugging</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">⚡ Quick Development Tips</h3>
+                                <ul class="space-y-2 text-sm">
+                                    <li>• Use <code>just local-dev 8080</code> for specific ports</li>
+                                    <li>• Check <code>/debug/routes</code> to see all endpoints</li>
+                                    <li>• Visit <code>/debug/config</code> for settings overview</li>
+                                    <li>• Use <code>ruff format .</code> after code changes</li>
+                                    <li>• Background jobs visible at <code>/debug/jobs</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="section-divider"></div>
+
+                <!-- Adding Features -->
+                <section id="features" class="space-y-8">
+                    <h2 class="text-3xl font-bold gradient-text">✨ Adding New Features</h2>
+                    
+                    <div class="grid lg:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                            <h3 class="text-lg font-bold text-blue-600 mb-4">📊 1. Create a Model</h3>
+                            <div class="code-block text-xs">
+                                <div class="text-gray-400 mb-2"># models/posts.py</div>
+                                <pre>from beanie import Document
+from datetime import datetime
+from typing import Optional
+
+class Post(Document):
+    title: str
+    content: str
+    author_id: str
+    created_at: datetime
+    published: bool = False
+    
+    class Settings:
+        collection = "posts"</pre>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                            <h3 class="text-lg font-bold text-green-600 mb-4">⚙️ 2. Create a Service</h3>
+                            <div class="code-block text-xs">
+                                <div class="text-gray-400 mb-2"># services/posts.py</div>
+                                <pre>from ..models.posts import Post
+
+async def create_post(
+    title: str, 
+    content: str, 
+    author_id: str
+) -> Post:
+    post = Post(
+        title=title,
+        content=content,
+        author_id=author_id
+    )
+    return await post.save()</pre>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                            <h3 class="text-lg font-bold text-purple-600 mb-4">🌐 3. Create Routes</h3>
+                            <div class="code-block text-xs">
+                                <div class="text-gray-400 mb-2"># frontend/routes/posts.py</div>
+                                <pre>from fastapi import APIRouter
+from ..deps import get_current_user
+from ...services.posts import create_post
+
+router = APIRouter(prefix="/posts")
+
+@router.post("/")
+async def create_post_route(
+    title: str,
+    content: str,
+    user = Depends(get_current_user)
+):
+    return await create_post(
+        title, content, str(user.id)
+    )</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                        <h3 class="text-xl font-bold mb-4">🖼️ 4. Create Templates</h3>
+                        <div class="grid lg:grid-cols-2 gap-6">
+                            <div class="code-block text-xs">
+                                <div class="text-gray-400 mb-2"># templates/frontend/posts.html.jinja</div>
+                                <pre>{% extends "base/skeleton.html.jinja" %}
+
+{% block title %}{% trans %}Posts{% endtrans %}{% endblock %}
+
+{% block content %}
+&lt;div class="container mx-auto px-4"&gt;
+    &lt;h1 class="text-3xl font-bold mb-6"&gt;
+        {% trans %}My Posts{% endtrans %}
+    &lt;/h1&gt;
+    
+    {% for post in posts %}
+    &lt;div class="card bg-base-100 shadow-xl mb-4"&gt;
+        &lt;div class="card-body"&gt;
+            &lt;h2 class="card-title"&gt;{{ post.title }}&lt;/h2&gt;
+            &lt;p&gt;{{ post.content[:200] }}...&lt;/p&gt;
+            &lt;div class="card-actions justify-end"&gt;
+                &lt;a href="/posts/{{ post.id }}" 
+                   class="btn btn-primary"&gt;
+                    {% trans %}Read More{% endtrans %}
+                &lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    {% endfor %}
+&lt;/div&gt;
+{% endblock %}</pre>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                                    <h4 class="font-bold text-blue-800">Template Best Practices</h4>
+                                    <ul class="text-sm text-blue-700 mt-2 space-y-1">
+                                        <li>• Extend <code>base/skeleton.html.jinja</code></li>
+                                        <li>• Use <code>{% trans %}{% endtrans %}</code> for i18n</li>
+                                        <li>• Leverage DaisyUI components</li>
+                                        <li>• Use HTMX for dynamic interactions</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                                    <h4 class="font-bold text-green-800">HTMX Integration</h4>
+                                    <div class="code-block text-xs mt-2">
+                                        <pre>&lt;button hx-post="/posts/like/{{ post.id }}"
+        hx-target="#likes-{{ post.id }}"
+        class="btn btn-outline btn-sm"&gt;
+    ❤️ Like
+&lt;/button&gt;</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="section-divider"></div>
+
+                <!-- Testing -->
+                <section id="testing" class="space-y-8">
+                    <h2 class="text-3xl font-bold gradient-text">🧪 Testing Your Application</h2>
+                    
+                    <div class="warning-card rounded-lg p-6">
+                        <h3 class="text-lg font-bold text-yellow-800 mb-3">⚠️ Prerequisites for Testing</h3>
+                        <p class="text-sm text-yellow-700 mb-3">Before running any tests, ensure BOTH services are running:</p>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-white/50 rounded p-3">
+                                <code class="command-badge">pnpm dev</code>
+                                <div class="text-xs text-yellow-700 mt-1">Frontend asset watching</div>
+                            </div>
+                            <div class="bg-white/50 rounded p-3">
+                                <code class="command-badge">just local-dev</code>
+                                <div class="text-xs text-yellow-700 mt-1">Backend server running</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🎭 Playwright MCP Testing</h3>
+                                <p class="text-sm text-gray-600 mb-4">Claude Code has built-in Playwright integration for browser testing:</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                        <span>Automated form interactions</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                        <span>Button clicking and navigation</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                                        <span>Page content verification</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                                        <span>Authentication flow testing</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🔐 Authentication Testing</h3>
+                                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                                    <p class="text-sm text-blue-700 mb-2"><strong>Important:</strong> When testing protected routes:</p>
+                                    <ol class="text-xs text-blue-600 space-y-1">
+                                        <li>1. Claude will encounter 403 errors initially</li>
+                                        <li>2. Claude will ask you to authenticate in browser</li>
+                                        <li>3. Log in via OAuth or magic link when prompted</li>
+                                        <li>4. Claude continues testing protected routes</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">💾 Database Testing</h3>
+                                <p class="text-sm text-gray-600 mb-4">Claude Code includes database testing tools:</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                        <span><strong>MongoDB MCP:</strong> Direct database queries</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+                                        <span><strong>Redis MCP:</strong> Cache and job queue testing</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                        <span><strong>Auto cleanup:</strong> Test data management</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                                        <span><strong>Transaction testing:</strong> Rollback scenarios</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🔍 Manual Testing Tools</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">Debug Info</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">/debug/info</code>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">All Routes</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">/debug/routes</code>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">Database Status</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">/debug/db</code>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">Test Users</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">/debug/users</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="section-divider"></div>
+
+                <!-- Authentication -->
+                <section id="authentication" class="space-y-8">
+                    <h2 class="text-3xl font-bold gradient-text">🔐 Authentication System</h2>
+                    
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🌐 OAuth Providers</h3>
+                                <p class="text-sm text-gray-600 mb-4">Pre-configured OAuth providers:</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center">
+                                        <span class="w-6 h-6 bg-red-500 rounded mr-3 flex items-center justify-center text-white text-xs">G</span>
+                                        <span><strong>Google:</strong> OAuth 2.0 integration</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-6 h-6 bg-gray-800 rounded mr-3 flex items-center justify-center text-white text-xs">GH</span>
+                                        <span><strong>GitHub:</strong> Developer-friendly auth</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-6 h-6 bg-blue-500 rounded mr-3 flex items-center justify-center text-white text-xs">MS</span>
+                                        <span><strong>Microsoft:</strong> Enterprise integration</span>
+                                    </li>
+                                </ul>
+
+                                <div class="mt-4 p-4 bg-gray-50 rounded">
+                                    <h4 class="font-bold text-sm mb-2">OAuth Flow:</h4>
+                                    <div class="text-xs text-gray-600 space-y-1">
+                                        <div>1. User clicks "Login with Google"</div>
+                                        <div>2. Redirect to OAuth provider</div>
+                                        <div>3. User authenticates</div>
+                                        <div>4. Callback with authorization code</div>
+                                        <div>5. Exchange for access token</div>
+                                        <div>6. Create/link user account</div>
+                                        <div>7. Set session cookie</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">✉️ Magic Link Authentication</h3>
+                                <p class="text-sm text-gray-600 mb-4">Passwordless authentication via email:</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                        <span>Enter email address</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                        <span>Receive secure login link</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                                        <span>Click link to authenticate</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                                        <span>Automatic account creation</span>
+                                    </li>
+                                </ul>
+
+                                <div class="mt-4 code-block text-xs">
+                                    <div class="text-gray-400 mb-2"># Magic link flow</div>
+                                    <pre>POST /auth/magic-link
+{
+  "email": "user@example.com"
+}
+
+# Email sent with secure token
+# User clicks: /auth/verify/{token}
+# Session created, user logged in</pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🛡️ Protecting Routes</h3>
+                                <div class="code-block text-xs">
+                                    <div class="text-gray-400 mb-2"># frontend/routes/protected.py</div>
+                                    <pre>from fastapi import Depends
+from ..deps import get_current_user
+from ...models.core.user import User
+
+@router.get("/profile")
+async def get_profile(
+    user: User = Depends(get_current_user)
+):
+    return {"user": user.dict()}
+
+@router.post("/posts")
+async def create_post(
+    title: str,
+    content: str,
+    user: User = Depends(get_current_user)
+):
+    # User is guaranteed to be authenticated
+    return await create_post(title, content, user.id)</pre>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">👤 User Management</h3>
+                                <p class="text-sm text-gray-600 mb-4">Built-in user model with OAuth linking:</p>
+                                <div class="code-block text-xs">
+                                    <pre># User model features:
+class User(Document):
+    email: str
+    name: str
+    avatar_url: Optional[str]
+    is_active: bool = True
+    created_at: datetime
+    
+    # OAuth accounts linked to user
+    oauth_accounts: List[OAuthAccount]
+    
+    # Email verification for magic links
+    email_verified: bool = False</pre>
+                                </div>
+
+                                <div class="mt-4 p-3 bg-green-50 rounded">
+                                    <h4 class="font-bold text-green-800 text-sm mb-1">Available Endpoints:</h4>
+                                    <ul class="text-xs text-green-700 space-y-1">
+                                        <li>• <code>GET /profile</code> - User profile</li>
+                                        <li>• <code>POST /auth/logout</code> - Logout</li>
+                                        <li>• <code>GET /auth/oauth/{provider}</code> - OAuth</li>
+                                        <li>• <code>POST /auth/magic-link</code> - Magic link</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="section-divider"></div>
+
+                <!-- Localization -->
+                <section id="localization" class="space-y-8">
+                    <h2 class="text-3xl font-bold gradient-text">🌍 Internationalization (i18n)</h2>
+                    
+                    <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                        <h3 class="text-xl font-bold mb-4">🔄 Translation Workflow</h3>
+                        <div class="grid lg:grid-cols-4 gap-4">
+                            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                                <div class="text-2xl mb-2">1️⃣</div>
+                                <div class="font-bold text-sm mb-2">Extract</div>
+                                <code class="command-badge text-xs">just extract-translations</code>
+                                <div class="text-xs text-gray-600 mt-2">Find translatable strings</div>
+                            </div>
+                            <div class="text-center p-4 bg-green-50 rounded-lg">
+                                <div class="text-2xl mb-2">2️⃣</div>
+                                <div class="font-bold text-sm mb-2">Translate</div>
+                                <code class="command-badge text-xs">edit .po files</code>
+                                <div class="text-xs text-gray-600 mt-2">Update translations</div>
+                            </div>
+                            <div class="text-center p-4 bg-purple-50 rounded-lg">
+                                <div class="text-2xl mb-2">3️⃣</div>
+                                <div class="font-bold text-sm mb-2">Compile</div>
+                                <code class="command-badge text-xs">just compile-locales</code>
+                                <div class="text-xs text-gray-600 mt-2">Build runtime files</div>
+                            </div>
+                            <div class="text-center p-4 bg-orange-50 rounded-lg">
+                                <div class="text-2xl mb-2">4️⃣</div>
+                                <div class="font-bold text-sm mb-2">Test</div>
+                                <code class="command-badge text-xs">Browser check</code>
+                                <div class="text-xs text-gray-600 mt-2">Verify translations</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">📝 Template Usage</h3>
+                                <div class="code-block text-xs">
+                                    <div class="text-gray-400 mb-2"># Basic translation</div>
+                                    <pre>&lt;h1&gt;{% trans %}Welcome{% endtrans %}&lt;/h1&gt;
+
+# With variables
+{% trans user=user.name %}
+Hello {{ user }}!
+{% endtrans %}
+
+# Pluralization
+{% trans count=items|length %}
+You have {{ count }} item.
+{% pluralize %}
+You have {{ count }} items.
+{% endtrans %}</pre>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🐍 Python Code Usage</h3>
+                                <div class="code-block text-xs">
+                                    <div class="text-gray-400 mb-2"># services/notifications.py</div>
+                                    <pre>from starlette_babel import gettext_lazy as _
+
+# Simple message
+message = _("Operation completed")
+
+# With parameters
+error = _("Invalid input: %(details)s") % {
+    "details": error_details
+}
+
+# In FastAPI responses
+return {
+    "message": str(_("Post created successfully"))
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🌎 Adding New Languages</h3>
+                                <div class="space-y-4">
+                                    <div class="p-3 bg-blue-50 rounded">
+                                        <div class="font-bold text-blue-800 text-sm mb-2">Step-by-step:</div>
+                                        <ol class="text-xs text-blue-700 space-y-1">
+                                            <li>1. <code>just new-locale es</code> - Create Spanish locale</li>
+                                            <li>2. Edit <code>locales/es/LC_MESSAGES/messages.po</code></li>
+                                            <li>3. Add translations for all msgid entries</li>
+                                            <li>4. <code>just compile-locales</code> - Compile</li>
+                                            <li>5. Test in browser with <code>?lang=es</code></li>
+                                        </ol>
+                                    </div>
+                                    <div class="code-block text-xs">
+                                        <div class="text-gray-400 mb-2"># Example .po entry</div>
+                                        <pre>msgid "Welcome"
+msgstr "Bienvenido"
+
+msgid "You have %(count)d items"
+msgstr "Tienes %(count)d elementos"</pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">⚙️ Language Detection</h3>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                        <span><strong>Browser:</strong> Accept-Language header</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                        <span><strong>URL:</strong> ?lang=es parameter</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                                        <span><strong>User Profile:</strong> Saved preference</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                                        <span><strong>Fallback:</strong> English default</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="section-divider"></div>
+
+                <!-- Deployment -->
+                <section id="deployment" class="space-y-8">
+                    <h2 class="text-3xl font-bold gradient-text">🚀 Deployment</h2>
+                    
+                    <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                        <h3 class="text-xl font-bold mb-4">📋 Automated Deployment Pipeline</h3>
+                        <div class="grid lg:grid-cols-3 gap-6">
+                            <div class="text-center p-4 bg-green-50 rounded-lg">
+                                <div class="text-3xl mb-3">🏷️</div>
+                                <div class="font-bold text-sm mb-2">1. Create Tag</div>
+                                <code class="command-badge text-xs">git tag v1.0.0</code>
+                                <div class="text-xs text-gray-600 mt-2">Triggers GitHub Actions</div>
+                            </div>
+                            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                                <div class="text-3xl mb-3">🔄</div>
+                                <div class="font-bold text-sm mb-2">2. CI/CD Pipeline</div>
+                                <div class="text-xs text-gray-600">Automated testing, building, and deployment</div>
+                            </div>
+                            <div class="text-center p-4 bg-purple-50 rounded-lg">
+                                <div class="text-3xl mb-3">✅</div>
+                                <div class="font-bold text-sm mb-2">3. Live Production</div>
+                                <div class="text-xs text-gray-600">Health checks and monitoring</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🐳 Docker Multi-Stage Build</h3>
+                                <div class="code-block text-xs">
+                                    <div class="text-gray-400 mb-2"># Automatic Dockerfile generation</div>
+                                    <pre># Stage 1: Dependencies
+FROM python:3.13-slim as deps
+RUN pip install uv
+COPY uv.lock pyproject.toml ./
+RUN uv sync --frozen
+
+# Stage 2: Frontend Build  
+FROM node:20 as frontend
+COPY package.json pnpm-lock.yaml ./
+RUN corepack enable pnpm && pnpm install
+COPY . .
+RUN pnpm build-prod
+
+# Stage 3: Production
+FROM python:3.13-slim as production
+COPY --from=deps /.venv /.venv
+COPY --from=frontend /app/assets ./assets
+COPY . .
+EXPOSE 8000
+CMD ["uv", "run", "python", "-m", "myapp"]</pre>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">📊 Health Checks</h3>
+                                <div class="space-y-3 text-sm">
+                                    <div class="flex justify-between items-center">
+                                        <span>Basic Health</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">/health</code>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Readiness Probe</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">/health/ready</code>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Liveness Probe</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">/health/live</code>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Metrics</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">/metrics</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">⚙️ GitHub Actions Workflow</h3>
+                                <div class="space-y-3">
+                                    <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
+                                        <div class="font-bold text-blue-800 text-sm mb-2">CI Pipeline (.github/workflows/ci.yml)</div>
+                                        <ul class="text-xs text-blue-700 space-y-1">
+                                            <li>• Code quality checks (ruff, pyright)</li>
+                                            <li>• Security scanning (bandit, safety)</li>
+                                            <li>• Container vulnerability scanning</li>
+                                            <li>• Automated testing with Playwright</li>
+                                            <li>• Multi-platform Docker builds</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-green-50 border-l-4 border-green-500 p-3 rounded">
+                                        <div class="font-bold text-green-800 text-sm mb-2">CD Pipeline (.github/workflows/cd.yml)</div>
+                                        <ul class="text-xs text-green-700 space-y-1">
+                                            <li>• Automatic deployment on tag creation</li>
+                                            <li>• Production image builds and pushes</li>
+                                            <li>• Rolling deployments with health checks</li>
+                                            <li>• Rollback mechanisms on failure</li>
+                                            <li>• Notification on success/failure</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🔄 Manual Deployment</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just build-dev</code>
+                                        <span class="text-sm text-gray-600">Build dev image</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just test-build-prod</code>
+                                        <span class="text-sm text-gray-600">Test production build</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just release</code>
+                                        <span class="text-sm text-gray-600">Build & tag production</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just deploy-latest HOST</code>
+                                        <span class="text-sm text-gray-600">Deploy to server</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <code class="command-badge">just rollback TAG</code>
+                                        <span class="text-sm text-gray-600">Emergency rollback</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="section-divider"></div>
+
+                <!-- Debugging -->
+                <section id="debugging" class="space-y-8">
+                    <h2 class="text-3xl font-bold gradient-text">🐛 Debugging & Development Tools</h2>
+                    
+                    <div class="warning-card rounded-lg p-6">
+                        <h3 class="text-lg font-bold text-yellow-800 mb-3">🔍 Debug Endpoints (Development Only)</h3>
+                        <p class="text-sm text-yellow-700 mb-4">Available when <code>DEBUG=true</code>:</p>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <code class="bg-white/50 p-2 rounded text-xs">/debug/info</code>
+                            <code class="bg-white/50 p-2 rounded text-xs">/debug/routes</code>
+                            <code class="bg-white/50 p-2 rounded text-xs">/debug/config</code>
+                            <code class="bg-white/50 p-2 rounded text-xs">/debug/health</code>
+                            <code class="bg-white/50 p-2 rounded text-xs">/debug/db</code>
+                            <code class="bg-white/50 p-2 rounded text-xs">/debug/templates</code>
+                            <code class="bg-white/50 p-2 rounded text-xs">/debug/assets</code>
+                            <code class="bg-white/50 p-2 rounded text-xs">/debug/users</code>
+                        </div>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🔍 Route Inspector</h3>
+                                <p class="text-sm text-gray-600 mb-4">Visit <code>/debug/routes</code> to see:</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                        <span>All registered endpoints</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                        <span>HTTP methods for each route</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                                        <span>Route parameters and types</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                                        <span>Authentication requirements</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">⚙️ Configuration Viewer</h3>
+                                <p class="text-sm text-gray-600 mb-4">Visit <code>/debug/config</code> for:</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                        <span>Current settings with masked secrets</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                        <span>Environment variable sources</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                                        <span>Database and Redis connections</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                                        <span>Feature flags and toggles</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">📄 Template Debugger</h3>
+                                <p class="text-sm text-gray-600 mb-4">Visit <code>/debug/templates</code> for:</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                        <span>Template resolution order</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                        <span>Available context variables</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                                        <span>Template inheritance chain</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                                        <span>Jinja2 filter availability</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">💾 Database Inspector</h3>
+                                <p class="text-sm text-gray-600 mb-4">Visit <code>/debug/db</code> for:</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                        <span>Connection status and latency</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                        <span>Collection info and document counts</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                                        <span>Recent queries and performance</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                                        <span>Index usage and optimization</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">📦 Asset Pipeline Status</h3>
+                                <p class="text-sm text-gray-600 mb-4">Visit <code>/debug/assets</code> for:</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                        <span>Build status and file sizes</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                        <span>Dependency graph and imports</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                                        <span>Purged CSS and unused code</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                                        <span>Version hashes and cache busting</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">👥 Development Helpers</h3>
+                                <p class="text-sm text-gray-600 mb-4">Development-only endpoints:</p>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between items-center">
+                                        <span>List all users</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">GET /debug/users</code>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Create fake users</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">POST /debug/users/fake</code>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Clear all users</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">DELETE /debug/users/all</code>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>View sent emails</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">GET /debug/emails</code>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Trigger jobs</span>
+                                        <code class="bg-gray-100 px-2 py-1 rounded text-xs">POST /debug/jobs/{id}</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="section-divider"></div>
+
+                <!-- Best Practices -->
+                <section id="best-practices" class="space-y-8">
+                    <h2 class="text-3xl font-bold gradient-text">📋 Best Practices</h2>
+                    
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🐍 Python Code Style</h3>
+                                <ul class="space-y-3 text-sm">
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3 mt-2"></span>
+                                        <div>
+                                            <strong>Type hints:</strong> Always use type hints for function parameters and returns<br>
+                                            <code class="text-xs bg-gray-100 px-1 rounded">async def get_user(user_id: str) -> User | None:</code>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3 mt-2"></span>
+                                        <div>
+                                            <strong>Async/await:</strong> Use async functions for all database operations and I/O<br>
+                                            <code class="text-xs bg-gray-100 px-1 rounded">user = await User.find_one(User.email == email)</code>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-2"></span>
+                                        <div>
+                                            <strong>Auto-formatting:</strong> ALWAYS run <code>ruff format .</code> after changes<br>
+                                            <code class="text-xs bg-gray-100 px-1 rounded">ruff format . && ruff check --fix .</code>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3 mt-2"></span>
+                                        <div>
+                                            <strong>Naming:</strong> snake_case for functions/variables, PascalCase for classes<br>
+                                            <code class="text-xs bg-gray-100 px-1 rounded">def get_user_posts() -> list[Post]:</code>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🎨 Frontend Patterns</h3>
+                                <ul class="space-y-3 text-sm">
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3 mt-2"></span>
+                                        <div>
+                                            <strong>HTMX:</strong> Prefer server-side rendering with HTMX over complex JavaScript<br>
+                                            <code class="text-xs bg-gray-100 px-1 rounded">hx-post="/api/like" hx-target="#likes"</code>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3 mt-2"></span>
+                                        <div>
+                                            <strong>Tailwind:</strong> Use utility classes, avoid custom CSS<br>
+                                            <code class="text-xs bg-gray-100 px-1 rounded">class="btn btn-primary rounded-lg shadow-md"</code>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-2"></span>
+                                        <div>
+                                            <strong>DaisyUI:</strong> Use pre-built components when available<br>
+                                            <code class="text-xs bg-gray-100 px-1 rounded">class="card card-body bg-base-100"</code>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3 mt-2"></span>
+                                        <div>
+                                            <strong>Templates:</strong> Use Jinja2 inheritance, avoid duplication<br>
+                                            <code class="text-xs bg-gray-100 px-1 rounded">{% extends "base/skeleton.html.jinja" %}</code>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">📁 File Organization</h3>
+                                <div class="code-block text-xs">
+                                    <pre># ✅ GOOD: Organized structure
+models/
+├── posts.py          # Post model
+├── comments.py       # Comment model
+└── categories.py     # Category model
+
+services/
+├── post_service.py   # Post business logic
+├── auth_service.py   # Authentication logic
+└── email_service.py  # Email functionality
+
+frontend/routes/
+├── api/
+│   ├── posts.py      # Post API endpoints
+│   └── auth.py       # Auth API endpoints
+└── pages/
+    ├── blog.py       # Blog page routes
+    └── admin.py      # Admin page routes</pre>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4">🔒 Security Best Practices</h3>
+                                <ul class="space-y-3 text-sm">
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mr-3 mt-2"></span>
+                                        <div>
+                                            <strong>Never log secrets:</strong> Use secret masking in configuration<br>
+                                            <code class="text-xs bg-gray-100 px-1 rounded">api_key: SecretStr = Field(..., repr=False)</code>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3 mt-2"></span>
+                                        <div>
+                                            <strong>Input validation:</strong> Use Pydantic models for all inputs<br>
+                                            <code class="text-xs bg-gray-100 px-1 rounded">class CreatePost(BaseModel): title: str</code>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-yellow-500 rounded-full mr-3 mt-2"></span>
+                                        <div>
+                                            <strong>Authentication:</strong> Use dependency injection for protected routes<br>
+                                            <code class="text-xs bg-gray-100 px-1 rounded">user: User = Depends(get_current_user)</code>
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3 mt-2"></span>
+                                        <div>
+                                            <strong>Environment secrets:</strong> Use .env.local for sensitive data<br>
+                                            <code class="text-xs bg-gray-100 px-1 rounded">SECRET_KEY=your-secret-key-here</code>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="section-divider"></div>
+
+                <!-- Troubleshooting -->
+                <section id="troubleshooting" class="space-y-8">
+                    <h2 class="text-3xl font-bold gradient-text">🔧 Troubleshooting</h2>
+                    
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4 text-red-600">🚨 Common Issues</h3>
+                                <div class="space-y-4">
+                                    <div class="border-l-4 border-red-500 pl-4">
+                                        <h4 class="font-bold text-sm text-red-800">Port Already in Use</h4>
+                                        <p class="text-xs text-red-600 mb-2">Error: Address already in use (port 8000)</p>
+                                        <div class="code-block text-xs">
+                                            <pre># Kill process using port
+lsof -ti:8000 | xargs kill -9
+
+# Or use different port
+just local-dev 8080</pre>
+                                        </div>
+                                    </div>
+                                    <div class="border-l-4 border-orange-500 pl-4">
+                                        <h4 class="font-bold text-sm text-orange-800">CSS Not Loading</h4>
+                                        <p class="text-xs text-orange-600 mb-2">Styles not updating or missing</p>
+                                        <div class="code-block text-xs">
+                                            <pre># Restart asset watcher
+pkill -f "pnpm dev"
+pnpm dev
+
+# Clear browser cache
+Cmd+Shift+R (Mac) or Ctrl+Shift+R</pre>
+                                        </div>
+                                    </div>
+                                    <div class="border-l-4 border-yellow-500 pl-4">
+                                        <h4 class="font-bold text-sm text-yellow-800">Database Connection</h4>
+                                        <p class="text-xs text-yellow-600 mb-2">Cannot connect to MongoDB</p>
+                                        <div class="code-block text-xs">
+                                            <pre># Check database URL
+echo $MONGODB_URL
+
+# Test connection
+curl $MONGODB_URL
+
+# Restart Docker if using containers
+just dev</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4 text-blue-600">🔍 Debugging Steps</h3>
+                                <ol class="space-y-3 text-sm">
+                                    <li class="flex items-start">
+                                        <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-0.5">1</span>
+                                        <div>
+                                            <strong>Check debug endpoints:</strong><br>
+                                            Visit <code>/debug/info</code> for system status
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-0.5">2</span>
+                                        <div>
+                                            <strong>Review logs:</strong><br>
+                                            Check console output for error messages
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-0.5">3</span>
+                                        <div>
+                                            <strong>Verify configuration:</strong><br>
+                                            Visit <code>/debug/config</code> to check settings
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-0.5">4</span>
+                                        <div>
+                                            <strong>Test database:</strong><br>
+                                            Visit <code>/debug/db</code> for connection status
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-0.5">5</span>
+                                        <div>
+                                            <strong>Check assets:</strong><br>
+                                            Visit <code>/debug/assets</code> for build status
+                                        </div>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4 text-green-600">✅ Quick Fixes</h3>
+                                <div class="space-y-4">
+                                    <div class="border-l-4 border-green-500 pl-4">
+                                        <h4 class="font-bold text-sm text-green-800">Restart Everything</h4>
+                                        <div class="code-block text-xs">
+                                            <pre># Nuclear option - restart all processes
+pkill -f "pnpm\|uvicorn\|just"
+just dev</pre>
+                                        </div>
+                                    </div>
+                                    <div class="border-l-4 border-blue-500 pl-4">
+                                        <h4 class="font-bold text-sm text-blue-800">Clear Caches</h4>
+                                        <div class="code-block text-xs">
+                                            <pre># Clear various caches
+rm -rf __pycache__ .pytest_cache
+rm -rf node_modules/.cache
+rm -rf assets/statics/css/* assets/statics/js/*
+uv sync && pnpm install</pre>
+                                        </div>
+                                    </div>
+                                    <div class="border-l-4 border-purple-500 pl-4">
+                                        <h4 class="font-bold text-sm text-purple-800">Reset Database</h4>
+                                        <div class="code-block text-xs">
+                                            <pre># WARNING: This will delete all data
+# Only for development!
+docker-compose down -v
+docker-compose up -d mongodb</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-6 shadow-lg guide-card">
+                                <h3 class="text-xl font-bold mb-4 text-purple-600">📞 Getting Help</h3>
+                                <ul class="space-y-3 text-sm">
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                        <span><strong>Claude Code:</strong> Ask Claude for help with specific issues</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                        <span><strong>Debug endpoints:</strong> Use built-in debugging tools</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                                        <span><strong>Documentation:</strong> Check CLAUDE.md files</span>
+                                    </li>
+                                    <li class="flex items-center">
+                                        <span class="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                                        <span><strong>Community:</strong> FastAPI, HTMX, and Tailwind docs</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">AT</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold gradient-text">Happy Coding!</h3>
+                            <p class="text-sm text-gray-600">Everything you need to build amazing web applications.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center md:text-right">
+                    <div class="bg-gray-50 rounded-lg p-6 inline-block">
+                        <h4 class="font-bold text-gray-800 mb-2">Need Help?</h4>
+                        <p class="text-sm text-gray-600 mb-2">Questions about development workflow?</p>
+                        <div class="text-blue-600 font-medium">david@alltuner.com</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-8 border-t border-gray-200 text-center">
+                <p class="text-gray-600">Built with ❤️ by David Poblador to avoid reinventing the square wheel</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
