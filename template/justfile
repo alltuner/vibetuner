@@ -180,6 +180,13 @@ merge:
 i18n: extract-translations update-locale-files compile-locales
     @echo "✓ Complete i18n workflow finished"
 
+# Generate or update README.md using Claude Code
+[group('documentation')]
+readme:
+    @echo "📝 Generating README.md..."
+    @claude /readme
+    @echo "✓ README.md generated/updated"
+
 # Extracts translations from source files
 [group('localization')]
 extract-translations:

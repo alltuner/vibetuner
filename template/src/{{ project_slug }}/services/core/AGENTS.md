@@ -1,6 +1,7 @@
 # Core Services - DO NOT MODIFY
 
-**⚠️ IMPORTANT**: These files are managed by the scaffolding system and should NEVER be modified directly.
+**⚠️ IMPORTANT**: These files are managed by the scaffolding system and
+should NEVER be modified directly.
 
 ## Protected Core Services
 

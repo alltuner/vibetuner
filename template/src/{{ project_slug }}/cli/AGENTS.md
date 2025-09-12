@@ -1,3 +1,4 @@
+
 # CLI Module
 
 Command-line interface using AsyncTyper.
@@ -40,10 +41,10 @@ main_app.add_typer(my_app, name="my-commands")
 
 ```bash
 # Via uv (recommended)
-uv run python -m {{ project_slug }} my-command --name test --count 5
+uv run python -m [project_slug] my-command --name test --count 5
 
 # After installation
-{{ project_slug }} my-command --name test --count 5
+[project_slug] my-command --name test --count 5
 ```
 
 ## Database Commands
@@ -114,5 +115,5 @@ async def show_stats():
 ```bash
 uv add asynctyper rich      # Add CLI dependencies
 uv sync                     # Sync dependencies
-uv run python -m {{ project_slug }} --help  # Show CLI help
+uv run python -m [project_slug] --help  # Show CLI help
 ```
