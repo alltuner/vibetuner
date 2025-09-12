@@ -6,7 +6,8 @@
       "Bash(git push:*)",
       "Bash(ruff format:*)",
       "Bash(tree:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(head:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
