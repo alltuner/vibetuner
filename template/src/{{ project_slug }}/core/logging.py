@@ -28,15 +28,10 @@ class InterceptHandler(logging.Handler):
             frame = frame.f_back
             depth += 1
 
-        # Extract module information
-        module_path = (
-            record.name
-        )  # This will get the full logger name (e.g., 'castuner.XXXX.XXXX')
-
         # Format the message with module information inline
         logger.opt(depth=depth, exception=record.exc_info).log(
             level,
-            f"[{module_path}] {record.getMessage()}",
+            f"[{record.name}] {record.getMessage()}",
         )
 
 

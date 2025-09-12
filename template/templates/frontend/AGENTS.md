@@ -6,7 +6,7 @@ This application uses a layered Jinja2 template system with automatic fallback s
 
 ## Template Loading Order
 
-The system uses a two-tier template lookup system defined in `src/castuner/core/paths.py`:
+The system uses a two-tier template lookup system defined in `src/PROJECT_NAME/core/paths.py`:
 
 1. **Primary Path**: `templates/frontend/`
 2. **Fallback Path**: `templates/frontend/defaults/`
@@ -67,7 +67,7 @@ templates/frontend/base/footer.html.jinja
 
 ## Template Rendering
 
-Templates are rendered using the `render_template()` function from `src/castuner/frontend/templates.py`:
+Templates are rendered using the `render_template()` function from `src/PROJECT_NAME/frontend/templates.py`:
 
 ```python
 def render_template(
