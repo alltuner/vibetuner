@@ -1,5 +1,14 @@
 {
   "mcpServers": {
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--browser=${PLAYWRIGHT_BROWSER:-msedge}"
+      ],
+      "env": {}
+    },
     "cloudflare": {
       "command": "npx",
       "args": [
@@ -13,15 +22,6 @@
         "mongo-mcp",
         "{{ mongodb_url }}{{ project_slug }}?authSource=admin"
       ]
-    },
-    "playwright": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "@playwright/mcp@latest",
-        "--browser=${PLAYWRIGHT_BROWSER:-msedge}"
-      ],
-      "env": {}
     },
     "redis": {
       "command": "uvx",
