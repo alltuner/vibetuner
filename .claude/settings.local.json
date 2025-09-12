@@ -1,12 +1,15 @@
 {
   "permissions": {
     "allow": [
+      "Bash(bun markdownlint:*)",
+      "Bash(find:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
+      "Bash(head:*)",
+      "Bash(mkdir:*)",
       "Bash(ruff format:*)",
-      "Bash(tree:*)",
-      "Bash(mkdir:*)"
+      "Bash(tree:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

@@ -1,6 +1,8 @@
+
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working
+with code in this repository.
 
 ## Project Overview
 
@@ -30,7 +32,9 @@ just local-dev
 
 The webserver automatically picks up Python code changes without manual restart.
 
-**Tip**: Use the `web-app-runner` agent to automatically start both processes correctly in parallel. This agent checks if the app is already running and starts it only if needed.
+**Tip**: Use the `web-app-runner` agent to automatically start both processes
+correctly in parallel. This agent checks if the app is already running and
+starts it only if needed.
 
 Or use Docker (all-in-one):
 
@@ -100,7 +104,7 @@ Use **uv exclusively** for Python dependencies:
 uv add package-name         # Install a package
 uv remove package-name      # Remove a package
 uv sync                     # Sync all dependencies
-uv run python -m {{ project_slug }}  # Run the application
+uv run python -m [project_slug]  # Run the application
 ```
 
 Never use pip, poetry, or conda directly.
@@ -189,7 +193,8 @@ Never use pip, poetry, or conda directly.
 **Application Templates** (add your custom templates here):
 
 - Add your application-specific templates directly in `templates/frontend/`
-- Example: `templates/frontend/dashboard.html.jinja`, `templates/frontend/profile.html.jinja`, etc.
+- Example: `templates/frontend/dashboard.html.jinja`,
+  `templates/frontend/profile.html.jinja`, etc.
 
 **Core Templates** (`templates/frontend/defaults/` - **DO NOT MODIFY**):
 
@@ -222,7 +227,8 @@ Never use pip, poetry, or conda directly.
 ### Starting Development
 
 1. **Environment setup**: Copy `.env.example` to `.env.local` and configure
-2. **Start services**: `just dev` (Docker) or `just local-dev` (local - auto-reloads on changes)
+2. **Start services**: `just dev` (Docker) or `just local-dev`
+   (local - auto-reloads on changes)
 3. **Asset watching**: `bun dev` in separate terminal for CSS/JS auto-rebuilding
 
 ### Testing the Application
@@ -251,30 +257,37 @@ This project includes **Playwright MCP integration** for web testing:
 - The app runs on `http://localhost:8000` when using `just local-dev`
 - Claude Code has access to a Playwright MCP tool for automated browser testing
 - The testing tool can interact with forms, click buttons, and verify page content
-- **Note**: There's a `web-app-runner` agent available that knows how to properly start both `bun dev` and `just local-dev` in parallel for testing
+- **Note**: There's a `web-app-runner` agent available that knows how to
+  properly start both `bun dev` and `just local-dev` in parallel for testing
 
 #### Handling Authentication During Testing
 
 **IMPORTANT**: When testing authenticated routes:
 
-1. **403 Forbidden Errors**: If you encounter a 403 error during testing, this means authentication is required
+1. **403 Forbidden Errors**: If you encounter a 403 error during testing,
+   this means authentication is required
 2. **Authentication Process**:
-   - Claude will need to pause and ask you to authenticate in the test browser window
+   - Claude will need to pause and ask you to authenticate in the test
+     browser window
    - This is expected behavior - simply log in when prompted
-   - Once authenticated, Claude can continue testing protected routes
-3. **Session Persistence**: The authentication session will persist for the duration of the test run
+   - Once authenticated, Claude can continue testing protected
+     routes
+3. **Session Persistence**: The authentication session will persist for
+   the duration of the test run
 
 Example workflow:
 
 ```text
-Claude: "I'm getting a 403 error. Please authenticate in the browser window so I can continue testing."
+Claude: "I'm getting a 403 error. Please authenticate in the browser window
+so I can continue testing."
 User: [Logs in via OAuth or magic link in the browser]
 Claude: "Thank you! I can now access the protected routes and continue testing."
 ```
 
 ### Available MCP Servers
 
-This project comes with several **MCP (Model Context Protocol) servers** pre-configured for Claude Code:
+This project comes with several **MCP (Model Context Protocol) servers**
+pre-configured for Claude Code:
 
 #### Database Servers
 
@@ -311,18 +324,24 @@ This project comes with several **MCP (Model Context Protocol) servers** pre-con
 
 ### Adding New Features
 
-1. **Routes**: Add new endpoints in `src/[project_slug]/frontend/routes/` (NOT in `default_routes/`)
-2. **Models**: Define data models in `src/[project_slug]/models/` (NOT in `models/core/`)
-3. **Services**: Create business logic in `src/[project_slug]/services/` (NOT in `services/core/`)
-4. **Templates**: Create Jinja2 templates in `templates/frontend/` (NOT in `templates/frontend/defaults/`)
+1. **Routes**: Add new endpoints in `src/[project_slug]/frontend/routes/`
+   (NOT in `default_routes/`)
+2. **Models**: Define data models in `src/[project_slug]/models/`
+   (NOT in `models/core/`)
+3. **Services**: Create business logic in `src/[project_slug]/services/`
+   (NOT in `services/core/`)
+4. **Templates**: Create Jinja2 templates in `templates/frontend/`
+   (NOT in `templates/frontend/defaults/`)
 5. **Styles**: Use Tailwind classes, extend in `config.css` if needed
 
-**Important**: Never modify files in `core/` or `defaults/` directories - these are managed by the scaffolding.
+**Important**: Never modify files in `core/` or `defaults/` directories -
+these are managed by the scaffolding.
 
 ### Authentication System
 
 - **OAuth Flow**: Configured providers in `core/config.py`, handled in `default_routes/auth.py`
-- **Magic Links**: Passwordless login via email, tokens in `models/core/email_verification.py`  
+- **Magic Links**: Passwordless login via email, tokens in
+  `models/core/email_verification.py`
 - **User Sessions**: FastAPI session middleware with secure cookies
 - **Protected Routes**: Use `get_current_user` dependency from `frontend/deps.py`
 
@@ -449,7 +468,8 @@ error = _("Invalid input: %(details)s") % {"details": error_details}
 ### Adding OAuth Providers
 
 1. Update `core/config.py` with provider configuration
-2. Add provider-specific logic in `frontend/default_routes/auth.py` (or extend via custom routes)
+2. Add provider-specific logic in `frontend/default_routes/auth.py`
+   (or extend via custom routes)
 3. Update login template with new provider button
 
 ### Adding Background Jobs
@@ -488,7 +508,8 @@ When job queue is enabled:
 
 ## Project-Specific Notes
 
-This section should be updated with any project-specific information, custom configurations, or special considerations for your application.
+This section should be updated with any project-specific information,
+custom configurations, or special considerations for your application.
 
 ## Code Style Guidelines
 
@@ -500,7 +521,8 @@ This section should be updated with any project-specific information, custom con
 - **Imports**: Group as stdlib → third-party → local, alphabetically sorted
 - **Naming**: snake_case for functions/variables, PascalCase for classes
 - **Line length**: 88 characters (Black formatter default)
-- **Auto-formatting**: ALWAYS run `ruff format .` after making Python code changes to ensure consistent formatting
+- **Auto-formatting**: ALWAYS run `ruff format .` after making Python
+  code changes to ensure consistent formatting
 
 ### Frontend Patterns
 
@@ -543,10 +565,10 @@ from ..services.email import send_email
 
 **NEVER MODIFY** these scaffolding-managed locations:
 
-- `src/{{ project_slug }}/core/` - Core utilities
-- `src/{{ project_slug }}/models/core/` - Core models
-- `src/{{ project_slug }}/services/core/` - Core services
-- `src/{{ project_slug }}/frontend/default_routes/` - Core routes
+- `src/[project_slug]/core/` - Core utilities
+- `src/[project_slug]/models/core/` - Core models
+- `src/[project_slug]/services/core/` - Core services
+- `src/[project_slug]/frontend/default_routes/` - Core routes
 - `templates/frontend/defaults/` - Default templates
 
 To extend or customize:
@@ -578,6 +600,7 @@ If core functionality is insufficient:
 - Do what has been asked; nothing more, nothing less
 - NEVER create files unless they're absolutely necessary for achieving your goal
 - ALWAYS prefer editing an existing file to creating a new one
-- NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User
+- NEVER proactively create documentation files (*.md) or README files.
+  Only create documentation files if explicitly requested by the User
 
 ## Custom project instructions

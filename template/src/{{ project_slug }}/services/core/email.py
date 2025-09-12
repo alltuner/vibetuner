@@ -8,7 +8,6 @@ from typing import Literal
 
 import boto3
 
-# Note: Import path is correct when template is rendered ({{ project_slug }} replaced)
 from ...core.config import project_settings, settings
 
 

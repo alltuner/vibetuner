@@ -1,10 +1,12 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
 ## Project Overview
 
-This is a **Copier-based project scaffolding template** that generates modern Python web applications using AllTuner's blessed stack:
+This is a **Copier-based project scaffolding template** that generates modern
+Python web applications using AllTuner's blessed stack:
 
 - **FastAPI** + **MongoDB** + **HTMX** + **Tailwind CSS/DaisyUI**
 - **Docker** containerization with multi-stage builds
@@ -130,7 +132,8 @@ The template generates a FastAPI application with this structure:
 
 ### Template Files (.j2)
 
-- **Jinja2 templates** use Copier variables like `{{ project_slug }}`, `{{ author_name }}`
+- **Jinja2 templates** use Copier variables like `{{ project_slug }}`,
+  `{{ author_name }}`
 - **Conditional blocks** use `{% if condition %}` for optional features
 - **Key files**: `pyproject.toml.j2`, `compose.*.yml.j2`, `start.sh.j2`
 
