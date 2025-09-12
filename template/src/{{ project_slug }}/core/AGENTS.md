@@ -1,3 +1,4 @@
+
 # Core Module
 
 Foundation utilities - **DO NOT MODIFY** these files directly.
@@ -6,7 +7,8 @@ Foundation utilities - **DO NOT MODIFY** these files directly.
 
 ### How Settings Work
 
-The application uses Pydantic Settings for configuration management. Settings are loaded from multiple sources in priority order:
+The application uses Pydantic Settings for configuration management.
+Settings are loaded from multiple sources in priority order:
 
 1. **Environment variables** (highest priority)
 2. **`.env.local` file** (local overrides, not in git)

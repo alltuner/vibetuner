@@ -2,11 +2,13 @@
 
 ## Overview
 
-This application uses a layered Jinja2 template system with automatic fallback support. Templates in this directory (`templates/frontend/`) can override default templates provided by the scaffolding.
+This application uses a layered Jinja2 template system with automatic
+fallback support. Templates in this directory (`templates/frontend/`) can
+override default templates provided by the scaffolding.
 
 ## Template Loading Order
 
-The system uses a two-tier template lookup system defined in `src/PROJECT_NAME/core/paths.py`:
+The system uses a two-tier template lookup system defined in `src/[project_slug]/core/paths.py`:
 
 1. **Primary Path**: `templates/frontend/`
 2. **Fallback Path**: `templates/frontend/defaults/`
@@ -16,7 +18,8 @@ When a template is requested, the system:
 1. First looks in `templates/frontend/`
 2. If not found, falls back to `templates/frontend/defaults/`
 
-This is implemented via the `to_template_path_list()` function which creates a list of paths that Jinja2's FileSystemLoader searches in order.
+This is implemented via the `to_template_path_list()` function which creates
+a list of paths that Jinja2's FileSystemLoader searches in order.
 
 ## Directory Structure
 
@@ -67,7 +70,7 @@ templates/frontend/base/footer.html.jinja
 
 ## Template Rendering
 
-Templates are rendered using the `render_template()` function from `src/PROJECT_NAME/frontend/templates.py`:
+Templates are rendered using the `render_template()` function from `src/[project_slug]/frontend/templates.py`:
 
 ```python
 def render_template(
@@ -101,8 +104,10 @@ The following custom filters are available in templates:
 
 ## Best Practices
 
-1. **Never modify files in `defaults/`** - These are managed by the scaffolding
-2. **Use template inheritance** - Extend `base/skeleton.html.jinja` for consistent layout
+1. **Never modify files in `defaults/`** - These are managed by the
+   scaffolding
+2. **Use template inheritance** - Extend `base/skeleton.html.jinja` for
+   consistent layout
 3. **Keep overrides minimal** - Only override what you need to change
 4. **Follow naming conventions** - Use `.html.jinja` extension for all templates
 5. **Organize by feature** - Group related templates in subdirectories
@@ -132,4 +137,5 @@ To debug which template is being loaded:
 2. If not found, the system will use the default from `templates/frontend/defaults/`
 3. Template not found errors will show the full search path
 
-Remember: The fallback mechanism ensures the application always has working templates while allowing complete customization.
+Remember: The fallback mechanism ensures the application always has working
+templates while allowing complete customization.
