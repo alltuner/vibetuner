@@ -3,7 +3,6 @@
     "@tailwindcss/cli": "^4.1.13",
     "concurrently": "^9.2.1",
     "daisyui": "^5.1.10",
-    "esbuild": "^0.25.9",
     "htmx-ext-preload": "^2.1.1",
     "htmx.org": "2.0.7",
     "markdownlint-cli": "^0.45.0",
@@ -12,10 +11,10 @@
   "dependencies": {},
   "scripts": {
     "dev:css": "tailwindcss -w -i config.css -o assets/statics/css/bundle.css",
-    "dev:js": "esbuild --watch config.js --bundle --sourcemap --outfile=assets/statics/js/bundle.js",
+    "dev:js": "bun build config.js --watch --outdir=assets/statics/js --entry-naming=\"bundle.[ext]\" --sourcemap",
     "dev": "concurrently 'bun dev:css' 'bun dev:js'",
     "build-prod:css": "tailwindcss -i config.css --minify -o assets/statics/css/bundle.css",
-    "build-prod:js": "esbuild config.js --bundle --minify --outfile=assets/statics/js/bundle.js",
+    "build-prod:js": "bun build config.js --minify --outdir=assets/statics/js --entry-naming=\"bundle.[ext]\"",
     "build-prod": "concurrently 'bun build-prod:css' 'bun build-prod:js'"
   }
 }
