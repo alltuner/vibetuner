@@ -24,6 +24,6 @@ Then I'll:
    - Follows conventional commit format when appropriate
    - Includes the Claude Code footer for attribution
 
-!git add . && ruff format . && ruff check --fix . && djlint --reformat templates/ --quiet && pnpm markdownlint **/*.md --fix && git add .
+!git add . && ruff format . && ruff check --fix . && djlint --reformat templates/ --quiet && bun markdownlint **/*.md --fix && git add .
 
 This command captures ALL your current work (staged + unstaged) and creates a meaningful commit, perfect for saving progress or preparing for a release workflow.
