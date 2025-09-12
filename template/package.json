@@ -1,29 +1,20 @@
 {
   "devDependencies": {
-    // Scaffolding dependencies
-    // ----------------------------------------------------------------
-    // CSS framework and utilities
     "tailwindcss": "^4.1.13",
     "@tailwindcss/cli": "^4.1.13",
     "daisyui": "^5.1.10",
-    // Frontend interactivity
     "htmx.org": "2.0.7",
     "htmx-ext-preload": "^2.1.1",
-    // Development tools
-    "concurrently": "^9.2.1", // Run multiple scripts in parallel
-    "markdownlint-cli": "^0.45.0",
-    // Project dependencies
-    // ----------------------------------------------------------------
+    "concurrently": "^9.2.1",
+    "markdownlint-cli": "^0.45.0"
   },
   "dependencies": {},
   "scripts": {
-    // Development builds with watch mode
-    "dev:css": "tailwindcss -w -i config.css -o assets/statics/css/bundle.css",
+    "dev:css": "bun tailwindcss -w -i config.css -o assets/statics/css/bundle.css",
     "dev:js": "bun build config.js --watch --outdir=assets/statics/js --entry-naming=\"bundle.[ext]\" --sourcemap",
     "dev": "concurrently 'bun dev:css' 'bun dev:js'",
-    // Production builds (minified, optimized)
-    "build-prod:css": "tailwindcss -i config.css --minify -o assets/statics/css/bundle.css",
+    "build-prod:css": "bun tailwindcss -i config.css --minify -o assets/statics/css/bundle.css",
     "build-prod:js": "bun build config.js --minify --outdir=assets/statics/js --entry-naming=\"bundle.[ext]\"",
-    "build-prod": "concurrently 'bun build-prod:css' 'bun build-prod:js'",
+    "build-prod": "concurrently 'bun build-prod:css' 'bun build-prod:js'"
   }
 }
