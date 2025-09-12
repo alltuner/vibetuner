@@ -76,7 +76,7 @@ WORKDIR /app
 # Install frontend dependencies using lockfile
 RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
     --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=bun.lockb,target=bun.lockb \
+    --mount=type=bind,source=bun.lock,target=bun.lock \
     bun install --frozen-lockfile
 
 # ────────────────────────────────────────────────────────────────────────────────
@@ -91,7 +91,7 @@ RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
     --mount=type=bind,source=config.css,target=config.css \
     --mount=type=bind,source=config.js,target=config.js \
     --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=bun.lockb,target=bun.lockb \
+    --mount=type=bind,source=bun.lock,target=bun.lock \
     bun run build-prod
 
 # ────────────────────────────────────────────────────────────────────────────────
