@@ -1,3 +1,4 @@
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -100,7 +101,7 @@ Use **uv exclusively** for Python dependencies:
 uv add package-name         # Install a package
 uv remove package-name      # Remove a package
 uv sync                     # Sync all dependencies
-uv run python -m {{ project_slug }}  # Run the application
+uv run python -m [project_slug]  # Run the application
 ```
 
 Never use pip, poetry, or conda directly.
@@ -543,10 +544,10 @@ from ..services.email import send_email
 
 **NEVER MODIFY** these scaffolding-managed locations:
 
-- `src/{{ project_slug }}/core/` - Core utilities
-- `src/{{ project_slug }}/models/core/` - Core models
-- `src/{{ project_slug }}/services/core/` - Core services
-- `src/{{ project_slug }}/frontend/default_routes/` - Core routes
+- `src/[project_slug]/core/` - Core utilities
+- `src/[project_slug]/models/core/` - Core models
+- `src/[project_slug]/services/core/` - Core services
+- `src/[project_slug]/frontend/default_routes/` - Core routes
 - `templates/frontend/defaults/` - Default templates
 
 To extend or customize:

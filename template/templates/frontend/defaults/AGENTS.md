@@ -1,3 +1,4 @@
+
 # Default Templates - DO NOT MODIFY
 
 **⚠️ IMPORTANT**: These templates are managed by the scaffolding system and should NEVER be modified directly.

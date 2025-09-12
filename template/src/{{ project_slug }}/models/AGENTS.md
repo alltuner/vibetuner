@@ -1,3 +1,4 @@
+
 # Models Module
 
 MongoDB data models using Beanie ODM.
@@ -105,4 +106,4 @@ Claude Code has access to the **MongoDB MCP server** for database operations:
 - Debug database issues
 - Explore data relationships
 
-This is automatically connected to your project's MongoDB instance (`{{ project_slug }}` database).
+This is automatically connected to your project's MongoDB instance (`[project_slug]` database).
