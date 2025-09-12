@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Bash(bun markdownlint:*)",
       "Bash(find:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
