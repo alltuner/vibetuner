@@ -20,13 +20,13 @@ This command will:
    - Formats all .html.jinja template files in the templates directory
    - Uses djlint for consistent HTML/Jinja2 formatting
 
-4. 📝 **Lint Markdown files**: `pnpm markdownlint **/*.md --fix`
+4. 📝 **Lint Markdown files**: `bun markdownlint **/*.md --fix`
    - Lints and auto-fixes markdown files
    - Ensures consistent markdown formatting and style
 
 Let me run the formatting and linting:
 
-!ruff format . && ruff check --fix . && djlint --reformat templates/ --quiet && pnpm markdownlint **/*.md --fix
+!ruff format . && ruff check --fix . && djlint --reformat templates/ --quiet && bun markdownlint **/*.md --fix
 
 This will:
 

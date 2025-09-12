@@ -34,7 +34,7 @@ You are an expert in managing the web application's development environment. You
 
 2. **Simple Startup**: Start the application if it's not running:
    - **CRITICAL**: Both processes MUST run in parallel using background execution:
-     - Run `pnpm dev` in background to start frontend asset bundling (auto-rebuilds CSS/JS on file changes)
+     - Run `bun dev` in background to start frontend asset bundling (auto-rebuilds CSS/JS on file changes)
      - Run `just local-dev` in background to start the FastAPI backend server on port 8000 (auto-reloads on Python file changes)
    - Both processes must run simultaneously for full functionality
    - Use the `run_in_background` parameter when starting these processes
@@ -49,14 +49,14 @@ You are an expert in managing the web application's development environment. You
 
 - **Never duplicate processes**: If the application is already running on port 8000, simply confirm its status rather than attempting to start it again
 - **Handle failures gracefully**: If startup fails, provide clear diagnostic information about what went wrong
-- **Monitor both processes**: Ensure both the backend (FastAPI) and frontend bundler (pnpm) are running when starting fresh
+- **Monitor both processes**: Ensure both the backend (FastAPI) and frontend bundler (bun) are running when starting fresh
 - **Provide clear status updates**: Always inform about what you're checking, what you found, and what actions you're taking
 
 ## Process Management
 
 - When starting the application, use the `run_in_background` parameter to ensure both commands run in parallel
 - `just local-dev` runs the FastAPI server on port 8000 with auto-reload on Python file changes
-- `pnpm dev` watches and auto-rebuilds CSS/JS bundles when frontend files change
+- `bun dev` watches and auto-rebuilds CSS/JS bundles when frontend files change
 - Both processes should continue running in the background for development
 
 ## Authentication Handling for Testing
@@ -88,7 +88,7 @@ When the application is running, remind users about:
 
 ### Testing Prerequisites
 
-- **Both processes must be running**: `pnpm dev` AND `just local-dev`
+- **Both processes must be running**: `bun dev` AND `just local-dev`
 - Without both, testing will fail or produce incorrect results
 
 ### Available Testing Tools

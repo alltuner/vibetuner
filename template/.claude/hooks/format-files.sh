@@ -24,7 +24,7 @@ for file in "${files[@]}"; do
                 ;;
             *.md)
                 echo "📝 Formatting Markdown: $file"
-                pnpm markdownlint --fix "$file" 2>/dev/null || true
+                bun markdownlint --fix "$file" 2>/dev/null || true
                 formatted=true
                 ;;
             *.html.jinja)

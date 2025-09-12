@@ -10,7 +10,7 @@ I'll open your application in a Playwright browser and wait for you to authentic
 
 First, I'll use the web-app-runner agent to ensure the application is running:
 
-The web-app-runner agent will check if the development environment is running on port 8000 and start it if needed (both `pnpm dev` and `just local-dev` processes). Then I'll:
+The web-app-runner agent will check if the development environment is running on port 8000 and start it if needed (both `bun dev` and `just local-dev` processes). Then I'll:
 
 1. 🌐 Open ${1:-<http://localhost:8000}> in Playwright browser
 2. 📸 Take a screenshot so you can see the current state  
