@@ -1,7 +1,0 @@
-{
-  "files.associations": {
-    "package.json": "jsonc"
-  },
-  "json.validate.enable": false,
-  "json.schemas": []
-}
