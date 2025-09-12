@@ -3,6 +3,5 @@
     "package.json": "jsonc"
   },
   "json.validate.enable": false,
-  "jsonc.validate.enable": true,
   "json.schemas": []
 }
