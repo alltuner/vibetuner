@@ -25,7 +25,7 @@ Let me run the dependency updates:
 
 Now I'll commit the updated dependency files:
 
-!git add uv.lock bun.lockb pyproject.toml package.json && ruff format . && git add . && git status && git diff --cached
+!git add uv.lock bun.lock pyproject.toml package.json && ruff format . && git add . && git status && git diff --cached
 
 Based on the changes, I'll create a commit with an appropriate message summarizing the dependency updates.
 
@@ -34,14 +34,14 @@ This will:
 - `uv lock --upgrade` → Update Python dependency versions in uv.lock
 - `uv sync` → Synchronize the virtual environment with updated dependencies  
 - `bun update` → Update all Node.js packages to latest versions
-- `git add` → Stage all dependency-related files (uv.lock, bun.lockb, pyproject.toml, package.json)
+- `git add` → Stage all dependency-related files (uv.lock, bun.lock, pyproject.toml, package.json)
 - `ruff format` → Format any code changes and stage them
 - `git commit` → Commit with a descriptive message about the dependency updates
 
 **Files that get committed:**
 
 - `uv.lock` - Updated Python dependency versions
-- `bun.lockb` - Updated Node.js dependency versions  
+- `bun.lock` - Updated Node.js dependency versions  
 - `pyproject.toml` - If dependency constraints were updated
 - `package.json` - If Node.js dependency versions were updated
 
