@@ -118,7 +118,7 @@ Override by creating same path without `defaults/`.
 
 ```bash
 # Terminal 1: Watch and build frontend assets (auto-rebuilds CSS/JS)
-pnpm dev
+bun dev
 
 # Terminal 2: Run FastAPI server (auto-reloads Python changes)
 just local-dev
@@ -126,7 +126,7 @@ just local-dev
 
 **Why both are required:**
 
-- `pnpm dev`: Watches and rebuilds CSS/JS bundles when files change
+- `bun dev`: Watches and rebuilds CSS/JS bundles when files change
 - `just local-dev`: Runs the FastAPI backend server with hot-reload
 
 **For testing:** Both processes MUST be running before any testing can begin.
@@ -135,7 +135,7 @@ just local-dev
 
 When testing the application:
 
-1. Ensure both `pnpm dev` and `just local-dev` are running
+1. Ensure both `bun dev` and `just local-dev` are running
 2. Use Playwright MCP to interact with `http://localhost:8000`
 3. For 403 errors: Ask user to authenticate in the test browser
 4. Session will persist for the duration of testing

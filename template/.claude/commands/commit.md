@@ -23,6 +23,6 @@ Then I'll create a commit with a message that:
 
 Finally, I'll run comprehensive code formatting to ensure consistency:
 
-!ruff format . && ruff check --fix . && djlint --reformat templates/ --quiet && pnpm markdownlint **/*.md --fix
+!ruff format . && ruff check --fix . && djlint --reformat templates/ --quiet && bun markdownlint **/*.md --fix
 
 This command will automatically generate an appropriate commit message based on your actual changes, similar to what I did earlier with your Swedish language support changes.
