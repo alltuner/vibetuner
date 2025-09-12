@@ -33,6 +33,7 @@ node_modules/
 .markdownlint.json
 renovate.json
 Dockerfile
+.mcp.json
 
 # Localization
 ############################################################
