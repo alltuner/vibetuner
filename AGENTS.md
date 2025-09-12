@@ -31,7 +31,7 @@ When working with generated projects or testing the template:
 # Development
 just dev                      # Run dev environment with Docker + watch mode
 just local-dev               # Run locally without Docker
-just sync                     # Sync all dependencies (uv + pnpm)
+just sync                     # Sync all dependencies (uv + bun)
 
 # Building
 just build-dev               # Build development Docker image
@@ -39,8 +39,8 @@ just test-build-prod         # Test production build
 just release                 # Build and push production image (tagged commits only)
 
 # Frontend assets
-pnpm dev                     # Watch mode for CSS/JS (in template/)
-pnpm build-prod             # Production build for CSS/JS
+bun dev                      # Watch mode for CSS/JS (in template/)
+bun build-prod              # Production build for CSS/JS
 
 # Localization
 just extract-translations    # Extract i18n strings from source
@@ -115,7 +115,7 @@ The template generates a FastAPI application with this structure:
 ### Generated Project Development
 
 1. **Start development**: `just dev` (Docker) or `just local-dev` (local)
-2. **Frontend changes**: `pnpm dev` watches CSS/JS automatically
+2. **Frontend changes**: `bun dev` watches CSS/JS automatically
 3. **Database changes**: Update models in `models/`, migrations handled by application
 4. **New features**: Follow FastAPI patterns in `frontend/routes/`
 
@@ -167,7 +167,7 @@ The template generates a FastAPI application with this structure:
 - **HTMX attributes**: Use `hx-*` attributes for reactive behavior
 - **Tailwind classes**: DaisyUI components provide pre-built patterns
 - **Template inheritance**: Extend `base/skeleton.html.jinja`
-- **Asset pipeline**: Automatic rebuilding with `pnpm dev`
+- **Asset pipeline**: Automatic rebuilding with `bun dev`
 
 ### Database Schema Changes
 

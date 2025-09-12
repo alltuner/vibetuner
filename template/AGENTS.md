@@ -22,7 +22,7 @@ This is a modern Python web application built with AllTuner's blessed stack:
 
 ```bash
 # Terminal 1: Watch and build frontend assets (auto-rebuilds CSS/JS on changes)
-pnpm dev
+bun dev
 
 # Terminal 2: Run FastAPI server (auto-reloads on Python file changes)
 just local-dev
@@ -45,8 +45,8 @@ just sync                    # Sync all dependencies
 ### Frontend Assets
 
 ```bash
-pnpm dev                     # Watch mode - auto-rebuilds CSS/JS bundles on file changes
-pnpm build-prod             # Production build for CSS/JS
+bun dev                     # Watch mode - auto-rebuilds CSS/JS bundles on file changes
+bun build-prod             # Production build for CSS/JS
 ```
 
 ### Building & Deployment
@@ -223,7 +223,7 @@ Never use pip, poetry, or conda directly.
 
 1. **Environment setup**: Copy `.env.example` to `.env.local` and configure
 2. **Start services**: `just dev` (Docker) or `just local-dev` (local - auto-reloads on changes)
-3. **Asset watching**: `pnpm dev` in separate terminal for CSS/JS auto-rebuilding
+3. **Asset watching**: `bun dev` in separate terminal for CSS/JS auto-rebuilding
 
 ### Testing the Application
 
@@ -233,7 +233,7 @@ Never use pip, poetry, or conda directly.
 
 ```bash
 # Terminal 1: Frontend asset watching and auto-rebuilding
-pnpm dev
+bun dev
 
 # Terminal 2: FastAPI backend server
 just local-dev
@@ -241,7 +241,7 @@ just local-dev
 
 Both processes MUST be running simultaneously for the application to work properly:
 
-- Without `pnpm dev`: CSS and JavaScript changes won't be reflected
+- Without `bun dev`: CSS and JavaScript changes won't be reflected
 - Without `just local-dev`: The backend server won't be available
 
 #### Automated Testing with Playwright MCP
@@ -251,7 +251,7 @@ This project includes **Playwright MCP integration** for web testing:
 - The app runs on `http://localhost:8000` when using `just local-dev`
 - Claude Code has access to a Playwright MCP tool for automated browser testing
 - The testing tool can interact with forms, click buttons, and verify page content
-- **Note**: There's a `web-app-runner` agent available that knows how to properly start both `pnpm dev` and `just local-dev` in parallel for testing
+- **Note**: There's a `web-app-runner` agent available that knows how to properly start both `bun dev` and `just local-dev` in parallel for testing
 
 #### Handling Authentication During Testing
 

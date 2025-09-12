@@ -22,6 +22,6 @@ repos:
         additional_dependencies: [djlint]
       - id: markdownlint
         name: markdownlint
-        entry: pnpm markdownlint --fix
+        entry: bun markdownlint --fix
         language: system
         files: \.md$

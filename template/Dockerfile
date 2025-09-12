@@ -67,29 +67,17 @@ RUN find locales -mindepth 1 -maxdepth 1 -type d -name '??' 2>/dev/null | grep -
     && uvx --from babel pybabel compile -d locales || echo "No locales to compile"
 
 # ────────────────────────────────────────────────────────────────────────────────
-# Stage 4: Node.js Base with PNPM Package Manager
-# ────────────────────────────────────────────────────────────────────────────────
-FROM node:24-alpine AS frontend-deps-base
-
-# Configure PNPM package manager
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-
-# Enable and prepare PNPM
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
-# ────────────────────────────────────────────────────────────────────────────────
 # Stage 5: Install Frontend Dependencies
 # ────────────────────────────────────────────────────────────────────────────────
-FROM frontend-deps-base AS frontend-deps
+FROM oven/bun:1-alpine AS frontend-deps
 
 WORKDIR /app
 
-# Install frontend dependencies using lockfile for reproducibility
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+# Install frontend dependencies using lockfile
+RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
     --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=pnpm-lock.yaml,target=pnpm-lock.yaml \
-    pnpm install --frozen-lockfile
+    --mount=type=bind,source=bun.lockb,target=bun.lockb \
+    bun install --frozen-lockfile
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 6: Build Frontend Assets
@@ -98,13 +86,13 @@ FROM frontend-deps AS frontend-build
 
 COPY /templates/frontend/ templates/frontend/
 
-# Copy frontend source code and build production assets
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+# Build production assets with Bun
+RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
     --mount=type=bind,source=config.css,target=config.css \
     --mount=type=bind,source=config.js,target=config.js \
     --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=pnpm-lock.yaml,target=pnpm-lock.yaml \
-    pnpm run build-prod
+    --mount=type=bind,source=bun.lockb,target=bun.lockb \
+    bun run build-prod
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 7: Final Runtime Image
