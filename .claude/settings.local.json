@@ -1,13 +1,14 @@
 {
   "permissions": {
     "allow": [
+      "Bash(find:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(ruff format:*)",
-      "Bash(tree:*)",
+      "Bash(head:*)",
       "Bash(mkdir:*)",
-      "Bash(head:*)"
+      "Bash(ruff format:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
