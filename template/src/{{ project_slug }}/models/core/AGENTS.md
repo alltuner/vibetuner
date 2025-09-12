@@ -1,6 +1,7 @@
 # Core Models - DO NOT MODIFY
 
-**⚠️ IMPORTANT**: These files are managed by the scaffolding system and should NEVER be modified directly.
+**⚠️ IMPORTANT**: These files are managed by the scaffolding system and
+should NEVER be modified directly.
 
 ## Why These Files Are Protected
 
@@ -34,7 +35,8 @@ If a core feature is missing:
    - Filing an issue in the scaffolding repository
    - Forking and customizing the scaffolding template
    - Implementing a workaround in your custom code"
-3. **Backport changes**: If critical, suggest the user contributes the change back to the scaffolding template
+3. **Backport changes**: If critical, suggest the user contributes the
+   change back to the scaffolding template
 
 ## Core Model Files
 
