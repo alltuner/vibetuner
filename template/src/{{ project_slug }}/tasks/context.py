@@ -3,7 +3,8 @@ from typing import AsyncIterator
 
 from httpx import AsyncClient
 from pydantic import BaseModel
-from streaq import Worker
+
+from ..core.mongo import init_models
 
 
 class Context(BaseModel):
@@ -15,7 +16,8 @@ class Context(BaseModel):
 
 
 @asynccontextmanager
-async def lifespan(worker: Worker) -> AsyncIterator[Context]:
+async def lifespan() -> AsyncIterator[Context]:
+    await init_models()
     # Add below anything that should happen before startup
 
     # Until here
