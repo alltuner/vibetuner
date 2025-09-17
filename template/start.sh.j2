@@ -16,10 +16,10 @@ elif [ "$1" = "local-dev" ]; then
 {%- if enable_job_queue %}
 elif [ "$1" = "worker" ]; then
     echo "Starting task worker..."
-    exec streaq {{ project_slug }}.tasks.worker.worker
-    exec streaq  --web --port 11111 {{ project_slug }}.tasks.worker.worker
+    exec streaq --web --port 11111 {{ project_slug }}.tasks.worker.worker
 elif [ "$1" = "worker-dev" ]; then
     echo "Starting task worker in development mode..."
+    cd src
     DEBUG=1 exec streaq --web --port 11111 --reload --verbose {{ project_slug }}.tasks.worker.worker
 {%- endif %}
 #### Add your custom startup commands below this line
