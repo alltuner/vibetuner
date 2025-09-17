@@ -15,6 +15,11 @@ cache-keys = [
     { file = "pyproject.toml" },
     { git = { commit = true, tags = true } },
 ]
+dependency-metadata = [
+    # This is a temporary fix to ensure Arel doesn't hold back wathcfiles,
+    # which holds back StreaQ. We should PR upstream to fix this properly.
+    { name = "arel", version = "0.3.0", requires-dist = ["watchfiles>=1.1.0"] },
+]
 
 [tool.uv.sources]
 prototuner = { git = "https://github.com/alltuner/prototuner" }
