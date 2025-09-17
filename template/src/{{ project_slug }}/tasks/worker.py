@@ -11,5 +11,8 @@ worker = Worker(
         if not settings.debug
         else f"debug-{project_settings.project_slug}"
     ),
-    worker_lifespan=lifespan,
+    lifespan=lifespan,
 )
+
+# Register tasks
+# use something like from . import task_module_name // noqa: E402, F401
