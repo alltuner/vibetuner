@@ -4,84 +4,104 @@ Background job processing with Redis and Streaq (when enabled).
 
 ## Setup
 
-Only available when job queue is enabled during scaffolding.
+The queue is provisioned only when the job-runner option is selected during
+scaffolding.
 
-## Task Pattern
+## Defining Tasks
+
+Tasks are attached to the shared worker declared in `worker.py`.
 
 ```python
-from streaq import task
 from ..models import User
+from .worker import worker
 
-@task
-async def send_welcome_email(user_id: str):
-    """Send welcome email to new user."""
-    user = await User.get(user_id)
-    if user:
-        # Send email logic here
+
+@worker.task()
+async def send_welcome_email(user_id: str) -> dict[str, str]:
+    """Example background job."""
+    
+    # Access the context this way
+    res = await worker.context.http_client.get(url)
+
+    if user := await User.get(user_id):
+        # perform side effects here (email, webhook, etc.)
         return {"status": "sent", "user": user.email}
+    return {"status": "skipped"}
 ```
 
-## Queueing Tasks
+Key points:
 
-From routes:
+- Decorate functions with `@worker.task()` so they register automatically.
+- You can access the context via worker.context from within the tasks
+- Context resources are defined in `tasks/context.py`
+- Return serializable data; it is stored in Redis for retrieval.
+
+## Queueing Tasks From Routes or Services
+
+Import the registered task and call its `enqueue` helper directly.
 
 ```python
-from fastapi import Depends
-from ..frontend.deps import get_streaq_client
 from ..tasks import send_welcome_email
 
+
 @router.post("/signup")
-async def signup(
-    email: str,
-    streaq=Depends(get_streaq_client)
-):
+async def signup(email: str):
     user = await create_user(email)
-    await streaq.enqueue(send_welcome_email, user.id)
-    return {"status": "registered"}
+
+    task = await send_welcome_email.enqueue(user.id)
+    # Optional: inspect task.id or await task.result()
+
+    return {"status": "registered", "job_id": task.id}
 ```
+
+`RegisteredTask.enqueue()` returns a `Task` handle (`task.id`,
+`await task.status()`, `await task.result(timeout=...)`) that you can use for
+polling or surfacing status updates.
 
 ## Worker Management
 
 ```bash
 # Development
-just worker-dev             # Run worker locally
-
-# Production
-docker compose up worker    # Run worker in Docker
+just worker-dev                 # Run worker locally with auto-reload
 ```
 
-## Task Configuration
+The `start.sh` script already wires the recommended commands for local and
+containerised environments.
 
-In `worker.py`:
+## Worker Configuration
+
+`tasks/worker.py` initialises the shared worker used across the app.
 
 ```python
-from streaq import Streaq
-from ..core.config import settings
+from streaq import Worker
+from ..core.config import project_settings, settings
+from .context import lifespan
 
-streaq = Streaq(redis_url=settings.REDIS_URL)
 
-# Register tasks
-streaq.task(send_welcome_email)
-streaq.task(process_payment)
+worker = Worker(
+    redis_url=str(project_settings.redis_url),
+    queue_name=(
+        project_settings.project_slug
+        if not settings.debug
+        else f"debug-{project_settings.project_slug}"
+    ),
+    lifespan=lifespan,
+)
+
+# Import modules at the bottom of this file so their tasks register.
+from . import emails  # noqa: E402, F401
 ```
 
-## Monitoring
+When adding a new task module, import it at the end of `worker.py` (or
+`tasks/__init__.py`) so the decorator runs and the task is visible to the
+worker.
 
-Check Redis for job status:
+## Monitoring & Diagnostics
 
 ```python
-job_id = await streaq.enqueue(my_task, arg1, arg2)
-status = await streaq.get_job_status(job_id)
-result = await streaq.get_job_result(job_id)
+task = await send_digest_email.enqueue(account_id)
+
+status = await task.status()
+result = await task.result(timeout=30)  # raises TimeoutError if it takes too long
+await task.abort()                      # request cancellation when required
 ```
-
-### Redis MCP Integration
-
-Claude Code has access to the **Redis MCP server** for debugging and monitoring:
-
-- Monitor job queues and task status
-- Inspect cache keys and values
-- Debug background job processing issues
-- View Redis data structures directly
-
-This is automatically connected to your project's Redis instance.
