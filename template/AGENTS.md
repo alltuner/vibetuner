@@ -350,9 +350,9 @@ these are managed by the scaffolding.
 When job queue is enabled:
 
 - **Define tasks**: Add functions to `src/[project_slug]/tasks/`
-- **Queue jobs**: Use Streaq client to enqueue from route handlers
+- **Queue jobs**: Import the task and call `await my_task.enqueue(...)`
 - **Process jobs**: `just worker-dev` runs worker locally
-- **Monitor**: Check Redis for job status and results
+- **Monitor**: Use the returned task handle (`task.id`, `await task.status()`, `await task.result()`) or Redis tooling
 
 ### Database Operations
 
@@ -476,10 +476,12 @@ error = _("Invalid input: %(details)s") % {"details": error_details}
 
 When job queue is enabled:
 
-1. Define task function in `src/[project_slug]/tasks/`
-2. Import and register in `tasks/__init__.py`
-3. Queue from routes using `get_streaq_client()`
-4. Handle results and errors appropriately
+1. Define a task with `@worker.task()` in `src/[project_slug]/tasks/`
+2. Import the new module at the end of `tasks/worker.py` (or `tasks/__init__.py`) so
+   the decorator runs and registers the task
+3. Call `await my_task.enqueue(...)` from your route or service
+4. Use the returned task handle (`task.id`, `await task.status()`, `await task.result()`) to
+   monitor progress or surface errors
 
 ### Internationalization
 

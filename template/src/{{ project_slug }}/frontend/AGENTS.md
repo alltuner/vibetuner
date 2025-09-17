@@ -97,7 +97,6 @@ Override by creating same path without `defaults/`.
 
 - `get_current_user` - Require authenticated user
 - `get_current_user_optional` - Optional auth check
-- `get_streaq_client` - Background job queue client
 
 ## HTMX Patterns
 
