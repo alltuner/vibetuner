@@ -21,16 +21,6 @@
         "mongo-mcp",
         "{{ mongodb_url }}{{ project_slug }}?authSource=admin"
       ]
-    },
-    "redis": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/redis/mcp-redis.git",
-        "redis-mcp-server",
-        "--url",
-        "{{ redis_url }}0"
-      ]
     }
   }
 }
