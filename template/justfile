@@ -223,7 +223,7 @@ dump-untranslated DEST:
 [group('scaffolding')]
 update-scaffolding:
     @echo "Updating project scaffolding..."
-    @uvx copier update -A --trust
+    @copier update -A --trust
     @bun install
     @uv sync --all-extras
     @echo "Project scaffolding updated."
