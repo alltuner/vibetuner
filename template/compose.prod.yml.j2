@@ -10,6 +10,7 @@ services:
   {{ project_slug }}-worker:
     image: alltuner-docker-registry.long-python.ts.net/{{ project_slug }}:latest
     restart: unless-stopped
+    container_name: {{ project_slug }}-worker
     env_file:
       - .env
     networks:
@@ -38,6 +39,11 @@ services:
           - alltuner-docker-registry.long-python.ts.net/{{ project_slug }}:${VERSION:-0.0.0}
           - alltuner-docker-registry.long-python.ts.net/{{ project_slug }}:latest
     image: alltuner-docker-registry.long-python.ts.net/{{ project_slug }}:latest
+    container_name: {{ project_slug }}
+{%- if enable_job_queue %}
+    depends_on:
+      - {{ project_slug }}-worker
+{%- endif %}
     healthcheck:
       test:
         [

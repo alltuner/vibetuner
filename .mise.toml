@@ -1,5 +1,7 @@
 [env]
 _.file = '.env'
+UV_GIT_LFS=1
+GIT_LFS_SKIP_SMUDGE=1
 
 [settings.python]
 uv_venv_auto = true
