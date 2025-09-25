@@ -1,3 +1,5 @@
+_exclude:
+  - ".env.local"
 _preserve_symlinks: True
 _skip_if_exists:
   - .env
