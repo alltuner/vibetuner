@@ -1650,8 +1650,8 @@ wheels = [
 
 [[package]]
 name = "prototuner"
-version = "0.3.2"
-source = { git = "https://github.com/alltuner/prototuner#0d909ddc6038eaf47875052192c8fd1303c0ca79" }
+version = "0.3.3"
+source = { git = "https://github.com/alltuner/prototuner#eea3403b39a485cf2bf1a3052eeefc8d269e6323" }
 dependencies = [
     { name = "aioboto3" },
     { name = "arel" },
