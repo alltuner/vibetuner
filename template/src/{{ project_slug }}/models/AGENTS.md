@@ -1,21 +1,11 @@
-
 # Models Module
 
 MongoDB data models using Beanie ODM.
 
-## Structure
+## Quick Reference
 
-**Add your models here:**
-
-- Create files directly in `models/` (e.g., `posts.py`, `products.py`)
-
-**Core models (DO NOT MODIFY):**
-
-- `core/user.py` - User authentication
-- `core/oauth.py` - OAuth provider accounts
-- `core/email_verification.py` - Magic link tokens
-- `core/mixins.py` - Reusable model components
-- `core/blob.py` - File storage models
+**Add your models**: Create files in `models/` (e.g., `posts.py`, `products.py`)
+**Core models** (DO NOT MODIFY): `core/`
 
 ## Model Pattern
 
@@ -28,65 +18,84 @@ class Product(Document, TimeStampMixin):
     name: str
     price: float = Field(gt=0)
     stock: int = Field(ge=0)
-    
+
     class Settings:
         name = "products"
         indexes = ["name"]
 ```
 
-## Mixins
+## TimeStampMixin
 
-### TimeStampMixin
+Automatic timestamps:
 
-Use `TimeStampMixin` for automatic timestamps:
-
-- `db_insert_dt` - Set on creation (UTC)
-- `db_update_dt` - Updated on save (UTC)
-
-```python
-from .core.mixins import TimeStampMixin
-
-class Product(Document, TimeStampMixin):
-    name: str
-    price: float
-    
-    # Automatically gets db_insert_dt and db_update_dt fields
-    # Plus age calculation helpers: age(), age_in(), is_older_than()
-```
+- `db_insert_dt` - Created at (UTC)
+- `db_update_dt` - Updated at (UTC)
+- Methods: `age()`, `age_in()`, `is_older_than()`
 
 ## Queries
 
+### Finding Documents
+
 ```python
-# Find operations
-product = await Product.find_one(Product.name == "Widget")
-products = await Product.find(Product.price < 100).to_list()
+from beanie.operators import Eq, In, Gt, Lt
 
-# Save operations
+# By ID (preferred method)
+product = await Product.get(product_id)
+
+# By field (use Beanie operators)
+product = await Product.find_one(Eq(Product.name, "Widget"))
+products = await Product.find(Lt(Product.price, 100)).to_list()
+
+# Multiple conditions
+results = await Product.find(
+    Eq(Product.category, "electronics"),
+    Gt(Product.price, 50)
+).to_list()
+
+# With In operator
+products = await Product.find(
+    In(Product.category, ["electronics", "gadgets"])
+).to_list()
+```
+
+### Save/Delete
+
+```python
+# Create
+product = Product(name="Widget", price=9.99, stock=100)
+await product.insert()
+
+# Update
+product.price = 19.99
 await product.save()
-await product.replace()
-await product.delete()
 
-# Aggregation
-pipeline = [{"$match": {"price": {"$gt": 50}}}]
-results = await Product.aggregate(pipeline).to_list()
+# Delete
+await product.delete()
+```
+
+### Aggregation
+
+```python
+results = await Product.aggregate([
+    {"$match": {"price": {"$gt": 50}}},
+    {"$group": {"_id": "$category", "total": {"$sum": 1}}}
+]).to_list()
 ```
 
 ## Indexes
 
-Define in model's `Settings` class:
-
 ```python
+from pymongo import IndexModel, TEXT
+
 class Settings:
     indexes = [
-        "field_name",
+        "field_name",  # Simple index
         [("field1", 1), ("field2", -1)],  # Compound index
-        IndexModel([("text_field", TEXT)])  # Text index
+        IndexModel([("text_field", TEXT)])  # Text search
     ]
 ```
 
 ## Relationships
-
-Use `Link` for document references:
 
 ```python
 from beanie import Link
@@ -94,17 +103,12 @@ from beanie import Link
 class Order(Document):
     user: Link[User]
     products: list[Link[Product]]
+
+# Fetch with relations
+order = await Order.get(order_id, fetch_links=True)
+print(order.user.email)  # Automatically loaded
 ```
 
-## MongoDB MCP Integration
+## MongoDB MCP
 
-Claude Code has access to the **MongoDB MCP server** for database operations:
-
-- Query collections directly
-- Inspect document structures
-- Run aggregation pipelines
-- Debug database issues
-- Explore data relationships
-
-This is automatically connected to your project's MongoDB instance
-(`[project_slug]` database).
+Claude Code has MongoDB MCP access for database operations, queries, and debugging.

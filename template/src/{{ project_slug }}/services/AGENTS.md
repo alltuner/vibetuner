@@ -1,44 +1,35 @@
-
 # Services Module
 
 Business logic and external service integrations.
 
-## Structure
+## Quick Reference
 
-**Add your services here:**
-
-- Create files directly in `services/` (e.g., `notifications.py`, `payments.py`)
-
-**Core services (DO NOT MODIFY):**
-
-- `core/email.py` - AWS SES email sending
-- `core/blob.py` - File storage operations
+**Add your services**: Create files in `services/` (e.g., `notifications.py`)
+**Core services** (DO NOT MODIFY): `core/email.py`, `core/blob.py`
 
 ## Service Pattern
 
 ```python
-from typing import Optional
 from ..models import User
 from ..core.config import settings
 
 class NotificationService:
     async def send_notification(
-        self, 
-        user: User, 
+        self,
+        user: User,
         message: str,
         priority: str = "normal"
     ) -> bool:
-        """Send notification to user."""
-        # Implementation here
+        # Implementation
         return True
 
-# Singleton instance
+# Singleton
 notification_service = NotificationService()
 ```
 
-## Email Service
+## Using Core Services
 
-Using the core email service:
+### Email
 
 ```python
 from .core.email import send_email
@@ -51,16 +42,15 @@ await send_email(
 )
 ```
 
-## External APIs
+### External APIs
 
 ```python
 import httpx
-from ..core.config import settings
 
-async def call_external_api(data: dict) -> dict:
+async def call_api(data: dict) -> dict:
     async with httpx.AsyncClient() as client:
         response = await client.post(
-            settings.EXTERNAL_API_URL,
+            settings.API_URL,
             json=data,
             headers={"Authorization": f"Bearer {settings.API_KEY}"}
         )
@@ -70,23 +60,13 @@ async def call_external_api(data: dict) -> dict:
 
 ## Dependency Injection
 
-Use in routes:
-
 ```python
 from fastapi import Depends
-from ..services.notifications import notification_service
 
 @router.post("/notify")
 async def notify(
     message: str,
-    service: NotificationService = Depends(lambda: notification_service)
+    service=Depends(lambda: notification_service)
 ):
     await service.send_notification(user, message)
-```
-
-## Package Management
-
-```bash
-uv add httpx boto3          # Add service dependencies
-uv sync                     # Sync all dependencies
 ```

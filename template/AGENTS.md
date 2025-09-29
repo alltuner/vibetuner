@@ -1,608 +1,291 @@
+# Agent Guide
 
-# CLAUDE.md
+FastAPI + MongoDB + HTMX web application scaffolded from AllTuner's template.
 
-This file provides guidance to Claude Code (claude.ai/code) when working
-with code in this repository.
+## Tech Stack
 
-## Project Overview
+**Backend**: FastAPI, MongoDB (Beanie ODM), Redis (optional)
+**Frontend**: HTMX, Tailwind CSS, DaisyUI
+**Tools**: uv (Python), bun (JS/CSS), Docker
 
-This is a modern Python web application built with AllTuner's blessed stack:
+## Quick Start
 
-- **FastAPI** web framework with async support
-- **MongoDB** database with Beanie ODM  
-- **HTMX** for reactive frontend interactions
-- **Tailwind CSS + DaisyUI** for styling
-- **Docker** containerization
-- **Redis + Streaq** for background job processing (if enabled)
-- **OAuth + Magic Link** authentication
+### Development (Local)
 
-## Essential Commands
-
-### Development
-
-**IMPORTANT**: For local development without Docker, run BOTH:
+**CRITICAL**: Run both processes simultaneously:
 
 ```bash
-# Terminal 1: Watch and build frontend assets (auto-rebuilds CSS/JS on changes)
+# Terminal 1: Frontend asset building
 bun dev
 
-# Terminal 2: Run FastAPI server (auto-reloads on Python file changes)
+# Terminal 2: Backend server
 just local-dev
 ```
 
-The webserver automatically picks up Python code changes without manual restart.
-
-**Tip**: Use the `web-app-runner` agent to automatically start both processes
-correctly in parallel. This agent checks if the app is already running and
-starts it only if needed.
-
-Or use Docker (all-in-one):
+### Development (Docker)
 
 ```bash
-just dev                     # Full dev environment with hot reload
-just local-dev               # Run locally on port 8000 (default)  
-just local-dev 8080          # Run locally on specific port (8080-8089 for dev instances)
-just worker-dev              # Task worker (if job queue enabled)
+just dev                     # All-in-one with hot reload
+just worker-dev              # Background worker (if enabled)
+```
+
+### Common Commands
+
+```bash
+# Dependencies
+uv add package-name          # Add Python package
 just sync                    # Sync all dependencies
+
+# Code Quality
+ruff format .                # Format Python (ALWAYS run after code changes)
+ruff check --fix .           # Auto-fix linting
+
+# Localization
+just extract-translations    # Extract i18n strings
+just compile-locales         # Compile translations
+
+# Versioning & Git
+just bump-patch              # Version bump
+just pr                      # Create pull request
 ```
 
-### Frontend Assets
+## Architecture
 
-```bash
-bun dev                     # Watch mode - auto-rebuilds CSS/JS bundles on file changes
-bun build-prod             # Production build for CSS/JS
-```
-
-### Building & Deployment
-
-```bash
-just build-dev               # Build development Docker image
-just test-build-prod         # Test production build locally
-just release                 # Build and push production (tagged commits only)
-just deploy-latest HOST      # Deploy to production server (if configured)
-```
-
-### Localization
-
-```bash
-just extract-translations    # Extract translatable strings from code
-just update-locale-files     # Update existing translation files
-just compile-locales         # Compile translations for runtime
-just new-locale LANG         # Add support for new language
-```
-
-### Code Quality & Formatting
-
-```bash
-ruff check .                 # Check for linting issues
-ruff format .                # Format Python code (run after any code changes)
-ruff check --fix .           # Auto-fix linting issues where possible
-```
-
-### Git Workflow
-
-```bash
-just start-branch NAME       # Create new feature branch from main
-just commit "MESSAGE"        # Add all changes and commit
-just pr                      # Push branch and create GitHub PR
-just merge                   # Merge PR with squash
-```
-
-### Versioning
-
-```bash
-just bump-patch              # Increment patch version (0.1.0 → 0.1.1)
-just bump-minor              # Increment minor version (0.1.0 → 0.2.0)  
-just bump-major              # Increment major version (0.1.0 → 1.0.0)
-```
-
-## Package Management
-
-Use **uv exclusively** for Python dependencies:
-
-```bash
-uv add package-name         # Install a package
-uv remove package-name      # Remove a package
-uv sync                     # Sync all dependencies
-uv run python -m [project_slug]  # Run the application
-```
-
-Never use pip, poetry, or conda directly.
-
-## Application Architecture
-
-### Backend Structure (`src/[project_slug]/`)
-
-#### Core Application
-
-- **`__main__.py`**: CLI entry point, run with `python -m [project_slug]`
-- **`config.py`**: Application configuration using Pydantic Settings
-- **`paths.py`**: Static asset and template path management
-- **`logging.py`**: Centralized logging configuration
-- **`_version.py`**: Dynamic version management from git tags
-
-#### Web Application (`frontend/`)
-
-- **`__init__.py`**: FastAPI app setup, static file mounting, middleware
-- **`context.py`**: Frontend context management
-- **`deps.py`**: Dependency injection for route handlers
-- **`email.py`**: Email-related frontend utilities
-- **`hotreload.py`**: Development hot reload functionality
-- **`lifespan.py`**: Application lifespan management
-- **`middleware.py`**: Request/response processing middleware
-- **`oauth.py`**: OAuth authentication handlers
-- **`templates.py`**: Jinja2 template rendering utilities
-
-**Application Routes** (add your custom routes here):
-
-- **`routes/`**: Add your application-specific route handlers here
-- Example: `routes/api.py`, `routes/dashboard.py`, etc.
-
-**Core Routes** (`default_routes/` - **DO NOT MODIFY**):
-
-- **`auth.py`**: OAuth and magic link authentication
-- **`debug.py`**: Development debugging endpoints
-
-#### Data Layer (`models/`)
-
-**Application Models** (add your custom models here):
-
-- Add your application-specific models directly in `models/` directory
-- Example: `models/posts.py`, `models/products.py`, etc.
-
-**Core Models** (`models/core/` - **DO NOT MODIFY**):
-
-- **`user.py`**: User model with OAuth account linking
-- **`oauth.py`**: OAuth provider account management  
-- **`email_verification.py`**: Magic link email authentication tokens
-- **`mixins.py`**: Reusable model components (timestamps, etc.)
-- **`blob.py`**: File storage and blob management
-- **`types.py`**: Common type definitions
-
-#### Services (`services/`)
-
-**Application Services** (add your custom services here):
-
-- Add your application-specific services directly in `services/` directory
-- Example: `services/notifications.py`, `services/payments.py`, etc.
-
-**Core Services** (`services/core/` - **DO NOT MODIFY**):
-
-- **`email.py`**: Email sending via AWS SES (if configured)
-- **`blob.py`**: File storage and blob management services
-
-#### Background Jobs (`tasks/`)
-
-- **`worker.py`**: Streaq task worker setup (if job queue enabled)
-- **`context.py`**: Task execution context and dependencies
-
-#### Database Integration
-
-- **`mongo.py`**: MongoDB connection with Motor async driver
-- **`mongo_types.py`**: Custom MongoDB type definitions
-
-#### CLI Commands (`cli/`)
-
-- **`__init__.py`**: CLI command registration
-- Custom commands can be added here
-
-### Frontend Structure
-
-#### Templates (`templates/`)
-
-**Application Templates** (add your custom templates here):
-
-- Add your application-specific templates directly in `templates/frontend/`
-- Example: `templates/frontend/dashboard.html.jinja`,
-  `templates/frontend/profile.html.jinja`, etc.
-
-**Core Templates** (`templates/frontend/defaults/` - **DO NOT MODIFY**):
-
-- **`base/skeleton.html.jinja`**: Base HTML layout with HTMX
-- **`base/footer.html.jinja`**: Common footer component
-- **`index.html.jinja`**: Homepage template
-- **`login.html.jinja`**: Authentication page
-- **`email_sent.html.jinja`**: Email confirmation page
-- **`debug/`**: Development debugging templates
-
-**Email Templates**:
-
-- **`email/default/`**: Default email templates for transactional emails
-
-#### Static Assets (`assets/statics/`)
-
-- **`css/bundle.css`**: Compiled Tailwind CSS (auto-generated)
-- **`js/bundle.js`**: Bundled JavaScript with HTMX (auto-generated)
-- **`img/`**: Images and logos
-- **`favicons/`**: Favicon files
-
-#### Asset Pipeline
-
-- **`config.css`**: Tailwind CSS source file
-- **`config.js`**: JavaScript source with HTMX configuration
-- **Hot reload**: Changes automatically rebuild and refresh browser
-
-## Development Workflow
-
-### Starting Development
-
-1. **Environment setup**: Copy `.env.example` to `.env.local` and configure
-2. **Start services**: `just dev` (Docker) or `just local-dev`
-   (local - auto-reloads on changes)
-3. **Asset watching**: `bun dev` in separate terminal for CSS/JS auto-rebuilding
-
-### Testing the Application
-
-#### Prerequisites for Testing
-
-**CRITICAL**: Before running any tests, ensure BOTH services are running:
-
-```bash
-# Terminal 1: Frontend asset watching and auto-rebuilding
-bun dev
-
-# Terminal 2: FastAPI backend server
-just local-dev
-```
-
-Both processes MUST be running simultaneously for the application to work properly:
-
-- Without `bun dev`: CSS and JavaScript changes won't be reflected
-- Without `just local-dev`: The backend server won't be available
-
-#### Automated Testing with Playwright MCP
-
-This project includes **Playwright MCP integration** for web testing:
-
-- The app runs on `http://localhost:8000` when using `just local-dev`
-- Claude Code has access to a Playwright MCP tool for automated browser testing
-- The testing tool can interact with forms, click buttons, and verify page content
-- **Note**: There's a `web-app-runner` agent available that knows how to
-  properly start both `bun dev` and `just local-dev` in parallel for testing
-
-#### Handling Authentication During Testing
-
-**IMPORTANT**: When testing authenticated routes:
-
-1. **403 Forbidden Errors**: If you encounter a 403 error during testing,
-   this means authentication is required
-2. **Authentication Process**:
-   - Claude will need to pause and ask you to authenticate in the test
-     browser window
-   - This is expected behavior - simply log in when prompted
-   - Once authenticated, Claude can continue testing protected
-     routes
-3. **Session Persistence**: The authentication session will persist for
-   the duration of the test run
-
-Example workflow:
+### Directory Structure
 
 ```text
-Claude: "I'm getting a 403 error. Please authenticate in the browser window
-so I can continue testing."
-User: [Logs in via OAuth or magic link in the browser]
-Claude: "Thank you! I can now access the protected routes and continue testing."
+src/[project_slug]/
+├── core/                # ⚠️  DO NOT MODIFY - scaffolding-managed
+├── frontend/            # FastAPI app and routes
+│   ├── routes/         # ✅ ADD YOUR ROUTES HERE
+│   └── default_routes/ # ⚠️  DO NOT MODIFY
+├── models/             # ✅ ADD YOUR MODELS HERE
+│   └── core/          # ⚠️  DO NOT MODIFY
+├── services/           # ✅ ADD YOUR SERVICES HERE
+│   └── core/          # ⚠️  DO NOT MODIFY
+├── tasks/              # Background jobs (if enabled)
+└── cli/                # CLI commands
+
+templates/frontend/
+├── (your templates)    # ✅ ADD YOUR TEMPLATES HERE
+└── defaults/          # ⚠️  DO NOT MODIFY - override by copying
+
+assets/statics/
+├── css/bundle.css     # Auto-generated from config.css
+├── js/bundle.js       # Auto-generated from config.js
+└── img/               # Your images
 ```
 
-### Available MCP Servers
+### Core Modules (DO NOT MODIFY)
 
-This project comes with several **MCP (Model Context Protocol) servers**
-pre-configured for Claude Code:
+- `core/`: Config, paths, logging, DB connection
+- `models/core/`: User, OAuth, email verification
+- `services/core/`: Email (SES), blob storage
+- `frontend/default_routes/`: Auth, debug routes
+- `templates/frontend/defaults/`: Base layouts
 
-#### Database Servers
+**To extend**: Create files in parent directories, never modify `core/` or `defaults/`
 
-- **MongoDB MCP**: Direct database operations and queries
-  - Access collections, run queries, and manage documents
-  - Automatically connected to your project's MongoDB instance
-  - Use for database debugging and data exploration
+## Development Patterns
 
-- **Redis MCP**: Cache and queue operations  
-  - Monitor cache keys, job queues, and Redis data
-  - Automatically connected to your Redis instance
-  - Useful for debugging background jobs and caching issues
+### Adding Routes
 
-#### Cloud Services (if using Cloudflare)
+```python
+# src/[project_slug]/frontend/routes/dashboard.py
+from fastapi import APIRouter, Request, Depends
+from ..deps import get_current_user
+from ..templates import render_template
 
-- **Cloudflare Docs MCP**: Access Cloudflare documentation
-  - Query Cloudflare Workers, Pages, and other service docs
-  - Helpful when deploying to Cloudflare infrastructure
+router = APIRouter()
 
-- **Cloudflare Bindings MCP**: Manage Cloudflare bindings
-  - Configure KV namespaces, Durable Objects, R2 buckets
-  - Useful for Cloudflare Workers integration
+@router.get("/dashboard")
+async def dashboard(request: Request, user=Depends(get_current_user)):
+    return render_template("dashboard.html.jinja", request, {"user": user})
+```
 
-- **Cloudflare Observability MCP**: Monitor Cloudflare services
-  - Access logs, metrics, and analytics
-  - Debug production issues on Cloudflare
+### Adding Models
 
-#### Testing Tools
+```python
+# src/[project_slug]/models/post.py
+from beanie import Document
+from pydantic import Field
+from .core.mixins import TimeStampMixin
 
-- **Playwright MCP**: Browser automation and testing
-  - Interact with your running application
-  - Test user flows, forms, and UI interactions
-  - Verify page content and behavior
+class Post(Document, TimeStampMixin):
+    title: str
+    content: str
+    author_id: str = Field(index=True)
 
-### Adding New Features
+    class Settings:
+        name = "posts"
+        indexes = ["author_id", "db_insert_dt"]
+```
 
-1. **Routes**: Add new endpoints in `src/[project_slug]/frontend/routes/`
-   (NOT in `default_routes/`)
-2. **Models**: Define data models in `src/[project_slug]/models/`
-   (NOT in `models/core/`)
-3. **Services**: Create business logic in `src/[project_slug]/services/`
-   (NOT in `services/core/`)
-4. **Templates**: Create Jinja2 templates in `templates/frontend/`
-   (NOT in `templates/frontend/defaults/`)
-5. **Styles**: Use Tailwind classes, extend in `config.css` if needed
+### Adding Services
 
-**Important**: Never modify files in `core/` or `defaults/` directories -
-these are managed by the scaffolding.
+```python
+# src/[project_slug]/services/notifications.py
+from .core.email import send_email
 
-### Authentication System
+async def send_notification(user_email: str, message: str):
+    await send_email(
+        to_email=user_email,
+        subject="Notification",
+        html_content=f"<p>{message}</p>"
+    )
+```
 
-- **OAuth Flow**: Configured providers in `core/config.py`, handled in `default_routes/auth.py`
-- **Magic Links**: Passwordless login via email, tokens in
-  `models/core/email_verification.py`
-- **User Sessions**: FastAPI session middleware with secure cookies
-- **Protected Routes**: Use `get_current_user` dependency from `frontend/deps.py`
+### Adding Background Tasks
 
-### Background Jobs  
+```python
+# src/[project_slug]/tasks/emails.py
+from .worker import worker
 
-When job queue is enabled:
+@worker.task()
+async def send_digest_email(user_id: str):
+    # Task logic here
+    return {"status": "sent"}
 
-- **Define tasks**: Add functions to `src/[project_slug]/tasks/`
-- **Queue jobs**: Import the task and call `await my_task.enqueue(...)`
-- **Process jobs**: `just worker-dev` runs worker locally
-- **Monitor**: Use the returned task handle (`task.id`, `await task.status()`, `await task.result()`) or Redis tooling
+# Queue from routes:
+# task = await send_digest_email.enqueue(user.id)
+```
 
-### Database Operations
+### Template Override
 
-- **Models**: Extend `BaseModel` from Beanie ODM
-- **Queries**: Use async/await with Beanie query methods
-- **Indexes**: Define in model `Settings.indexes`
-- **Relationships**: Use `Link` for document references
+To customize default templates, copy to parent directory:
 
-### Frontend Development
+```bash
+# Override footer
+cp templates/frontend/defaults/base/footer.html.jinja \
+   templates/frontend/base/footer.html.jinja
 
-- **HTMX Patterns**: Use `hx-get`, `hx-post`, etc. for dynamic updates
-- **Tailwind CSS**: DaisyUI components provide pre-built UI elements
-- **Template Inheritance**: Extend `base/skeleton.html.jinja` for consistent layout
-- **Forms**: Server-side validation with Pydantic models
+# Now edit templates/frontend/base/footer.html.jinja
+```
 
 ## Configuration
 
 ### Environment Variables
 
-- **`ENVIRONMENT`**: `development` or `production`
-- **`DEBUG`**: Enable debug mode and endpoints
-- **`DATABASE_URL`**: MongoDB connection string
-- **`REDIS_URL`**: Redis connection for job queue (if enabled)
-- **`SECRET_KEY`**: Session encryption key
-- **`AWS_*`**: AWS credentials for services (if configured)
+- `.env` - Default config (not committed)
+- `.env.local` - Local overrides (not committed)
 
-### Configuration Files
-
-- **`.env`**: Default environment variables (committed)
-- **`.env.local`**: Local overrides (not committed)
-- **`config.yaml`**: Optional YAML configuration file
-- **`.copier-answers.yml`**: Project metadata and configuration
-
-## Deployment
-
-### Docker Deployment
-
-- **Multi-stage build**: Optimized production image
-- **Health checks**: Built-in endpoint monitoring
-- **Environment-based**: Different configs for dev/staging/prod
-
-### Production Deployment
-
-- **Process**: `just release` → `just deploy-latest [HOST]`
-- **Requirements**: Tagged commit, clean working directory
-- **Auto-updates**: Watchtower integration (if enabled)
-
-## Localization (i18n)
-
-### How It Works
-
-The app uses Babel for internationalization with Jinja2 integration:
-
-1. **Translatable strings** marked with `_()` in Python or `{% trans %}` in templates
-2. **Language files** in `locales/[lang]/LC_MESSAGES/messages.po`
-3. **User language** detected from browser or user preference
-4. **Fallback** to English if translation missing
-
-### Translation Workflow
+Key variables:
 
 ```bash
-# 1. Extract all translatable strings
+DATABASE_URL=mongodb://localhost:27017/[dbname]
+REDIS_URL=redis://localhost:6379  # If background jobs enabled
+SECRET_KEY=your-secret-key
+DEBUG=true  # Development only
+```
+
+### Pydantic Settings
+
+```python
+from .core.config import settings
+
+settings.DEBUG              # bool
+settings.DATABASE_URL       # str
+settings.ENVIRONMENT        # "development" | "production"
+```
+
+## Testing
+
+### Prerequisites
+
+Both processes must be running:
+
+```bash
+# Terminal 1
+bun dev
+
+# Terminal 2
+just local-dev
+```
+
+### Playwright MCP Integration
+
+This project includes Playwright MCP for browser testing. The app runs on
+`http://localhost:8000`.
+
+**Authentication**: If testing protected routes, you'll need to authenticate
+manually in the browser when prompted.
+
+## Localization
+
+```bash
+# 1. Extract translatable strings
 just extract-translations
 
-# 2. Update existing language files
+# 2. Update translation files
 just update-locale-files
 
-# 3. Translate strings in .po files
-edit locales/es/LC_MESSAGES/messages.po
+# 3. Translate in locales/[lang]/LC_MESSAGES/messages.po
 
-# 4. Compile for runtime
+# 4. Compile
 just compile-locales
 ```
 
-### Adding New Language
-
-```bash
-just new-locale fr          # Add French support
-edit locales/fr/LC_MESSAGES/messages.po
-just compile-locales
-```
-
-### In Templates
+In templates:
 
 ```jinja
-{# Simple translation #}
-<h1>{% trans %}Welcome{% endtrans %}</h1>
+{% trans %}Welcome{% endtrans %}
 
-{# With variables #}
 {% trans user=user.name %}
 Hello {{ user }}!
 {% endtrans %}
-
-{# Pluralization #}
-{% trans count=items|length %}
-You have {{ count }} item.
-{% pluralize %}
-You have {{ count }} items.
-{% endtrans %}
 ```
 
-### In Python Code
+In Python:
 
 ```python
 from starlette_babel import gettext_lazy as _
 
 message = _("Operation completed")
-error = _("Invalid input: %(details)s") % {"details": error_details}
 ```
 
-## Common Tasks
+## Code Style
 
-### Adding OAuth Providers
+### Python
 
-1. Update `core/config.py` with provider configuration
-2. Add provider-specific logic in `frontend/default_routes/auth.py`
-   (or extend via custom routes)
-3. Update login template with new provider button
-
-### Adding Background Jobs
-
-When job queue is enabled:
-
-1. Define a task with `@worker.task()` in `src/[project_slug]/tasks/`
-2. Import the new module at the end of `tasks/worker.py` (or `tasks/__init__.py`) so
-   the decorator runs and registers the task
-3. Call `await my_task.enqueue(...)` from your route or service
-4. Use the returned task handle (`task.id`, `await task.status()`, `await task.result()`) to
-   monitor progress or surface errors
-
-### Internationalization
-
-1. **Extract**: `just extract-translations` finds translatable strings
-2. **Translate**: Edit `.po` files in `locales/[lang]/LC_MESSAGES/`
-3. **Compile**: `just compile-locales` builds runtime files
-4. **Templates**: Use `{% trans %}` blocks and `_()` functions
-
-### Database Schema Changes
-
-1. **Update models**: Modify Beanie model classes
-2. **Migration strategy**: Handle in application startup or separate script
-3. **Indexes**: Add to model `Settings.indexes` list
-4. **Test thoroughly**: Verify with existing data
-
-## Technology Stack
-
-- **Python**: 3.13+ with modern async support
-- **FastAPI**: Latest stable version with async support
-- **MongoDB**: Compatible with Motor async driver
-- **HTMX**: Version 2.x for modern web interactions  
-- **Tailwind CSS**: Version 4.x with DaisyUI components
-- **Docker**: Multi-stage builds for production optimization
-- **uv**: Fast Python package manager
-- **Prototuner**: Base framework providing common utilities
-
-## Project-Specific Notes
-
-This section should be updated with any project-specific information,
-custom configurations, or special considerations for your application.
-
-## Code Style Guidelines
-
-### Python Code Style
-
-- **Type hints**: Always use type hints for function parameters and returns
-- **Async/await**: Use async functions for all database operations and I/O
-- **Docstrings**: Only add when explaining complex logic (avoid obvious docstrings)
-- **Imports**: Group as stdlib → third-party → local, alphabetically sorted
-- **Naming**: snake_case for functions/variables, PascalCase for classes
-- **Line length**: 88 characters (Black formatter default)
-- **Auto-formatting**: ALWAYS run `ruff format .` after making Python
-  code changes to ensure consistent formatting
-
-### Frontend Patterns
-
-- **HTMX**: Prefer server-side rendering with HTMX over complex JavaScript
-- **Tailwind**: Use utility classes, avoid custom CSS
-- **DaisyUI**: Use pre-built components when available
-- **Templates**: Use Jinja2 inheritance, avoid duplication
-
-### Consistency Rules
+- **Type hints** always
+- **Async/await** for DB operations
+- **ALWAYS run `ruff format .` after code changes**
+- Line length: 88 characters
 
 ```python
-# ✅ GOOD: Type hints, async, clear naming
+from beanie.operators import Eq
+
+# ✅ GOOD
 async def get_user_by_email(email: str) -> User | None:
-    return await User.find_one(User.email == email)
+    return await User.find_one(Eq(User.email, email))
 
-# ❌ BAD: No types, sync DB call, poor naming
+# ❌ BAD
 def get_usr(e):
-    return User.find_one(User.email == e)  # Wrong: sync call
+    return User.find_one(User.email == e)  # Wrong: sync call, no types
 ```
 
-### Import Organization
+### Frontend
 
-```python
-# Standard library
-from datetime import datetime
-from typing import Optional
+- **HTMX** for dynamic updates
+- **Tailwind classes** over custom CSS
+- **DaisyUI components** when available
+- Extend `base/skeleton.html.jinja` for layout
 
-# Third-party packages
-from beanie import Document
-from fastapi import APIRouter, Depends
-from pydantic import Field
+## MCP Servers Available
 
-# Local imports
-from ..core.config import settings
-from ..models import User
-from ..services.email import send_email
-```
+- **Playwright MCP**: Browser automation and testing (Chromium)
+- **Cloudflare MCP**: Access to Cloudflare documentation and APIs
+- **MongoDB MCP**: Direct database operations and queries
+- **Chrome DevTools MCP**: Chrome DevTools Protocol integration
 
-## Protected Files and Directories
+## Important Rules
 
-**NEVER MODIFY** these scaffolding-managed locations:
+1. **Never modify** `core/` or `defaults/` directories
+2. **Always run** `ruff format .` after Python changes
+3. **Both processes required** for development: `bun dev` + `just local-dev`
+4. **Use uv exclusively** for Python packages (never pip/poetry/conda)
+5. **Override, don't modify** default templates
 
-- `src/[project_slug]/core/` - Core utilities
-- `src/[project_slug]/models/core/` - Core models
-- `src/[project_slug]/services/core/` - Core services
-- `src/[project_slug]/frontend/default_routes/` - Core routes
-- `templates/frontend/defaults/` - Default templates
+## Custom Project Instructions
 
-To extend or customize:
-
-1. **Models**: Add to `models/` directory
-2. **Services**: Add to `services/` directory
-3. **Routes**: Add to `frontend/routes/` directory
-4. **Templates**: Override in `templates/frontend/` (without `defaults/`)
-
-If core functionality is insufficient:
-
-1. Document the limitation clearly
-2. Suggest workarounds or extensions
-3. Recommend filing issue with scaffolding repo
-
-## Claude Code Instructions
-
-**IMPORTANT**: When working on this project, follow these mandatory guidelines:
-
-### Code Quality Enforcement
-
-- **ALWAYS run `ruff format .` immediately after making any Python code changes**
-- This ensures consistent code formatting across the project
-- Use `ruff check --fix .` to auto-fix linting issues when possible
-- These commands are pre-approved and can be run without asking
-
-### File Management Rules
-
-- Do what has been asked; nothing more, nothing less
-- NEVER create files unless they're absolutely necessary for achieving your goal
-- ALWAYS prefer editing an existing file to creating a new one
-- NEVER proactively create documentation files (*.md) or README files.
-  Only create documentation files if explicitly requested by the User
-
-## Custom project instructions
+Add project-specific notes here.
