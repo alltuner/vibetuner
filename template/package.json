@@ -1,8 +1,8 @@
 {
   "devDependencies": {
-    "tailwindcss": "^4.1.13",
-    "@tailwindcss/cli": "^4.1.13",
-    "daisyui": "^5.1.25",
+    "tailwindcss": "^4.1.14",
+    "@tailwindcss/cli": "^4.1.14",
+    "daisyui": "^5.1.26",
     "htmx.org": "2.0.7",
     "htmx-ext-preload": "^2.1.1",
     "htmx-ext-sse": "^2.2.3",
