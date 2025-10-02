@@ -1,13 +1,6 @@
 {
   "devDependencies": {
-    "tailwindcss": "^4.1.14",
-    "@tailwindcss/cli": "^4.1.14",
-    "daisyui": "^5.1.26",
-    "htmx.org": "2.0.7",
-    "htmx-ext-preload": "^2.1.1",
-    "htmx-ext-sse": "^2.2.3",
-    "concurrently": "^9.2.1",
-    "markdownlint-cli": "^0.45.0"
+    "prototuner": "github:alltuner/prototuner"
   },
   "dependencies": {},
   "scripts": {
