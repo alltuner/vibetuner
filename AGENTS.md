@@ -13,6 +13,7 @@ Python web applications using AllTuner's blessed stack:
 - **OAuth + Magic Link authentication**
 - **Background task processing** with Redis/Streaq
 - **Internationalization** support
+- **Dependency management**: Uses `prototuner` package for both Python (runtime) and JavaScript (build-time) dependencies
 
 ## Essential Commands
 
@@ -141,7 +142,8 @@ The template generates a FastAPI application with this structure:
 
 - **`copier.yml`**: Template configuration and user prompts
 - **`pyproject.toml`**: Scaffolding dependencies (minimal)
-- **`template/pyproject.toml.j2`**: Generated project dependencies (full stack)
+- **`template/pyproject.toml.j2`**: Generated project Python dependencies (uses `prototuner` from GitHub)
+- **`template/package.json`**: Generated project JavaScript dependencies (uses `prototuner` from GitHub)
 
 ### Static Assets
 
