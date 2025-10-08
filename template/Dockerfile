@@ -8,7 +8,7 @@ ARG PYTHON_VERSION=3.13
 FROM python:${PYTHON_VERSION}-slim AS python-base
 
 RUN apt-get update && apt-get install -y --no-install-recommends git \
-    build-essential git pkg-config autoconf automake libtool \
+    build-essential git pkg-config autoconf automake libtool libzstd-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install UV package manager from official image
