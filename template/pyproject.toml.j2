@@ -29,6 +29,11 @@ cache-keys = [
     { file = "pyproject.toml" },
     { git = { commit = true, tags = true } },
 ]
+override-dependencies = [
+    # This must go as soon as uvloop lands PR #638
+    # https://github.com/MagicStack/uvloop/pull/638
+    "uvloop @ git+https://github.com/davidpoblador/uvloop.git",
+]
 
 [tool.uv.sources]
 prototuner = { git = "https://github.com/alltuner/prototuner" }
