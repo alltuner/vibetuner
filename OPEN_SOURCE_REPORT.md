@@ -76,7 +76,7 @@
 
 ## Additional Considerations
 
-- **Testing Matrix**: Add automated copier smoke tests (generate project via GitHub Actions matrix for Python versions 3.10–3.13, with and without optional features).
+- **Testing Matrix**: Add automated copier smoke tests (generate project via GitHub Actions matrix for Python versions 3.10–3.14, with and without optional features).
 - **Frontend Assets**: Consider publishing the default HTMX/Tailwind theme as a separate package so other users can opt-out cleanly.
 - **Background Jobs**: Document expectations around Redis/Streaq; optionally turn off queue scaffolding unless explicitly enabled.
 - **Analytics & Observability**: Provide guidance on third-party alternatives (PostHog, Plausible) or leave placeholders in the template metadata.
