@@ -8,7 +8,6 @@ ARG PYTHON_VERSION=3.13
 FROM python:${PYTHON_VERSION}-slim AS python-base
 
 RUN apt-get update && apt-get install -y --no-install-recommends git \
-    build-essential git pkg-config autoconf automake libtool libzstd-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install UV package manager from official image
@@ -17,7 +16,7 @@ COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /uvx /bin/
 # Configure UV for optimal performance and behavior
 ENV UV_COMPILE_BYTECODE=0 \
     UV_LINK_MODE=copy \
-    UV_PYTHON_DOWNLOADS=1
+    UV_PYTHON_DOWNLOADS=0
 
 WORKDIR /app
 
