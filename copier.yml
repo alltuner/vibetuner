@@ -112,3 +112,4 @@ _tasks:
     when: "{{ _copier_operation == 'copy' and use_github_repo }}"
   - command: [just, deploy-latest, "{{ deploy_host }}"]
     when: "{{ _copier_operation == 'copy' and deploy_host and fqdn }}"
+  - ln -sfn {{ project_slug }} src/app

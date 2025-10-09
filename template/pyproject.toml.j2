@@ -63,6 +63,9 @@ template = '''
 version = "{version}"
 '''
 
+[tool.hatch.build.targets.wheel]
+sources = ["src"]
+
 [tool.pyright]
 include = ["src"]
 exclude = ["**/node_modules", "**/__pycache__", ".git", ".venv"]
