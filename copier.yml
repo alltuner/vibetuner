@@ -4,8 +4,6 @@ _skip_if_exists:
   - .env.local
 _subdirectory: template
 _templates_suffix: .j2
-_exclude:
-  - pyproject-base.toml
 
 company_name:
   type: str
