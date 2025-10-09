@@ -3,13 +3,4 @@ name = "{{ project_slug }}"
 description = "{{ project_description }}"
 authors = [{ name = "{{ author_name }}", email = "{{ author_email }}" }]
 requires-python = ">={{ python_version }}"
-
-dynamic = ["version"]
-readme = "README.md"
-dependencies = [
-    # These are the base dependencies of AllTuner's blessed stack
-    "prototuner",
-    # Below this line you can add your dependencies
-]
-
 {% include 'pyproject-base.toml' %}

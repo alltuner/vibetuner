@@ -1,3 +1,11 @@
+dynamic = ["version"]
+readme = "README.md"
+dependencies = [
+    # These are the base dependencies of AllTuner's blessed stack
+    "prototuner",
+    # Below this line you can add your dependencies
+]
+
 [project.scripts]
 app = "main.cli:app"
 
