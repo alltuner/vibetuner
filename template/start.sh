@@ -12,7 +12,7 @@ elif [ "$1" = "sleep" ]; then
 elif [ "$1" = "local-dev" ]; then
     PORT=${PORT:-8000}
     echo "Starting in development mode on port $PORT..."
-    DEBUG=1 exec uvicorn core.frontend:app --host 0.0.0.0 --port $PORT --reload --reload-dir src/core --reload-dir templates/frontend --reload-include '*.py' --reload-include '*.html.jinja'
+    DEBUG=1 exec uvicorn core.frontend:app --host 0.0.0.0 --port $PORT --reload --reload-dir src/core --reload-dir src/app --reload-dir templates/frontend --reload-include '*.py' --reload-include '*.html.jinja'
 elif [ "$1" = "worker" ]; then
     echo "Starting task worker..."
     exec streaq --web --port 11111 core.tasks.worker.worker
