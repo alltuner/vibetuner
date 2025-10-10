@@ -11,7 +11,7 @@ from typing import Self
 from beanie import Insert, Replace, Save, SaveChanges, Update, before_event
 from pydantic import BaseModel, Field
 
-from ...core.time import Unit, now
+from core.core.time import Unit, now
 
 
 class Since(StrEnum):
