@@ -4,15 +4,13 @@ from fastapi import Depends as Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.frontend.routes import app_router
+
 from ..core import paths
 from .default_routes import auth, debug, health, language, meta, user
-from .deps import (
-    LangDep as LangDep,
-    MagicCookieDep as MagicCookieDep,
-)
+from .deps import LangDep as LangDep, MagicCookieDep as MagicCookieDep
 from .lifespan import ctx, lifespan
 from .middleware import middlewares
-from .routes import app_router
 from .templates import render_template
 
 
@@ -71,11 +69,9 @@ app.include_router(user.router)
 app.include_router(language.router)
 
 
-# Add your routes below
 app.include_router(app_router)
 
 
-# Default routes to be rewritten by the user
 @app.get("/", name="homepage", response_class=HTMLResponse)
 def default_index(request: Request) -> HTMLResponse:
     return render_template("index.html.jinja", request)
@@ -83,4 +79,3 @@ def default_index(request: Request) -> HTMLResponse:
 
 app.include_router(debug.router)
 app.include_router(health.router)
-# EOF
