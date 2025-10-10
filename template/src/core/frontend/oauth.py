@@ -8,7 +8,8 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types.language_code import LanguageAlpha2
 from starlette.authentication import BaseUser
 
-from ..models.core import OAuthAccountModel, UserModel
+from core.models.user import OAuthAccountModel, UserModel
+
 from .default_routes import get_homepage_url
 
 

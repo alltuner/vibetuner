@@ -10,7 +10,7 @@ from beanie import Document
 from beanie.operators import Eq
 from pydantic import Field
 
-from . import TimeStampMixin
+from .mixins import TimeStampMixin
 
 
 class OAuthAccountModel(Document, TimeStampMixin):
