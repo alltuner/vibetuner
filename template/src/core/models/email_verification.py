@@ -13,9 +13,11 @@ from beanie.operators import Eq, Set
 from pydantic import Field
 
 from core.core.time import now
+from core.models.registry import register_model
 
 
 # Email verification token model
+@register_model
 class EmailVerificationTokenModel(Document):
     email: str = Field(
         ...,

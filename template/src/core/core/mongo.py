@@ -1,12 +1,9 @@
 from beanie import init_beanie
 from pymongo import AsyncMongoClient
 
-from ..models import MODELS
+from core.models.registry import get_all_models
+
 from .config import project_settings, settings
-
-
-# Include here any custom things that need to be done after model definitions
-# for instance, model rebuilds for documents that contain links
 
 
 async def init_models() -> None:
@@ -17,4 +14,6 @@ async def init_models() -> None:
         compressors=["zstd"],
     )
 
-    await init_beanie(database=client[settings.mongo_dbname], document_models=MODELS)
+    await init_beanie(
+        database=client[settings.mongo_dbname], document_models=get_all_models()
+    )

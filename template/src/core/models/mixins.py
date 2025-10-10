@@ -74,5 +74,3 @@ class TimeStampMixin(BaseModel):
         """Manually bump `db_update_dt` and return `self` (chain-friendly)."""
         self.db_update_dt = now()
         return self
-
-    # Custom methods below
