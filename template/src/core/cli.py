@@ -3,9 +3,13 @@ from functools import partial, wraps
 
 import asyncer
 import typer
+from rich.console import Console
 
-from ..core.config import project_settings
-from ..core.logging import LogLevel, setup_logging
+from core.config import project_settings
+from core.core.logging import LogLevel, setup_logging
+
+
+console = Console()
 
 
 class AsyncTyper(typer.Typer):
