@@ -19,3 +19,6 @@ wheels/
 .DS_Store
 .git
 node_modules/
+
+# Template files to ignore
+template/uv.lock

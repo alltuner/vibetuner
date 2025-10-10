@@ -1,4 +1,5 @@
-from ...app.models import APP_MODELS
+from app.models import APP_MODELS
+
 from .core import CORE_MODELS
 
 
