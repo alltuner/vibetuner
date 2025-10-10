@@ -1,7 +1,8 @@
 from streaq import Worker
 
-from ..core.config import project_settings, settings
-from .context import lifespan
+from app.config import settings
+from core.config import project_settings
+from core.tasks.context import lifespan
 
 
 worker = Worker(
