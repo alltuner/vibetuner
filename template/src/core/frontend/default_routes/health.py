@@ -3,8 +3,10 @@ from datetime import datetime
 
 from fastapi import APIRouter
 
+from app.config import settings
+from core.config import project_settings
+
 from ...core import paths
-from ...core.config import project_settings, settings
 
 
 router = APIRouter(prefix="/health")

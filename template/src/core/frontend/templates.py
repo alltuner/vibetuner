@@ -115,6 +115,34 @@ def format_datetime(dt):
 
 
 # Add your functions here
+def format_duration(seconds):
+    """Formats duration in seconds to user-friendly format with rounding.
+
+    Args:
+        seconds (float): Duration in seconds.
+
+    Returns:
+        str: For 0-45 seconds, shows "x sec" (e.g., "30 sec").
+        For 46 seconds to 1:45, shows "1 min".
+        For 1:46 to 2:45, shows "2 min", etc.
+        Returns empty string if seconds is None or invalid.
+    """
+    if seconds is None:
+        return ""
+    try:
+        total_seconds = int(float(seconds))
+
+        if total_seconds <= 45:
+            return f"{total_seconds} sec"
+        else:
+            # Round to nearest minute for times > 45 seconds
+            # 46-105 seconds = 1 min, 106-165 seconds = 2 min, etc.
+            minutes = round(total_seconds / 60)
+            return f"{minutes} min"
+    except (ValueError, TypeError):
+        return ""
+
+
 # Until here
 
 templates: Jinja2Templates = Jinja2Templates(directory=frontend_templates)
@@ -138,8 +166,10 @@ jinja_env.globals.update({"hotreload": hotreload})
 jinja_env.filters["timeago"] = timeago
 jinja_env.filters["format_date"] = format_date
 jinja_env.filters["format_datetime"] = format_datetime
+jinja_env.filters["format_duration"] = format_duration
 
 # Customize your templates here
+jinja_env.filters["duration"] = format_duration
 
 # Until here
 configure_jinja_env(jinja_env)
