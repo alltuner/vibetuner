@@ -11,8 +11,8 @@ from fastapi.responses import (
 )
 
 from core.models import UserModel
+from core.models.registry import get_all_models
 
-from ...models import MODELS
 from ..context import ctx
 from ..deps import MAGIC_COOKIE_NAME
 from ..templates import render_template
@@ -349,7 +349,7 @@ def _get_collection_info(model) -> dict:
 @router.get("/collections", response_class=HTMLResponse)
 def debug_collections(request: Request):
     """Debug endpoint to display MongoDB collection schemas."""
-    collections_info = [_get_collection_info(model) for model in MODELS]
+    collections_info = [_get_collection_info(model) for model in get_all_models()]
 
     return render_template(
         "debug/collections.html.jinja", request, {"collections": collections_info}
