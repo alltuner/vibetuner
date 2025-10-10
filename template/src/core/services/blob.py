@@ -11,7 +11,8 @@ from typing import Literal
 import aioboto3
 from aiobotocore.config import AioConfig
 
-from ..core.config import settings
+from app.config import settings
+
 from ..models import BlobModel
 from ..models.blob import BlobStatus
 

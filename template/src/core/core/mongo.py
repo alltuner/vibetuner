@@ -1,9 +1,9 @@
 from beanie import init_beanie
 from pymongo import AsyncMongoClient
 
+from app.config import settings
+from core.config import project_settings
 from core.models.registry import get_all_models
-
-from .config import project_settings, settings
 
 
 async def init_models() -> None:
