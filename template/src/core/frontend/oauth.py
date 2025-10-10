@@ -8,9 +8,10 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types.language_code import LanguageAlpha2
 from starlette.authentication import BaseUser
 
-from core.models.user import OAuthAccountModel, UserModel
-
-from .default_routes import get_homepage_url
+from app.frontend.oauth import _PROVIDERS
+from core.frontend.default_routes import get_homepage_url
+from core.models.oauth import OAuthAccountModel
+from core.models.user import UserModel
 
 
 DEFAULT_AVATAR_IMAGE = "/statics/img/user-avatar.png"
@@ -37,18 +38,6 @@ class WebUser(BaseUser, BaseModel):
     def display_name(self) -> str:
         return self.name
 
-
-class OauthProviderModel(BaseModel):
-    identifier: str
-    params: dict[str, str] = {}
-    client_kwargs: dict[str, str]
-    config: dict[str, str]
-
-
-_PROVIDERS: dict[str, OauthProviderModel] = {}
-
-# Define OAuth providers
-# Until here
 
 oauth_config: dict[str, str] = {
     key: value

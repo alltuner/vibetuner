@@ -1,16 +1,17 @@
-"""OAuth account model for third-party authentication providers.
-
-WARNING: This is a scaffolding-managed file. DO NOT MODIFY directly.
-Manages OAuth provider accounts (Google, GitHub, etc.) linked to users.
-"""
-
 from typing import Self
 
 from beanie import Document
 from beanie.operators import Eq
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from .mixins import TimeStampMixin
+
+
+class OauthProviderModel(BaseModel):
+    identifier: str
+    params: dict[str, str] = {}
+    client_kwargs: dict[str, str]
+    config: dict[str, str]
 
 
 class OAuthAccountModel(Document, TimeStampMixin):
