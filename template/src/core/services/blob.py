@@ -11,9 +11,9 @@ from typing import Literal
 import aioboto3
 from aiobotocore.config import AioConfig
 
-from ...core.config import settings
-from ...models.core import BlobModel
-from ...models.core.blob import BlobStatus
+from ..core.config import settings
+from ..models import BlobModel
+from ..models.blob import BlobStatus
 
 
 S3_SERVICE_NAME: Literal["s3"] = "s3"
