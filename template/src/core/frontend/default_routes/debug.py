@@ -10,6 +10,8 @@ from fastapi.responses import (
     RedirectResponse,
 )
 
+from core.models import UserModel
+
 from ...models import MODELS
 from ..context import ctx
 from ..deps import MAGIC_COOKIE_NAME
@@ -357,7 +359,6 @@ def debug_collections(request: Request):
 @router.get("/users", response_class=HTMLResponse)
 async def debug_users(request: Request):
     """Debug endpoint to list and impersonate users."""
-    from ...models.core import UserModel
 
     users = await UserModel.find_all().to_list()
     current_user_id = (
@@ -379,8 +380,6 @@ async def debug_impersonate_user(request: Request, user_id: str):
     # Double check debug mode for security
     if not ctx.DEBUG:
         raise HTTPException(status_code=404, detail="Not found")
-
-    from ...models.core import UserModel
 
     # Verify user exists
     user = await UserModel.get(user_id)

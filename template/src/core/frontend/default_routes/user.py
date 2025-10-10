@@ -3,7 +3,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic_extra_types.language_code import LanguageAlpha2
 from starlette.authentication import requires
 
-from ...models.core import UserModel
+from core.models import UserModel
+
 from ..context import ctx
 from ..templates import render_template
 
