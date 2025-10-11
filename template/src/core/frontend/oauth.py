@@ -9,7 +9,7 @@ from pydantic_extra_types.language_code import LanguageAlpha2
 from starlette.authentication import BaseUser
 
 from app.frontend.oauth import _PROVIDERS
-from core.frontend.default_routes import get_homepage_url
+from core.frontend.routes import get_homepage_url
 from core.models.oauth import OAuthAccountModel
 from core.models.user import UserModel
 
