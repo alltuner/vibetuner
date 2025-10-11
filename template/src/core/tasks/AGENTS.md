@@ -1,16 +1,39 @@
-# Tasks Module
+# Core Tasks Module
 
-Background job processing with Redis and Streaq (when enabled).
+**IMMUTABLE SCAFFOLDING CODE** - This is the framework's core background task infrastructure.
+
+## What's Here
+
+This module contains the scaffolding's core task components:
+
+- **worker.py** - Streaq worker setup and configuration
+- **context.py** - Task context management (DB, HTTP client, etc.)
+- **__init__.py** - Task infrastructure exports
+
+## Important Rules
+
+⚠️  **DO NOT MODIFY** these core task components directly.
+
+**For changes to core tasks:**
+- File an issue at `https://github.com/alltuner/scaffolding`
+- Core changes benefit all projects using the scaffolding
+
+**For your application tasks:**
+- Create them in `src/app/tasks/` instead
+- Import the worker from app: `from app.tasks.worker import worker`
 
 ## Quick Reference
 
 Tasks are only available if job queue was enabled during scaffolding.
 
-## Defining Tasks
+## User Task Pattern (for reference)
+
+Your application tasks in `src/app/tasks/` should follow this pattern:
 
 ```python
-from ..models import User
-from .worker import worker
+# src/app/tasks/emails.py
+from core.models import UserModel
+from app.tasks.worker import worker
 
 @worker.task()
 async def send_welcome_email(user_id: str) -> dict[str, str]:
@@ -19,7 +42,7 @@ async def send_welcome_email(user_id: str) -> dict[str, str]:
     # Access context
     res = await worker.context.http_client.get(url)
 
-    if user := await User.get(user_id):
+    if user := await UserModel.get(user_id):
         # Perform side effects
         return {"status": "sent", "user": user.email}
     return {"status": "skipped"}
@@ -28,7 +51,8 @@ async def send_welcome_email(user_id: str) -> dict[str, str]:
 ## Queueing Tasks
 
 ```python
-from ..tasks import send_welcome_email
+# In your routes: src/app/frontend/routes/auth.py
+from app.tasks.emails import send_welcome_email
 
 @router.post("/signup")
 async def signup(email: str):
@@ -48,9 +72,12 @@ just worker-dev    # Run worker locally with auto-reload
 
 ## Task Registration
 
-Add new task modules at the end of `worker.py`:
+Add new task modules at the end of `src/app/tasks/worker.py`:
 
 ```python
+# src/app/tasks/worker.py
+from core.tasks.worker import worker  # Import core worker
+
 # Import at bottom so decorator runs
 from . import emails  # noqa: E402, F401
 from . import new_tasks  # noqa: E402, F401

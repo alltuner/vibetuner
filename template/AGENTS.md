@@ -54,47 +54,76 @@ just pr                      # Create pull request
 ### Directory Structure
 
 ```text
-src/[project_slug]/
-├── core/                # ⚠️  DO NOT MODIFY - scaffolding-managed
-├── frontend/            # FastAPI app and routes
-│   ├── routes/         # ✅ ADD YOUR ROUTES HERE
-│   └── default_routes/ # ⚠️  DO NOT MODIFY
-├── models/             # ✅ ADD YOUR MODELS HERE
-│   └── core/          # ⚠️  DO NOT MODIFY
-├── services/           # ✅ ADD YOUR SERVICES HERE
-│   └── core/          # ⚠️  DO NOT MODIFY
-├── tasks/              # Background jobs (if enabled)
-└── cli/                # CLI commands
+src/
+├── core/                      # ⚠️  IMMUTABLE SCAFFOLDING - DO NOT MODIFY
+│   ├── frontend/             # Core web infrastructure
+│   │   ├── default_routes/  # Auth, health, debug, etc.
+│   │   ├── deps.py          # Core dependencies
+│   │   ├── templates.py     # Template rendering
+│   │   ├── middleware.py    # Request/response middleware
+│   │   └── oauth.py         # OAuth integration
+│   ├── models/              # Core data models
+│   │   ├── user.py         # User accounts
+│   │   ├── oauth.py        # OAuth accounts
+│   │   ├── email_verification.py
+│   │   ├── blob.py         # File storage
+│   │   └── mixins.py       # Reusable behaviors
+│   ├── services/            # Core services
+│   │   ├── email.py        # Email via SES
+│   │   └── blob.py         # Blob storage
+│   ├── tasks/               # Task infrastructure
+│   ├── config.py            # Project configuration
+│   ├── mongo.py             # Database setup
+│   ├── logging.py           # Logging config
+│   └── ... (other core utilities)
+│
+└── app/                       # ✅ YOUR APPLICATION CODE
+    ├── config.py             # App-specific configuration
+    ├── cli/                  # ✅ ADD YOUR CLI COMMANDS
+    ├── frontend/             # ✅ ADD YOUR ROUTES
+    │   └── routes/          # Your HTTP handlers
+    ├── models/              # ✅ ADD YOUR MODELS
+    ├── services/            # ✅ ADD YOUR SERVICES
+    └── tasks/               # ✅ ADD YOUR BACKGROUND JOBS
 
 templates/frontend/
-├── (your templates)    # ✅ ADD YOUR TEMPLATES HERE
-└── defaults/          # ⚠️  DO NOT MODIFY - override by copying
+├── (your templates)         # ✅ ADD YOUR TEMPLATES HERE
+└── defaults/               # ⚠️  DO NOT MODIFY - override by copying
 
 assets/statics/
-├── css/bundle.css     # Auto-generated from config.css
-├── js/bundle.js       # Auto-generated from config.js
-└── img/               # Your images
+├── css/bundle.css          # Auto-generated from config.css
+├── js/bundle.js            # Auto-generated from config.js
+└── img/                    # Your images
 ```
 
-### Core Modules (DO NOT MODIFY)
+### Core vs App
 
-- `core/`: Config, paths, logging, DB connection
-- `models/core/`: User, OAuth, email verification
-- `services/core/`: Email (SES), blob storage
-- `frontend/default_routes/`: Auth, debug routes
-- `templates/frontend/defaults/`: Base layouts
+**`src/core/`** - Immutable scaffolding framework
+- User authentication, OAuth, magic links
+- Email service, blob storage
+- Base templates, middleware, default routes
+- MongoDB setup, logging, configuration
+- **Changes**: File issues at `https://github.com/alltuner/scaffolding`
 
-**To extend**: Create files in parent directories, never modify `core/` or `defaults/`
+**`src/app/`** - Your application space
+- Your business logic
+- Your data models  
+- Your API routes
+- Your background tasks
+- Your CLI commands
+- **Changes**: Edit freely, this is your code
+
+**Note**: `src/{{ project_slug }}/` exists for migration compatibility but is deprecated. All new code goes in `src/app/`.
 
 ## Development Patterns
 
 ### Adding Routes
 
 ```python
-# src/[project_slug]/frontend/routes/dashboard.py
+# src/app/frontend/routes/dashboard.py
 from fastapi import APIRouter, Request, Depends
-from ..deps import get_current_user
-from ..templates import render_template
+from core.frontend.deps import get_current_user
+from core.frontend.templates import render_template
 
 router = APIRouter()
 
@@ -106,26 +135,27 @@ async def dashboard(request: Request, user=Depends(get_current_user)):
 ### Adding Models
 
 ```python
-# src/[project_slug]/models/post.py
-from beanie import Document
+# src/app/models/post.py
+from beanie import Document, Link
 from pydantic import Field
-from .core.mixins import TimeStampMixin
+from core.models import UserModel
+from core.models.mixins import TimeStampMixin
 
 class Post(Document, TimeStampMixin):
     title: str
     content: str
-    author_id: str = Field(index=True)
+    author: Link[UserModel]
 
     class Settings:
         name = "posts"
-        indexes = ["author_id", "db_insert_dt"]
+        indexes = ["author", "db_insert_dt"]
 ```
 
 ### Adding Services
 
 ```python
-# src/[project_slug]/services/notifications.py
-from .core.email import send_email
+# src/app/services/notifications.py
+from core.services.email import send_email
 
 async def send_notification(user_email: str, message: str):
     await send_email(
@@ -138,8 +168,8 @@ async def send_notification(user_email: str, message: str):
 ### Adding Background Tasks
 
 ```python
-# src/[project_slug]/tasks/emails.py
-from .worker import worker
+# src/app/tasks/emails.py
+from app.tasks.worker import worker
 
 @worker.task()
 async def send_digest_email(user_id: str):
@@ -147,6 +177,7 @@ async def send_digest_email(user_id: str):
     return {"status": "sent"}
 
 # Queue from routes:
+# from app.tasks.emails import send_digest_email
 # task = await send_digest_email.enqueue(user.id)
 ```
 
@@ -181,11 +212,19 @@ DEBUG=true  # Development only
 ### Pydantic Settings
 
 ```python
-from .core.config import settings
+from core.config import project_settings
+from app.config import settings
 
-settings.DEBUG              # bool
-settings.DATABASE_URL       # str
-settings.ENVIRONMENT        # "development" | "production"
+# Project-level (read-only from core)
+project_settings.project_slug
+project_settings.project_name
+project_settings.mongodb_url
+project_settings.supported_languages
+
+# Application-specific (your config)
+settings.debug              # bool
+settings.version           # str
+settings.aws_access_key_id # SecretStr | None
 ```
 
 ## Testing
@@ -280,11 +319,13 @@ def get_usr(e):
 
 ## Important Rules
 
-1. **Never modify** `core/` or `defaults/` directories
-2. **Always run** `ruff format .` after Python changes
-3. **Both processes required** for development: `bun dev` + `just local-dev`
-4. **Use uv exclusively** for Python packages (never pip/poetry/conda)
-5. **Override, don't modify** default templates
+1. **Never modify** `src/core/` - It's immutable scaffolding code
+2. **File issues** at `https://github.com/alltuner/scaffolding` for core changes
+3. **All your code** goes in `src/app/` - This is your space
+4. **Always run** `ruff format .` after Python changes
+5. **Both processes required** for development: `bun dev` + `just local-dev`
+6. **Use uv exclusively** for Python packages (never pip/poetry/conda)
+7. **Override, don't modify** default templates in `templates/frontend/defaults/`
 
 ## Custom Project Instructions
 

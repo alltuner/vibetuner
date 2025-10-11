@@ -1,22 +1,38 @@
-# Services Module
+# Core Services Module
 
-Business logic and external service integrations.
+**IMMUTABLE SCAFFOLDING CODE** - These are the framework's core services that provide essential functionality.
 
-## Quick Reference
+## What's Here
 
-**Add your services**: Create files in `services/` (e.g., `notifications.py`)
-**Core services** (DO NOT MODIFY): `core/email.py`, `core/blob.py`
+This module contains the scaffolding's core services:
 
-## Service Pattern
+- **email.py** - Email sending via AWS SES
+- **blob.py** - File storage and blob management
+
+## Important Rules
+
+⚠️  **DO NOT MODIFY** these core services directly.
+
+**For changes to core services:**
+- File an issue at `https://github.com/alltuner/scaffolding`
+- Core changes benefit all projects using the scaffolding
+
+**For your application services:**
+- Create them in `src/app/services/` instead
+- Import core services when needed: `from core.services.email import send_email`
+
+## User Service Pattern (for reference)
+
+Your application services in `src/app/services/` should follow this pattern:
 
 ```python
-from ..models import User
-from ..core.config import settings
+from core.models import UserModel
+from app.config import settings
 
 class NotificationService:
     async def send_notification(
         self,
-        user: User,
+        user: UserModel,
         message: str,
         priority: str = "normal"
     ) -> bool:
@@ -29,10 +45,10 @@ notification_service = NotificationService()
 
 ## Using Core Services
 
-### Email
+### Email Service
 
 ```python
-from .core.email import send_email
+from core.services.email import send_email
 
 await send_email(
     to_email="user@example.com",
@@ -42,10 +58,26 @@ await send_email(
 )
 ```
 
-### External APIs
+### Blob Service
 
 ```python
+from core.services.blob import blob_service
+
+# Upload file
+blob = await blob_service.upload(file_data, "image.png")
+
+# Get file URL
+url = await blob_service.get_url(blob.id)
+```
+
+## Creating Your Own Services
+
+Place your application services in `src/app/services/`:
+
+```python
+# src/app/services/external_api.py
 import httpx
+from app.config import settings
 
 async def call_api(data: dict) -> dict:
     async with httpx.AsyncClient() as client:

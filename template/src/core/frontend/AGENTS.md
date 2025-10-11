@@ -1,18 +1,44 @@
-# Frontend Module
+# Core Frontend Module
 
-FastAPI web application with HTMX-powered reactive UI.
+**IMMUTABLE SCAFFOLDING CODE** - This is the framework's core frontend infrastructure.
 
-## Quick Reference
+## What's Here
 
-**Add your routes**: `routes/*.py`
-**Core routes** (DO NOT MODIFY): `default_routes/`
+This module contains the scaffolding's core frontend components:
 
-## Route Pattern
+- **default_routes/** - Essential routes (auth, health, debug, language, user, meta)
+- **templates.py** - Template rendering with automatic context injection
+- **deps.py** - FastAPI dependencies (authentication, language, etc.)
+- **middleware.py** - Request/response middleware
+- **oauth.py** - OAuth provider integration
+- **email.py** - Magic link email authentication
+- **lifespan.py** - Application startup/shutdown lifecycle
+- **context.py** - Request context management
+- **hotreload.py** - Development hot-reload support
+
+## Important Rules
+
+⚠️  **DO NOT MODIFY** these core frontend components directly.
+
+**For changes to core frontend:**
+- File an issue at `https://github.com/alltuner/scaffolding`
+- Core changes benefit all projects using the scaffolding
+
+**For your application routes:**
+- Create them in `src/app/frontend/routes/` instead
+- Import core components when needed:
+  - `from core.frontend.deps import get_current_user`
+  - `from core.frontend.templates import render_template`
+
+## User Route Pattern (for reference)
+
+Your application routes in `src/app/frontend/routes/` should follow this pattern:
 
 ```python
+# src/app/frontend/routes/dashboard.py
 from fastapi import APIRouter, Request, Depends
-from ..deps import get_current_user
-from ..templates import render_template
+from core.frontend.deps import get_current_user
+from core.frontend.templates import render_template
 
 router = APIRouter()
 
@@ -39,10 +65,14 @@ async def dashboard(request: Request, user=Depends(get_current_user)):
 - `{{ datetime | format_date }}` - "January 15, 2024"
 - `{{ text | markdown }}` - Convert Markdown to HTML
 
-## Dependencies
+## Core Dependencies Available
 
-- `get_current_user` - Require authenticated user
-- `get_current_user_optional` - Optional auth check
+Import these from `core.frontend.deps`:
+
+- `get_current_user` - Require authenticated user (raises 403 if not authenticated)
+- `get_current_user_optional` - Optional auth check (returns None if not authenticated)
+- `LangDep` - Current language from cookie/header
+- `MagicCookieDep` - Magic link cookie for authentication
 
 ## HTMX Patterns
 
@@ -57,7 +87,18 @@ async def dashboard(request: Request, user=Depends(get_current_user)):
 <div hx-get="/status" hx-trigger="every 2s">...</div>
 ```
 
-## Running
+## Default Routes Provided
+
+The following routes are automatically available (DO NOT MODIFY):
+
+- **/auth/*** - OAuth and magic link authentication
+- **/health/ping** - Health check endpoint
+- **/debug/** - Debug info (only in DEBUG mode)
+- **/lang/** - Language selection
+- **/user/** - User profile routes
+- **/meta/** - Metadata endpoints
+
+## Development
 
 **CRITICAL**: Both processes required:
 

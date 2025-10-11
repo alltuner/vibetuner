@@ -146,8 +146,8 @@ If you need to customize `templates/frontend/defaults/base/footer.html.jinja`:
 
 Your templates may interact with backend services:
 
-- Email service: Backend handles via `services.core.email`
-- Blob storage: Backend handles via `services.core.blob`
+- Email service: Backend handles via `core.services.email`
+- Blob storage: Backend handles via `core.services.blob`
 - API documentation: Available at `/docs` and `/redoc`
 
 **Testing & Quality:**

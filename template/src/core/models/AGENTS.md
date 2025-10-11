@@ -1,18 +1,39 @@
-# Models Module
+# Core Models Module
 
-MongoDB data models using Beanie ODM.
+**IMMUTABLE SCAFFOLDING CODE** - These are the framework's core models that provide essential functionality.
 
-## Quick Reference
+## What's Here
 
-**Add your models**: Create files in `models/` (e.g., `posts.py`, `products.py`)
-**Core models** (DO NOT MODIFY): `core/`
+This module contains the scaffolding's core models:
 
-## Model Pattern
+- **UserModel** - Base user model with authentication support
+- **OAuthAccountModel** - OAuth provider account linking
+- **EmailVerificationTokenModel** - Magic link authentication tokens
+- **BlobModel** - File storage and blob management
+- **Mixins** - Reusable model behaviors (TimeStampMixin, etc.)
+- **Types** - Common field types and validators
+
+## Important Rules
+
+⚠️  **DO NOT MODIFY** these core models directly.
+
+**For changes to core models:**
+- File an issue at `https://github.com/alltuner/scaffolding`
+- Core changes benefit all projects using the scaffolding
+
+**For your application models:**
+- Create them in `src/app/models/` instead
+- Import core models when needed: `from core.models import UserModel`
+- Use mixins from here: `from core.models.mixins import TimeStampMixin`
+
+## User Model Pattern (for reference)
+
+Your application models in `src/app/models/` should follow this pattern:
 
 ```python
 from beanie import Document
 from pydantic import Field
-from .core.mixins import TimeStampMixin
+from core.models.mixins import TimeStampMixin
 
 class Product(Document, TimeStampMixin):
     name: str
@@ -24,13 +45,20 @@ class Product(Document, TimeStampMixin):
         indexes = ["name"]
 ```
 
-## TimeStampMixin
+## Available Mixins
 
-Automatic timestamps:
+### TimeStampMixin
+
+Automatic timestamps for all models:
 
 - `db_insert_dt` - Created at (UTC)
 - `db_update_dt` - Updated at (UTC)
 - Methods: `age()`, `age_in()`, `is_older_than()`
+
+Import in your app models:
+```python
+from core.models.mixins import TimeStampMixin
+```
 
 ## Queries
 
@@ -107,6 +135,26 @@ class Order(Document):
 # Fetch with relations
 order = await Order.get(order_id, fetch_links=True)
 print(order.user.email)  # Automatically loaded
+```
+
+## Extending Core Models
+
+If you need to add fields to User or other core models:
+
+1. **Option A**: File an issue at `https://github.com/alltuner/scaffolding` for widely useful fields
+2. **Option B**: Create a related model in `src/app/models/` that links to the core model:
+
+```python
+from beanie import Document, Link
+from core.models import UserModel
+
+class UserProfile(Document):
+    user: Link[UserModel]
+    bio: str
+    avatar_url: str
+    
+    class Settings:
+        name = "user_profiles"
 ```
 
 ## MongoDB MCP
