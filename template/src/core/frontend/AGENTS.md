@@ -6,7 +6,7 @@
 
 This module contains the scaffolding's core frontend components:
 
-- **default_routes/** - Essential routes (auth, health, debug, language, user, meta)
+- **routes/** - Essential default routes (auth, health, debug, language, user, meta)
 - **templates.py** - Template rendering with automatic context injection
 - **deps.py** - FastAPI dependencies (authentication, language, etc.)
 - **middleware.py** - Request/response middleware

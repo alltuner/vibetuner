@@ -57,7 +57,7 @@ just pr                      # Create pull request
 src/
 ├── core/                      # ⚠️  IMMUTABLE SCAFFOLDING - DO NOT MODIFY
 │   ├── frontend/             # Core web infrastructure
-│   │   ├── default_routes/  # Auth, health, debug, etc.
+│   │   ├── routes/          # Default routes (auth, health, debug, etc.)
 │   │   ├── deps.py          # Core dependencies
 │   │   ├── templates.py     # Template rendering
 │   │   ├── middleware.py    # Request/response middleware
