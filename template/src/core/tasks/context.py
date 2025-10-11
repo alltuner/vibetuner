@@ -4,7 +4,7 @@ from typing import AsyncIterator
 from httpx import AsyncClient
 from pydantic import BaseModel
 
-from ..core.mongo import init_models
+from core.mongo import init_models
 
 
 class Context(BaseModel):

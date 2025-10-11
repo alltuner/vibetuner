@@ -17,8 +17,8 @@ from starlette_compress import CompressMiddleware
 from starlette_htmx.middleware import HtmxMiddleware  # type: ignore[import-untyped]
 
 from app.config import settings
+from core.paths import locales as locales_path
 
-from ..core import paths
 from .context import ctx
 from .oauth import WebUser
 
@@ -67,9 +67,9 @@ def user_preference_selector(conn: HTTPConnection) -> str | None:
 
 
 shared_translator = get_translator()
-if paths.locales.exists() and paths.locales.is_dir():
+if locales_path.exists() and locales_path.is_dir():
     # Load translations from the locales directory
-    shared_translator.load_from_directories([paths.locales])
+    shared_translator.load_from_directories([locales_path])
 
 
 class AdjustLangCookieMiddleware(BaseHTTPMiddleware):

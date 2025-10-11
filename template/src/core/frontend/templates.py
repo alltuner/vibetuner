@@ -7,10 +7,11 @@ from starlette.responses import HTMLResponse
 from starlette_babel import gettext_lazy as _, gettext_lazy as ngettext
 from starlette_babel.contrib.jinja import configure_jinja_env
 
-from ..core.context import Context
-from ..core.paths import frontend_templates
-from ..core.templates import render_static_template
-from ..core.time import age_in_timedelta
+from core.context import Context
+from core.paths import frontend_templates
+from core.templates import render_static_template
+from core.time import age_in_timedelta
+
 from .hotreload import hotreload
 
 

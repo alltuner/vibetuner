@@ -12,8 +12,8 @@ from beanie import Document
 from beanie.operators import Eq, Set
 from pydantic import Field
 
-from core.core.time import now
 from core.models.registry import register_model
+from core.time import now
 
 
 # Email verification token model

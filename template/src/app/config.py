@@ -11,7 +11,7 @@ from pydantic import (
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from core.config import project_settings
-from core.core.versioning import version
+from core.versioning import version
 
 
 current_year: int = datetime.now().year

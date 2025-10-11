@@ -5,8 +5,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.frontend.routes import app_router
+from core import paths
 
-from ..core import paths
 from .default_routes import auth, debug, health, language, meta, user
 from .deps import LangDep as LangDep, MagicCookieDep as MagicCookieDep
 from .lifespan import ctx, lifespan

@@ -12,7 +12,7 @@ from pydantic import (
 from pydantic_extra_types.language_code import LanguageAlpha2
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from .core import paths
+from core.paths import config_vars as config_vars_path
 
 
 current_year: int = datetime.now().year
@@ -78,8 +78,8 @@ class ProjectConfiguration(BaseSettings):
 
 project_settings: ProjectConfiguration = (
     ProjectConfiguration()
-    if not paths.config_vars.exists()
+    if not config_vars_path.exists()
     else ProjectConfiguration(
-        **yaml.safe_load(paths.config_vars.read_text(encoding="utf-8"))
+        **yaml.safe_load(config_vars_path.read_text(encoding="utf-8"))
     )
 )

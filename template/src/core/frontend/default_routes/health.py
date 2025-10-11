@@ -5,8 +5,7 @@ from fastapi import APIRouter
 
 from app.config import settings
 from core.config import project_settings
-
-from ...core import paths
+from core.paths import root as root_path
 
 
 router = APIRouter(prefix="/health")
@@ -29,7 +28,7 @@ def health_instance_id():
         "port": int(os.environ.get("PORT", 8000)),
         "debug": settings.debug,
         "status": "healthy",
-        "root_path": str(paths.root.resolve()),
+        "root_path": str(root_path.resolve()),
         "process_id": os.getpid(),
         "startup_time": _startup_time.isoformat(),
     }

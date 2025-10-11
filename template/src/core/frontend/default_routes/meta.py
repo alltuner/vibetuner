@@ -3,7 +3,8 @@ from pathlib import Path
 from fastapi import APIRouter, Request
 from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 
-from ...core import paths
+from core.paths import fallback_static_default
+
 from ..templates import render_template
 
 
@@ -14,7 +15,7 @@ router = APIRouter()
 # Todo, provide an easy way to override default statics
 @router.get("/favicon.ico", response_class=FileResponse)
 async def favicon() -> Path:
-    return paths.fallback_static_default("favicons", "favicon.ico")
+    return fallback_static_default("favicons", "favicon.ico")
 
 
 # Misc static routes
