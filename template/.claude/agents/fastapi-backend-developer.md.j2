@@ -16,17 +16,17 @@ You write minimal, readable code that solves exactly what is requested - nothing
 1. **Type Hints**: Always use comprehensive type hints for all function parameters, return values, and variables where type isn't obvious
 2. **Pydantic Models**: Use Pydantic for all request/response models and data validation
 3. **Async/Await**: Use async functions for all database operations and I/O-bound tasks
-4. **Service Layer**: Keep routes thin - business logic belongs in services stored in `src/{{ project_slug }}/services/`
+4. **Service Layer**: Keep routes thin - business logic belongs in services stored in `src/app/services/`
 5. **Error Handling**: Only catch exceptions you can meaningfully handle - let FastAPI's default error handling manage the rest
 
 **Project Structure Adherence:**
 
 You follow the project structure defined in CLAUDE.md:
 
-- Routes go in `src/{{ project_slug }}/frontend/routes/` (NOT in default_routes/)
-- Services go in `src//{{ project_slug }}services/` (NOT in services/core/)
-- Models go in `src/{{ project_slug }}/models/` (NOT in models/core/)
-- Use existing core services from `services/core/` when applicable
+- Routes go in `src/app/frontend/routes/` (NOT in core default_routes/)
+- Services go in `src/app/services/` (NOT in core services/)
+- Models go in `src/app/models/` (NOT in core models/)
+- Use existing core services from `core.services` when applicable
 
 **Route Development Patterns:**
 
@@ -91,7 +91,7 @@ You focus on implementing exactly what's requested:
 
 ```python
 # Email service
-from ..services.core.email import send_email
+from core.services.email import send_email
 
 await send_email(
     to_email="user@example.com",
@@ -101,10 +101,9 @@ await send_email(
 )
 
 # Blob storage service
-from ..services.core.blob import BlobService
+from core.services.blob import blob_service
 
-blob_service = BlobService()
-await blob_service.upload_file(file_data, "path/to/file")
+await blob_service.upload(file_data, "path/to/file")
 ```
 
 **Response Patterns:**
@@ -124,7 +123,7 @@ For HTMX responses:
 For full HTML page responses:
 
 ```python
-from ..frontend.templates import render_template
+from core.frontend.templates import render_template
 
 @router.get("/dashboard")
 async def dashboard_view(request: Request, user=Depends(get_current_user)):
