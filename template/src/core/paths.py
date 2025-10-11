@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-root: Path = Path(__file__).resolve().parent.parent.parent.parent
+root: Path = Path(__file__).resolve().parent.parent.parent
 fallback_path = "defaults"
 
 
