@@ -37,9 +37,12 @@ config_vars = root / ".copier-answers.yml"
 
 # Template paths
 templates = root / "templates"
-frontend_templates = to_template_path_list(templates / "frontend")
-email_templates = templates / "email"
-markdown_templates = templates / "markdown"
+app_templates = templates / "app"
+core_templates = templates / "core"
+
+frontend_templates = [app_templates / "frontend", core_templates / "frontend"]
+email_templates = [app_templates / "email", core_templates / "email"]
+markdown_templates = [app_templates / "markdown", core_templates / "markdown"]
 
 # Asset paths
 assets = root / "assets"

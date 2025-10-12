@@ -86,9 +86,15 @@ src/
     ├── services/            # ✅ ADD YOUR SERVICES
     └── tasks/               # ✅ ADD YOUR BACKGROUND JOBS
 
-templates/frontend/
-├── (your templates)         # ✅ ADD YOUR TEMPLATES HERE
-└── defaults/               # ⚠️  DO NOT MODIFY - override by copying
+templates/
+├── app/                    # ✅ YOUR CUSTOM TEMPLATES
+│   ├── frontend/          # Your frontend template overrides
+│   ├── email/             # Your email template overrides
+│   └── markdown/          # Your markdown template overrides
+└── core/                  # ⚠️  DO NOT MODIFY - scaffolding templates
+    ├── frontend/          # Core frontend templates
+    ├── email/             # Core email templates
+    └── markdown/          # Core markdown templates
 
 assets/statics/
 ├── css/bundle.css          # Auto-generated from config.css
@@ -183,15 +189,17 @@ async def send_digest_email(user_id: str):
 
 ### Template Override
 
-To customize default templates, copy to parent directory:
+To customize core templates, copy to app directory:
 
 ```bash
 # Override footer
-cp templates/frontend/defaults/base/footer.html.jinja \
-   templates/frontend/base/footer.html.jinja
+cp templates/core/frontend/base/footer.html.jinja \
+   templates/app/frontend/base/footer.html.jinja
 
-# Now edit templates/frontend/base/footer.html.jinja
+# Now edit templates/app/frontend/base/footer.html.jinja
 ```
+
+The template system searches `templates/app/` first, then falls back to `templates/core/`.
 
 ## Configuration
 
@@ -325,7 +333,7 @@ def get_usr(e):
 4. **Always run** `ruff format .` after Python changes
 5. **Both processes required** for development: `bun dev` + `just local-dev`
 6. **Use uv exclusively** for Python packages (never pip/poetry/conda)
-7. **Override, don't modify** default templates in `templates/frontend/defaults/`
+7. **Override, don't modify** core templates - copy to `templates/app/` instead
 
 ## Custom Project Instructions
 
