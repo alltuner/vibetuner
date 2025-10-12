@@ -21,6 +21,7 @@ templates/app/frontend/base/footer.html.jinja
 ```
 
 The template system searches in order:
+
 1. `templates/app/frontend/` (your overrides)
 2. `templates/core/frontend/` (scaffolding defaults)
 
