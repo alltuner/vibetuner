@@ -1,0 +1,56 @@
+[project]
+name = "atl"
+requires-python = ">=3.13"
+version = "0.0.1"
+dependencies = [
+    "prototuner",
+]
+
+[dependency-groups]
+dev = [
+    "prototuner[dev]",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.1,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = ["core", "app"]
+
+[tool.uv.sources]
+prototuner = { git = "https://github.com/alltuner/prototuner" }
+
+[tool.ruff.lint]
+extend-select = [
+    # E and F are enabled by default
+    'B',      # flake8-bugbear
+    'C4',     # flake8-comprehensions
+    'C90',    # mccabe
+    'I',      # isort
+    'N',      # pep8-naming
+    'Q',      # flake8-quotes
+    'RUF100', # ruff (unused noqa)
+    'S',      # flake8-bandit
+    'W',      # pycodestyle
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+lines-after-imports = 2
+
+[tool.pyright]
+include = ["src"]
+exclude = ["**/node_modules", "**/__pycache__", ".git", ".venv"]
+venvPath = "."
+venv = ".venv"
+typeCheckingMode = "basic"
+reportMissingImports = false
+reportMissingTypeStubs = false
+reportGeneralTypeIssues = "warning"
+reportOptionalMemberAccess = false
+reportOptionalSubscript = false
+extraPaths = ["src"]
+
+[tool.djlint]
+ignore = "H006"

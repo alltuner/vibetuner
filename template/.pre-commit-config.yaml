@@ -12,6 +12,13 @@ repos:
     rev: v6.0.0
     hooks:
       - id: no-commit-to-branch
+  - repo: https://github.com/rvben/rumdl-pre-commit
+    rev: v0.0.155  # Use the latest release tag
+    hooks:
+      - id: rumdl
+        name: rumdl check
+        pass_filenames: true
+        require_serial: true
   - repo: local
     hooks:
       - id: djlint
@@ -20,8 +27,3 @@ repos:
         language: python
         files: \.html\.jinja$
         additional_dependencies: [djlint]
-      - id: markdownlint
-        name: markdownlint
-        entry: bun markdownlint --fix
-        language: system
-        files: \.md$
