@@ -1,0 +1,45 @@
+# General
+.env
+.env.local
+
+# Python
+############################################################
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.mypy_cache/
+
+# Virtual environments
+.venv
+
+# Frontend
+############################################################
+node_modules/
+
+# Misc
+############################################################
+.DS_Store
+.playwright-mcp/
+.mcp.json
+
+# Localization
+############################################################
+locales/*/LC_MESSAGES/messages.mo
+/messages.mo
+
+# Asset bundles
+assets/statics/css/bundle.css
+assets/statics/js/bundle.js
+assets/statics/js/bundle.js.map
+
+# Versioning
+src/core/_version.py
+
+# App Specific
+############################################################
+############################################################
+# End of file: do not remove this line or add anything below

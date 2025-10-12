@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-{{ project_slug }} = "{{ project_slug }}.cli:app"
+cli = "core.cli:app"
 
 [dependency-groups]
 dev = [
@@ -58,10 +58,13 @@ fallback-version = "0.0.0"
 source = "uv-dynamic-versioning"
 
 [tool.hatch.build.hooks.version]
-path = "src/{{ project_slug }}/core/_version.py"
+path = "src/core/_version.py"
 template = '''
 version = "{version}"
 '''
+
+[tool.hatch.build.targets.wheel]
+sources = ["src"]
 
 [tool.pyright]
 include = ["src"]
