@@ -27,6 +27,7 @@ EOF
 )"
 
 This will:
+
 - Stage all modified and new files with `git add .`
 - Create a descriptive commit message explaining the changes
 - Include the Claude Code signature as per project conventions
