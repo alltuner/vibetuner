@@ -22,3 +22,4 @@ node_modules/
 
 # Template files to ignore
 template/uv.lock
+template/bun.lock
