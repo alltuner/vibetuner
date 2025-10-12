@@ -64,7 +64,6 @@
                     </svg>
                     Available Users ({{ users | length }})
                 </h2>
-                
                 {% if users %}
                     <div class="overflow-x-auto">
                         <table class="table table-zebra w-full">
@@ -82,9 +81,7 @@
                                     <tr class="{% if current_user_id == user.id|string %}bg-primary/20{% endif %}">
                                         <td>
                                             <div class="flex items-center gap-2">
-                                                {% if current_user_id == user.id|string %}
-                                                    <div class="badge badge-primary badge-xs">CURRENT</div>
-                                                {% endif %}
+                                                {% if current_user_id == user.id|string %}<div class="badge badge-primary badge-xs">CURRENT</div>{% endif %}
                                                 <span class="font-mono text-sm">{{ user.email or "No email" }}</span>
                                             </div>
                                         </td>
@@ -105,7 +102,9 @@
                                         </td>
                                         <td class="text-center">
                                             {% if current_user_id != user.id|string %}
-                                                <form method="POST" action="/debug/impersonate/{{ user.id }}" class="inline">
+                                                <form method="POST"
+                                                      action="/debug/impersonate/{{ user.id }}"
+                                                      class="inline">
                                                     <button type="submit" class="btn btn-outline btn-sm">Impersonate</button>
                                                 </form>
                                             {% else %}

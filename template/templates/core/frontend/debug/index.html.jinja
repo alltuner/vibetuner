@@ -19,9 +19,7 @@
                         </svg>
                         System Information
                     </h2>
-                    <p class="text-base-content/70 mb-4">
-                        View application configuration, cookies, and runtime information
-                    </p>
+                    <p class="text-base-content/70 mb-4">View application configuration, cookies, and runtime information</p>
                     <div class="card-actions justify-end">
                         <a href="{{ url_for("debug_info") }}" class="btn btn-primary btn-sm">View Details</a>
                     </div>
@@ -39,7 +37,8 @@
                     </h2>
                     <p class="text-base-content/70 mb-4">Explore MongoDB collections and their field schemas</p>
                     <div class="card-actions justify-end">
-                        <a href="{{ url_for("debug_collections") }}" class="btn btn-primary btn-sm">View Schemas</a>
+                        <a href="{{ url_for("debug_collections") }}"
+                           class="btn btn-primary btn-sm">View Schemas</a>
                     </div>
                 </div>
             </div>
