@@ -4,7 +4,7 @@
 
 ## Structure
 
-```
+```text
 src/app/
 ├── __init__.py           # Application package root
 ├── config.py             # Application-specific configuration
@@ -47,10 +47,10 @@ class Configuration(BaseSettings):
     # Your app settings
     debug: bool = False
     version: str = version
-    
+
     # AWS, R2, or other service credentials
     aws_access_key_id: SecretStr | None = None
-    
+
     # Add your configuration variables here
 ```
 
@@ -103,7 +103,7 @@ class Post(Document, TimeStampMixin):
     title: str
     content: str
     author: Link[UserModel]
-    
+
     class Settings:
         name = "posts"
         indexes = ["author"]

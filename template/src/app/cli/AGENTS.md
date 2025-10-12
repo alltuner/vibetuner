@@ -31,16 +31,16 @@ def create_user(
 ):
     """Create a new user account."""
     import asyncio
-    
+
     async def _create():
         await init_db()
-        
+
         # Check if exists
         existing = await UserModel.find_one(UserModel.email == email)
         if existing:
             typer.echo(f"❌ User {email} already exists", err=True)
             raise typer.Exit(1)
-        
+
         # Create user
         user = UserModel(
             email=email,
@@ -48,11 +48,11 @@ def create_user(
             is_admin=admin
         )
         await user.insert()
-        
+
         typer.echo(f"✅ Created user: {email}")
         typer.echo(f"   ID: {user.id}")
         typer.echo(f"   Admin: {admin}")
-    
+
     asyncio.run(_create())
 
 @app.command()
@@ -61,23 +61,23 @@ def list_users(
 ):
     """List users in the database."""
     import asyncio
-    
+
     async def _list():
         await init_db()
-        
+
         users = await UserModel.find_all().limit(limit).to_list()
-        
+
         if not users:
             typer.echo("No users found")
             return
-        
+
         typer.echo(f"\n{'Email':<30} {'Name':<20} {'Admin'}")
         typer.echo("-" * 60)
-        
+
         for user in users:
             admin_mark = "✓" if user.is_admin else ""
             typer.echo(f"{user.email:<30} {user.display_name:<20} {admin_mark}")
-    
+
     asyncio.run(_list())
 ```
 
@@ -151,10 +151,10 @@ from app.config import settings
 def seed_data():
     """Seed database with test data."""
     import asyncio
-    
+
     async def _seed():
         await init_db()
-        
+
         # Create test users
         for i in range(10):
             user = UserModel(
@@ -162,9 +162,9 @@ def seed_data():
                 display_name=f"User {i}"
             )
             await user.insert()
-        
+
         typer.echo("✅ Seeded 10 test users")
-    
+
     asyncio.run(_seed())
 
 @app.command()
@@ -174,17 +174,17 @@ def clear_data(
     """Clear all data from database."""
     if not confirm:
         typer.confirm("⚠️  This will delete all data. Continue?", abort=True)
-    
+
     import asyncio
-    
+
     async def _clear():
         await init_db()
-        
+
         # Delete all
         await UserModel.delete_all()
-        
+
         typer.echo("✅ Cleared all data")
-    
+
     asyncio.run(_clear())
 ```
 
@@ -200,12 +200,12 @@ def export_users(
 ):
     """Export users to JSON file."""
     import asyncio
-    
+
     async def _export():
         await init_db()
-        
+
         users = await UserModel.find_all().to_list()
-        
+
         data = [
             {
                 "email": user.email,
@@ -214,10 +214,10 @@ def export_users(
             }
             for user in users
         ]
-        
+
         output.write_text(json.dumps(data, indent=2))
         typer.echo(f"✅ Exported {len(users)} users to {output}")
-    
+
     asyncio.run(_export())
 
 @app.command()
@@ -226,12 +226,12 @@ def import_users(
 ):
     """Import users from JSON file."""
     import asyncio
-    
+
     async def _import():
         await init_db()
-        
+
         data = json.loads(input.read_text())
-        
+
         count = 0
         for item in data:
             existing = await UserModel.find_one(
@@ -240,7 +240,7 @@ def import_users(
             if existing:
                 typer.echo(f"⏭  Skipping {item['email']} (exists)")
                 continue
-            
+
             user = UserModel(
                 email=item["email"],
                 display_name=item["name"],
@@ -248,9 +248,9 @@ def import_users(
             )
             await user.insert()
             count += 1
-        
+
         typer.echo(f"✅ Imported {count} users")
-    
+
     asyncio.run(_import())
 ```
 
@@ -263,44 +263,44 @@ from datetime import datetime, timedelta
 def cleanup_old_sessions():
     """Remove expired sessions."""
     import asyncio
-    
+
     async def _cleanup():
         await init_db()
-        
+
         cutoff = datetime.now() - timedelta(days=30)
-        
+
         # Delete old sessions
         result = await Session.find(
             Session.expires_at < cutoff
         ).delete()
-        
+
         typer.echo(f"✅ Deleted {result.deleted_count} expired sessions")
-    
+
     asyncio.run(_cleanup())
 
 @app.command()
 def rebuild_indexes():
     """Rebuild database indexes."""
     import asyncio
-    
+
     async def _rebuild():
         await init_db()
-        
+
         # Get database
         from motor.motor_asyncio import AsyncIOMotorClient
         from core.config import project_settings
-        
+
         client = AsyncIOMotorClient(str(project_settings.mongodb_url))
         db = client[project_settings.project_slug]
-        
+
         # Rebuild indexes for each collection
         collections = await db.list_collection_names()
-        
+
         for collection_name in collections:
             collection = db[collection_name]
             await collection.reindex()
             typer.echo(f"✅ Rebuilt indexes for {collection_name}")
-    
+
     asyncio.run(_rebuild())
 ```
 
@@ -311,27 +311,27 @@ def rebuild_indexes():
 def interactive_user_create():
     """Create user interactively."""
     import asyncio
-    
+
     email = typer.prompt("Email")
     name = typer.prompt("Display name")
     admin = typer.confirm("Make admin?", default=False)
-    
+
     if not typer.confirm(f"Create user {email}?"):
         typer.echo("Cancelled")
         raise typer.Exit()
-    
+
     async def _create():
         await init_db()
-        
+
         user = UserModel(
             email=email,
             display_name=name,
             is_admin=admin
         )
         await user.insert()
-        
+
         typer.echo(f"✅ Created user: {user.id}")
-    
+
     asyncio.run(_create())
 ```
 
@@ -344,18 +344,18 @@ from rich.progress import track
 def process_all_users():
     """Process all users with progress bar."""
     import asyncio
-    
+
     async def _process():
         await init_db()
-        
+
         users = await UserModel.find_all().to_list()
-        
+
         for user in track(users, description="Processing users..."):
             # Do something with each user
             await process_user(user)
-        
+
         typer.echo("✅ Processed all users")
-    
+
     asyncio.run(_process())
 ```
 
@@ -371,22 +371,22 @@ console = Console()
 def show_stats():
     """Show database statistics."""
     import asyncio
-    
+
     async def _stats():
         await init_db()
-        
+
         user_count = await UserModel.count()
         post_count = await Post.count()
-        
+
         table = Table(title="Database Statistics")
         table.add_column("Metric", style="cyan")
         table.add_column("Count", style="magenta")
-        
+
         table.add_row("Users", str(user_count))
         table.add_row("Posts", str(post_count))
-        
+
         console.print(table)
-    
+
     asyncio.run(_stats())
 ```
 
@@ -394,7 +394,7 @@ def show_stats():
 
 ### Group Related Commands
 
-```
+```text
 cli/
 ├── __init__.py          # Main CLI entry point
 ├── users.py             # User management commands
@@ -446,7 +446,7 @@ def safe_operation():
     if not validate_preconditions():
         typer.echo("❌ Preconditions not met", err=True)
         raise typer.Exit(1)
-    
+
     # Continue...
 ```
 

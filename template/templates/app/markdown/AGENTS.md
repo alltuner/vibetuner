@@ -70,7 +70,7 @@ def get_terms_content(lang: str = "en") -> str:
             "last_updated": "2024-01-01"
         }
     )
-    
+
     # Convert markdown to HTML
     html_content = markdown.markdown(md_content)
     return html_content

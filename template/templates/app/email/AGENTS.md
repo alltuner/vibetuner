@@ -99,7 +99,7 @@ async def send_welcome_email(user_email: str, user_name: str, lang: str = "en"):
             "dashboard_url": "https://example.com/dashboard"
         }
     )
-    
+
     text_body = render_static_template(
         "welcome.txt",
         namespace="email",
@@ -110,7 +110,7 @@ async def send_welcome_email(user_email: str, user_name: str, lang: str = "en"):
             "dashboard_url": "https://example.com/dashboard"
         }
     )
-    
+
     ses_service = SESEmailService()
     await ses_service.send_email(
         subject=f"Welcome to My App!",

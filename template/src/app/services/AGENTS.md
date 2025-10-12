@@ -23,7 +23,7 @@ from app.config import settings
 
 class NotificationService:
     """Handle all notification delivery."""
-    
+
     async def send_welcome_email(self, user: UserModel) -> bool:
         """Send welcome email to new user."""
         await send_email(
@@ -33,7 +33,7 @@ class NotificationService:
             text_content=f"Welcome {user.display_name}!"
         )
         return True
-    
+
     async def notify_admin(self, message: str, severity: str = "info") -> None:
         """Send notification to admin."""
         # Implementation
@@ -84,11 +84,11 @@ from app.config import settings
 
 class PaymentService:
     """Stripe payment integration."""
-    
+
     def __init__(self):
         self.api_key = settings.stripe_api_key
         self.base_url = "https://api.stripe.com/v1"
-    
+
     async def create_payment_intent(
         self,
         amount: int,
@@ -103,7 +103,7 @@ class PaymentService:
             )
             response.raise_for_status()
             return response.json()
-    
+
     async def retrieve_payment(self, payment_id: str) -> dict:
         """Get payment status."""
         async with httpx.AsyncClient() as client:
@@ -126,11 +126,11 @@ from app.models.event import Event
 
 class AnalyticsService:
     """Process and aggregate analytics data."""
-    
+
     async def get_daily_stats(self, days: int = 7) -> dict:
         """Get aggregated stats for past N days."""
         start_date = datetime.now() - timedelta(days=days)
-        
+
         pipeline = [
             {"$match": {"created_at": {"$gte": start_date}}},
             {"$group": {
@@ -145,7 +145,7 @@ class AnalyticsService:
             }},
             {"$sort": {"_id": 1}}
         ]
-        
+
         results = await Event.aggregate(pipeline).to_list()
         return {
             "dates": [r["_id"] for r in results],
@@ -166,7 +166,7 @@ from core.services.blob import blob_service
 
 class DocumentService:
     """Process uploaded documents."""
-    
+
     async def process_image(
         self,
         file_bytes: bytes,
@@ -175,18 +175,18 @@ class DocumentService:
         """Process and optimize uploaded image."""
         # Open image
         img = Image.open(BytesIO(file_bytes))
-        
+
         # Create thumbnail
         thumb = img.copy()
         thumb.thumbnail((300, 300))
-        
+
         # Save optimized versions
         optimized = BytesIO()
         img.save(optimized, format="WEBP", quality=85)
-        
+
         thumb_bytes = BytesIO()
         thumb.save(thumb_bytes, format="WEBP", quality=85)
-        
+
         # Upload to blob storage
         original = await blob_service.upload(
             optimized.getvalue(),
@@ -196,7 +196,7 @@ class DocumentService:
             thumb_bytes.getvalue(),
             f"thumbnails/{filename}.webp"
         )
-        
+
         return {
             "original_id": str(original.id),
             "thumbnail_id": str(thumbnail.id),
@@ -215,19 +215,19 @@ from app.tasks.cleanup import cleanup_old_files
 
 class TaskOrchestrator:
     """Coordinate multiple background tasks."""
-    
+
     async def run_daily_maintenance(self) -> dict:
         """Run all daily maintenance tasks."""
         results = {}
-        
+
         # Cleanup old files
         cleanup_task = await cleanup_old_files.enqueue()
         results["cleanup"] = cleanup_task.id
-        
+
         # Send digest emails
         digest_task = await send_digest_email.enqueue()
         results["digest"] = digest_task.id
-        
+
         return results
 
 orchestrator = TaskOrchestrator()
@@ -262,7 +262,7 @@ async def create_payment(
 
 Each service should have a focused purpose:
 
-```
+```text
 services/
 ├── __init__.py
 ├── payment.py         # Payment processing
@@ -286,7 +286,7 @@ from app.config import settings
 
 class ServiceFactory:
     """Factory for creating configured service instances."""
-    
+
     @staticmethod
     def create_payment_service():
         if settings.payment_provider == "stripe":
@@ -317,9 +317,9 @@ async def test_create_payment_intent(payment_service):
             "id": "pi_123",
             "client_secret": "secret_123"
         }
-        
+
         result = await payment_service.create_payment_intent(1000)
-        
+
         assert result["id"] == "pi_123"
         mock_post.assert_called_once()
 ```
@@ -372,14 +372,14 @@ class Configuration(BaseSettings):
     # Payment
     stripe_api_key: SecretStr | None = None
     payment_provider: str = "stripe"
-    
+
     # Email (if not using core)
     sendgrid_api_key: SecretStr | None = None
-    
+
     # SMS
     twilio_account_sid: str | None = None
     twilio_auth_token: SecretStr | None = None
-    
+
     # External APIs
     api_timeout: int = 30
     api_retry_attempts: int = 3

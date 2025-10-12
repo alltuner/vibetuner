@@ -43,7 +43,7 @@ async def dashboard_home(
 ):
     """Dashboard home page."""
     posts = await Post.find(Post.author.id == user.id).to_list()
-    
+
     return render_template(
         "dashboard/home.html.jinja",
         request,
@@ -64,7 +64,7 @@ async def create_post(
     """Create a new post."""
     post = Post(title=title, content=content, author=user)
     await post.insert()
-    
+
     # Return HTMX partial
     return render_template(
         "dashboard/partials/post_item.html.jinja",
@@ -228,7 +228,7 @@ async def create_post_api(
 async def load_comments(request: Request, post_id: str):
     """Load comments partial for HTMX."""
     comments = await Comment.find(Comment.post_id == post_id).to_list()
-    
+
     # Return just the HTML fragment
     return render_template(
         "partials/comments.html.jinja",
@@ -246,7 +246,7 @@ async def like_post(
     post = await Post.get(post_id)
     post.likes += 1
     await post.save()
-    
+
     # Return updated button HTML
     return render_template(
         "partials/like_button.html.jinja",
@@ -282,14 +282,14 @@ async def create_post_form(
             content=content,
             tags=tags.split(",") if tags else []
         )
-        
+
         # Create post
         post = Post(**form_data.model_dump(), author=user)
         await post.insert()
-        
+
         # Redirect or return success
         return RedirectResponse(f"/posts/{post.id}", status_code=303)
-        
+
     except ValidationError as e:
         # Return errors
         return render_template(
@@ -314,10 +314,10 @@ async def upload_file(
     """Handle file upload."""
     # Read file
     file_bytes = await file.read()
-    
+
     # Upload to blob storage
     blob = await blob_service.upload(file_bytes, file.filename)
-    
+
     # Return upload result
     return {
         "id": str(blob.id),
@@ -339,7 +339,7 @@ async def stream_data(user: UserModel = Depends(get_current_user)):
         for i in range(10):
             await asyncio.sleep(1)
             yield f"data: {i}\n\n"
-    
+
     return StreamingResponse(
         event_generator(),
         media_type="text/event-stream"

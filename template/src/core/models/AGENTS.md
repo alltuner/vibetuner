@@ -155,7 +155,7 @@ class UserProfile(Document):
     user: Link[UserModel]
     bio: str
     avatar_url: str
-    
+
     class Settings:
         name = "user_profiles"
 ```

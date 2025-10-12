@@ -30,33 +30,33 @@ from core.services.email import send_email
 @worker.task()
 async def send_welcome_email(user_id: str) -> dict[str, str]:
     """Send welcome email to new user."""
-    
+
     # Access context for HTTP client, etc.
     # ctx = worker.context
-    
+
     user = await UserModel.get(user_id)
     if not user:
         return {"status": "skipped", "reason": "user_not_found"}
-    
+
     await send_email(
         to_email=user.email,
         subject="Welcome!",
         html_content=f"<h1>Welcome {user.display_name}!</h1>",
         text_content=f"Welcome {user.display_name}!"
     )
-    
+
     return {"status": "sent", "user_email": user.email}
 
 @worker.task()
 async def send_daily_digest() -> dict:
     """Send daily digest to all users."""
     users = await UserModel.find_all().to_list()
-    
+
     sent_count = 0
     for user in users:
         # Process each user...
         sent_count += 1
-    
+
     return {"sent_count": sent_count}
 ```
 
@@ -87,13 +87,13 @@ from app.tasks.emails import send_welcome_email
 async def signup(email: str):
     # Create user
     user = await create_user(email)
-    
+
     # Queue background task
     task = await send_welcome_email.enqueue(user.id)
-    
+
     # Optionally get task ID
     task_id = task.id
-    
+
     return {"user_id": str(user.id), "task_id": task_id}
 ```
 
@@ -105,10 +105,10 @@ Access shared resources through worker context:
 @worker.task()
 async def fetch_external_data(url: str) -> dict:
     """Fetch data from external API."""
-    
+
     # HTTP client is available in context
     http_client = worker.context.http_client
-    
+
     response = await http_client.get(url)
     return response.json()
 ```
@@ -178,16 +178,16 @@ async def send_password_reset(user_id: str, token: str) -> dict:
     user = await UserModel.get(user_id)
     if not user:
         return {"status": "error", "reason": "user_not_found"}
-    
+
     reset_url = f"https://example.com/reset?token={token}"
-    
+
     await send_email(
         to_email=user.email,
         subject="Reset Your Password",
         html_content=f"<a href='{reset_url}'>Reset Password</a>",
         text_content=f"Reset your password: {reset_url}"
     )
-    
+
     return {"status": "sent"}
 ```
 
@@ -202,22 +202,22 @@ from core.services.blob import blob_service
 @worker.task()
 async def generate_sales_report(start_date: str, end_date: str) -> dict:
     """Generate sales report for date range."""
-    
+
     # Fetch data
     orders = await Order.find(
         Order.created_at >= start_date,
         Order.created_at <= end_date
     ).to_list()
-    
+
     # Generate report
     report_bytes = await export_service.create_pdf_report(orders)
-    
+
     # Upload to storage
     blob = await blob_service.upload(
         report_bytes,
         f"reports/sales_{start_date}_{end_date}.pdf"
     )
-    
+
     return {
         "status": "completed",
         "blob_id": str(blob.id),
@@ -235,27 +235,27 @@ from app.services.image import image_service
 @worker.task()
 async def process_uploaded_image(image_id: str) -> dict:
     """Process uploaded image: generate thumbnails, optimize, etc."""
-    
+
     image = await ImageModel.get(image_id)
     if not image:
         return {"status": "error", "reason": "image_not_found"}
-    
+
     # Download original
     original_bytes = await blob_service.download(image.blob_id)
-    
+
     # Create variants
     thumbnail = await image_service.create_thumbnail(original_bytes)
     optimized = await image_service.optimize(original_bytes)
-    
+
     # Upload variants
     thumb_blob = await blob_service.upload(thumbnail, f"thumbs/{image_id}.webp")
     opt_blob = await blob_service.upload(optimized, f"optimized/{image_id}.webp")
-    
+
     # Update image record
     image.thumbnail_id = str(thumb_blob.id)
     image.optimized_id = str(opt_blob.id)
     await image.save()
-    
+
     return {"status": "completed", "image_id": image_id}
 ```
 
@@ -269,16 +269,16 @@ from app.models.session import Session
 @worker.task()
 async def cleanup_expired_sessions() -> dict:
     """Remove expired sessions from database."""
-    
+
     cutoff = datetime.now() - timedelta(days=30)
-    
+
     expired = await Session.find(
         Session.expires_at < cutoff
     ).to_list()
-    
+
     for session in expired:
         await session.delete()
-    
+
     return {
         "status": "completed",
         "deleted_count": len(expired)
@@ -291,21 +291,21 @@ async def cleanup_expired_sessions() -> dict:
 @worker.task()
 async def process_upload(file_id: str) -> dict:
     """Process file upload in stages."""
-    
+
     # Stage 1: Validate
     validation = await validate_file.enqueue(file_id)
     result1 = await validation.result()
-    
+
     if result1["valid"]:
         # Stage 2: Process
         processing = await process_file.enqueue(file_id)
         result2 = await processing.result()
-        
+
         # Stage 3: Notify
         await notify_user.enqueue(file_id, "completed")
-        
+
         return {"status": "completed", "stages": [result1, result2]}
-    
+
     return {"status": "failed", "reason": "invalid_file"}
 ```
 
@@ -367,18 +367,18 @@ async def risky_operation(data_id: str) -> dict:
         if not data:
             logger.warning(f"Data not found: {data_id}")
             return {"status": "skipped", "reason": "not_found"}
-        
+
         # Process
         result = await process_data(data)
-        
+
         logger.info(f"Processed data: {data_id}")
         return {"status": "success", "result": result}
-        
+
     except TransientError as e:
         # Retry on transient errors
         logger.error(f"Transient error processing {data_id}: {e}")
         raise  # Triggers retry
-        
+
     except PermanentError as e:
         # Don't retry on permanent errors
         logger.error(f"Permanent error processing {data_id}: {e}")
@@ -394,10 +394,10 @@ from app.tasks.emails import send_welcome_email
 @pytest.mark.asyncio
 async def test_send_welcome_email(db, user):
     """Test welcome email task."""
-    
+
     # Run task directly (not queued)
     result = await send_welcome_email(str(user.id))
-    
+
     assert result["status"] == "sent"
     assert result["user_email"] == user.email
 

@@ -22,14 +22,14 @@ from core.models.mixins import TimeStampMixin
 
 class Post(Document, TimeStampMixin):
     """Blog post model."""
-    
+
     title: str = Field(min_length=1, max_length=200)
     content: str
     author: Link[UserModel]
     tags: list[str] = []
     published: bool = False
     view_count: int = 0
-    
+
     class Settings:
         name = "posts"  # Collection name in MongoDB
         indexes = [
@@ -111,11 +111,11 @@ class Customer(Document):
 class Post(Document, TimeStampMixin):
     title: str
     deleted_at: datetime | None = None
-    
+
     @property
     def is_deleted(self) -> bool:
         return self.deleted_at is not None
-    
+
     async def soft_delete(self) -> None:
         self.deleted_at = datetime.now(UTC)
         await self.save()
@@ -224,7 +224,7 @@ from pymongo import IndexModel, TEXT, ASCENDING, DESCENDING
 
 class Post(Document):
     # ...
-    
+
     class Settings:
         name = "posts"
         indexes = [
@@ -248,7 +248,7 @@ class Post(Document):
     title: str = Field(min_length=1, max_length=200)
     slug: str = Field(pattern=r"^[a-z0-9-]+$")
     content: str = Field(min_length=10)
-    
+
     @field_validator("slug")
     @classmethod
     def validate_slug(cls, v: str) -> str:
