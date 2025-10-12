@@ -18,10 +18,12 @@ This module contains the scaffolding's core models:
 ⚠️  **DO NOT MODIFY** these core models directly.
 
 **For changes to core models:**
+
 - File an issue at `https://github.com/alltuner/scaffolding`
 - Core changes benefit all projects using the scaffolding
 
 **For your application models:**
+
 - Create them in `src/app/models/` instead
 - Import core models when needed: `from core.models import UserModel`
 - Use mixins from here: `from core.models.mixins import TimeStampMixin`
@@ -56,6 +58,7 @@ Automatic timestamps for all models:
 - Methods: `age()`, `age_in()`, `is_older_than()`
 
 Import in your app models:
+
 ```python
 from core.models.mixins import TimeStampMixin
 ```

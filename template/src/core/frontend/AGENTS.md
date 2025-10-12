@@ -21,10 +21,12 @@ This module contains the scaffolding's core frontend components:
 ⚠️  **DO NOT MODIFY** these core frontend components directly.
 
 **For changes to core frontend:**
+
 - File an issue at `https://github.com/alltuner/scaffolding`
 - Core changes benefit all projects using the scaffolding
 
 **For your application routes:**
+
 - Create them in `src/app/frontend/routes/` instead
 - Import core components when needed:
   - `from core.frontend.deps import get_current_user`

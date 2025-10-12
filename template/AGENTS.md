@@ -105,6 +105,7 @@ assets/statics/
 ### Core vs App
 
 **`src/core/`** - Immutable scaffolding framework
+
 - User authentication, OAuth, magic links
 - Email service, blob storage
 - Base templates, middleware, default routes
@@ -112,6 +113,7 @@ assets/statics/
 - **Changes**: File issues at `https://github.com/alltuner/scaffolding`
 
 **`src/app/`** - Your application space
+
 - Your business logic
 - Your data models  
 - Your API routes
@@ -119,7 +121,8 @@ assets/statics/
 - Your CLI commands
 - **Changes**: Edit freely, this is your code
 
-**Note**: `src/{{ project_slug }}/` exists for migration compatibility but is deprecated. All new code goes in `src/app/`.
+**Note**: `src/{{ project_slug }}/` exists for migration compatibility but is
+deprecated. All new code goes in `src/app/`.
 
 ## Development Patterns
 
@@ -199,7 +202,8 @@ cp templates/core/frontend/base/footer.html.jinja \
 # Now edit templates/app/frontend/base/footer.html.jinja
 ```
 
-The template system searches `templates/app/` first, then falls back to `templates/core/`.
+The template system searches `templates/app/` first, then falls back to
+`templates/core/`.
 
 ## Configuration
 

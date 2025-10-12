@@ -1,6 +1,6 @@
 # Application Frontend Templates
 
-**✅ YOUR CUSTOM TEMPLATES GO HERE**
+YOUR CUSTOM TEMPLATES GO HERE
 
 ## Purpose
 
@@ -82,7 +82,8 @@ async def dashboard(request: Request):
 
 ## Best Practices
 
-1. **Extend, don't duplicate**: Use `{% extends %}` and `{% block %}` to build on core templates
+1. **Extend, don't duplicate**: Use `{% extends %}` and `{% block %}` to
+   build on core templates
 2. **Organize by feature**: Group related templates in subdirectories
 3. **Document overrides**: Add comments explaining why you're overriding
 4. **Test fallbacks**: Ensure your overrides work after scaffolding updates

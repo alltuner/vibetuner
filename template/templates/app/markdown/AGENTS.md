@@ -1,6 +1,6 @@
 # Application Markdown Templates
 
-**✅ YOUR CUSTOM MARKDOWN TEMPLATES GO HERE**
+YOUR CUSTOM MARKDOWN TEMPLATES GO HERE
 
 ## Purpose
 

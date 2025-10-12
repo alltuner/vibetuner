@@ -1,6 +1,6 @@
 # Application Email Templates
 
-**✅ YOUR CUSTOM EMAIL TEMPLATES GO HERE**
+YOUR CUSTOM EMAIL TEMPLATES GO HERE
 
 ## Purpose
 
@@ -39,6 +39,7 @@ app/email/
 ```
 
 The system searches:
+
 1. `templates/app/email/{lang}/` (your language-specific)
 2. `templates/app/email/default/` (your default)
 3. `templates/core/email/{lang}/` (core language-specific)
@@ -62,7 +63,9 @@ Always provide both HTML and text versions:
   <h1>Welcome, {{ user_name }}!</h1>
   <p>Thank you for joining {{ project_name }}.</p>
   <p>
-    <a href="{{ dashboard_url }}" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+    <a href="{{ dashboard_url }}"
+       style="background: #007bff; color: white; padding: 10px 20px;
+              text-decoration: none; border-radius: 5px;">
       Get Started
     </a>
   </p>

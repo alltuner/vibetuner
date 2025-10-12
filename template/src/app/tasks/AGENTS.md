@@ -411,12 +411,14 @@ async def test_task_queue(db, user):
 ## Task vs Service
 
 **When to use tasks:**
+
 - Operation takes >1 second
 - User doesn't need immediate result
 - Operation can fail and retry
 - Scheduled/recurring work
 
 **When to use services:**
+
 - Immediate result needed
 - Fast operation (<100ms)
 - Synchronous validation

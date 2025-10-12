@@ -294,6 +294,7 @@ async def test_create_post(db):
 ## MongoDB MCP
 
 Claude Code has MongoDB MCP access for:
+
 - Database inspection
 - Query execution
 - Index analysis

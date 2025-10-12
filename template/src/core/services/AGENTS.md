@@ -14,10 +14,12 @@ This module contains the scaffolding's core services:
 ⚠️  **DO NOT MODIFY** these core services directly.
 
 **For changes to core services:**
+
 - File an issue at `https://github.com/alltuner/scaffolding`
 - Core changes benefit all projects using the scaffolding
 
 **For your application services:**
+
 - Create them in `src/app/services/` instead
 - Import core services when needed: `from core.services.email import send_email`
 

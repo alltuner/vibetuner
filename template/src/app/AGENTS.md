@@ -38,6 +38,7 @@ src/app/
 ### Configuration
 
 **`src/app/config.py`** - Application-specific settings:
+
 ```python
 from core.config import project_settings
 from core.versioning import version
@@ -54,6 +55,7 @@ class Configuration(BaseSettings):
 ```
 
 **`src/core/config.py`** - Project-level settings (read-only):
+
 - Project name, slug, description
 - MongoDB URL, Redis URL
 - Supported languages

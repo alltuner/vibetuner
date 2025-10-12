@@ -8,17 +8,19 @@ This module contains the scaffolding's core task components:
 
 - **worker.py** - Streaq worker setup and configuration
 - **context.py** - Task context management (DB, HTTP client, etc.)
-- **__init__.py** - Task infrastructure exports
+- ****init**.py** - Task infrastructure exports
 
 ## Important Rules
 
 ⚠️  **DO NOT MODIFY** these core task components directly.
 
 **For changes to core tasks:**
+
 - File an issue at `https://github.com/alltuner/scaffolding`
 - Core changes benefit all projects using the scaffolding
 
 **For your application tasks:**
+
 - Create them in `src/app/tasks/` instead
 - Import the worker from app: `from app.tasks.worker import worker`
 
