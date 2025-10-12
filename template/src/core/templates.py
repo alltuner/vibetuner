@@ -9,7 +9,6 @@ from .paths import (
     email_templates,
     frontend_templates,
     markdown_templates,
-    templates,
 )
 
 
@@ -35,8 +34,8 @@ def render_static_template(
 
     Args:
         template_name: Base filename without extension (e.g. ``"invoice"``).
-        template_path: Root directory or list of directories containing template 
-            collections. When a list is provided, searches in order (app overrides 
+        template_path: Root directory or list of directories containing template
+            collections. When a list is provided, searches in order (app overrides
             come first). Defaults to the library's built‑in path if omitted.
         namespace: Optional subfolder under *template_path* to confine the
             lookup. Ignored when the directory does not exist.
@@ -54,7 +53,7 @@ def render_static_template(
 
     # 0. Normalise inputs
     context = context or {}
-    
+
     # Ensure we have a list of paths, with smart namespace handling
     if template_path is None:
         # No template_path provided - use namespace to determine paths
