@@ -15,7 +15,7 @@ Create your application-specific routes in the `routes/` subdirectory:
 
 ## Directory Structure
 
-```
+```text
 src/app/frontend/
 ├── routes/              # ✅ ADD YOUR ROUTES HERE
 │   ├── __init__.py     # Register routes (edit app_router)
