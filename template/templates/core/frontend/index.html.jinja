@@ -1,0 +1,19 @@
+{% set BODY_CLASS = "min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex flex-col justify-between" %}
+{% extends "base/skeleton.html.jinja" %}
+{% block body %}
+    <!-- Main Content -->
+    <div class="flex-1 flex items-center justify-center px-6">
+        <div class="text-center max-w-4xl mx-auto">
+            <!-- Main Title -->
+            <h1 class="text-6xl md:text-8xl font-bold text-slate-800 mb-6 tracking-tight">{{ project_name }}</h1>
+            <!-- Subtitle -->
+            <p class="text-xl md:text-2xl text-slate-600 font-light max-w-2xl mx-auto leading-relaxed">
+                {{ project_description }}
+            </p>
+            <!-- Decorative element -->
+            <div class="mt-12 flex justify-center">
+                <div class="w-24 h-1 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full"></div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}

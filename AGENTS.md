@@ -13,7 +13,8 @@ Python web applications using AllTuner's blessed stack:
 - **OAuth + Magic Link authentication**
 - **Background task processing** with Redis/Streaq
 - **Internationalization** support
-- **Dependency management**: Uses `prototuner` package for both Python (runtime) and JavaScript (build-time) dependencies
+- **Dependency management**: Uses `prototuner` package for both Python
+  (runtime) and JavaScript (build-time) dependencies
 
 ## Essential Commands
 
