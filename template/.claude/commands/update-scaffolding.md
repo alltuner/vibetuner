@@ -3,6 +3,8 @@ allowed-tools: Bash(just update-scaffolding:*), Bash(git status:*), Bash(git dif
 description: Update project scaffolding to latest version and commit changes
 ---
 
+# Scaffolding Updater
+
 I'll update your project scaffolding to the latest version and handle any changes.
 
 First, let me check if there are any uncommitted changes that need to be stashed:

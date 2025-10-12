@@ -3,6 +3,8 @@ name: dev
 description: Start the development environment (frontend assets + backend server)
 ---
 
+# Development Environment
+
 I'll use the web-app-runner agent to start the development environment with both frontend asset bundling and the backend server.
 
 The web-app-runner agent will:

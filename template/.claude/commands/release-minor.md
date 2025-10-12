@@ -4,6 +4,8 @@ argument-hint: <next-branch-name>
 description: Complete release workflow with minor version increment
 ---
 
+# Minor Release Creator
+
 I'll execute your complete release workflow with **minor** version increment.
 
 **Next branch name:** $1 (required)

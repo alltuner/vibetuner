@@ -3,6 +3,8 @@ allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git a
 description: Stage all changes and create commit with relevant message
 ---
 
+# Commit All Changes
+
 I'll stage all your changes (both staged and unstaged) and create a commit with an appropriate message.
 
 Let me check what's currently changed and generate a relevant commit message:
