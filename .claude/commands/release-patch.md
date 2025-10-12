@@ -4,6 +4,8 @@ description: Release a new patch version of the scaffolding template
 allowed-tools: Bash(just:*), Bash(git:*)
 ---
 
+# Patch Release Creator
+
 I'll create a patch release of the scaffolding template.
 
 This will:

@@ -4,6 +4,8 @@ description: Commit all staged and unstaged changes with a descriptive message
 allowed-tools: Bash(git:*)
 ---
 
+# Commit All Changes
+
 I'll commit all changes with a proper commit message.
 
 Let me check the current status and create an appropriate commit:

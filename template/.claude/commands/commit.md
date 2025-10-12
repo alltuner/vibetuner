@@ -3,6 +3,8 @@ allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git c
 description: Generate and create commit with relevant message for staged changes
 ---
 
+# Commit Generator
+
 I'll analyze your staged changes and create a commit with an appropriate message.
 
 Let me check what's currently staged and generate a relevant commit message:

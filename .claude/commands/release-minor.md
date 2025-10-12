@@ -4,6 +4,8 @@ description: Release a new minor version of the scaffolding template
 allowed-tools: Bash(just:*), Bash(git:*)
 ---
 
+# Minor Release Creator
+
 I'll create a minor release of the scaffolding template.
 
 This will:

@@ -4,6 +4,8 @@ description: Update all project dependencies (Python and Node.js)
 allowed-tools: Bash(uv:*), Bash(bun:*), Bash(git:*), Bash(ruff:*)
 ---
 
+# Dependency Updater
+
 I'll update all project dependencies for both Python and Node.js.
 
 This command will:
