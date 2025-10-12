@@ -24,7 +24,6 @@ exclude = [
 
     # We only have CLAUDE.md symlinks, hence we don't need to check
     "CLAUDE.md",
-    ".claude/agents/*.md",
 ]
 
 # Respect .gitignore files when scanning directories (default: true)
