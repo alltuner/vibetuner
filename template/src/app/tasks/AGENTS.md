@@ -17,7 +17,8 @@ Create your application-specific background tasks in this directory:
 
 **Background tasks are only available if job queue was enabled during scaffolding.**
 
-If job queue wasn't enabled, this directory exists but has no functionality. You would need to re-scaffold or file an issue to add task support.
+If job queue wasn't enabled, this directory exists but has no functionality. You
+would need to re-scaffold or file an issue to add task support.
 
 ## Task Pattern
 
