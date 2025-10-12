@@ -12,6 +12,72 @@ from .paths import (
 )
 
 
+def _get_base_paths_for_namespace(
+    namespace: str | None,
+    template_path: Path | list[Path] | None,
+) -> list[Path]:
+    """Get base template paths based on namespace and template_path."""
+    if template_path is not None:
+        return [template_path] if isinstance(template_path, Path) else template_path
+
+    # Map known namespaces to their predefined paths
+    if namespace == "email":
+        return email_templates
+    if namespace == "markdown":
+        return markdown_templates
+    if namespace == "frontend":
+        return frontend_templates
+
+    # Default for unknown or None namespace
+    return [app_templates, core_templates]
+
+
+def _build_search_paths(
+    base_paths: list[Path],
+    namespace: str | None,
+    template_path: Path | list[Path] | None,
+) -> list[Path]:
+    """Build list of directories to search for templates."""
+    search_paths: list[Path] = []
+    known_namespaces = ("email", "markdown", "frontend")
+
+    for base_path in base_paths:
+        # If namespace is known and we're using default paths, they already include it
+        if namespace in known_namespaces and template_path is None:
+            if base_path.is_dir():
+                search_paths.append(base_path)
+        elif namespace:
+            # Append namespace to path for custom namespaces or explicit paths
+            ns_path = base_path / namespace
+            if ns_path.is_dir():
+                search_paths.append(ns_path)
+        else:
+            if base_path.is_dir():
+                search_paths.append(base_path)
+
+    return search_paths
+
+
+def _render_template_with_env(
+    env: Environment,
+    jinja_template_name: str,
+    lang: str | None,
+    context: dict[str, Any],
+) -> str:
+    """Render template using Jinja environment with language fallback."""
+    # Try language-specific folder first
+    if lang:
+        try:
+            template = env.get_template(f"{lang}/{jinja_template_name}")
+            return template.render(**context)
+        except TemplateNotFound:
+            pass
+
+    # Fallback to default folder
+    template = env.get_template(f"default/{jinja_template_name}")
+    return template.render(**context)
+
+
 def render_static_template(
     template_name: str,
     *,
@@ -51,70 +117,30 @@ def render_static_template(
             fallbacks.
     """
 
-    # 0. Normalise inputs
     context = context or {}
 
-    # Ensure we have a list of paths, with smart namespace handling
-    if template_path is None:
-        # No template_path provided - use namespace to determine paths
-        if namespace == "email":
-            base_paths = email_templates
-        elif namespace == "markdown":
-            base_paths = markdown_templates
-        elif namespace == "frontend":
-            base_paths = frontend_templates
-        else:
-            # Unknown namespace, use root templates with namespace subfolder
-            base_paths = [app_templates, core_templates]
-    elif isinstance(template_path, Path):
-        base_paths = [template_path]
-    else:
-        base_paths = template_path
+    # Determine base paths from namespace and template_path
+    base_paths = _get_base_paths_for_namespace(namespace, template_path)
 
-    # 1. Apply namespace if requested and collect valid paths
-    search_paths: list[Path] = []
-    for base_path in base_paths:
-        # If namespace matches known template types, paths already point to correct location
-        if namespace in ("email", "markdown", "frontend") and template_path is None:
-            # Paths already include the namespace, don't append it again
-            if base_path.is_dir():
-                search_paths.append(base_path)
-        elif namespace:
-            # For other namespaces or when template_path is explicitly provided
-            ns_path = base_path / namespace
-            if ns_path.is_dir():
-                search_paths.append(ns_path)
-        else:
-            if base_path.is_dir():
-                search_paths.append(base_path)
+    # Build search paths from base paths
+    search_paths = _build_search_paths(base_paths, namespace, template_path)
 
     if not search_paths:
         raise TemplateNotFound(
             f"No valid template paths found for namespace '{namespace}'"
         )
 
-    # 2. Prepare Jinja environment with multiple search paths
+    # Create Jinja environment with search paths
     env = Environment(  # noqa: S701
         loader=FileSystemLoader(search_paths),
         trim_blocks=True,
         lstrip_blocks=True,
     )
 
+    # Render template with language fallback
     jinja_template_name = f"{template_name}.jinja"
-
-    # 3. Try language‑specific folder first
-    if lang:
-        try:
-            template = env.get_template(f"{lang}/{jinja_template_name}")
-            return template.render(**context)
-        except TemplateNotFound:
-            # Missing locale template – fall through to default lookup
-            pass
-
-    # 4. Default folder fallback
     try:
-        template = env.get_template(f"default/{jinja_template_name}")
-        return template.render(**context)
+        return _render_template_with_env(env, jinja_template_name, lang, context)
     except TemplateNotFound as err:
         raise TemplateNotFound(
             f"Template '{jinja_template_name}' not found under '{search_paths}'."
