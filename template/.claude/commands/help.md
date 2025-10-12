@@ -4,6 +4,8 @@ description: List all available Claude commands
 allowed-tools: Bash(ls:*), Bash(grep:*), Bash(cat:*)
 ---
 
+# Available Commands
+
 Here are all available Claude commands in this project:
 
 !ls -1 /Users/dpoblador/repos/scaffolding/template/.claude/commands/*.md | sed 's|.*/||; s|\.md$||' | sort

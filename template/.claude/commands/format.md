@@ -4,6 +4,8 @@ description: Format and lint all code (Python with ruff, templates with djlint)
 allowed-tools: Bash(ruff:*), Bash(uv:*), Bash(djlint:*), Bash(markdownlint:*)
 ---
 
+# Code Formatter
+
 I'll format and lint all code in the project.
 
 This command will:
