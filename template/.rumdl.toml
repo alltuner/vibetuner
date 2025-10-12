@@ -1,19 +1,4 @@
-# rumdl configuration file
-
 [global]
-# List of rules to disable (uncomment and modify as needed)
-# disable = ["MD013", "MD033"]
-
-# List of rules to enable exclusively (if provided, only these rules will run)
-# enable = ["MD001", "MD003", "MD004"]
-
-# List of file/directory patterns to include for linting (if provided, only these will be linted)
-# include = [
-#    "docs/*.md",
-#    "src/**/*.md",
-#    "README.md"
-# ]
-
 # List of file/directory patterns to exclude from linting
 exclude = [
     # Common directories to exclude
@@ -26,12 +11,18 @@ exclude = [
     "CLAUDE.md",
 ]
 
-# Respect .gitignore files when scanning directories (default: true)
-respect_gitignore = true
-
 # Rule-specific configurations
-# [MD013]
-line_length = 120  # Line length
-# code_blocks = false  # Exclude code blocks from line length check
-# tables = false  # Exclude tables from line length check
-# headings = true  # Include headings in line length check
+[MD013]
+# Line length
+line_length = 120
+
+# Per file ignores
+[per-file-ignores]
+"**/.claude/agents/*.md" = [
+    "MD013", # Line length
+    "MD033", # Inline HTML
+]
+"**/.claude/commands/*.md" = [
+    "MD013", # Line length
+    "MD033", # Inline HTML
+]

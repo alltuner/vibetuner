@@ -4,6 +4,8 @@ description: Create or update a beautiful README.md file with emojis and project
 allowed-tools: Read(*), Write(*), Glob(*)
 ---
 
+# README Generator
+
 Create or update a comprehensive and visually appealing README.md file for this project. Make it engaging with:
 
 🎯 **Requirements:**

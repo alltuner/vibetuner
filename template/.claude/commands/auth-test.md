@@ -4,6 +4,8 @@ argument-hint: [url]
 description: Open app in Playwright browser and wait for authentication
 ---
 
+# Authentication Tester
+
 I'll open your application in a Playwright browser and wait for you to authenticate.
 
 **URL:** ${1:-<http://localhost:8000}>
