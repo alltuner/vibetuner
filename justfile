@@ -126,3 +126,12 @@ type-check:
 # Run all linting checks
 [group('linting')]
 lint: lint-md lint-py
+
+# Format Python files with ruff
+[group('formatting')]
+format-py:
+    uv run ruff format .
+
+# Format all code
+[group('formatting')]
+format: format-py

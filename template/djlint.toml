@@ -1,0 +1,28 @@
+extension="html.jinja"
+
+# Ignore H006: img tag should have height and width attributes
+ignore = "H006"
+
+# Use 4 spaces for indentation
+indent = 4
+
+# Max line length
+max_line_length = 120
+
+# Profile for Jinja templates
+profile = "jinja"
+
+# Blank line after load/extends/include tags
+blank_line_after_tag = "load,extends,include"
+
+# Format CSS
+format_css = true
+
+# Format JS
+format_js = true
+
+# Preserve leading spaces on text
+preserve_leading_space = false
+
+# Preserve blank lines
+preserve_blank_lines = false

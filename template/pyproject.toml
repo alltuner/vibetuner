@@ -20,6 +20,3 @@ module-name = ["core", "app"]
 
 [tool.uv.sources]
 prototuner = { git = "https://github.com/alltuner/prototuner" }
-
-[tool.djlint]
-ignore = "H006"

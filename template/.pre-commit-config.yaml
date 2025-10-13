@@ -9,11 +9,8 @@ repos:
     # Ruff version.
     rev: v0.14.0
     hooks:
-      # Run the linter.
+      # Run the linter (check only, no auto-fix).
       - id: ruff-check
-        args: [--fix]
-      # Run the formatter.
-      - id: ruff-format
   - repo: local
     hooks:
       - id: ty
@@ -31,11 +28,7 @@ repos:
         name: rumdl check
         pass_filenames: true
         require_serial: true
-  - repo: local
+  - repo: https://github.com/djlint/djLint
+    rev: v1.36.4
     hooks:
-      - id: djlint
-        name: djlint
-        entry: djlint --reformat
-        language: python
-        files: \.html\.jinja$
-        additional_dependencies: [djlint]
+      - id: djlint-jinja
