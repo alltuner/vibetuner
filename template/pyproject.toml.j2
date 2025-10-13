@@ -47,16 +47,3 @@ version = "{version}"
 
 [tool.hatch.build.targets.wheel]
 sources = ["src"]
-
-[tool.pyright]
-include = ["src"]
-exclude = ["**/node_modules", "**/__pycache__", ".git", ".venv"]
-venvPath = "."
-venv = ".venv"
-typeCheckingMode = "basic"
-reportMissingImports = false
-reportMissingTypeStubs = false
-reportGeneralTypeIssues = "warning"
-reportOptionalMemberAccess = false
-reportOptionalSubscript = false
-extraPaths = ["src"]
