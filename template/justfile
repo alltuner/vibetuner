@@ -194,9 +194,14 @@ type-check:
 lint-jinja:
     uv run djlint templates/ --check
 
+# Lint TOML files with taplo (check only)
+[group('linting')]
+lint-toml:
+    taplo fmt --check
+
 # Run all linting checks
 [group('linting')]
-lint: lint-md lint-py type-check lint-jinja
+lint: lint-md lint-py type-check lint-jinja lint-toml
 
 # Format Python files with ruff
 [group('formatting')]
@@ -208,9 +213,14 @@ format-py:
 format-jinja:
     uv run djlint templates/ --reformat
 
+# Format TOML files with taplo
+[group('formatting')]
+format-toml:
+    taplo fmt
+
 # Format all code
 [group('formatting')]
-format: format-py format-jinja
+format: format-py format-jinja format-toml
 
 # Complete i18n workflow: extract, update, and compile translations
 [group('localization')]

@@ -1,0 +1,32 @@
+# ABOUTME: Taplo configuration for TOML linting and formatting in generated projects
+# ABOUTME: This file configures how taplo formats and validates TOML files
+
+# Include all TOML files in the project
+include = ["**/*.toml"]
+
+# Exclude common directories that shouldn't be formatted
+exclude = ["**/node_modules/**", "**/.venv/**", "**/venv/**", "**/__pycache__/**"]
+
+# Formatting options
+[formatting]
+# Align entries in tables
+align_entries = false
+
+# Use 2 spaces for indentation
+indent_tables = false
+indent_entries = false
+
+# Add trailing comma to arrays
+trailing_comma = true
+
+# Reorder keys alphabetically
+reorder_keys = false
+
+# Compact arrays (single line when possible)
+compact_arrays = true
+
+# Compact inline tables
+compact_inline_tables = false
+
+# Maximum column width
+column_width = 120

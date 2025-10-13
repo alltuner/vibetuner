@@ -1,4 +1,4 @@
-extension="html.jinja"
+extension = "html.jinja"
 
 # Ignore H006: img tag should have height and width attributes
 # Ignore J018: Debug pages can use hardcoded URLs

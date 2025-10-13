@@ -1,7 +1,7 @@
 [env]
-GIT_LFS_SKIP_SMUDGE=1
-NODE_ENV="development"
-UV_GIT_LFS=1
+GIT_LFS_SKIP_SMUDGE = 1
+NODE_ENV = "development"
+UV_GIT_LFS = 1
 _.file = '.env'
 
 [settings]
