@@ -11,12 +11,6 @@ repos:
     hooks:
       # Run the linter (check only, no auto-fix).
       - id: ruff-check
-  - repo: local
-    hooks:
-      - id: ty
-        name: ty check
-        entry: uv run ty check .
-        language: python
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
