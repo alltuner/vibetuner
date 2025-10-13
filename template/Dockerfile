@@ -84,7 +84,8 @@ RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
 # ────────────────────────────────────────────────────────────────────────────────
 FROM frontend-deps AS frontend-build
 
-COPY /templates/frontend/ templates/frontend/
+COPY /templates/core/frontend/ templates/core/frontend/
+COPY /templates/app/frontend/ templates/app/frontend/
 
 # Build production assets with Bun
 RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
@@ -101,6 +102,9 @@ FROM python:${PYTHON_VERSION}-slim AS runtime
 
 ARG ENVIRONMENT=development
 
+COPY --from=mwader/static-ffmpeg:7.1.1 /ffmpeg /usr/local/bin/
+COPY --from=mwader/static-ffmpeg:7.1.1 /ffprobe /usr/local/bin/
+
 WORKDIR /app
 
 # Copy Python virtual environment with all dependencies and project
@@ -108,14 +112,17 @@ COPY --from=python-versioning --chown=app:app /app/.venv/ .venv/
 
 # Copy static assets and markdown content (not full frontend source)
 COPY --chown=app:app assets/statics/ assets/statics/
-COPY --chown=app:app templates/markdown/ templates/markdown/
+COPY --chown=app:app templates/core/markdown/ templates/core/markdown/
+COPY --chown=app:app templates/app/markdown/ templates/app/markdown/
 
 # Copy compiled localization files (smaller than source .po files)
 COPY --from=locales --chown=app:app --parents /app/locales/*/LC_MESSAGES/messages.mo /
 
 # Copy template files
-COPY --chown=app:app templates/frontend templates/frontend/
-COPY --chown=app:app templates/email templates/email/
+COPY --chown=app:app templates/core/frontend templates/core/frontend/
+COPY --chown=app:app templates/app/frontend templates/app/frontend/
+COPY --chown=app:app templates/core/email templates/core/email/
+COPY --chown=app:app templates/app/email templates/app/email/
 
 # Copy built frontend assets (CSS and JS bundles)
 COPY --from=frontend-build --chown=app:app /app/assets/statics/css/bundle.css assets/statics/css/bundle.css

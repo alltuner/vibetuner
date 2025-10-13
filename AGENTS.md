@@ -92,7 +92,7 @@ The template generates a FastAPI application with this structure:
 #### Configuration Management
 
 - **`config.py`**: Uses Pydantic settings with environment variable support
-- **Environment files**: `.env`, `.env.local` for different environments
+- **Environment file**: `.env`
 - **Copier variables**: Configured in `copier.yml` for template generation
 
 #### Database Integration

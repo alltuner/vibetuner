@@ -209,8 +209,7 @@ The template system searches `templates/app/` first, then falls back to
 
 ### Environment Variables
 
-- `.env` - Default config (not committed)
-- `.env.local` - Local overrides (not committed)
+- `.env` - Configuration file (not committed)
 
 Key variables:
 

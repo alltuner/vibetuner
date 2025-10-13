@@ -1,7 +1,6 @@
 _preserve_symlinks: True
 _skip_if_exists:
   - .env
-  - .env.local
 _subdirectory: template
 _templates_suffix: .j2
 
