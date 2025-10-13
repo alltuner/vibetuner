@@ -1,0 +1,18 @@
+# ABOUTME: Type checking configuration for generated projects
+# ABOUTME: This file configures ty type checking for the application code
+
+# Source code configuration
+[src]
+# Include source files for type checking
+include = ["src"]
+
+# Exclude common paths that don't need type checking
+exclude = ["**/node_modules", "**/__pycache__", ".git", ".venv", "**/.venv", "**/migrations"]
+
+# Respect .gitignore files
+respect-ignore-files = true
+
+# Terminal output configuration
+[terminal]
+# Show concise output
+output-format = "concise"

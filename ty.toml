@@ -1,0 +1,7 @@
+# ABOUTME: Type checking configuration for the scaffolding repository root
+# ABOUTME: This file prevents ty from type checking the scaffolding template itself
+# The template will have its own ty.toml that enables checking for generated projects
+
+[src]
+# We exclude template, because that is linted from inside the project
+exclude = ["template"]

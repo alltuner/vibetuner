@@ -6,33 +6,12 @@ dependencies = []
 
 [dependency-groups]
 dev = [
-    "prototuner[dev]",
-    # Add below this line any dev dependencies you need for development
+  "prototuner[dev]",
+  # Add below this line any dev dependencies you need for development
 ]
 
 [tool.uv]
-cache-keys = [
-    { file = "pyproject.toml" },
-    { git = { commit = true, tags = true } },
-]
+cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true } }]
 
 [tool.uv.sources]
 prototuner = { git = "https://github.com/alltuner/prototuner" }
-
-[tool.ruff.lint]
-extend-select = [
-    # E and F are enabled by default
-    'B',      # flake8-bugbear
-    'C4',     # flake8-comprehensions
-    'C90',    # mccabe
-    'I',      # isort
-    'N',      # pep8-naming
-    'Q',      # flake8-quotes
-    'RUF100', # ruff (unused noqa)
-    'S',      # flake8-bandit
-    'W',      # pycodestyle
-]
-
-[tool.ruff.lint.isort]
-combine-as-imports = true
-lines-after-imports = 2
