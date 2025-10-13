@@ -1,5 +1,5 @@
 {% extends "base/skeleton.html.jinja" %}
-{% block title %}Debug - User Impersonation{% endblock %}
+{% block title %}Debug - User Impersonation{% endblock title %}
 {% block body %}
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <!-- Header -->
@@ -34,7 +34,7 @@
                         User ID: <code>{{ current_user_id }}</code>
                     </p>
                     <div class="card-actions justify-end">
-                        <form method="POST" action="/debug/stop-impersonation">
+                        <form method="post" action="/debug/stop-impersonation">
                             <button type="submit" class="btn btn-secondary btn-sm">Stop Impersonation</button>
                         </form>
                     </div>
@@ -102,7 +102,7 @@
                                         </td>
                                         <td class="text-center">
                                             {% if current_user_id != user.id|string %}
-                                                <form method="POST"
+                                                <form method="post"
                                                       action="/debug/impersonate/{{ user.id }}"
                                                       class="inline">
                                                     <button type="submit" class="btn btn-outline btn-sm">Impersonate</button>
