@@ -107,3 +107,8 @@ pr:
 [group('gitflow')]
 merge:
     gh pr merge --squash --delete-branch
+
+# Lint markdown files including dot directories
+[group('linting')]
+lint-md:
+    uv run rumdl check . .* template/.*
