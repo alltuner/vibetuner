@@ -184,9 +184,14 @@ lint-md:
 lint-py:
     uv run ruff check .
 
+# Type check Python files with ty
+[group('linting')]
+type-check:
+    uv run ty check .
+
 # Run all linting checks
 [group('linting')]
-lint: lint-md lint-py
+lint: lint-md lint-py type-check
 
 # Complete i18n workflow: extract, update, and compile translations
 [group('localization')]

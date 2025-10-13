@@ -118,6 +118,11 @@ lint-md:
 lint-py:
     uv run ruff check .
 
+# Type check Python files with ty (disabled by ty.toml)
+[group('linting')]
+type-check:
+    uv run ty check .
+
 # Run all linting checks
 [group('linting')]
 lint: lint-md lint-py
