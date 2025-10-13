@@ -16,7 +16,7 @@ services:
     networks:
       - {{ project_slug }}
       - alltuner-network
-    command: ['prod', '--worker']
+    command: ['prod', 'worker']
     labels:
       managed_by: "all-tuner"
 {%- if enable_watchtower %}
