@@ -13,7 +13,6 @@ from starlette_babel import (
     LocaleMiddleware,
     get_translator,
 )
-from starlette_compress import CompressMiddleware
 from starlette_htmx.middleware import HtmxMiddleware  # type: ignore[import-untyped]
 
 from app.config import settings
@@ -129,7 +128,6 @@ class AuthBackend(AuthenticationBackend):
 
 # Until this line
 middlewares: list[Middleware] = [
-    Middleware(CompressMiddleware),
     Middleware(TrustedHostMiddleware),
     Middleware(ForwardedProtocolMiddleware),
     Middleware(HtmxMiddleware),
