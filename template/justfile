@@ -54,7 +54,7 @@ local-dev PORT="8000": _update_local_deps
 # Runs the task worker locally without Docker
 [group('Local Development')]
 worker-dev: _update_local_deps
-    @dotenv -f .env.local run -- atl run dev --worker
+    @dotenv -f .env.local run -- atl run dev worker
 
 # Sync deps
 [group('Local Development')]
