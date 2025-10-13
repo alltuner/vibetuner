@@ -1,10 +1,14 @@
+# ABOUTME: Core CLI setup with AsyncTyper wrapper and base configuration
+# ABOUTME: Provides main CLI entry point and logging configuration
 import inspect
 from functools import partial, wraps
+from importlib import import_module
 
 import asyncer
 import typer
 from rich.console import Console
 
+from core.cli.run import run_app
 from core.config import project_settings
 from core.logging import LogLevel, setup_logging
 
@@ -54,3 +58,9 @@ LOG_LEVEL_OPTION = typer.Option(
 def callback(log_level: LogLevel | None = LOG_LEVEL_OPTION) -> None:
     """Initialize logging and other global settings."""
     setup_logging(level=log_level)
+
+
+app.add_typer(run_app, name="run")
+
+# Import app commands to register them (avoiding name collision)
+import_module("app.cli")
