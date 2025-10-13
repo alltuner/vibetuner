@@ -32,6 +32,7 @@ repos:
     rev: v1.36.4
     hooks:
       - id: djlint-jinja
+        files: \.(html\.jinja)$
   - repo: https://github.com/ComPWA/taplo-pre-commit
     rev: v0.9.3
     hooks:

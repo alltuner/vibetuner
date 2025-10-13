@@ -16,7 +16,7 @@ services:
     networks:
       - {{ project_slug }}
       - alltuner-network
-    command: ['worker']
+    command: ['prod', '--worker']
     labels:
       managed_by: "all-tuner"
 {%- if enable_watchtower %}
@@ -28,7 +28,7 @@ services:
       context: .
       args:
         VERSION: ${VERSION:-0.0.0}
-        PYTHON_VERSION: ${PYTHON_VERSION:-{{ python_version }}}
+        PYTHON_VERSION: ${PYTHON_VERSION:-{{python_version}}}
         ENVIRONMENT: ${ENVIRONMENT:-development}
       x-bake:
         platforms:
