@@ -1,10 +1,13 @@
 extension="html.jinja"
 
 # Ignore H006: img tag should have height and width attributes
-# Ignore H005, H007, H016, H030, H031, H021: Email templates don't need full HTML structure
 # Ignore J018: Debug pages can use hardcoded URLs
 # Ignore T028: Spaceless tags in attribute values (stylistic preference)
-ignore = "H005,H006,H007,H016,H021,H030,H031,J018,T028"
+ignore = "H006,J018,T028"
+
+# Per-file ignores for email templates - they don't need full HTML structure
+[per-file-ignores]
+"templates/core/email/default/magic_link.html.jinja" = "H005,H007,H016,H021,H030,H031"
 
 # Use 4 spaces for indentation
 indent = 4
