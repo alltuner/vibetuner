@@ -21,34 +21,34 @@
                 <h2 class="text-2xl font-bold text-base-content mb-4">{{ _("Check Your Email") }}</h2>
                 <!-- Main Message -->
                 <div class="space-y-4 mb-6">
-                    <p class="text-base-content/80">{{ _('We\'ve sent a secure login link to') }}</p>
-                                            <div class="bg-base-200/50 rounded-lg p-3 border border-base-300/50">
-                                                <p class="font-semibold text-primary break-all">{{ email }}</p>
-                                            </div>
-                                            <div class="alert alert-info bg-info/10 border-info/20 text-left">
-                                                <svg class="w-5 h-5 text-info shrink-0"
-                                                     fill="none"
-                                                     stroke="currentColor"
-                                                     viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                                <div class="text-sm">
-                                                    <p class="font-medium text-info">{{ _('Quick! Link expires in 15 minutes') }}</p>
-                                                    <p class="text-info/80">{{ _('Click the link in the email to sign in instantly.') }}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Troubleshooting -->
-                                        <div class="bg-warning/5 border border-warning/20 rounded-lg p-4 mb-6">
-                                            <div class="flex items-start gap-3">
-                                                <svg class="w-5 h-5 text-warning shrink-0 mt-0.5"
-                                                     fill="none"
-                                                     stroke="currentColor"
-                                                     viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
-                                                </svg>
-                                                <div class="text-left">
-                                                    <p class="font-medium text-warning text-sm">{{ _('Don\'t see the email?') }}</p>
+                    <p class="text-base-content/80">{{ _("We've sent a secure login link to") }}</p>
+                    <div class="bg-base-200/50 rounded-lg p-3 border border-base-300/50">
+                        <p class="font-semibold text-primary break-all">{{ email }}</p>
+                    </div>
+                    <div class="alert alert-info bg-info/10 border-info/20 text-left">
+                        <svg class="w-5 h-5 text-info shrink-0"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div class="text-sm">
+                            <p class="font-medium text-info">{{ _("Quick! Link expires in 15 minutes") }}</p>
+                            <p class="text-info/80">{{ _("Click the link in the email to sign in instantly.") }}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Troubleshooting -->
+                <div class="bg-warning/5 border border-warning/20 rounded-lg p-4 mb-6">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-warning shrink-0 mt-0.5"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        <div class="text-left">
+                            <p class="font-medium text-warning text-sm">{{ _("Don't see the email?") }}</p>
                             <p class="text-warning/80 text-sm">{{ _("Check your spam folder or try signing in again.") }}</p>
                         </div>
                     </div>

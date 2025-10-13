@@ -144,10 +144,8 @@ def format_duration(seconds):
         return ""
 
 
-# Until here
-
 templates: Jinja2Templates = Jinja2Templates(directory=frontend_templates)
-jinja_env = templates.env  # ty: ignore[possibly-unbound-attribute]
+jinja_env = templates.env
 
 
 def render_template(
@@ -162,15 +160,17 @@ def render_template(
     return templates.TemplateResponse(template, merged_ctx, **kwargs)
 
 
+# Global Vars
 jinja_env.globals.update({"DEBUG": data_ctx.DEBUG})
 jinja_env.globals.update({"hotreload": hotreload})
+
+# Date Filters
 jinja_env.filters["timeago"] = timeago
 jinja_env.filters["format_date"] = format_date
 jinja_env.filters["format_datetime"] = format_datetime
-jinja_env.filters["format_duration"] = format_duration
 
-# Customize your templates here
+# Duration Filters
+jinja_env.filters["format_duration"] = format_duration
 jinja_env.filters["duration"] = format_duration
 
-# Until here
 configure_jinja_env(jinja_env)
