@@ -1,0 +1,66 @@
+networks:
+  alltuner-network:
+    external: true
+    name: alltuner-network
+
+services:
+  worker:
+    profiles: ["worker"]
+    image: alltuner-docker-registry.long-python.ts.net/${COMPOSE_PROJECT_NAME}:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - default
+      - alltuner-network
+    command: ['prod', 'worker']
+    labels:
+      managed_by: "all-tuner"
+      com.centurylinklabs.watchtower.enable: "${ENABLE_WATCHTOWER:-false}"
+  frontend:
+    build:
+      context: .
+      args:
+        VERSION: ${VERSION:-0.0.0}
+        PYTHON_VERSION: ${PYTHON_VERSION}
+        ENVIRONMENT: ${ENVIRONMENT:-development}
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+        push: true
+        tags:
+          - alltuner-docker-registry.long-python.ts.net/${COMPOSE_PROJECT_NAME}:${VERSION:-0.0.0}
+          - alltuner-docker-registry.long-python.ts.net/${COMPOSE_PROJECT_NAME}:latest
+    image: alltuner-docker-registry.long-python.ts.net/${COMPOSE_PROJECT_NAME}:latest
+    depends_on:
+      - worker
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "uv",
+          "run",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ping')"
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - default
+      - alltuner-network
+    labels:
+      managed_by: "all-tuner"
+      com.centurylinklabs.watchtower.enable: "${ENABLE_WATCHTOWER:-false}"
+      caddy_0: ${FQDN:-default.example.com}
+      caddy_0.reverse_proxy: "{{upstreams 8000}}"
+      caddy_0.tls.dns: cloudflare ${CF_API_TOKEN}
+      caddy_0.log.output: file /var/log/caddy/${FQDN:-default}.log
+      caddy_0.log.output.import: log-rotation
+      caddy_0.import: umami

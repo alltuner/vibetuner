@@ -1,6 +1,10 @@
 /* Start of File: do not remove this comment and don't add anything above */
 /* Do not change anything between this comment and the next comment */
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  // Remove this once this is fixed
+  // https://github.com/saadeghi/daisyui/issues/3882
+  exclude: properties;
+}
 /* Do not change anything between this comment and the one above */
 /* End of File: do not remove this comment or add anything below */
