@@ -1,8 +1,3 @@
-PYTHON_VERSION := `cat .python-version`
-
-COMPOSE_DEV := "compose.dev.yml"
-COMPOSE_PROD := "compose.prod.yml"
-
 # Gracefully fallback if no tags exist
 LATEST_VERSION_TAG := `git describe --tags --abbrev=0 --match "v*" 2>/dev/null | sed 's/^v//' || echo "0.0.0"`
 VERSION := `dunamai from git 2>/dev/null || echo 0.0.0`
@@ -42,19 +37,18 @@ _update_local_deps:
 [group('Local Development')]
 dev: _update_local_deps
     ENVIRONMENT=development \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
     COMPOSE_BAKE=true \
-    docker compose -f {{COMPOSE_DEV}} up --watch --remove-orphans
+    docker compose -f compose.dev.yml up --watch --remove-orphans
 
 # Runs the dev environment locally without Docker
 [group('Local Development')]
 local-dev PORT="8000": _update_local_deps
-    atl run dev --port {{PORT}}
+    @atl run dev --port {{PORT}}
 
 # Runs the task worker locally without Docker
 [group('Local Development')]
 worker-dev: _update_local_deps
-    atl run dev worker
+    @atl run dev worker
 
 # Sync deps
 [group('Local Development')]
@@ -67,31 +61,35 @@ sync: _update_local_deps
 [group('CI/CD')]
 build-dev: _update_local_deps
     ENVIRONMENT=development \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
     COMPOSE_BAKE=true \
-    docker compose -f {{COMPOSE_DEV}} build --progress=plain
+    docker compose -f compose.dev.yml build --progress=plain
 
-# Builds a test production image with COMPOSE_BAKE set
+# Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
 test-build-prod: _update_local_deps
     ENVIRONMENT=production \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
-    COMPOSE_BAKE=true \
-    docker compose -f {{COMPOSE_PROD}} build
+    docker buildx bake -f compose.prod.yml
+
+# Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
+[group('CI/CD')]
+build-prod: _check-clean _check-last-commit-tagged _update_local_deps
+    ENVIRONMENT=production \
+    VERSION={{VERSION}} \
+    docker buildx bake -f compose.prod.yml
 
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
 release: _check-clean _check-last-commit-tagged _update_local_deps
     ENVIRONMENT=production \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
     VERSION={{VERSION}} \
-    docker buildx bake -f {{COMPOSE_PROD}} --push
+    docker buildx bake -f compose.prod.yml --push
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
 deploy-latest HOST: release
-    DOCKER_HOST="ssh://{{ HOST }}" docker compose -f {{COMPOSE_PROD}} up -d --remove-orphans --pull always
+    DOCKER_HOST="ssh://{{ HOST }}" \
+    docker compose -f compose.prod.yml up -d --remove-orphans --pull always
 
 # Bump major version based on the latest tag
 [group('versioning')]
@@ -197,7 +195,7 @@ lint-jinja:
 # Lint TOML files with taplo (check only)
 [group('linting')]
 lint-toml:
-    taplo fmt --check
+    uv run taplo fmt --check
 
 # Run all linting checks
 [group('linting')]
@@ -216,7 +214,7 @@ format-jinja:
 # Format TOML files with taplo
 [group('formatting')]
 format-toml:
-    taplo fmt
+    uv run taplo fmt
 
 # Format all code
 [group('formatting')]
