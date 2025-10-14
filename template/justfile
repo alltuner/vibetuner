@@ -2,6 +2,9 @@
 LATEST_VERSION_TAG := `git describe --tags --abbrev=0 --match "v*" 2>/dev/null | sed 's/^v//' || echo "0.0.0"`
 VERSION := `dunamai from git 2>/dev/null || echo 0.0.0`
 
+PROJECT_SLUG := `uv run python -c "import yaml; print(yaml.safe_load(open('.copier-answers.yml'))['project_slug'].strip())"`
+PYTHON_VERSION := `tr -d '\n\r' < .python-version`
+
 # List available commands
 default:
     @just --list
@@ -38,6 +41,8 @@ _update_local_deps:
 dev: _update_local_deps
     ENVIRONMENT=development \
     COMPOSE_BAKE=true \
+    PYTHON_VERSION={{PYTHON_VERSION}} \
+    COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
     docker compose -f compose.dev.yml up --watch --remove-orphans
 
 # Runs the dev environment locally without Docker
@@ -62,12 +67,16 @@ sync: _update_local_deps
 build-dev: _update_local_deps
     ENVIRONMENT=development \
     COMPOSE_BAKE=true \
-    docker compose -f compose.dev.yml build --progress=plain
+    PYTHON_VERSION={{PYTHON_VERSION}} \
+    COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
+    docker compose --progress=plain -f compose.dev.yml build
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
 test-build-prod: _update_local_deps
     ENVIRONMENT=production \
+    PYTHON_VERSION={{PYTHON_VERSION}} \
+    COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
     docker buildx bake -f compose.prod.yml
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
@@ -75,6 +84,8 @@ test-build-prod: _update_local_deps
 build-prod: _check-clean _check-last-commit-tagged _update_local_deps
     ENVIRONMENT=production \
     VERSION={{VERSION}} \
+    PYTHON_VERSION={{PYTHON_VERSION}} \
+    COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
     docker buildx bake -f compose.prod.yml
 
 
@@ -83,12 +94,16 @@ build-prod: _check-clean _check-last-commit-tagged _update_local_deps
 release: _check-clean _check-last-commit-tagged _update_local_deps
     ENVIRONMENT=production \
     VERSION={{VERSION}} \
+    PYTHON_VERSION={{PYTHON_VERSION}} \
+    COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
     docker buildx bake -f compose.prod.yml --push
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
 deploy-latest HOST: release
     DOCKER_HOST="ssh://{{ HOST }}" \
+    PYTHON_VERSION={{PYTHON_VERSION}} \
+    COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
     docker compose -f compose.prod.yml up -d --remove-orphans --pull always
 
 # Bump major version based on the latest tag
