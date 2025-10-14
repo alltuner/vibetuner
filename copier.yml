@@ -60,21 +60,6 @@ supported_languages:
   help: List of 2 letter lang codes in JSON format of supported languages (in addition to English)
   multiline: true
 
-use_github_repo:
-  type: bool
-  help: Do you want to commit to a github repo?
-  default: false
-
-github_repo:
-  type: str
-  help: ORG/repo or USER/repo github repo to create
-  when: "{{ use_github_repo }}"
-  default: "alltuner/{{ project_slug }}"
-  validator: >-
-    {% if not (github_repo | regex_search('^[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]/[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]$')) %}
-    github_repo must contain an org or a username followed by a slash and a repo name
-    {% endif %}
-
 enable_job_queue:
   type: bool
   help: Do you want to enable job queuing?
@@ -93,21 +78,15 @@ mongodb_url:
 enable_watchtower:
   type: bool
   help: Do you want to enable watchtower (containers self-reload on update)?
-  default: true
-  when: "{{ fqdn }}"
-
-deploy_host:
-  type: str
-  help: Host to deploy to production (leave empty to not deploy)
-  default: ""
+  default: false
   when: "{{ fqdn }}"
 
 _tasks:
   - command: [just, git-init, "{{ project_slug }}"]
     when: "{{ _copier_operation == 'copy' }}"
-  - command: [pre-commit, install]
+  - command: [uv, sync]
     when: "{{ _copier_operation == 'copy' }}"
-  - command: [just, create-github-repo, "{{ github_repo }}"]
-    when: "{{ _copier_operation == 'copy' and use_github_repo }}"
-  - command: [just, deploy-latest, "{{ deploy_host }}"]
-    when: "{{ _copier_operation == 'copy' and deploy_host and fqdn }}"
+  - command: [mise, trust]
+    when: "{{ _copier_operation == 'copy' }}"
+  - command: [uv, run, pre-commit, install]
+    when: "{{ _copier_operation == 'copy' }}"
