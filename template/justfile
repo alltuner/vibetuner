@@ -3,6 +3,7 @@ LATEST_VERSION_TAG := `git describe --tags --abbrev=0 --match "v*" 2>/dev/null |
 VERSION := `dunamai from git 2>/dev/null || echo 0.0.0`
 
 PROJECT_SLUG := `uv run python -c "import yaml; print(yaml.safe_load(open('.copier-answers.yml'))['project_slug'].strip())"`
+FQDN := `uv run python -c "import yaml; print(yaml.safe_load(open('.copier-answers.yml')).get('fqdn', '').strip())"`
 PYTHON_VERSION := `tr -d '\n\r' < .python-version`
 
 # List available commands
@@ -77,6 +78,7 @@ test-build-prod: _update_local_deps
     ENVIRONMENT=production \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
+    FQDN={{FQDN}} \
     docker buildx bake -f compose.prod.yml
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
@@ -86,6 +88,7 @@ build-prod: _check-clean _check-last-commit-tagged _update_local_deps
     VERSION={{VERSION}} \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
+    FQDN={{FQDN}} \
     docker buildx bake -f compose.prod.yml
 
 
@@ -96,6 +99,7 @@ release: _check-clean _check-last-commit-tagged _update_local_deps
     VERSION={{VERSION}} \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
+    FQDN={{FQDN}} \
     docker buildx bake -f compose.prod.yml --push
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
@@ -104,6 +108,7 @@ deploy-latest HOST: release
     DOCKER_HOST="ssh://{{ HOST }}" \
     PYTHON_VERSION={{PYTHON_VERSION}} \
     COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
+    FQDN={{FQDN}} \
     docker compose -f compose.prod.yml up -d --remove-orphans --pull always
 
 # Bump major version based on the latest tag
