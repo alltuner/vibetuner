@@ -17,8 +17,8 @@ Create your application-specific data models in this directory:
 # posts.py
 from beanie import Document, Link
 from pydantic import Field
-from core.models import UserModel
-from core.models.mixins import TimeStampMixin
+from vibetuner.models import UserModel
+from vibetuner.models.mixins import TimeStampMixin
 
 class Post(Document, TimeStampMixin):
     """Blog post model."""
@@ -46,7 +46,7 @@ class Post(Document, TimeStampMixin):
 Import these when you need to reference them:
 
 ```python
-from core.models import (
+from vibetuner.models import (
     UserModel,              # User accounts
     OAuthAccountModel,      # OAuth provider links
     EmailVerificationTokenModel,  # Magic link tokens
@@ -57,7 +57,7 @@ from core.models import (
 ### Mixins
 
 ```python
-from core.models.mixins import TimeStampMixin
+from vibetuner.models.mixins import TimeStampMixin
 
 # Provides:
 # - db_insert_dt: datetime  # Auto-set on insert
@@ -70,7 +70,7 @@ from core.models.mixins import TimeStampMixin
 ### Field Types
 
 ```python
-from core.models.types import (
+from vibetuner.models.types import (
     # Import any common types defined in core
 )
 ```
@@ -81,7 +81,7 @@ from core.models.types import (
 
 ```python
 from beanie import Link
-from core.models import UserModel
+from vibetuner.models import UserModel
 
 class UserProfile(Document):
     user: Link[UserModel]

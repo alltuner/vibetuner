@@ -1,1 +1,1 @@
-from core.cli import app as app, console as console
+from vibetuner.cli import app as app, console as console

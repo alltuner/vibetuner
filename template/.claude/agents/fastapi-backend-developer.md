@@ -28,7 +28,7 @@ You follow the project structure defined in CLAUDE.md:
 - Routes go in `src/app/frontend/routes/` (NOT in core frontend routes/)
 - Services go in `src/app/services/` (NOT in core services/)
 - Models go in `src/app/models/` (NOT in core models/)
-- Use existing core services from `core.services` when applicable
+- Use existing core services from `vibetuner.services` when applicable
 
 **Route Development Patterns:**
 
@@ -93,7 +93,7 @@ You focus on implementing exactly what's requested:
 
 ```python
 # Email service
-from core.services.email import send_email
+from vibetuner.services.email import send_email
 
 await send_email(
     to_email="user@example.com",
@@ -103,7 +103,7 @@ await send_email(
 )
 
 # Blob storage service
-from core.services.blob import blob_service
+from vibetuner.services.blob import blob_service
 
 await blob_service.upload(file_data, "path/to/file")
 ```
@@ -125,7 +125,7 @@ For HTMX responses:
 For full HTML page responses:
 
 ```python
-from core.frontend.templates import render_template
+from vibetuner.frontend.templates import render_template
 
 @router.get("/dashboard")
 async def dashboard_view(request: Request, user=Depends(get_current_user)):

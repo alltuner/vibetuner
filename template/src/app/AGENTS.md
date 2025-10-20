@@ -22,7 +22,7 @@ src/app/
 
 ### Core vs App
 
-- **`src/core/`** - Immutable scaffolding code (DO NOT MODIFY)
+- **`src/vibetuner/`** - Immutable scaffolding code (DO NOT MODIFY)
   - User authentication, OAuth, email verification
   - Email service, blob storage
   - Base templates, middleware, default routes
@@ -40,45 +40,50 @@ src/app/
 **`src/app/config.py`** - Application-specific settings:
 
 ```python
-from core.config import project_settings
-from core.versioning import version
+from pydantic_settings import SettingsConfigDict
+from vibetuner.config import CoreConfiguration, _load_project_config
 
-class Configuration(BaseSettings):
-    # Your app settings
-    debug: bool = False
-    version: str = version
-
-    # AWS, R2, or other service credentials
-    aws_access_key_id: SecretStr | None = None
-
+class Configuration(CoreConfiguration):
     # Add your configuration variables here
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False, extra="ignore", env_file=".env"
+    )
+
+settings = Configuration(project=_load_project_config())
 ```
 
-**`src/core/config.py`** - Project-level settings (read-only):
+**`src/vibetuner/config.py`** - Core configuration that includes:
 
-- Project name, slug, description
-- MongoDB URL, Redis URL
-- Supported languages
-- Company info, copyright
+- Project settings (project name, slug, MongoDB URL, Redis URL, etc.)
+- Common settings (debug, version, session key, AWS credentials, etc.)
+- All settings accessible via the unified `settings` object
 
 ### Importing from Core
 
 ```python
 # Models
-from core.models import UserModel, OAuthAccountModel
-from core.models.mixins import TimeStampMixin
+from vibetuner.models import UserModel, OAuthAccountModel
+from vibetuner.models.mixins import TimeStampMixin
 
 # Services
-from core.services.email import send_email
-from core.services.blob import blob_service
+from vibetuner.services.email import send_email
+from vibetuner.services.blob import blob_service
 
 # Frontend utilities
-from core.frontend.deps import get_current_user
-from core.frontend.templates import render_template
+from vibetuner.frontend.deps import get_current_user
+from vibetuner.frontend.templates import render_template
 
-# Configuration
-from core.config import project_settings
-from app.config import settings
+# Configuration (unified)
+from vibetuner.config import settings
+
+# Access project-level settings
+settings.project.project_slug
+settings.project.mongodb_url
+
+# Access application settings
+settings.debug
+settings.version
 ```
 
 ## Quick Start Patterns
@@ -96,8 +101,8 @@ from app.config import settings
 ```python
 # models/post.py
 from beanie import Document
-from core.models.mixins import TimeStampMixin
-from core.models import UserModel
+from vibetuner.models.mixins import TimeStampMixin
+from vibetuner.models import UserModel
 
 class Post(Document, TimeStampMixin):
     title: str
@@ -110,8 +115,8 @@ class Post(Document, TimeStampMixin):
 
 # frontend/routes/posts.py
 from fastapi import APIRouter, Request, Depends
-from core.frontend.deps import get_current_user
-from core.frontend.templates import render_template
+from vibetuner.frontend.deps import get_current_user
+from vibetuner.frontend.templates import render_template
 from app.models.post import Post
 
 router = APIRouter(prefix="/posts", tags=["posts"])
@@ -143,7 +148,7 @@ async def create_post(
 
 ## Important Notes
 
-- **Never modify `src/core/`** - File issues at `https://github.com/alltuner/scaffolding`
+- **Never modify `src/vibetuner/`** - File issues at `https://github.com/alltuner/scaffolding`
 - **Always use type hints** - FastAPI and Beanie rely on them
 - **Run `ruff format .`** after changes - Keep code consistent
 - **Use async/await** - The stack is fully async

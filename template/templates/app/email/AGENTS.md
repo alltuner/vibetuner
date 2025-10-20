@@ -13,7 +13,7 @@ Templates in this directory automatically override core email templates:
 
 ```bash
 # Core template (scaffolding default):
-templates/core/email/default/magic_link.html.jinja
+templates/vibetuner/email/default/magic_link.html.jinja
 
 # Your override (searches first):
 templates/app/email/default/magic_link.html.jinja
@@ -42,8 +42,8 @@ The system searches:
 
 1. `templates/app/email/{lang}/` (your language-specific)
 2. `templates/app/email/default/` (your default)
-3. `templates/core/email/{lang}/` (core language-specific)
-4. `templates/core/email/default/` (core default)
+3. `templates/vibetuner/email/{lang}/` (core language-specific)
+4. `templates/vibetuner/email/default/` (core default)
 
 ## Usage
 
@@ -85,8 +85,8 @@ Get started: {{ dashboard_url }}
 ### Sending Emails
 
 ```python
-from core.templates import render_static_template
-from core.services.email import SESEmailService
+from vibetuner.templates import render_static_template
+from vibetuner.services.email import SESEmailService
 
 async def send_welcome_email(user_email: str, user_name: str, lang: str = "en"):
     html_body = render_static_template(

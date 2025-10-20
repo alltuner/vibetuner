@@ -24,9 +24,9 @@ would need to re-scaffold or file an issue to add task support.
 
 ```python
 # emails.py
-from core.models import UserModel
+from vibetuner.models import UserModel
 from app.tasks.worker import worker
-from core.services.email import send_email
+from vibetuner.services.email import send_email
 
 @worker.task()
 async def send_welcome_email(user_id: str) -> dict[str, str]:
@@ -67,7 +67,7 @@ The `worker.py` file sets up the Streaq worker:
 
 ```python
 # worker.py
-from core.tasks.worker import worker
+from vibetuner.tasks.worker import worker
 
 # Import your task modules at the bottom
 # so the @worker.task() decorator can register them
@@ -169,9 +169,9 @@ task = await send_welcome_email.enqueue(
 
 ```python
 # emails.py
-from core.models import UserModel
+from vibetuner.models import UserModel
 from app.tasks.worker import worker
-from core.services.email import send_email
+from vibetuner.services.email import send_email
 
 @worker.task()
 async def send_password_reset(user_id: str, token: str) -> dict:
@@ -198,7 +198,7 @@ async def send_password_reset(user_id: str, token: str) -> dict:
 # reports.py
 from app.models.order import Order
 from app.services.export import export_service
-from core.services.blob import blob_service
+from vibetuner.services.blob import blob_service
 
 @worker.task()
 async def generate_sales_report(start_date: str, end_date: str) -> dict:
@@ -332,7 +332,7 @@ Workers run as separate processes/containers alongside the web server.
 
 ```python
 # worker.py
-from core.tasks.worker import worker
+from vibetuner.tasks.worker import worker
 
 # ⚠️ Import task modules LAST so decorators can register
 from . import emails  # noqa: E402, F401

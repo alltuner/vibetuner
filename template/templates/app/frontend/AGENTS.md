@@ -13,7 +13,7 @@ Templates in this directory automatically override core templates with the same 
 
 ```bash
 # Core template (scaffolding default):
-templates/core/frontend/base/footer.html.jinja
+templates/vibetuner/frontend/base/footer.html.jinja
 
 # Your override (searches first):
 templates/app/frontend/base/footer.html.jinja
@@ -21,7 +21,7 @@ templates/app/frontend/base/footer.html.jinja
 
 ## Directory Structure
 
-Match the structure from `templates/core/frontend/` when overriding:
+Match the structure from `templates/vibetuner/frontend/` when overriding:
 
 ```text
 app/frontend/
@@ -58,7 +58,7 @@ app/frontend/
 
 ```bash
 # 1. Copy the core template
-cp templates/core/frontend/base/header.html.jinja \
+cp templates/vibetuner/frontend/base/header.html.jinja \
    templates/app/frontend/base/header.html.jinja
 
 # 2. Edit your copy
@@ -68,12 +68,12 @@ cp templates/core/frontend/base/header.html.jinja \
 ### Rendering from Routes
 
 ```python
-from core.frontend.templates import render_template
+from vibetuner.frontend.templates import render_template
 
 @router.get("/dashboard")
 async def dashboard(request: Request):
     # Automatically uses templates/app/frontend/dashboard/home.html.jinja
-    # if it exists, otherwise falls back to templates/core/frontend/
+    # if it exists, otherwise falls back to templates/vibetuner/frontend/
     return render_template("dashboard/home.html.jinja", request, {
         "user": current_user,
         "stats": dashboard_stats
