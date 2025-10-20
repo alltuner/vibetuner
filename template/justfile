@@ -6,6 +6,9 @@ FQDN := `uv run python -c "import yaml; print(yaml.safe_load(open('.copier-answe
 ENABLE_WATCHTOWER := `uv run python -c "import yaml; print(str(yaml.safe_load(open('.copier-answers.yml')).get('enable_watchtower', False)).lower())"`
 PYTHON_VERSION := `tr -d '\n\r' < .python-version`
 
+# Default: update dependencies
+default: update-deps
+
 # Runs the dev environment with watch mode and cleans up orphans
 [group('Local Development')]
 dev: install-deps
