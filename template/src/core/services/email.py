@@ -8,8 +8,7 @@ from typing import Literal
 
 import boto3
 
-from app.config import settings
-from core.config import project_settings
+from core.config import settings
 
 
 SES_SERVICE_NAME: Literal["ses"] = "ses"
@@ -23,7 +22,7 @@ class SESEmailService:
     ) -> None:
         self.ses_client = ses_client or boto3.client(
             service_name=SES_SERVICE_NAME,
-            region_name=project_settings.aws_default_region,
+            region_name=settings.project.aws_default_region,
             aws_access_key_id=settings.aws_access_key_id.get_secret_value()
             if settings.aws_access_key_id
             else None,
@@ -31,7 +30,7 @@ class SESEmailService:
             if settings.aws_secret_access_key
             else None,
         )
-        self.from_email = from_email or project_settings.from_email
+        self.from_email = from_email or settings.project.from_email
 
     async def send_email(
         self, to_address: str, subject: str, html_body: str, text_body: str

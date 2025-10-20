@@ -1,7 +1,7 @@
 from pydantic import EmailStr
 from starlette_babel import gettext_lazy as _
 
-from core.config import project_settings
+from core.config import settings
 from core.services.email import SESEmailService
 
 from .templates import render_static_template
@@ -13,7 +13,7 @@ async def send_magic_link_email(
     to_address: EmailStr,
     login_url: str,
 ) -> None:
-    project_name = project_settings.project_name
+    project_name = settings.project.project_name
 
     html_body = render_static_template(
         "magic_link.html",
@@ -37,7 +37,7 @@ async def send_magic_link_email(
 
     await ses_service.send_email(
         subject=_("Sign in to {project_name}").format(
-            project_name=project_settings.project_name
+            project_name=settings.project.project_name
         ),
         html_body=html_body,
         text_body=text_body,

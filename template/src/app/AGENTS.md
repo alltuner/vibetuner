@@ -40,26 +40,24 @@ src/app/
 **`src/app/config.py`** - Application-specific settings:
 
 ```python
-from core.config import project_settings
-from core.versioning import version
+from pydantic_settings import SettingsConfigDict
+from core.config import CoreConfiguration, _load_project_config
 
-class Configuration(BaseSettings):
-    # Your app settings
-    debug: bool = False
-    version: str = version
-
-    # AWS, R2, or other service credentials
-    aws_access_key_id: SecretStr | None = None
-
+class Configuration(CoreConfiguration):
     # Add your configuration variables here
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False, extra="ignore", env_file=".env"
+    )
+
+settings = Configuration(project=_load_project_config())
 ```
 
-**`src/core/config.py`** - Project-level settings (read-only):
+**`src/core/config.py`** - Core configuration that includes:
 
-- Project name, slug, description
-- MongoDB URL, Redis URL
-- Supported languages
-- Company info, copyright
+- Project settings (project name, slug, MongoDB URL, Redis URL, etc.)
+- Common settings (debug, version, session key, AWS credentials, etc.)
+- All settings accessible via the unified `settings` object
 
 ### Importing from Core
 
@@ -76,9 +74,16 @@ from core.services.blob import blob_service
 from core.frontend.deps import get_current_user
 from core.frontend.templates import render_template
 
-# Configuration
-from core.config import project_settings
-from app.config import settings
+# Configuration (unified)
+from core.config import settings
+
+# Access project-level settings
+settings.project.project_slug
+settings.project.mongodb_url
+
+# Access application settings
+settings.debug
+settings.version
 ```
 
 ## Quick Start Patterns

@@ -1,3 +1,5 @@
+import base64
+import hashlib
 from datetime import datetime
 from functools import cached_property
 from typing import Annotated
@@ -6,16 +8,28 @@ import yaml
 from pydantic import (
     UUID4,
     Field,
+    HttpUrl,
     MongoDsn,
     RedisDsn,
+    SecretStr,
+    computed_field,
 )
 from pydantic_extra_types.language_code import LanguageAlpha2
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from core.paths import config_vars as config_vars_path
+from core.versioning import version
 
 
 current_year: int = datetime.now().year
+
+
+def _load_project_config() -> "ProjectConfiguration":
+    if not config_vars_path.exists():
+        return ProjectConfiguration()
+    return ProjectConfiguration(
+        **yaml.safe_load(config_vars_path.read_text(encoding="utf-8"))
+    )
 
 
 class ProjectConfiguration(BaseSettings):
@@ -51,7 +65,6 @@ class ProjectConfiguration(BaseSettings):
 
     @cached_property
     def languages(self) -> set[str]:
-        """Return the supported languages as a set of strings."""
         if self.supported_languages is None:
             return {self.language}
 
@@ -61,7 +74,6 @@ class ProjectConfiguration(BaseSettings):
 
     @cached_property
     def language(self) -> str:
-        """Return the default language as a string."""
         return str(self.default_language)
 
     @cached_property
@@ -76,10 +88,41 @@ class ProjectConfiguration(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore")
 
 
-project_settings: ProjectConfiguration = (
-    ProjectConfiguration()
-    if not config_vars_path.exists()
-    else ProjectConfiguration(
-        **yaml.safe_load(config_vars_path.read_text(encoding="utf-8"))
+class CoreConfiguration(BaseSettings):
+    project: ProjectConfiguration
+
+    debug: bool = False
+    version: str = version
+    session_key: SecretStr = SecretStr("ct-!secret-must-change-me")
+
+    aws_access_key_id: SecretStr | None = None
+    aws_secret_access_key: SecretStr | None = None
+
+    r2_default_bucket_name: str | None = None
+    r2_bucket_endpoint_url: HttpUrl | None = None
+    r2_access_key: SecretStr | None = None
+    r2_secret_key: SecretStr | None = None
+    r2_default_region: str = "auto"
+
+    @computed_field
+    @cached_property
+    def v_hash(self) -> str:
+        hash_object = hashlib.sha256(self.version.encode("utf-8"))
+        hash_bytes = hash_object.digest()
+
+        b64_hash = base64.urlsafe_b64encode(hash_bytes).decode("utf-8")
+
+        url_safe_hash = b64_hash.rstrip("=")[:8]
+
+        return url_safe_hash
+
+    @cached_property
+    def mongo_dbname(self) -> str:
+        return self.project.project_slug
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False, extra="ignore", env_file=".env"
     )
-)
+
+
+settings = CoreConfiguration(project=_load_project_config())

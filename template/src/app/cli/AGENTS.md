@@ -136,10 +136,15 @@ from app.models.post import Post
 ### Configuration
 
 ```python
-from core.config import project_settings
-from app.config import settings
+from core.config import settings
 
-# Access configuration
+# Access project-level settings
+settings.project.project_slug
+settings.project.mongodb_url
+
+# Access application settings
+settings.debug
+settings.version
 ```
 
 ## Common Patterns
@@ -288,10 +293,10 @@ def rebuild_indexes():
 
         # Get database
         from motor.motor_asyncio import AsyncIOMotorClient
-        from core.config import project_settings
+        from core.config import settings
 
-        client = AsyncIOMotorClient(str(project_settings.mongodb_url))
-        db = client[project_settings.project_slug]
+        client = AsyncIOMotorClient(str(settings.project.mongodb_url))
+        db = client[settings.project.project_slug]
 
         # Rebuild indexes for each collection
         collections = await db.list_collection_names()

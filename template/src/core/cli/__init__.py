@@ -9,7 +9,7 @@ import typer
 from rich.console import Console
 
 from core.cli.run import run_app
-from core.config import project_settings
+from core.config import settings
 from core.logging import LogLevel, setup_logging
 
 
@@ -43,7 +43,7 @@ class AsyncTyper(typer.Typer):
         return partial(self.maybe_run_async, decorator)
 
 
-app = AsyncTyper(help=f"{project_settings.project_name.title()} CLI")
+app = AsyncTyper(help=f"{settings.project.project_name.title()} CLI")
 
 LOG_LEVEL_OPTION = typer.Option(
     LogLevel.INFO,

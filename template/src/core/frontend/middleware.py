@@ -15,7 +15,7 @@ from starlette_babel import (
 )
 from starlette_htmx.middleware import HtmxMiddleware  # type: ignore[import-untyped]
 
-from app.config import settings
+from core.config import settings
 from core.paths import locales as locales_path
 
 from .context import ctx

@@ -3,8 +3,7 @@ from datetime import datetime
 
 from fastapi import APIRouter
 
-from app.config import settings
-from core.config import project_settings
+from core.config import settings
 from core.paths import root as root_path
 
 
@@ -24,7 +23,7 @@ def health_ping():
 def health_instance_id():
     """Instance identification endpoint for distinguishing app instances"""
     return {
-        "app": project_settings.project_slug,
+        "app": settings.project.project_slug,
         "port": int(os.environ.get("PORT", 8000)),
         "debug": settings.debug,
         "status": "healthy",
