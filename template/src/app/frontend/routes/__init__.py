@@ -2,7 +2,7 @@ from fastapi import (
     APIRouter,
 )
 
-from core.frontend import register_router
+from vibetuner.frontend import register_router
 
 
 app_router = APIRouter()

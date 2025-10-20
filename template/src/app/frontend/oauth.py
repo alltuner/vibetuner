@@ -11,8 +11,8 @@
 
 # Uncomment to enable Google OAuth:
 # from app.config import settings
-# from core.frontend.oauth import register_oauth_provider
-# from core.models.oauth import OauthProviderModel
+# from vibetuner.frontend.oauth import register_oauth_provider
+# from vibetuner.models.oauth import OauthProviderModel
 #
 # if hasattr(settings, 'google_client_id') and settings.google_client_id and settings.google_client_secret:
 #     google_provider = OauthProviderModel(

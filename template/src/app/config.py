@@ -1,6 +1,6 @@
 from pydantic_settings import SettingsConfigDict
 
-from core.config import CoreConfiguration, _load_project_config
+from vibetuner.config import CoreConfiguration, _load_project_config
 
 
 class Configuration(CoreConfiguration):

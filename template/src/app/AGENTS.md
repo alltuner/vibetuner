@@ -22,7 +22,7 @@ src/app/
 
 ### Core vs App
 
-- **`src/core/`** - Immutable scaffolding code (DO NOT MODIFY)
+- **`src/vibetuner/`** - Immutable scaffolding code (DO NOT MODIFY)
   - User authentication, OAuth, email verification
   - Email service, blob storage
   - Base templates, middleware, default routes
@@ -41,7 +41,7 @@ src/app/
 
 ```python
 from pydantic_settings import SettingsConfigDict
-from core.config import CoreConfiguration, _load_project_config
+from vibetuner.config import CoreConfiguration, _load_project_config
 
 class Configuration(CoreConfiguration):
     # Add your configuration variables here
@@ -53,7 +53,7 @@ class Configuration(CoreConfiguration):
 settings = Configuration(project=_load_project_config())
 ```
 
-**`src/core/config.py`** - Core configuration that includes:
+**`src/vibetuner/config.py`** - Core configuration that includes:
 
 - Project settings (project name, slug, MongoDB URL, Redis URL, etc.)
 - Common settings (debug, version, session key, AWS credentials, etc.)
@@ -63,19 +63,19 @@ settings = Configuration(project=_load_project_config())
 
 ```python
 # Models
-from core.models import UserModel, OAuthAccountModel
-from core.models.mixins import TimeStampMixin
+from vibetuner.models import UserModel, OAuthAccountModel
+from vibetuner.models.mixins import TimeStampMixin
 
 # Services
-from core.services.email import send_email
-from core.services.blob import blob_service
+from vibetuner.services.email import send_email
+from vibetuner.services.blob import blob_service
 
 # Frontend utilities
-from core.frontend.deps import get_current_user
-from core.frontend.templates import render_template
+from vibetuner.frontend.deps import get_current_user
+from vibetuner.frontend.templates import render_template
 
 # Configuration (unified)
-from core.config import settings
+from vibetuner.config import settings
 
 # Access project-level settings
 settings.project.project_slug
@@ -101,8 +101,8 @@ settings.version
 ```python
 # models/post.py
 from beanie import Document
-from core.models.mixins import TimeStampMixin
-from core.models import UserModel
+from vibetuner.models.mixins import TimeStampMixin
+from vibetuner.models import UserModel
 
 class Post(Document, TimeStampMixin):
     title: str
@@ -115,8 +115,8 @@ class Post(Document, TimeStampMixin):
 
 # frontend/routes/posts.py
 from fastapi import APIRouter, Request, Depends
-from core.frontend.deps import get_current_user
-from core.frontend.templates import render_template
+from vibetuner.frontend.deps import get_current_user
+from vibetuner.frontend.templates import render_template
 from app.models.post import Post
 
 router = APIRouter(prefix="/posts", tags=["posts"])
@@ -148,7 +148,7 @@ async def create_post(
 
 ## Important Notes
 
-- **Never modify `src/core/`** - File issues at `https://github.com/alltuner/scaffolding`
+- **Never modify `src/vibetuner/`** - File issues at `https://github.com/alltuner/scaffolding`
 - **Always use type hints** - FastAPI and Beanie rely on them
 - **Run `ruff format .`** after changes - Keep code consistent
 - **Use async/await** - The stack is fully async

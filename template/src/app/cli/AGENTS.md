@@ -18,8 +18,8 @@ Create your application-specific CLI commands in this directory:
 ```python
 # commands.py
 import typer
-from core.models import UserModel
-from core.mongo import init_db
+from vibetuner.models import UserModel
+from vibetuner.mongo import init_db
 
 app = typer.Typer(help="Application management commands")
 
@@ -117,7 +117,7 @@ If the package is installed, commands may be available directly (configured in p
 ### Database
 
 ```python
-from core.mongo import init_db
+from vibetuner.mongo import init_db
 
 async def command():
     await init_db()  # Initialize DB connection
@@ -127,7 +127,7 @@ async def command():
 ### Models
 
 ```python
-from core.models import UserModel, OAuthAccountModel
+from vibetuner.models import UserModel, OAuthAccountModel
 from app.models.post import Post
 
 # Access all models
@@ -136,7 +136,7 @@ from app.models.post import Post
 ### Configuration
 
 ```python
-from core.config import settings
+from vibetuner.config import settings
 
 # Access project-level settings
 settings.project.project_slug
@@ -293,7 +293,7 @@ def rebuild_indexes():
 
         # Get database
         from motor.motor_asyncio import AsyncIOMotorClient
-        from core.config import settings
+        from vibetuner.config import settings
 
         client = AsyncIOMotorClient(str(settings.project.mongodb_url))
         db = client[settings.project.project_slug]

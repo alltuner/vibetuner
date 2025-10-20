@@ -17,8 +17,8 @@ Create your application-specific services in this directory:
 
 ```python
 # notifications.py
-from core.models import UserModel
-from core.services.email import send_email
+from vibetuner.models import UserModel
+from vibetuner.services.email import send_email
 from app.config import settings
 
 class NotificationService:
@@ -48,7 +48,7 @@ notification_service = NotificationService()
 ### Email Service
 
 ```python
-from core.services.email import send_email
+from vibetuner.services.email import send_email
 
 await send_email(
     to_email="user@example.com",
@@ -61,7 +61,7 @@ await send_email(
 ### Blob Storage Service
 
 ```python
-from core.services.blob import blob_service
+from vibetuner.services.blob import blob_service
 
 # Upload file
 blob = await blob_service.upload(file_bytes, filename="document.pdf")
@@ -162,7 +162,7 @@ analytics_service = AnalyticsService()
 # document.py
 from io import BytesIO
 from PIL import Image
-from core.services.blob import blob_service
+from vibetuner.services.blob import blob_service
 
 class DocumentService:
     """Process uploaded documents."""
