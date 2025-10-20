@@ -62,6 +62,7 @@
       "WebFetch(domain:docs.astral.sh)",
       "WebFetch(domain:fastapi.tiangolo.com)",
       "WebFetch(domain:github.com)",
+      "WebFetch(domain:just.systems)",
       "WebFetch(domain:llm.datasette.io)",
       "WebFetch(domain:tailwindcss.com)",
       "WebFetch(domain:taplo.tamasfe.dev)",
