@@ -1,7 +1,6 @@
 import 'base.justfile'
 
 VERSION := `uv run dunamai from git 2>/dev/null || echo 0.0.0`
-
 PROJECT_SLUG := `uv run python -c "import yaml; print(yaml.safe_load(open('.copier-answers.yml'))['project_slug'].strip())"`
 FQDN := `uv run python -c "import yaml; print(yaml.safe_load(open('.copier-answers.yml')).get('fqdn', '').strip())"`
 ENABLE_WATCHTOWER := `uv run python -c "import yaml; print(str(yaml.safe_load(open('.copier-answers.yml')).get('enable_watchtower', False)).lower())"`
@@ -12,14 +11,14 @@ PYTHON_VERSION := `tr -d '\n\r' < .python-version`
 dev: install-deps
     ENVIRONMENT=development \
     COMPOSE_BAKE=true \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
-    COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
+    PYTHON_VERSION={{ PYTHON_VERSION }} \
+    COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
     docker compose -f compose.dev.yml up --watch --remove-orphans
 
 # Runs the dev environment locally without Docker
 [group('Local Development')]
 local-dev PORT="8000": install-deps
-    @atl run dev --port {{PORT}}
+    @atl run dev --port {{ PORT }}
 
 # Runs the task worker locally without Docker
 [group('Local Development')]
@@ -31,51 +30,50 @@ worker-dev: install-deps
 build-dev: install-deps
     ENVIRONMENT=development \
     COMPOSE_BAKE=true \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
-    COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
+    PYTHON_VERSION={{ PYTHON_VERSION }} \
+    COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
     docker compose --progress=plain -f compose.dev.yml build
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
 test-build-prod: install-deps
     ENVIRONMENT=production \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
-    COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
-    FQDN={{FQDN}} \
-    ENABLE_WATCHTOWER={{ENABLE_WATCHTOWER}} \
+    PYTHON_VERSION={{ PYTHON_VERSION }} \
+    COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
+    FQDN={{ FQDN }} \
+    ENABLE_WATCHTOWER={{ ENABLE_WATCHTOWER }} \
     docker buildx bake -f compose.prod.yml
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
 build-prod: _check-clean _check-last-commit-tagged install-deps
     ENVIRONMENT=production \
-    VERSION={{VERSION}} \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
-    COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
-    FQDN={{FQDN}} \
-    ENABLE_WATCHTOWER={{ENABLE_WATCHTOWER}} \
+    VERSION={{ VERSION }} \
+    PYTHON_VERSION={{ PYTHON_VERSION }} \
+    COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
+    FQDN={{ FQDN }} \
+    ENABLE_WATCHTOWER={{ ENABLE_WATCHTOWER }} \
     docker buildx bake -f compose.prod.yml
-
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
 release: _check-clean _check-last-commit-tagged install-deps
     ENVIRONMENT=production \
-    VERSION={{VERSION}} \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
-    COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
-    FQDN={{FQDN}} \
-    ENABLE_WATCHTOWER={{ENABLE_WATCHTOWER}} \
+    VERSION={{ VERSION }} \
+    PYTHON_VERSION={{ PYTHON_VERSION }} \
+    COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
+    FQDN={{ FQDN }} \
+    ENABLE_WATCHTOWER={{ ENABLE_WATCHTOWER }} \
     docker buildx bake -f compose.prod.yml --push
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
 deploy-latest HOST: release
     DOCKER_HOST="ssh://{{ HOST }}" \
-    PYTHON_VERSION={{PYTHON_VERSION}} \
-    COMPOSE_PROJECT_NAME={{PROJECT_SLUG}} \
-    FQDN={{FQDN}} \
-    ENABLE_WATCHTOWER={{ENABLE_WATCHTOWER}} \
+    PYTHON_VERSION={{ PYTHON_VERSION }} \
+    COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
+    FQDN={{ FQDN }} \
+    ENABLE_WATCHTOWER={{ ENABLE_WATCHTOWER }} \
     docker compose -f compose.prod.yml up -d --remove-orphans --pull always
 
 # Lint Jinja templates with djlint (check only)
@@ -116,7 +114,7 @@ extract-translations:
 # Creates a new language file for localization
 [group('localization')]
 new-locale LANG:
-    @uv run pybabel init -i locales/messages.pot -d locales -l {{LANG}}
+    @uv run pybabel init -i locales/messages.pot -d locales -l {{ LANG }}
 
 # Updates existing language files for localization
 [group('localization')]
@@ -133,11 +131,11 @@ compile-locales:
 dump-untranslated DEST:
     #!/usr/bin/env bash
 
-    mkdir -p {{DEST}}
+    mkdir -p {{ DEST }}
 
     for LANG_DIR in locales/??; do
         LANG=$(basename ${LANG_DIR} | cut -d/ -f1)
-        msgattrib --untranslated ./locales/${LANG}/LC_MESSAGES/messages.po > "{{DEST}}/untranslated_${LANG}.po"
+        msgattrib --untranslated ./locales/${LANG}/LC_MESSAGES/messages.po > "{{ DEST }}/untranslated_${LANG}.po"
     done
 
 # Update to the latest version of the project scaffolding
