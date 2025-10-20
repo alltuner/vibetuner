@@ -1,4 +1,4 @@
-set allow-duplicate-recipes
+set allow-duplicate-recipes := true
 
 import 'template/base.justfile'
 

@@ -1,4 +1,5 @@
 # Gracefully fallback if no tags exist
+
 LATEST_VERSION_TAG := `git describe --tags --abbrev=0 --match "v*" 2>/dev/null | sed 's/^v//' || echo "0.0.0"`
 
 # Default: update dependencies
@@ -68,7 +69,7 @@ _semver_bump type: _check-clean _check-unpushed-commits
         exit 0
     fi
 
-    NEW_VERSION=$(uv run pysemver bump {{type}} {{LATEST_VERSION_TAG}})
+    NEW_VERSION=$(uv run pysemver bump {{ type }} {{ LATEST_VERSION_TAG }})
     if [ -z "$NEW_VERSION" ]; then
         echo "❌ Failed to compute new version. Aborting to avoid invalid tag."
         exit 1
@@ -92,13 +93,13 @@ _semver_bump type: _check-clean _check-unpushed-commits
 start-branch BRANCH: _check-clean _check-unpushed-commits
     git checkout main
     git pull origin main
-    git checkout -b {{BRANCH}}
+    git checkout -b "{{ BRANCH }}"
 
 # Adds and commits all changes with a message
 [group('gitflow')]
 commit MESSAGE:
     git add .
-    git commit -m "{{MESSAGE}}"
+    git commit -m "{{ MESSAGE }}"
 
 # Pushes all tags to the remote repository
 [group('gitflow')]
@@ -115,7 +116,6 @@ pr:
       --base main \
       --title "$branch" \
       --body "$(git log origin/main..HEAD --pretty=format:'- %s')"
-
 
 # Merge PR using squash
 [group('gitflow')]
