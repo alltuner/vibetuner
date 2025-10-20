@@ -144,7 +144,7 @@ update-scaffolding:
     @echo "Updating project scaffolding..."
     @copier update -A --trust
     @bun install
-    @uv install-deps --all-extras
+    @uv sync --all-extras
     @echo "Project scaffolding updated."
     @echo "Please review the changes and commit."
 
