@@ -29,9 +29,9 @@ src/app/frontend/
 ```python
 # routes/dashboard.py
 from fastapi import APIRouter, Request, Depends, HTTPException
-from core.frontend.deps import get_current_user
-from core.frontend.templates import render_template
-from core.models import UserModel
+from vibetuner.frontend.deps import get_current_user
+from vibetuner.frontend.templates import render_template
+from vibetuner.models import UserModel
 from app.models.post import Post
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
@@ -99,7 +99,7 @@ app_router.include_router(api_router, prefix="/api")
 ### Dependencies
 
 ```python
-from core.frontend.deps import (
+from vibetuner.frontend.deps import (
     get_current_user,           # Require auth (raises 403)
     get_current_user_optional,  # Optional auth (returns None)
     LangDep,                    # Current language
@@ -120,7 +120,7 @@ async def home(user: UserModel | None = Depends(get_current_user_optional)):
 ### Template Rendering
 
 ```python
-from core.frontend.templates import render_template
+from vibetuner.frontend.templates import render_template
 
 return render_template(
     "template_path.html.jinja",
@@ -143,7 +143,7 @@ Edit `oauth.py` to configure OAuth providers:
 
 ```python
 # src/app/frontend/oauth.py
-from core.frontend.oauth import OAuthProvider
+from vibetuner.frontend.oauth import OAuthProvider
 
 def get_oauth_providers() -> dict[str, OAuthProvider]:
     """Define OAuth providers for your app."""
@@ -303,7 +303,7 @@ async def create_post_form(
 
 ```python
 from fastapi import File, UploadFile
-from core.services.blob import blob_service
+from vibetuner.services.blob import blob_service
 
 @router.post("/upload")
 async def upload_file(

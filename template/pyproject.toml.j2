@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-atl = "core.cli:app"
+atl = "vibetuner.cli:app"
 
 [dependency-groups]
 dev = [
@@ -40,7 +40,7 @@ fallback-version = "0.0.0"
 source = "uv-dynamic-versioning"
 
 [tool.hatch.build.hooks.version]
-path = "src/core/_version.py"
+path = "src/vibetuner/_version.py"
 template = '''
 version = "{version}"
 '''

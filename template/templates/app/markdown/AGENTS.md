@@ -12,7 +12,7 @@ Templates in this directory automatically override core markdown templates:
 
 ```bash
 # Core template (if any):
-templates/core/markdown/default/terms.md.jinja
+templates/vibetuner/markdown/default/terms.md.jinja
 
 # Your override (searches first):
 templates/app/markdown/default/terms.md.jinja
@@ -56,7 +56,7 @@ By accessing {{ project_name }}, you agree to these terms.
 ### Rendering Markdown Templates
 
 ```python
-from core.templates import render_static_template
+from vibetuner.templates import render_static_template
 import markdown
 
 def get_terms_content(lang: str = "en") -> str:

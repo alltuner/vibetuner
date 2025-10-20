@@ -84,7 +84,7 @@ RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
 # ────────────────────────────────────────────────────────────────────────────────
 FROM frontend-deps AS frontend-build
 
-COPY /templates/core/frontend/ templates/core/frontend/
+COPY /templates/vibetuner/frontend/ templates/vibetuner/frontend/
 COPY /templates/app/frontend/ templates/app/frontend/
 
 # Build production assets with Bun
@@ -112,16 +112,16 @@ COPY --from=python-versioning --chown=app:app /app/.venv/ .venv/
 
 # Copy static assets and markdown content (not full frontend source)
 COPY --chown=app:app assets/statics/ assets/statics/
-COPY --chown=app:app templates/core/markdown/ templates/core/markdown/
+COPY --chown=app:app templates/vibetuner/markdown/ templates/vibetuner/markdown/
 COPY --chown=app:app templates/app/markdown/ templates/app/markdown/
 
 # Copy compiled localization files (smaller than source .po files)
 COPY --from=locales --chown=app:app --parents /app/locales/*/LC_MESSAGES/messages.mo /
 
 # Copy template files
-COPY --chown=app:app templates/core/frontend templates/core/frontend/
+COPY --chown=app:app templates/vibetuner/frontend templates/vibetuner/frontend/
 COPY --chown=app:app templates/app/frontend templates/app/frontend/
-COPY --chown=app:app templates/core/email templates/core/email/
+COPY --chown=app:app templates/vibetuner/email templates/vibetuner/email/
 COPY --chown=app:app templates/app/email templates/app/email/
 
 # Copy built frontend assets (CSS and JS bundles)
@@ -132,7 +132,7 @@ COPY --from=frontend-build --chown=app:app /app/assets/statics/js/bundle.js asse
 COPY --chown=app:app src/ src/
 
 # Copy version files from the versioning stage
-COPY --from=python-versioning --chown=app:app --parents /app/src/core/_version.py /
+COPY --from=python-versioning --chown=app:app --parents /app/src/vibetuner/_version.py /
 
 # Copy configuration file
 COPY --chown=app:app .copier-answers.yml ./

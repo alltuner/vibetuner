@@ -125,7 +125,7 @@ merge:
 # Lint markdown files including dot directories
 [group('linting')]
 lint-md:
-    uv run rumdl check . .claude .github template template/.*
+    uv run rumdl check . .claude .github
 
 # Lint Python files with ruff
 [group('linting')]

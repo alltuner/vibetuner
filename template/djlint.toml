@@ -7,7 +7,7 @@ ignore = "H006,J018,T028"
 
 # Per-file ignores for email templates - they don't need full HTML structure
 [per-file-ignores]
-"templates/core/email/default/magic_link.html.jinja" = "H005,H007,H016,H021,H030,H031"
+"templates/vibetuner/email/default/magic_link.html.jinja" = "H005,H007,H016,H021,H030,H031"
 
 # Use 4 spaces for indentation
 indent = 4
