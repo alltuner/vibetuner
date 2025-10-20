@@ -21,6 +21,7 @@ _PROVIDERS: dict[str, OauthProviderModel] = {}
 def register_oauth_provider(name: str, provider: OauthProviderModel) -> None:
     _PROVIDERS[name] = provider
     PROVIDER_IDENTIFIERS[name] = provider.identifier
+    _oauth_config.update(**provider.config)
     register_kwargs = {"client_kwargs": provider.client_kwargs, **provider.params}
     oauth.register(name, overwrite=True, **register_kwargs)
 
@@ -54,8 +55,12 @@ class Config:
     def get(self, key, default=None):
         return self._data.get(key, default)
 
+    def update(self, **kwargs):
+        self._data.update(kwargs)
 
-oauth = OAuth(Config())
+
+_oauth_config = Config()
+oauth = OAuth(_oauth_config)
 
 PROVIDER_IDENTIFIERS: dict[str, str] = {}
 
