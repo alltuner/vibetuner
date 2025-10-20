@@ -2,9 +2,6 @@
 
 LATEST_VERSION_TAG := `git describe --tags --abbrev=0 --match "v*" 2>/dev/null | sed 's/^v//' || echo "0.0.0"`
 
-# Default: update dependencies
-default: update-deps
-
 [group('Helpers')]
 _check-clean:
     @git diff --quiet || (echo "❌ Uncommitted changes found. Commit or stash them before building." && exit 1)
