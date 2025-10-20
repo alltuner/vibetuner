@@ -55,7 +55,7 @@ just pr                      # Create pull request
 
 ```text
 src/
-├── core/                      # ⚠️  IMMUTABLE SCAFFOLDING - DO NOT MODIFY
+├── vibetuner/                 # ⚠️  IMMUTABLE SCAFFOLDING - DO NOT MODIFY
 │   ├── frontend/             # Core web infrastructure
 │   │   ├── routes/          # Default routes (auth, health, debug, etc.)
 │   │   ├── deps.py          # Core dependencies
@@ -91,7 +91,7 @@ templates/
 │   ├── frontend/          # Your frontend template overrides
 │   ├── email/             # Your email template overrides
 │   └── markdown/          # Your markdown template overrides
-└── core/                  # ⚠️  DO NOT MODIFY - scaffolding templates
+└── vibetuner/             # ⚠️  DO NOT MODIFY - scaffolding templates
     ├── frontend/          # Core frontend templates
     ├── email/             # Core email templates
     └── markdown/          # Core markdown templates
@@ -104,7 +104,7 @@ assets/statics/
 
 ### Core vs App
 
-**`src/core/`** - Immutable scaffolding framework
+**`src/vibetuner/`** - Immutable scaffolding framework
 
 - User authentication, OAuth, magic links
 - Email service, blob storage
@@ -115,7 +115,7 @@ assets/statics/
 **`src/app/`** - Your application space
 
 - Your business logic
-- Your data models  
+- Your data models
 - Your API routes
 - Your background tasks
 - Your CLI commands
@@ -131,8 +131,8 @@ deprecated. All new code goes in `src/app/`.
 ```python
 # src/app/frontend/routes/dashboard.py
 from fastapi import APIRouter, Request, Depends
-from core.frontend.deps import get_current_user
-from core.frontend.templates import render_template
+from vibetuner.frontend.deps import get_current_user
+from vibetuner.frontend.templates import render_template
 
 router = APIRouter()
 
@@ -147,8 +147,8 @@ async def dashboard(request: Request, user=Depends(get_current_user)):
 # src/app/models/post.py
 from beanie import Document, Link
 from pydantic import Field
-from core.models import UserModel
-from core.models.mixins import TimeStampMixin
+from vibetuner.models import UserModel
+from vibetuner.models.mixins import TimeStampMixin
 
 class Post(Document, TimeStampMixin):
     title: str
@@ -164,7 +164,7 @@ class Post(Document, TimeStampMixin):
 
 ```python
 # src/app/services/notifications.py
-from core.services.email import send_email
+from vibetuner.services.email import send_email
 
 async def send_notification(user_email: str, message: str):
     await send_email(
@@ -196,14 +196,14 @@ To customize core templates, copy to app directory:
 
 ```bash
 # Override footer
-cp templates/core/frontend/base/footer.html.jinja \
+cp templates/vibetuner/frontend/base/footer.html.jinja \
    templates/app/frontend/base/footer.html.jinja
 
 # Now edit templates/app/frontend/base/footer.html.jinja
 ```
 
 The template system searches `templates/app/` first, then falls back to
-`templates/core/`.
+`templates/vibetuner/`.
 
 ## Configuration
 
@@ -223,10 +223,10 @@ DEBUG=true  # Development only
 ### Pydantic Settings
 
 ```python
-from core.config import project_settings
+from vibetuner.config import project_settings
 from app.config import settings
 
-# Project-level (read-only from core)
+# Project-level (read-only from vibetuner)
 project_settings.project_slug
 project_settings.project_name
 project_settings.mongodb_url
@@ -330,7 +330,7 @@ def get_usr(e):
 
 ## Important Rules
 
-1. **Never modify** `src/core/` - It's immutable scaffolding code
+1. **Never modify** `src/vibetuner/` - It's immutable scaffolding code
 2. **File issues** at `https://github.com/alltuner/scaffolding` for core changes
 3. **All your code** goes in `src/app/` - This is your space
 4. **Always run** `ruff format .` after Python changes
