@@ -16,7 +16,11 @@ from core.models import EmailVerificationTokenModel, UserModel
 from core.services.email import SESEmailService
 
 from ..email import send_magic_link_email
-from ..oauth import _create_auth_handler, _create_auth_login_handler, oauth_providers
+from ..oauth import (
+    _create_auth_handler,
+    _create_auth_login_handler,
+    get_oauth_providers,
+)
 from ..templates import render_template
 from . import get_homepage_url
 
@@ -52,6 +56,7 @@ async def auth_login(
         # If user is already authenticated, redirect to homepage
         return RedirectResponse(url=get_homepage_url(request), status_code=302)
 
+    oauth_providers = get_oauth_providers()
     return render_template(
         "login.html.jinja",
         request=request,
@@ -130,7 +135,7 @@ async def email_verify(
     return next or get_homepage_url(request)
 
 
-for provider in oauth_providers:
+for provider in get_oauth_providers():
     router.get(
         f"/provider/{provider}",
         response_class=RedirectResponse,

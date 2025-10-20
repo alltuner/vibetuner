@@ -62,5 +62,7 @@ def callback(log_level: LogLevel | None = LOG_LEVEL_OPTION) -> None:
 
 app.add_typer(run_app, name="run")
 
-# Import app commands to register them (avoiding name collision)
-import_module("app.cli")
+try:
+    import_module("app.cli")
+except (ImportError, ModuleNotFoundError):
+    pass

@@ -8,13 +8,21 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types.language_code import LanguageAlpha2
 from starlette.authentication import BaseUser
 
-from app.frontend.oauth import _PROVIDERS
 from core.frontend.routes import get_homepage_url
-from core.models.oauth import OAuthAccountModel
+from core.models.oauth import OAuthAccountModel, OauthProviderModel
 from core.models.user import UserModel
 
 
 DEFAULT_AVATAR_IMAGE = "/statics/img/user-avatar.png"
+
+_PROVIDERS: dict[str, OauthProviderModel] = {}
+
+
+def register_oauth_provider(name: str, provider: OauthProviderModel) -> None:
+    _PROVIDERS[name] = provider
+    PROVIDER_IDENTIFIERS[name] = provider.identifier
+    register_kwargs = {"client_kwargs": provider.client_kwargs, **provider.params}
+    oauth.register(name, overwrite=True, **register_kwargs)
 
 
 class WebUser(BaseUser, BaseModel):
@@ -39,13 +47,6 @@ class WebUser(BaseUser, BaseModel):
         return self.name
 
 
-oauth_config: dict[str, str] = {
-    key: value
-    for provider in _PROVIDERS.values()
-    for key, value in provider.config.items()
-}
-
-
 class Config:
     def __init__(self, **kwargs):
         self._data = kwargs
@@ -54,15 +55,13 @@ class Config:
         return self._data.get(key, default)
 
 
-oauth = OAuth(Config(**oauth_config))
+oauth = OAuth(Config())
 
-PROVIDER_IDENTIFIERS = {k: p.identifier for k, p in _PROVIDERS.items()}
-for name, provider in _PROVIDERS.items():
-    register_kwargs = {"client_kwargs": provider.client_kwargs, **provider.params}
-    oauth.register(name, overwrite=False, **register_kwargs)
+PROVIDER_IDENTIFIERS: dict[str, str] = {}
 
 
-oauth_providers = list(_PROVIDERS.keys())
+def get_oauth_providers() -> list[str]:
+    return list(_PROVIDERS.keys())
 
 
 async def _handle_user_account(

@@ -1,10 +1,9 @@
 from typing import Any
 
-from fastapi import Depends as Depends, FastAPI, Request
+from fastapi import APIRouter, Depends as Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.frontend.routes import app_router
 from core import paths
 
 from .deps import LangDep as LangDep, MagicCookieDep as MagicCookieDep
@@ -12,6 +11,20 @@ from .lifespan import ctx, lifespan
 from .middleware import middlewares
 from .routes import auth, debug, health, language, meta, user
 from .templates import render_template
+
+
+_registered_routers: list[APIRouter] = []
+
+
+def register_router(router: APIRouter) -> None:
+    _registered_routers.append(router)
+
+
+try:
+    import app.frontend.oauth as _app_oauth  # noqa: F401
+    import app.frontend.routes as _app_routes  # noqa: F401
+except (ImportError, ModuleNotFoundError):
+    pass
 
 
 dependencies: list[Any] = [
@@ -68,8 +81,8 @@ app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(language.router)
 
-
-app.include_router(app_router)
+for router in _registered_routers:
+    app.include_router(router)
 
 
 @app.get("/", name="homepage", response_class=HTMLResponse)

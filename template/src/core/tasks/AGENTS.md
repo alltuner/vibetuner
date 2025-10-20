@@ -22,11 +22,13 @@ This module contains the scaffolding's core task components:
 **For your application tasks:**
 
 - Create them in `src/app/tasks/` instead
-- Import the worker from app: `from app.tasks.worker import worker`
+- Import the worker from core: `from core.tasks.worker import worker`
 
 ## Quick Reference
 
 Tasks are only available if job queue was enabled during scaffolding.
+
+The worker is defined in `src/core/tasks/worker.py` and should be imported from there in your app tasks.
 
 ## User Task Pattern (for reference)
 
@@ -35,7 +37,7 @@ Your application tasks in `src/app/tasks/` should follow this pattern:
 ```python
 # src/app/tasks/emails.py
 from core.models import UserModel
-from app.tasks.worker import worker
+from core.tasks.worker import worker
 
 @worker.task()
 async def send_welcome_email(user_id: str) -> dict[str, str]:
@@ -66,6 +68,8 @@ async def signup(email: str):
     return {"status": "registered", "job_id": task.id}
 ```
 
+Note: Import your task functions from `src/app/tasks/` but the worker itself comes from `core.tasks.worker`.
+
 ## Worker Management
 
 ```bash
@@ -74,15 +78,13 @@ just worker-dev    # Run worker locally with auto-reload
 
 ## Task Registration
 
-Add new task modules at the end of `src/app/tasks/worker.py`:
+Add new task modules at the end of `src/app/tasks/__init__.py`:
 
 ```python
-# src/app/tasks/worker.py
-from core.tasks.worker import worker  # Import core worker
-
-# Import at bottom so decorator runs
-from . import emails  # noqa: E402, F401
-from . import new_tasks  # noqa: E402, F401
+# src/app/tasks/__init__.py
+# Import your task modules so decorators register with worker
+from . import emails  # noqa: F401
+from . import new_tasks  # noqa: F401
 ```
 
 ## Monitoring

@@ -29,7 +29,6 @@ Your application services in `src/app/services/` should follow this pattern:
 
 ```python
 from core.models import UserModel
-from app.config import settings
 
 class NotificationService:
     async def send_notification(
@@ -79,14 +78,13 @@ Place your application services in `src/app/services/`:
 ```python
 # src/app/services/external_api.py
 import httpx
-from app.config import settings
 
-async def call_api(data: dict) -> dict:
+async def call_api(api_url: str, api_key: str, data: dict) -> dict:
     async with httpx.AsyncClient() as client:
         response = await client.post(
-            settings.API_URL,
+            api_url,
             json=data,
-            headers={"Authorization": f"Bearer {settings.API_KEY}"}
+            headers={"Authorization": f"Bearer {api_key}"}
         )
         response.raise_for_status()
         return response.json()
