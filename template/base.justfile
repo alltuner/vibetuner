@@ -32,12 +32,19 @@ install-deps:
 
 # Update dependencies to latest compatible versions
 [group('Dependencies')]
-update-deps:
+update-deps: update-local-deps
     @echo "Updating dependencies..."
     @uv lock --upgrade
     @bun update
     @uv sync --all-extras
     @echo "✓ Dependencies updated"
+
+# Update locally declared dependencies
+[group('Dependencies')]
+update-local-deps:
+    @echo "Updating locally declared dependencies..."
+    @uv run uv-bump
+    @echo "✓ Locally declared dependencies updated"
 
 # Bump major version based on the latest tag
 [group('versioning')]
