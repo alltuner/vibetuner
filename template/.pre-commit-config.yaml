@@ -18,7 +18,7 @@ repos:
     hooks:
       - id: no-commit-to-branch
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.0.162  # Use the latest release tag
+    rev: v0.0.164  # Use the latest release tag
     hooks:
       - id: rumdl
         name: rumdl check
