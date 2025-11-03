@@ -192,18 +192,15 @@ async def send_digest_email(user_id: str):
 
 ### Template Override
 
-To customize core templates, copy to app directory:
+To customize core templates, override them in your templates directory:
 
 ```bash
-# Override footer
-cp templates/vibetuner/frontend/base/footer.html.jinja \
-   templates/app/frontend/base/footer.html.jinja
-
-# Now edit templates/app/frontend/base/footer.html.jinja
+# Override footer by creating the same structure in your templates/ directory
+# templates/frontend/base/footer.html.jinja
 ```
 
-The template system searches `templates/app/` first, then falls back to
-`templates/vibetuner/`.
+The template system searches `templates/` first, then falls back to
+`vibetuner/templates/` (from the package).
 
 ## Configuration
 
@@ -336,7 +333,7 @@ def get_usr(e):
 4. **Always run** `ruff format .` after Python changes
 5. **Both processes required** for development: `bun dev` + `just local-dev`
 6. **Use uv exclusively** for Python packages (never pip/poetry/conda)
-7. **Override, don't modify** core templates - copy to `templates/app/` instead
+7. **Override, don't modify** core templates - create in `templates/` instead
 
 ## Custom Project Instructions
 

@@ -4,18 +4,19 @@ YOUR CUSTOM MARKDOWN TEMPLATES GO HERE
 
 ## Purpose
 
-This directory contains your application-specific markdown templates.
+This directory contains your application-specific markdown templates and overrides
+of core templates from the vibetuner package.
 
 ## Override System
 
 Templates in this directory automatically override core markdown templates:
 
 ```bash
-# Core template (if any):
-templates/vibetuner/markdown/default/terms.md.jinja
+# Core template (if any, bundled in vibetuner package):
+vibetuner/templates/markdown/default/terms.md.jinja
 
 # Your override (searches first):
-templates/app/markdown/default/terms.md.jinja
+templates/markdown/default/terms.md.jinja
 ```
 
 ## Directory Structure
@@ -23,7 +24,7 @@ templates/app/markdown/default/terms.md.jinja
 Markdown templates follow the same language-based structure as email templates:
 
 ```text
-app/markdown/
+markdown/
 ├── default/            # Default language templates
 │   ├── terms.md.jinja
 │   ├── privacy.md.jinja
@@ -39,7 +40,7 @@ app/markdown/
 ### Creating Markdown Templates
 
 ```jinja
-{# templates/app/markdown/default/terms.md.jinja #}
+{# templates/markdown/default/terms.md.jinja #}
 # Terms of Service
 
 Last updated: {{ last_updated }}

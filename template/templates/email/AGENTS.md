@@ -5,18 +5,18 @@ YOUR CUSTOM EMAIL TEMPLATES GO HERE
 ## Purpose
 
 This directory contains your application-specific email templates and overrides
-of core email templates.
+of core email templates from the vibetuner package.
 
 ## Override System
 
 Templates in this directory automatically override core email templates:
 
 ```bash
-# Core template (scaffolding default):
-templates/vibetuner/email/default/magic_link.html.jinja
+# Core template (bundled in vibetuner package):
+vibetuner/templates/email/default/magic_link.html.jinja
 
 # Your override (searches first):
-templates/app/email/default/magic_link.html.jinja
+templates/email/default/magic_link.html.jinja
 ```
 
 ## Directory Structure
@@ -24,7 +24,7 @@ templates/app/email/default/magic_link.html.jinja
 Email templates follow a language-based structure:
 
 ```text
-app/email/
+email/
 ├── default/            # Default language templates
 │   ├── welcome.html.jinja
 │   ├── welcome.txt.jinja
@@ -40,10 +40,10 @@ app/email/
 
 The system searches:
 
-1. `templates/app/email/{lang}/` (your language-specific)
-2. `templates/app/email/default/` (your default)
-3. `templates/vibetuner/email/{lang}/` (core language-specific)
-4. `templates/vibetuner/email/default/` (core default)
+1. `templates/email/{lang}/` (your language-specific)
+2. `templates/email/default/` (your default)
+3. `vibetuner/templates/email/{lang}/` (package language-specific)
+4. `vibetuner/templates/email/default/` (package default)
 
 ## Usage
 
@@ -52,7 +52,7 @@ The system searches:
 Always provide both HTML and text versions:
 
 ```jinja
-{# templates/app/email/default/welcome.html.jinja #}
+{# templates/email/default/welcome.html.jinja #}
 <!DOCTYPE html>
 <html>
 <head>
@@ -74,7 +74,7 @@ Always provide both HTML and text versions:
 ```
 
 ```jinja
-{# templates/app/email/default/welcome.txt.jinja #}
+{# templates/email/default/welcome.txt.jinja #}
 Welcome to {{ project_name }}, {{ user_name }}!
 
 Thank you for joining {{ project_name }}.
@@ -131,11 +131,11 @@ async def send_welcome_email(user_email: str, user_name: str, lang: str = "en"):
 
 ## Core Email Templates
 
-The scaffolding provides:
+The vibetuner package provides:
 
 - `magic_link.html.jinja` / `magic_link.txt.jinja` - Passwordless login emails
 
-Override these by copying to your `app/email/` directory.
+Override these by copying to your `templates/email/` directory.
 
 ## Localization
 
@@ -143,7 +143,7 @@ For multi-language emails:
 
 ```bash
 # Create language-specific versions
-templates/app/email/
+templates/email/
 ├── default/        # Fallback
 │   └── welcome.html.jinja
 ├── en/            # English

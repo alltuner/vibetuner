@@ -5,26 +5,26 @@ YOUR CUSTOM TEMPLATES GO HERE
 ## Purpose
 
 This directory contains your application-specific frontend templates and overrides
-of core templates.
+of core templates from the vibetuner package.
 
 ## Override System
 
 Templates in this directory automatically override core templates with the same path:
 
 ```bash
-# Core template (scaffolding default):
-templates/vibetuner/frontend/base/footer.html.jinja
+# Core template (bundled in vibetuner package):
+vibetuner/templates/frontend/base/footer.html.jinja
 
 # Your override (searches first):
-templates/app/frontend/base/footer.html.jinja
+templates/frontend/base/footer.html.jinja
 ```
 
 ## Directory Structure
 
-Match the structure from `templates/vibetuner/frontend/` when overriding:
+Match the structure from vibetuner package templates when overriding:
 
 ```text
-app/frontend/
+frontend/
 ├── base/               # Layout overrides
 │   ├── skeleton.html.jinja
 │   ├── header.html.jinja
@@ -41,7 +41,7 @@ app/frontend/
 ### Creating New Templates
 
 ```jinja
-{# templates/app/frontend/dashboard/home.html.jinja #}
+{# templates/frontend/dashboard/home.html.jinja #}
 {% extends "base/skeleton.html.jinja" %}
 
 {% block title %}Dashboard{% endblock %}
@@ -56,13 +56,12 @@ app/frontend/
 
 ### Overriding Core Templates
 
-```bash
-# 1. Copy the core template
-cp templates/vibetuner/frontend/base/header.html.jinja \
-   templates/app/frontend/base/header.html.jinja
+Copy package templates to override them:
 
-# 2. Edit your copy
-# templates/app/frontend/base/header.html.jinja
+```bash
+# Templates are in the vibetuner package, you can override by creating
+# the same structure in your project's templates/ directory
+# templates/frontend/base/header.html.jinja
 ```
 
 ### Rendering from Routes
@@ -72,8 +71,8 @@ from vibetuner.frontend.templates import render_template
 
 @router.get("/dashboard")
 async def dashboard(request: Request):
-    # Automatically uses templates/app/frontend/dashboard/home.html.jinja
-    # if it exists, otherwise falls back to templates/vibetuner/frontend/
+    # Automatically uses templates/frontend/dashboard/home.html.jinja
+    # if it exists, otherwise falls back to vibetuner/templates/frontend/
     return render_template("dashboard/home.html.jinja", request, {
         "user": current_user,
         "stats": dashboard_stats

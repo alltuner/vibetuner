@@ -93,7 +93,7 @@ settings.version
 1. **Model** - Define data structure in `models/`
 2. **Service** - Business logic in `services/`
 3. **Route** - API endpoints in `frontend/routes/`
-4. **Template** - UI in `templates/app/frontend/`
+4. **Template** - UI in `templates/frontend/`
 5. **Task** - Background jobs in `tasks/` (if enabled)
 
 ### Example: Blog Posts
