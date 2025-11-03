@@ -1,29 +1,29 @@
 # Core Frontend Templates - DO NOT MODIFY
 
-**⚠️ IMPORTANT**: Scaffolding-managed files. Changes will be lost on updates.
+**⚠️ IMPORTANT**: Package-managed files. Changes will be lost on package updates.
 
 ## How to Override
 
 **NEVER modify files in this directory!** Instead:
 
-1. Copy template to `templates/app/frontend/`
+1. Copy template to your project's `templates/frontend/`
 2. Maintain the same directory structure
 3. Your version overrides automatically
 
 ### Example
 
 ```bash
-# Core template (DO NOT EDIT):
-templates/vibetuner/frontend/base/footer.html.jinja
+# Core template (DO NOT EDIT, bundled in vibetuner package):
+vibetuner/templates/frontend/base/footer.html.jinja
 
-# Your override (CREATE THIS):
-templates/app/frontend/base/footer.html.jinja
+# Your override (CREATE THIS in your project):
+templates/frontend/base/footer.html.jinja
 ```
 
 The template system searches in order:
 
-1. `templates/app/frontend/` (your overrides)
-2. `templates/vibetuner/frontend/` (scaffolding defaults)
+1. `templates/frontend/` (your project overrides)
+2. `vibetuner/templates/frontend/` (package defaults)
 
 ## Template Structure
 

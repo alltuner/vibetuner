@@ -1,23 +1,23 @@
 # Core Email Templates - DO NOT MODIFY
 
-**⚠️ IMPORTANT**: Scaffolding-managed files. Changes will be lost on updates.
+**⚠️ IMPORTANT**: Package-managed files. Changes will be lost on package updates.
 
 ## How to Override
 
 **NEVER modify files in this directory!** Instead:
 
-1. Copy template to `templates/app/email/`
+1. Copy template to your project's `templates/email/`
 2. Maintain the same directory structure
 3. Your version overrides automatically
 
 ### Example
 
 ```bash
-# Core template (DO NOT EDIT):
-templates/vibetuner/email/default/magic_link.html.jinja
+# Core template (DO NOT EDIT, bundled in vibetuner package):
+vibetuner/templates/email/default/magic_link.html.jinja
 
-# Your override (CREATE THIS):
-templates/app/email/default/magic_link.html.jinja
+# Your override (CREATE THIS in your project):
+templates/email/default/magic_link.html.jinja
 ```
 
 ## Template Structure

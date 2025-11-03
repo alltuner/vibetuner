@@ -29,7 +29,12 @@ def _get_base_paths_for_namespace(
         return frontend_templates
 
     # Default for unknown or None namespace
-    return [app_templates, core_templates]
+    # Only include app_templates if project root has been set
+    paths = []
+    if app_templates is not None:
+        paths.append(app_templates)
+    paths.append(core_templates)
+    return paths
 
 
 def _build_search_paths(
@@ -101,8 +106,8 @@ def render_static_template(
     Args:
         template_name: Base filename without extension (e.g. ``"invoice"``).
         template_path: Root directory or list of directories containing template
-            collections. When a list is provided, searches in order (app overrides
-            come first). Defaults to the library's built‑in path if omitted.
+            collections. When a list is provided, searches in order (project templates
+            override package templates). Defaults to the package's bundled templates.
         namespace: Optional subfolder under *template_path* to confine the
             lookup. Ignored when the directory does not exist.
         context: Variables passed to the template while rendering.

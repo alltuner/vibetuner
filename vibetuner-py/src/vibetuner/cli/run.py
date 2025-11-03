@@ -72,8 +72,9 @@ def dev(
         reload_paths = [
             Path("src/vibetuner"),
             Path("src/app"),
-            Path("templates/vibetuner/frontend"),
-            Path("templates/app/frontend"),
+            Path("templates/frontend"),
+            Path("templates/email"),
+            Path("templates/markdown"),
         ]
 
         server = Granian(
