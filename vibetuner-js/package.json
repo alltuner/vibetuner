@@ -1,5 +1,5 @@
 {
-  "name": "vibetuner",
+  "name": "@alltuner/vibetuner",
   "version": "0.0.0-dev",
   "description": "Blessed JavaScript/frontend build dependencies for Vibetuner projects",
   "keywords": ["tailwindcss", "htmx", "daisyui", "frontend", "build-tools"],

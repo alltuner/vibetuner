@@ -1,4 +1,4 @@
-# vibetuner
+# @alltuner/vibetuner
 
 Blessed JavaScript/frontend build dependencies for Vibetuner projects.
 
@@ -18,9 +18,9 @@ This package bundles all the essential frontend build tools and libraries needed
 ## Installation
 
 ```bash
-bun add vibetuner
+bun add @alltuner/vibetuner
 # or
-npm install vibetuner
+npm install @alltuner/vibetuner
 ```
 
 ## Usage
@@ -30,7 +30,7 @@ This package is typically used as a devDependency in Vibetuner projects to ensur
 ```json
 {
   "devDependencies": {
-    "vibetuner": "^1.0.0"
+    "@alltuner/vibetuner": "^1.0.0"
   }
 }
 ```

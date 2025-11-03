@@ -1,6 +1,6 @@
-# Publishing vibetuner to npm
+# Publishing @alltuner/vibetuner to npm
 
-The `vibetuner` package is automatically published to npm when a git tag matching `js-v*` is pushed.
+The `@alltuner/vibetuner` package is automatically published to npm when a git tag matching `js-v*` is pushed.
 
 ## Publishing a New Version
 
@@ -44,10 +44,10 @@ Examples:
 
 View published versions on npm:
 ```bash
-npm view vibetuner versions
+npm view @alltuner/vibetuner versions
 ```
 
-Or visit: https://www.npmjs.com/package/vibetuner
+Or visit: https://www.npmjs.com/package/@alltuner/vibetuner
 
 ## Manual Publishing (Not Recommended)
 
