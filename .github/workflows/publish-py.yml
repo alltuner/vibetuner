@@ -29,13 +29,12 @@ jobs:
       - name: Update pyproject.toml version
         working-directory: vibetuner-py
         run: |
-          # Use sed to update version in pyproject.toml
-          sed -i 's/^version = .*/version = "${{ steps.version.outputs.version }}"/' pyproject.toml
+          uv version "${{ steps.version.outputs.version }}"
           cat pyproject.toml
 
-      - name: Build package
+      - name: Build and verify package (dry-run)
         working-directory: vibetuner-py
-        run: uv build
+        run: uv publish --dry-run
 
       - name: Publish to PyPI
         working-directory: vibetuner-py

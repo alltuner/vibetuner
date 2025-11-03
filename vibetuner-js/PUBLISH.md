@@ -10,6 +10,7 @@ The `@alltuner/vibetuner` package is automatically published to npm when a git t
    - Major release (breaking changes): `2.0.0`
 
 2. **Create and push a git tag**:
+
    ```bash
    # Example for version 1.0.0
    git tag js-v1.0.0
@@ -26,7 +27,7 @@ The `@alltuner/vibetuner` package is automatically published to npm when a git t
 
 The repository must have an `NPM_TOKEN` secret configured:
 
-1. Generate an npm token at https://www.npmjs.com/settings/YOUR_USERNAME/tokens
+1. Generate an npm token at <https://www.npmjs.com/settings/YOUR_USERNAME/tokens>
 2. Add it as a repository secret named `NPM_TOKEN`
 
 ## Tag Format
@@ -34,6 +35,7 @@ The repository must have an `NPM_TOKEN` secret configured:
 Tags **must** follow the format: `js-v{MAJOR}.{MINOR}.{PATCH}`
 
 Examples:
+
 - ✅ `js-v1.0.0`
 - ✅ `js-v1.2.3`
 - ✅ `js-v2.0.0-beta.1`
@@ -43,11 +45,12 @@ Examples:
 ## Checking Published Versions
 
 View published versions on npm:
+
 ```bash
 npm view @alltuner/vibetuner versions
 ```
 
-Or visit: https://www.npmjs.com/package/@alltuner/vibetuner
+Or visit: <https://www.npmjs.com/package/@alltuner/vibetuner>
 
 ## Manual Publishing (Not Recommended)
 

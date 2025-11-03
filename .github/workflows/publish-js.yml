@@ -30,7 +30,7 @@ jobs:
       - name: Update package.json version
         working-directory: vibetuner-js
         run: |
-          jq '.version = "${{ steps.version.outputs.version }}"' package.json > package.json.tmp
+          jq --arg version "${{ steps.version.outputs.version }}" '.version = $version' package.json > package.json.tmp
           mv package.json.tmp package.json
           cat package.json
 
@@ -38,8 +38,13 @@ jobs:
         working-directory: vibetuner-js
         run: bun install
 
-      - name: Publish to npm
+      - name: Pack package
         working-directory: vibetuner-js
-        run: bun publish --access public
-        env:
-          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: bun pm pack
+
+      - name: Publish to npm with provenance
+        working-directory: vibetuner-js
+        run: |
+          TARBALL=$(ls alltuner-vibetuner-*.tgz)
+          echo "Publishing $TARBALL with provenance"
+          bunx npm publish "./$TARBALL" --provenance --access public

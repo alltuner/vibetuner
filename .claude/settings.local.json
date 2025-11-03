@@ -9,7 +9,8 @@
       "Bash(head:*)",
       "Bash(mkdir:*)",
       "Bash(ruff format:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "WebSearch"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

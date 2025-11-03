@@ -41,4 +41,4 @@ MIT
 
 ## Repository
 
-https://github.com/alltuner/vibetuner
+<https://github.com/alltuner/vibetuner>
