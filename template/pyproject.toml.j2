@@ -7,7 +7,7 @@ readme = "README.md"
 requires-python = ">={{ python_version }}"
 dependencies = [
     # These are the base dependencies of AllTuner's blessed stack
-    "prototuner",
+    "vibetuner>=2.6.1",
     # Below this line you can add your dependencies
 ]
 
@@ -30,9 +30,6 @@ cache-keys = [
     { git = { commit = true, tags = true } },
 ]
 
-[tool.uv.sources]
-prototuner = { git = "https://github.com/alltuner/prototuner" }
-
 [tool.uv-dynamic-versioning]
 fallback-version = "0.0.0"
 
@@ -40,7 +37,7 @@ fallback-version = "0.0.0"
 source = "uv-dynamic-versioning"
 
 [tool.hatch.build.hooks.version]
-path = "src/vibetuner/_version.py"
+path = "src/app/_version.py"
 template = '''
 version = "{version}"
 '''

@@ -132,7 +132,7 @@ COPY --from=frontend-build --chown=app:app /app/assets/statics/js/bundle.js asse
 COPY --chown=app:app src/ src/
 
 # Copy version files from the versioning stage
-COPY --from=python-versioning --chown=app:app --parents /app/src/vibetuner/_version.py /
+COPY --from=python-versioning --chown=app:app --parents /app/src/app/_version.py /
 
 # Copy configuration file
 COPY --chown=app:app .copier-answers.yml ./

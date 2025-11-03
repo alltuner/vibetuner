@@ -1,17 +1,10 @@
 [project]
-name = "scaffolding"
-version = "0.1.1"
+name = "vibetuner-scaffolding"
+version = "0.0.1"
 requires-python = ">=3.10"
 
 [dependency-groups]
 dev = [
-  "prototuner[dev]",
+  "vibetuner[dev]>=2.6.1",
   # Add below this line any dev dependencies you need for development
-  "pysemver>=0.5.0",
 ]
-
-[tool.uv]
-cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true } }]
-
-[tool.uv.sources]
-prototuner = { git = "https://github.com/alltuner/prototuner" }
