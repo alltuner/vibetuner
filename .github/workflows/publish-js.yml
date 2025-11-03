@@ -1,0 +1,50 @@
+name: Publish vibetuner to npm
+
+on:
+  push:
+    tags:
+      - 'js-v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG=${GITHUB_REF#refs/tags/js-v}
+          echo "version=$TAG" >> $GITHUB_OUTPUT
+          echo "Publishing version: $TAG"
+
+      - name: Update package.json version
+        working-directory: vibetuner-js
+        run: |
+          bun run --bun -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = '${{ steps.version.outputs.version }}';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          cat package.json
+
+      - name: Install dependencies
+        working-directory: vibetuner-js
+        run: bun install
+
+      - name: Publish to npm
+        working-directory: vibetuner-js
+        run: bun publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
