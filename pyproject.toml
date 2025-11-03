@@ -2,12 +2,12 @@
 name = "scaffolding"
 version = "0.1.1"
 requires-python = ">=3.10"
-dependencies = []
 
 [dependency-groups]
 dev = [
   "prototuner[dev]",
   # Add below this line any dev dependencies you need for development
+  "pysemver>=0.5.0",
 ]
 
 [tool.uv]

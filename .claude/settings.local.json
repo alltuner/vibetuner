@@ -9,7 +9,11 @@
       "Bash(head:*)",
       "Bash(mkdir:*)",
       "Bash(ruff format:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "WebSearch",
+      "WebFetch(domain:github.blog)",
+      "WebFetch(domain:docs.npmjs.com)",
+      "Bash(just --list:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
