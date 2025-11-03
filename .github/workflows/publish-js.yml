@@ -30,12 +30,8 @@ jobs:
       - name: Update package.json version
         working-directory: vibetuner-js
         run: |
-          bun run --bun -e "
-            const fs = require('fs');
-            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            pkg.version = '${{ steps.version.outputs.version }}';
-            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-          "
+          jq '.version = "${{ steps.version.outputs.version }}"' package.json > package.json.tmp
+          mv package.json.tmp package.json
           cat package.json
 
       - name: Install dependencies
