@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "prototuner": "github:alltuner/prototuner"
+    "vibetuner": "github:alltuner/vibetuner"
   },
   "dependencies": {},
   "scripts": {
