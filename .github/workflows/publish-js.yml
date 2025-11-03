@@ -47,4 +47,4 @@ jobs:
         working-directory: vibetuner-js
         run: bun publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
