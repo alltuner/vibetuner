@@ -1,9 +1,8 @@
 name: Publish vibetuner to npm
 
 on:
-  push:
-    tags:
-      - 'js-v*'
+  release:
+    types: [published]
 
 jobs:
   publish:
@@ -21,10 +20,10 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Extract version from tag
+      - name: Extract version from release
         id: version
         run: |
-          TAG=${GITHUB_REF#refs/tags/js-v}
+          TAG=${GITHUB_REF#refs/tags/v}
           echo "version=$TAG" >> $GITHUB_OUTPUT
           echo "Publishing version: $TAG"
 
