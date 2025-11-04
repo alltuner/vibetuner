@@ -135,16 +135,22 @@ async def email_verify(
     return next or get_homepage_url(request)
 
 
-for provider in get_oauth_providers():
-    router.get(
-        f"/provider/{provider}",
-        response_class=RedirectResponse,
-        name=f"auth_with_{provider}",
-        response_model=None,
-    )(_create_auth_handler(provider))
+def register_oauth_routes() -> None:
+    """Register OAuth provider routes dynamically.
 
-    router.get(
-        f"/login/provider/{provider}",
-        name=f"login_with_{provider}",
-        response_model=None,
-    )(_create_auth_login_handler(provider))
+    This must be called after OAuth providers are registered to ensure
+    routes are created for all configured providers.
+    """
+    for provider in get_oauth_providers():
+        router.get(
+            f"/provider/{provider}",
+            response_class=RedirectResponse,
+            name=f"auth_with_{provider}",
+            response_model=None,
+        )(_create_auth_handler(provider))
+
+        router.get(
+            f"/login/provider/{provider}",
+            name=f"login_with_{provider}",
+            response_model=None,
+        )(_create_auth_login_handler(provider))
