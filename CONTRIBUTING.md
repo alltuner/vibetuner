@@ -2,16 +2,25 @@
 
 Thanks for your interest in Vibetuner! We appreciate you taking the time to explore this project.
 
+## About This Project
+
+Vibetuner was born to meet the needs of [All Tuner Labs](https://alltuner.com) when spawning new projects. It embodies our core beliefs:
+
+- **Simplicity**: Minimal boilerplate, clear conventions
+- **Speed of Iteration**: Fast development cycles, hot reload, minimal friction
+- **Modern Technology Stack**: Latest stable versions, async-first architecture
+- **Good Integration with Coding Assistants**: Well-documented, predictable patterns
+
 ## About Contributions
 
-Vibetuner is currently maintained by All Tuner Labs, S.L. as an internal tool that we've decided to share publicly. While we welcome feedback and are happy to see community interest, please note:
+While we welcome feedback and are happy to see community interest, please note:
 
 - **We may not accept all pull requests** - The project serves specific internal needs and design goals
 - **Response times may vary** - This is one of many projects we maintain
 - **Breaking changes may occur** - We prioritize our internal requirements
 - **No guarantees on feature requests** - We'll consider them, but can't commit to implementing everything
 
-That said, we do appreciate good contributions and will do our best to review them when time allows.
+That said, we do appreciate good contributions that align with our core beliefs (simplicity, speed, modern stack, assistant-friendly) and will do our best to review them when time allows.
 
 ## Ways to Contribute
 
