@@ -1,97 +1,117 @@
 # Vibetuner
 
-**Production-ready FastAPI + MongoDB + HTMX project scaffolding**
+> **Production-ready FastAPI + MongoDB + HTMX project scaffolding in seconds**
 
-Vibetuner is a comprehensive project scaffolding tool that generates modern, full-stack web applications using All Tuner Labs' blessed technology stack. It provides everything you need to build, deploy, and maintain production-ready web applications.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
-## Features
+Vibetuner generates full-stack web applications with authentication, database, frontend, Docker deployment, and CLI tools pre-configured. Built by [All Tuner Labs](https://alltuner.com) for rapid iteration and modern development.
 
-- 🚀 **Complete Stack**: FastAPI, MongoDB (Beanie ODM), HTMX, Tailwind CSS, DaisyUI
-- 🔐 **Built-in Auth**: OAuth providers + passwordless magic links
-- 🎨 **Modern Frontend**: HTMX for reactivity, Tailwind CSS + DaisyUI for styling
-- 📦 **Background Jobs**: Optional Redis + Streaq task queue
-- 🌍 **i18n Ready**: Full internationalization support with babel
-- 🐳 **Docker-first**: Multi-stage builds, dev/prod compose files
-- 🛠️ **Developer Experience**: Hot reload, type checking, formatting, linting
-- 📝 **CLI Tools**: Custom commands via Typer
-- ⚡ **Performance**: Async-first with Granian ASGI server
+## ✨ What You Get
 
-## Quick Start
+```bash
+uvx vibetuner scaffold new my-project
+cd my-project && just dev
+# → Full application running at http://localhost:8000
+```
+
+**In 30 seconds you have:**
+- ✅ FastAPI backend with async support
+- ✅ MongoDB with Beanie ODM
+- ✅ OAuth + magic link authentication
+- ✅ HTMX reactive frontend
+- ✅ Tailwind CSS + DaisyUI styling
+- ✅ Docker dev/prod environments
+- ✅ Background jobs (optional)
+- ✅ i18n support
+- ✅ Hot reload for everything
+
+## 🚀 Quick Start
 
 ### Installation
 
-```bash
-# Using uvx (recommended - no installation needed)
-uvx vibetuner scaffold new my-project
+**No installation needed** - use `uvx`:
 
-# Or install globally
+```bash
+uvx vibetuner scaffold new my-app
+```
+
+Or install globally:
+
+```bash
 uv tool install vibetuner
-vibetuner scaffold new my-project
+vibetuner scaffold new my-app
 ```
 
-### Interactive Setup
-
-The scaffold command will prompt you for:
-- Project name and description
-- Author/company information
-- Python version (3.11-3.14)
-- Supported languages for i18n
-- Optional features (job queue, deployment configs)
-
-### Non-Interactive Mode
+### Your First Project
 
 ```bash
-# Use defaults for quick start
-uvx vibetuner scaffold new my-project --defaults
+# Create project (interactive)
+uvx vibetuner scaffold new my-app
 
-# Override specific values
-uvx vibetuner scaffold new my-project --defaults \
-  --data project_name="My App" \
-  --data author_name="Your Name" \
-  --data python_version="3.13"
+# Or skip questions with defaults
+uvx vibetuner scaffold new my-app --defaults
+
+# Start developing
+cd my-app
+just dev              # Docker mode with hot reload
 ```
 
-## Generated Project Structure
+Visit `http://localhost:8000` - your app is running!
 
-```
-my-project/
-├── src/
-│   ├── vibetuner/          # Core framework (immutable)
-│   │   ├── frontend/      # Web routes, auth, middleware
-│   │   ├── models/        # User, OAuth, core models
-│   │   ├── services/      # Email, storage services
-│   │   ├── tasks/         # Background job infrastructure
-│   │   └── cli/           # CLI framework
-│   └── app/               # Your application code
-│       ├── frontend/      # Your routes
-│       ├── models/        # Your models
-│       ├── services/      # Your services
-│       ├── tasks/         # Your background jobs
-│       └── cli/           # Your CLI commands
-├── templates/
-│   ├── frontend/          # Jinja2 templates
-│   ├── email/             # Email templates
-│   └── markdown/          # Markdown templates
-├── assets/
-│   └── statics/           # CSS, JS, images
-├── locales/               # Translation files
-├── Dockerfile             # Multi-stage Docker build
-├── compose.dev.yml        # Development environment
-├── compose.prod.yml       # Production environment
-└── justfile               # Development commands
-```
+## 🎯 Core Principles
 
-## Development
+**Born from real needs** at [All Tuner Labs](https://alltuner.com) when spawning new projects:
+
+- **Simplicity**: Minimal boilerplate, clear conventions, obvious patterns
+- **Speed**: Sub-second hot reload, one command to start, fast iteration
+- **Modern Stack**: Latest stable versions, async-first, production-tested
+- **Assistant-Friendly**: Works great with Claude, Cursor, and other coding AI
+
+## 📦 Tech Stack
+
+### Backend
+- **FastAPI** - Modern async web framework
+- **MongoDB** - Document database with Beanie ODM
+- **Granian** - High-performance ASGI server
+- **Redis** - Caching and task queue (optional)
+- **Streaq** - Background job processing (optional)
+
+### Frontend
+- **HTMX** - Dynamic HTML without complex JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **DaisyUI** - Beautiful Tailwind components
+- **Jinja2** - Template engine with i18n
+
+### DevOps
+- **Docker** - Multi-stage builds for dev/prod
+- **uv** - Fast Python package management
+- **bun** - Fast JavaScript tooling
+- **just** - Command runner
+
+### Why These Choices?
+
+**FastAPI + MongoDB**: Async-first, flexible schema, fast iteration, great for rapid prototyping that scales to production.
+
+**HTMX over React/Vue**: Simplicity wins. Server-rendered HTML with sprinkles of interactivity. Less complexity, faster development, easier to reason about.
+
+**Tailwind + DaisyUI**: Utility-first CSS is fast once you learn it. DaisyUI provides components without JavaScript bloat.
+
+**Docker-first**: Consistent environments, easy deployment, no "works on my machine" problems.
+
+**uv + bun**: Speed matters. Both are order-of-magnitude faster than pip/npm. Fast lockfiles, fast installs, fast everything.
+
+**Beanie ODM**: Pydantic models are your database models. Type-safe, validated, async. No impedance mismatch.
+
+## 💻 Development
 
 ### Local Development
 
 ```bash
-cd my-project
-
-# Terminal 1: Frontend asset building
+# Terminal 1: Frontend assets (auto-rebuild on changes)
 bun dev
 
-# Terminal 2: Backend server with hot reload
+# Terminal 2: Backend server (auto-reload on changes)
 just local-dev
 ```
 
@@ -105,85 +125,64 @@ just worker-dev       # Background worker (if enabled)
 ### Common Commands
 
 ```bash
-# Dependencies
-just sync             # Sync Python + JS dependencies
-uv add package        # Add Python package
-bun add package       # Add JS package
-
-# Code Quality
-ruff format .         # Format code
-ruff check --fix .    # Fix linting issues
-just format           # Format all (Python + templates)
-
-# Localization
-just extract-translations   # Extract i18n strings
-just compile-locales        # Compile translations
-
-# Version & Release
-just bump-patch      # Bump patch version
-just bump-minor      # Bump minor version
-just pr              # Create pull request
+just sync             # Sync all dependencies
+just format           # Format code
+just build-prod       # Test production build
 ```
 
-## Tech Stack
+## 🏗️ Project Structure
 
-### Backend
-- **FastAPI** (0.121+): Modern, fast web framework
-- **MongoDB** with **Beanie ODM**: Document database with Pydantic models
-- **Granian**: High-performance ASGI server
-- **Redis** (optional): Caching and task queue backend
-- **Streaq** (optional): Background job processing
+Generated projects separate framework code from your code:
 
-### Frontend
-- **HTMX** (2.0+): Dynamic HTML without complex JavaScript
-- **Tailwind CSS** (4.1+): Utility-first CSS framework
-- **DaisyUI** (5.4+): Beautiful Tailwind components
-- **Jinja2**: Template engine with i18n support
+```
+my-app/
+├── src/vibetuner/          # Core framework (immutable)
+│   ├── frontend/           # FastAPI app, auth, middleware
+│   ├── models/             # User, OAuth models
+│   ├── services/           # Email, storage services
+│   └── cli/                # CLI framework
+├── src/app/                # Your code (edit freely)
+│   ├── frontend/routes/    # Your HTTP routes
+│   ├── models/             # Your database models
+│   ├── services/           # Your business logic
+│   └── tasks/              # Your background jobs
+├── templates/              # Jinja2 templates
+├── assets/                 # Static files
+└── Dockerfile              # Production deployment
+```
 
-### Developer Tools
-- **uv**: Fast Python package management
-- **bun**: Fast JavaScript package management
-- **Ruff**: Fast Python linter and formatter
-- **djlint**: Template linter and formatter
-- **just**: Command runner (like make, but better)
-- **Typer**: CLI framework
+**Core framework** handles authentication, database, email, etc.
+**Your code** focuses on business logic.
 
-## Authentication
+## 🔐 Authentication
 
-Built-in authentication supports:
+Built-in authentication with zero config:
 
-- **OAuth Providers**: Google, GitHub, and more via Authlib
+- **OAuth**: Google, GitHub, and more via Authlib
 - **Magic Links**: Passwordless email authentication
-- **Session Management**: Secure cookie-based sessions
-- **User Models**: Extensible user and OAuth account models
+- **Sessions**: Secure cookie-based sessions
+- **Extensible**: Add providers or custom auth easily
 
-## Background Jobs (Optional)
+## 🌍 Internationalization
 
-When enabled, includes:
+Full i18n support:
 
-- **Streaq**: Modern async task queue for Python
-- **Redis**: Fast in-memory storage
-- **Web UI**: Built-in task monitoring dashboard
-- **Retry Logic**: Automatic retries with backoff
-- **Task Scheduling**: Cron-like task scheduling
+```bash
+just extract-translations    # Extract strings
+just compile-locales         # Compile translations
+```
 
-## Internationalization
+```jinja
+{% trans %}Welcome to {{ app_name }}{% endtrans %}
+```
 
-Full i18n support with:
-
-- **Babel**: Industry-standard i18n toolkit
-- **Message Extraction**: Automatic string extraction
-- **Template Support**: `{% trans %}` tags in Jinja2
-- **Language Selection**: Automatic language detection
-- **Fallbacks**: Graceful fallback to default language
-
-## Deployment
+## 🐳 Deployment
 
 ### Docker Production
 
 ```bash
-just test-build-prod    # Test production build locally
-just release            # Build and push to registry
+just test-build-prod    # Test locally
+just release            # Build and push
 ```
 
 ### Configuration
@@ -191,77 +190,62 @@ just release            # Build and push to registry
 Environment variables via `.env`:
 
 ```bash
-# Database
 DATABASE_URL=mongodb://localhost:27017/mydb
-
-# Redis (if job queue enabled)
-REDIS_URL=redis://localhost:6379
-
-# Security
-SECRET_KEY=your-secret-key-here
-
-# AWS (for email/storage)
-AWS_ACCESS_KEY_ID=your-key
-AWS_SECRET_ACCESS_KEY=your-secret
-AWS_REGION=us-east-1
-
-# OAuth (optional)
-GOOGLE_CLIENT_ID=your-client-id
-GOOGLE_CLIENT_SECRET=your-secret
+SECRET_KEY=your-secret-key
 ```
 
-## Packages
+## 📚 Documentation
+
+- **[Development Guide](./DEVELOPMENT.md)** - For contributing to Vibetuner
+- **[Contributing](./CONTRIBUTING.md)** - Contribution guidelines
+- **[AGENTS.md](./AGENTS.md)** - Detailed architecture and workflows
+
+## 📦 Packages
 
 Vibetuner consists of three packages:
 
-1. **vibetuner** (Python): Core framework and blessed dependencies
-2. **@alltuner/vibetuner** (JavaScript): Frontend build dependencies
-3. **scaffolding template**: Copier template for project generation
+| Package | Description | Published |
+|---------|-------------|-----------|
+| [`vibetuner`](https://pypi.org/project/vibetuner/) | Python framework | PyPI |
+| [`@alltuner/vibetuner`](https://www.npmjs.com/package/@alltuner/vibetuner) | Frontend dependencies | npm |
+| Scaffolding template | Copier template | GitHub |
 
-All packages are version-locked and tested together to ensure compatibility.
+All version-locked and tested together.
 
-## Philosophy
+## 🔄 Updating Projects
 
-Vibetuner is designed around these principles:
-
-- **Convention over Configuration**: Sensible defaults, minimal boilerplate
-- **Batteries Included**: Everything you need out of the box
-- **Separation of Concerns**: Core framework vs application code
-- **Developer Experience**: Fast iteration, great tooling
-- **Production Ready**: Docker, health checks, monitoring
-- **Modern Stack**: Latest stable versions, async-first
-
-## Updating Projects
-
-Update an existing project to the latest template version:
+Update existing projects to the latest template:
 
 ```bash
-cd my-project
+cd my-app
 vibetuner scaffold update
-
-# Or from any directory
-vibetuner scaffold update /path/to/my-project
 ```
 
-## Contributing
+## 🤝 Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+We welcome contributions that align with our core principles! See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-## License
+Built for All Tuner Labs' internal needs, shared publicly because it might help you too.
 
-MIT License - see [LICENSE](./LICENSE) for details.
+## 📄 License
 
-Copyright (c) 2025 All Tuner Labs, S.L.
+MIT License - Copyright (c) 2025 All Tuner Labs, S.L.
 
-## Links
+See [LICENSE](./LICENSE) for details.
 
-- **Documentation**: https://github.com/alltuner/vibetuner
+## 🔗 Links
+
+- **Repository**: https://github.com/alltuner/vibetuner
 - **Issues**: https://github.com/alltuner/vibetuner/issues
 - **PyPI**: https://pypi.org/project/vibetuner/
 - **npm**: https://www.npmjs.com/package/@alltuner/vibetuner
 
-## Credits
+## 👨‍💻 Credits
 
 Created and maintained by [All Tuner Labs, S.L.](https://alltuner.com)
 
 Main contributor: David Poblador i Garcia ([@davidpoblador](https://github.com/davidpoblador) | [davidpoblador.com](https://davidpoblador.com/))
+
+---
+
+**Made with ❤️ for rapid prototyping and production deployments**
