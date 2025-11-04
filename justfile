@@ -68,7 +68,7 @@ clean:
 docs-serve:
     #!/usr/bin/env bash
     set -euo pipefail
-    cd vibetuner-py && uv sync --group docs
+    cd vibetuner-py && uv sync --only-group docs
     cd ..
     vibetuner-py/.venv/bin/mkdocs serve
 
@@ -77,6 +77,6 @@ docs-serve:
 docs-build:
     #!/usr/bin/env bash
     set -euo pipefail
-    cd vibetuner-py && uv sync --group docs
+    cd vibetuner-py && uv sync --only-group docs
     cd ..
     vibetuner-py/.venv/bin/mkdocs build --site-dir _site
