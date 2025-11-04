@@ -13,7 +13,9 @@
       "WebSearch",
       "WebFetch(domain:github.blog)",
       "WebFetch(domain:docs.npmjs.com)",
-      "Bash(just --list:*)"
+      "Bash(just --list:*)",
+      "Bash(git tag:*)",
+      "Bash(git describe:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
