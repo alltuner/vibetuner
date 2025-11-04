@@ -66,11 +66,9 @@ clean:
 # Serve documentation locally with live reload
 [group('Documentation')]
 docs-serve:
-    uv sync --only-group docs
-    uv run mkdocs serve
+    uv run --only-group docs mkdocs serve
 
 # Build documentation
 [group('Documentation')]
 docs-build:
-    uv sync --only-group docs
-    uv run mkdocs build --site-dir _site
+    uv run --only-group docs mkdocs build --site-dir _site
