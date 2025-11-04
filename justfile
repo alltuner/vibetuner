@@ -21,6 +21,30 @@ sync-js:
 [group('Dependencies')]
 sync: sync-py sync-js
 
+# Create a GitHub release from the latest tag
+[group('gitflow')]
+gh-release:
+    #!/usr/bin/env bash
+    LATEST_TAG=$(git describe --tags --abbrev=0 --match "v*" 2>/dev/null)
+    if [ -z "$LATEST_TAG" ]; then
+        echo "❌ No version tags found."
+        exit 1
+    fi
+
+    echo "Creating GitHub release for tag: $LATEST_TAG"
+
+    # Generate release notes from commits since previous tag
+    PREV_TAG=$(git describe --tags --abbrev=0 "$LATEST_TAG^" 2>/dev/null || echo "")
+    if [ -z "$PREV_TAG" ]; then
+        NOTES=$(git log --pretty=format:'- %s' "$LATEST_TAG")
+    else
+        NOTES=$(git log --pretty=format:'- %s' "$PREV_TAG..$LATEST_TAG")
+    fi
+
+    gh release create "$LATEST_TAG" \
+        --title "$LATEST_TAG" \
+        --notes "$NOTES"
+
 # Test scaffold command locally
 [group('Scaffolding')]
 test-scaffold:
@@ -56,10 +80,3 @@ docs-build:
     cd vibetuner-py && uv sync --group docs
     cd ..
     vibetuner-py/.venv/bin/mkdocs build --site-dir _site
-
-# Deploy documentation (triggers automatically on tag push, use this for manual testing)
-[group('Documentation')]
-docs-deploy:
-    @echo "Documentation is deployed automatically on tag push to GitHub Pages"
-    @echo "For manual deployment, push a tag: git tag v0.0.x && git push origin v0.0.x"
-    @echo "Or manually trigger the workflow at: https://github.com/alltuner/vibetuner/actions/workflows/docs.yml"
