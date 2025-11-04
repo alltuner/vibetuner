@@ -43,13 +43,22 @@
   --md-code-fg-color: var(--white-smoke);
 }
 
-/* Custom link colors */
-.md-content a {
+/* Custom link colors for light mode */
+[data-md-color-scheme="default"] .md-content a {
   color: var(--wine);
 }
 
-.md-content a:hover {
+[data-md-color-scheme="default"] .md-content a:hover {
   color: #7a2f45;
+}
+
+/* Custom link colors for dark mode - lighter for better readability */
+[data-md-color-scheme="slate"] .md-content a {
+  color: #e89bb3;
+}
+
+[data-md-color-scheme="slate"] .md-content a:hover {
+  color: #f5b6ca;
 }
 
 /* Custom header logo sizing */
