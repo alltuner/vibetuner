@@ -1,96 +1,28 @@
 # Vibetuner Scaffolding Project Management
 # Commands for version management and releases
 
+import 'copier-template/base.justfile'
+
 # List all available commands
 default:
     @just --list
 
 # Sync Python dependencies in vibetuner-py
+[group('Dependencies')]
 sync-py:
     cd vibetuner-py && uv sync
 
 # Sync JavaScript dependencies in vibetuner-js
+[group('Dependencies')]
 sync-js:
     cd vibetuner-js && bun install
 
-# Sync all dependencies
+# Sync all dependencies (scaffolding packages)
+[group('Dependencies')]
 sync: sync-py sync-js
 
-# Format Python code
-format-py:
-    cd vibetuner-py && ruff format .
-
-# Check Python code
-check-py:
-    cd vibetuner-py && ruff check .
-
-# Format and check all code
-format: format-py check-py
-
-# Bump patch version (0.0.1 -> 0.0.2)
-bump-patch:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    cd vibetuner-py
-    NEW_VERSION=$(uv run uv-bump patch)
-    echo "Bumped to $NEW_VERSION"
-    git add pyproject.toml
-    git commit -m "Bump version to $NEW_VERSION"
-    git tag "v$NEW_VERSION"
-    echo "Created tag v$NEW_VERSION"
-
-# Bump minor version (0.0.1 -> 0.1.0)
-bump-minor:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    cd vibetuner-py
-    NEW_VERSION=$(uv run uv-bump minor)
-    echo "Bumped to $NEW_VERSION"
-    git add pyproject.toml
-    git commit -m "Bump version to $NEW_VERSION"
-    git tag "v$NEW_VERSION"
-    echo "Created tag v$NEW_VERSION"
-
-# Bump major version (0.0.1 -> 1.0.0)
-bump-major:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    cd vibetuner-py
-    NEW_VERSION=$(uv run uv-bump major)
-    echo "Bumped to $NEW_VERSION"
-    git add pyproject.toml
-    git commit -m "Bump version to $NEW_VERSION"
-    git tag "v$NEW_VERSION"
-    echo "Created tag v$NEW_VERSION"
-
-# Push tags to remote
-push-tags:
-    git push origin --tags
-
-# Create GitHub pull request
-pr:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    BRANCH=$(git branch --show-current)
-    if [ "$BRANCH" = "main" ]; then
-        echo "Error: Cannot create PR from main branch"
-        exit 1
-    fi
-
-    # Get commit messages since branching from main
-    COMMITS=$(git log main..HEAD --pretty=format:"- %s")
-
-    # Create PR body
-    printf -v BODY "## Changes\n\n%s\n\nGenerated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>" "$COMMITS"
-
-    gh pr create --fill --body "$BODY" --base main
-
-# Start a new feature branch
-start-branch name:
-    git checkout -b {{name}}
-    echo "Created and switched to branch: {{name}}"
-
 # Test scaffold command locally
+[group('Scaffolding')]
 test-scaffold:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -100,6 +32,7 @@ test-scaffold:
     echo "To test: cd /tmp/vibetuner-test && just dev"
 
 # Clean test artifacts
+[group('Scaffolding')]
 clean:
     rm -rf /tmp/vibetuner-test
     rm -rf vibetuner-py/dist
@@ -107,6 +40,7 @@ clean:
     rm -rf _site
 
 # Serve documentation locally with live reload
+[group('Documentation')]
 docs-serve:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -115,6 +49,7 @@ docs-serve:
     vibetuner-py/.venv/bin/mkdocs serve
 
 # Build documentation
+[group('Documentation')]
 docs-build:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -123,6 +58,7 @@ docs-build:
     vibetuner-py/.venv/bin/mkdocs build --site-dir _site
 
 # Deploy documentation (triggers automatically on tag push, use this for manual testing)
+[group('Documentation')]
 docs-deploy:
     @echo "Documentation is deployed automatically on tag push to GitHub Pages"
     @echo "For manual deployment, push a tag: git tag v0.0.x && git push origin v0.0.x"
