@@ -44,19 +44,18 @@ GITHUB_CLIENT_SECRET=your-client-secret
 ### Adding More Providers
 
 Vibetuner uses [Authlib](https://authlib.org/) which supports many OAuth providers.
-
 Edit `src/vibetuner/frontend/auth.py` to add providers:
 
 ```python
 # Example: Adding Discord
 oauth.register(
-    name="discord",
-    client_id=settings.DISCORD_CLIENT_ID,
-    client_secret=settings.DISCORD_CLIENT_SECRET,
-    authorize_url="https://discord.com/api/oauth2/authorize",
-    access_token_url="https://discord.com/api/oauth2/token",
-    userinfo_url="https://discord.com/api/users/@me",
-    client_kwargs={"scope": "identify email"},
+name="discord",
+client_id=settings.DISCORD_CLIENT_ID,
+client_secret=settings.DISCORD_CLIENT_SECRET,
+authorize_url="https://discord.com/api/oauth2/authorize",
+access_token_url="https://discord.com/api/oauth2/token",
+userinfo_url="https://discord.com/api/users/@me",
+client_kwargs={"scope": "identify email"},
 )
 ```
 
@@ -92,12 +91,12 @@ Edit `templates/emails/magic_link.html.jinja`:
 ```html
 <!DOCTYPE html>
 <html>
-<body>
-  <h1>Sign in to {{ app_name }}</h1>
-  <p>Click the link below to sign in:</p>
-  <a href="{{ magic_link }}">Sign In</a>
-  <p>This link expires in 15 minutes.</p>
-</body>
+    <body>
+        <h1>Sign in to {{ app_name }}</h1>
+        <p>Click the link below to sign in:</p>
+        <a href="{{ magic_link }}">Sign In</a>
+        <p>This link expires in 15 minutes.</p>
+    </body>
 </html>
 ```
 
@@ -108,13 +107,12 @@ The built-in User model supports both OAuth and magic link authentication:
 ```python
 # src/vibetuner/models/user.py
 class User(Document):
-    email: str
-    name: str | None
-    avatar_url: str | None
-    oauth_accounts: list[OAuthAccount] = []
-
-    class Settings:
-        name = "users"
+email: str
+name: str | None
+avatar_url: str | None
+oauth_accounts: list[OAuthAccount] = []
+class Settings:
+name = "users"
 ```
 
 ### Extending the User Model
@@ -125,13 +123,11 @@ Create your own model that extends the base:
 # src/app/models/user.py
 from vibetuner.models import User as BaseUser
 from pydantic import Field
-
 class User(BaseUser):
-    bio: str | None = None
-    preferences: dict = Field(default_factory=dict)
-
-    class Settings:
-        name = "users"
+bio: str | None = None
+preferences: dict = Field(default_factory=dict)
+class Settings:
+name = "users"
 ```
 
 ## Session Management
@@ -151,9 +147,9 @@ Edit `src/vibetuner/config.py`:
 
 ```python
 class Settings(BaseSettings):
-    SESSION_MAX_AGE: int = 60 * 60 * 24 * 7  # 7 days
-    SESSION_COOKIE_SECURE: bool = True  # HTTPS only
-    SESSION_COOKIE_SAMESITE: str = "lax"
+SESSION_MAX_AGE: int = 60 * 60 * 24 * 7  # 7 days
+SESSION_COOKIE_SECURE: bool = True  # HTTPS only
+SESSION_COOKIE_SAMESITE: str = "lax"
 ```
 
 ## Protecting Routes
@@ -164,14 +160,13 @@ Use the `@require_auth` decorator:
 
 ```python
 from vibetuner.frontend.auth import require_auth
-
 @router.get("/dashboard")
 @require_auth
 async def dashboard(request: Request):
-    user = request.state.user
-    return templates.TemplateResponse("dashboard.html.jinja", {
-        "user": user
-    })
+user = request.state.user
+return templates.TemplateResponse("dashboard.html.jinja", {
+"user": user
+})
 ```
 
 ### Optional Authentication
@@ -181,10 +176,10 @@ Access user if authenticated, but don't require it:
 ```python
 @router.get("/")
 async def home(request: Request):
-    user = getattr(request.state, "user", None)
-    return templates.TemplateResponse("home.html.jinja", {
-        "user": user
-    })
+user = getattr(request.state, "user", None)
+return templates.TemplateResponse("home.html.jinja", {
+"user": user
+})
 ```
 
 ### Template Context
@@ -193,11 +188,11 @@ User is automatically available in templates:
 
 ```html
 {% if user %}
-  <p>Welcome, {{ user.name }}!</p>
-  <a href="/auth/logout">Logout</a>
+    <p>Welcome, {{ user.name }}!</p>
+    <a href="/auth/logout">Logout</a>
 {% else %}
-  <a href="/auth/google">Sign in with Google</a>
-  <a href="/auth/magic-link">Sign in with Email</a>
+    <a href="/auth/google">Sign in with Google</a>
+    <a href="/auth/magic-link">Sign in with Email</a>
 {% endif %}
 ```
 
@@ -210,10 +205,10 @@ Customize what happens after successful authentication:
 ```python
 # src/app/frontend/hooks.py
 async def on_user_login(user: User, request: Request):
-    # Log login event
-    # Update last_login timestamp
-    # Send welcome email
-    pass
+# Log login event
+# Update last_login timestamp
+# Send welcome email
+pass
 ```
 
 Register in `src/app/frontend/__init__.py`:
@@ -221,7 +216,6 @@ Register in `src/app/frontend/__init__.py`:
 ```python
 from vibetuner.frontend import events
 from app.frontend.hooks import on_user_login
-
 events.register("user_login", on_user_login)
 ```
 
@@ -256,7 +250,7 @@ SECRET_KEY=your-generated-secret-key
 
 Use exact URLs in OAuth provider settings:
 
-```
+```text
 Development: http://localhost:8000/auth/google/callback
 Production: https://example.com/auth/google/callback
 ```
@@ -267,14 +261,12 @@ Consider adding rate limiting for authentication endpoints:
 
 ```python
 from slowapi import Limiter
-
 limiter = Limiter(key_func=lambda: request.client.host)
-
 @router.post("/auth/magic-link")
 @limiter.limit("5/minute")
 async def request_magic_link(email: str):
-    # Send magic link
-    pass
+# Send magic link
+pass
 ```
 
 ## Troubleshooting
@@ -282,6 +274,7 @@ async def request_magic_link(email: str):
 ### OAuth Redirect Mismatch
 
 Ensure callback URLs exactly match in:
+
 1. OAuth provider settings
 2. Your `.env` configuration
 3. The URL used in production
@@ -289,6 +282,7 @@ Ensure callback URLs exactly match in:
 ### Magic Links Not Working
 
 Check:
+
 1. SMTP settings are correct
 2. Email is being sent (check logs)
 3. Token hasn't expired (15 minutes default)

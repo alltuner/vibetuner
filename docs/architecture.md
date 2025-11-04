@@ -6,16 +6,18 @@ Understanding Vibetuner's system design and structure.
 
 Vibetuner generates full-stack web applications with clear separation between framework code and application code.
 
-```
-┌─────────────────────────────────────────────┐
-│           Your Application                   │
-│  (src/app/ - Routes, Models, Services)      │
-├─────────────────────────────────────────────┤
-│          Vibetuner Framework                 │
-│   (src/vibetuner/ - Auth, DB, Core)        │
-├─────────────────────────────────────────────┤
-│     FastAPI + MongoDB + HTMX + Redis        │
-└─────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+A["Your Application
+<br />
+(src/app/ — routes, models, services)"]
+B["Vibetuner Framework
+<br />
+(src/vibetuner/ — authentication, database, core services)"]
+C["Platform Stack
+<br />
+FastAPI · MongoDB · HTMX · Redis"]
+A --> B --> C
 ```
 
 ## Three-Package Architecture
@@ -25,22 +27,18 @@ Vibetuner consists of three components:
 ### 1. Scaffolding Template
 
 **Location**: Root repository (`copier.yml`, `copier-template/`)
-
 The Copier-based template that generates new projects:
 
 - Interactive project setup
 - Configurable features (OAuth, background jobs, etc.)
 - Generates complete project structure
 - Updates existing projects
-
 **Command**: `uvx vibetuner scaffold new my-app`
-
 **Note**: A `template/` symlink exists for backwards compatibility.
 
 ### 2. Python Package (`vibetuner`)
 
 **Location**: `vibetuner-py/`
-
 Published to PyPI, provides:
 
 - Core framework code
@@ -49,69 +47,63 @@ Published to PyPI, provides:
 - Email and storage services
 - CLI commands
 - Blessed dependency stack
-
 **Install**: `uv add vibetuner`
 
 ### 3. JavaScript Package (`@alltuner/vibetuner`)
 
 **Location**: `vibetuner-js/`
-
 Published to npm, provides:
 
 - Frontend build dependencies (Tailwind, esbuild, etc.)
 - Version-locked with Python package
 - No runtime dependencies
-
 **Install**: `bun add @alltuner/vibetuner`
 
 ## Generated Project Structure
 
+```mermaid
+flowchart TD
+classDef large font-size:16px,fill:#f8fafc,stroke:#94a3b8,stroke-width:2px;
+classDef medium font-size:14px,fill:#ffffff,stroke:#cbd5f5,stroke-width:1.5px;
+root["my-app/"]:::large
+src["src/"]:::large
+vib["src/vibetuner/\n(immutable framework)"]:::medium
+app["src/app/\n(your code)"]:::medium
+templates["templates/"]:::large
+templates_nodes["base/\nfrontend/\nemails/"]:::medium
+assets["assets/"]:::large
+assets_nodes["config.css\nconfig.js\nstatics/"]:::medium
+translations["translations/\n{locale}/LC_MESSAGES/"]:::large
+ops["Operational files"]:::large
+ops_nodes["Dockerfile\ncompose.dev.yml\ncompose.prod.yml\npyproject.toml\npackage.json\njustfile\n.env"]:::medium
+root --> src --> vib
+src --> app
+root --> templates --> templates_nodes
+root --> assets --> assets_nodes
+root --> translations
+root --> ops --> ops_nodes
 ```
-my-app/
-├── src/
-│   ├── vibetuner/              # Framework code (immutable)
-│   │   ├── frontend/           # FastAPI app, middleware, auth
-│   │   ├── models/             # User, OAuth models
-│   │   ├── services/           # Email, storage, external APIs
-│   │   ├── cli/                # Command-line interface
-│   │   ├── config.py           # Settings management
-│   │   └── mongo.py            # Database connection
-│   │
-│   └── app/                    # Your code (edit freely)
-│       ├── frontend/
-│       │   ├── __init__.py     # FastAPI app initialization
-│       │   └── routes/         # Your HTTP endpoints
-│       ├── models/             # Your database models
-│       ├── services/           # Your business logic
-│       └── tasks/              # Background jobs (optional)
-│
-├── templates/                  # Jinja2 templates
-│   ├── base/                   # Base layouts
-│   ├── frontend/               # Page templates
-│   └── emails/                 # Email templates
-│
-├── assets/                     # Static assets
-│   ├── config.css              # Tailwind CSS config
-│   ├── config.js               # JavaScript entry
-│   └── statics/                # Compiled output
-│
-├── translations/               # i18n files
-│   └── {locale}/LC_MESSAGES/
-│
-├── Dockerfile                  # Multi-stage production build
-├── compose.dev.yml             # Docker Compose for dev
-├── compose.prod.yml            # Docker Compose for prod
-├── pyproject.toml              # Python dependencies
-├── package.json                # JavaScript dependencies
-├── justfile                    # Command runner
-└── .env                        # Environment variables
-```
+
+Key directories:
+
+- `src/vibetuner/`: framework code you should not edit (auth, database, CLI,
+shared services).
+- `src/app/`: your application space—add routes, models, services, and optional
+background jobs here.
+- `templates/`: Jinja2 templates divided into base layouts, frontend pages, and
+email templates.
+- `assets/`: Tailwind and JavaScript entry points plus compiled bundles
+(`statics/`).
+- `translations/`: Babel-compatible locale directories (`LC_MESSAGES/messages.po`).
+- Operational files: container configs, dependency manifests, and tooling
+(`Dockerfile`, `compose.*.yml`, `pyproject.toml`, `package.json`, `justfile`,
+`.env`).
 
 ## Request Flow
 
 ### 1. HTTP Request
 
-```
+```text
 Client → Nginx/Caddy → FastAPI (Granian) → Route Handler
 ```
 
@@ -121,27 +113,27 @@ Client → Nginx/Caddy → FastAPI (Granian) → Route Handler
 # src/app/frontend/routes/blog.py
 @router.get("/blog/{post_id}")
 async def view_post(post_id: str):
-    post = await Post.get(post_id)
-    return templates.TemplateResponse("blog/post.html.jinja", {
-        "post": post
-    })
+post = await Post.get(post_id)
+return templates.TemplateResponse("blog/post.html.jinja", {
+"post": post
+})
 ```
 
 ### 3. Database Query
 
-```
+```text
 Route → Beanie ODM → Motor (async) → MongoDB
 ```
 
 ### 4. Template Rendering
 
-```
+```text
 Jinja2 Template → HTML with HTMX → Client
 ```
 
 ### 5. HTMX Interaction
 
-```
+```text
 User Action → HTMX Request → FastAPI → Partial HTML → Update DOM
 ```
 
@@ -150,17 +142,14 @@ User Action → HTMX Request → FastAPI → Partial HTML → Update DOM
 ### FastAPI Application
 
 **Location**: `src/app/frontend/__init__.py`
-
 Application initialization and middleware stack:
 
 ```python
 from fastapi import FastAPI
 from vibetuner.frontend.middleware import setup_middleware
 from app.frontend.routes import blog, api
-
 app = FastAPI()
 setup_middleware(app)  # Auth, sessions, i18n, static files
-
 app.include_router(blog.router)
 app.include_router(api.router)
 ```
@@ -168,7 +157,6 @@ app.include_router(api.router)
 ### Database Layer
 
 **Location**: `src/vibetuner/mongo.py`
-
 MongoDB connection and model registration:
 
 ```python
@@ -176,22 +164,20 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 from vibetuner.models import User
 from app.models import Post, Comment
-
 async def init_db():
-    client = AsyncIOMotorClient(settings.DATABASE_URL)
-    await init_beanie(
-        database=client.get_default_database(),
-        document_models=[User, Post, Comment]
-    )
+client = AsyncIOMotorClient(settings.DATABASE_URL)
+await init_beanie(
+database=client.get_default_database(),
+document_models=[User, Post, Comment]
+)
 ```
 
 ### Authentication System
 
 **Location**: `src/vibetuner/frontend/auth.py`
-
 Dual authentication with OAuth and magic links:
 
-```
+```text
 OAuth Flow:
 1. User clicks "Sign in with Google"
 2. Redirect to Google OAuth
@@ -199,7 +185,6 @@ OAuth Flow:
 4. Exchange code for user info
 5. Create/update user in database
 6. Create session
-
 Magic Link Flow:
 1. User enters email
 2. Generate secure token
@@ -215,8 +200,8 @@ HTTP-only, secure cookies with server-side validation:
 
 ```python
 session_data = {
-    "user_id": str(user.id),
-    "created_at": datetime.utcnow()
+"user_id": str(user.id),
+"created_at": datetime.utcnow()
 }
 session_id = secrets.token_urlsafe(32)
 await redis.setex(f"session:{session_id}", SESSION_MAX_AGE, json.dumps(session_data))
@@ -225,15 +210,13 @@ await redis.setex(f"session:{session_id}", SESSION_MAX_AGE, json.dumps(session_d
 ### Background Jobs
 
 **Location**: `src/app/tasks/`
-
 Optional Redis-based background processing:
 
 ```python
 # Define task
 async def send_email(user_id: str, template: str):
-    user = await User.get(user_id)
-    await email_service.send(user.email, template)
-
+user = await User.get(user_id)
+await email_service.send(user.email, template)
 # Queue task
 from streaq import queue
 await queue(send_email, user_id="123", template="welcome")
@@ -250,10 +233,10 @@ docker compose up worker  # Production
 
 ### Template Hierarchy
 
-```
+```text
 base/skeleton.html.jinja         # Base layout
 └── base/auth.html.jinja         # Requires authentication
-    └── dashboard.html.jinja     # Specific page
+└── dashboard.html.jinja     # Specific page
 ```
 
 ### HTMX Patterns
@@ -262,12 +245,7 @@ base/skeleton.html.jinja         # Base layout
 
 ```html
 <div id="posts">
-  <button
-    hx-get="/posts?page=2"
-    hx-target="#posts"
-    hx-swap="beforeend">
-    Load More
-  </button>
+    <button hx-get="/posts?page=2" hx-target="#posts" hx-swap="beforeend">Load More</button>
 </div>
 ```
 
@@ -275,8 +253,8 @@ base/skeleton.html.jinja         # Base layout
 
 ```html
 <form hx-post="/comments" hx-target="#comments" hx-swap="afterbegin">
-  <textarea name="content"></textarea>
-  <button type="submit">Post Comment</button>
+    <textarea name="content"></textarea>
+    <button type="submit">Post Comment</button>
 </form>
 ```
 
@@ -285,10 +263,10 @@ base/skeleton.html.jinja         # Base layout
 ```python
 @router.post("/comments")
 async def create_comment(content: str):
-    comment = await Comment(content=content).insert()
-    return templates.TemplateResponse("comments/item.html.jinja", {
-        "comment": comment
-    })
+comment = await Comment(content=content).insert()
+return templates.TemplateResponse("comments/item.html.jinja", {
+"comment": comment
+})
 ```
 
 ### Asset Pipeline
@@ -300,9 +278,9 @@ bun dev  # Watch mode
 ```
 
 Compiles:
+
 - `assets/config.css` → `assets/statics/css/bundle.css`
 - `assets/config.js` → `assets/statics/js/bundle.js`
-
 **Production**:
 
 ```bash
@@ -314,23 +292,19 @@ Minifies and optimizes for production.
 ## Configuration Management
 
 **Location**: `src/vibetuner/config.py`
-
 Pydantic Settings with environment variable support:
 
 ```python
 class Settings(BaseSettings):
-    # Automatic from .env or environment
-    DATABASE_URL: str
-    SECRET_KEY: str
-    DEBUG: bool = False
-
-    # OAuth
-    GOOGLE_CLIENT_ID: str | None = None
-    GOOGLE_CLIENT_SECRET: str | None = None
-
-    class Config:
-        env_file = ".env"
-
+# Automatic from .env or environment
+DATABASE_URL: str
+SECRET_KEY: str
+DEBUG: bool = False
+# OAuth
+GOOGLE_CLIENT_ID: str | None = None
+GOOGLE_CLIENT_SECRET: str | None = None
+class Config:
+env_file = ".env"
 settings = Settings()
 ```
 
@@ -343,19 +317,16 @@ settings = Settings()
 FROM python:3.11-slim as deps
 COPY pyproject.toml .
 RUN uv sync
-
 # Stage 2: Application code
 FROM deps as app
 COPY src/ ./src/
 COPY templates/ ./templates/
-
 # Stage 3: Frontend assets
 FROM node:20-slim as frontend
 COPY package.json .
 RUN bun install
 COPY assets/ ./assets/
 RUN bun build-prod
-
 # Stage 4: Runtime
 FROM app as runtime
 COPY --from=frontend /app/assets/statics/ /app/assets/statics/
@@ -364,25 +335,23 @@ CMD ["granian", "--host", "0.0.0.0", "--port", "8000", "app.frontend:app"]
 
 ### Production Stack
 
-```
-┌──────────────┐
-│ Load Balancer│
-└──────┬───────┘
-       │
-       ├─────┬──────────┬──────────┐
-       │     │          │          │
-   ┌───▼─┐ ┌─▼──┐  ┌───▼─┐   ┌───▼─┐
-   │App 1│ │App2│  │App 3│   │App 4│
-   └───┬─┘ └─┬──┘  └───┬─┘   └───┬─┘
-       │     │          │          │
-       └─────┴─────┬────┴──────────┘
-                   │
-       ┌───────────┴────────────┐
-       │                        │
-   ┌───▼──────┐          ┌─────▼────┐
-   │ MongoDB  │          │  Redis   │
-   │(Replica) │          │ (Master) │
-   └──────────┘          └──────────┘
+```mermaid
+graph TD
+LB[Load Balancer / Reverse Proxy]
+subgraph App Cluster
+A1[App Instance 1]
+A2[App Instance 2]
+A3[App Instance N]
+end
+LB --> A1
+LB --> A2
+LB --> A3
+A1 --> Mongo[(MongoDB Replica Set)]
+A2 --> Mongo
+A3 --> Mongo
+A1 --> Redis[(Redis / Streaq)]
+A2 --> Redis
+A3 --> Redis
 ```
 
 ## Scaling Considerations

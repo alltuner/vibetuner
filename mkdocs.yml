@@ -45,7 +45,11 @@ theme:
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
@@ -76,6 +80,8 @@ nav:
   - Reference:
     - Tech Stack: tech-stack.md
     - Architecture: architecture.md
+    - CLI Reference: cli-reference.md
+    - Scaffolding Reference: scaffolding.md
 
 extra:
   social:
@@ -90,3 +96,5 @@ extra:
 
 extra_css:
   - stylesheets/extra.css
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js

@@ -51,6 +51,7 @@ just dev
 ```
 
 This starts:
+
 - MongoDB database
 - Redis (if background jobs enabled)
 - FastAPI application with hot reload
@@ -60,7 +61,7 @@ Visit `http://localhost:8000` - your app is running!
 
 ## Project Structure
 
-```
+```text
 my-app/
 ├── src/vibetuner/          # Core framework (don't edit)
 │   ├── frontend/           # FastAPI app, auth, middleware
@@ -107,7 +108,6 @@ Everything runs in containers with hot reload. Changes to code, templates, and a
 ```bash
 # Terminal 1: Frontend assets
 bun dev
-
 # Terminal 2: Backend server
 just local-dev
 ```
