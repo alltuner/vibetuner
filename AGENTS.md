@@ -35,7 +35,7 @@ just pr                        # Create pull request for template changes
 just test-scaffold             # Test scaffold command locally
 ```
 
-### Generated Project Commands (in template/)
+### Generated Project Commands (in copier-template/)
 
 When working with generated projects or testing the template:
 
@@ -51,7 +51,7 @@ just test-build-prod         # Test production build
 just release                 # Build and push production image (tagged commits only)
 
 # Frontend assets
-bun dev                      # Watch mode for CSS/JS (in template/)
+bun dev                      # Watch mode for CSS/JS (in copier-template/)
 bun build-prod              # Production build for CSS/JS
 
 # Localization
@@ -82,9 +82,10 @@ Vibetuner consists of three main components:
    - Bundles Tailwind CSS, DaisyUI, HTMX, and build tools
    - Published to npm as `@alltuner/vibetuner`
 
-4. **Template** (`template/`): Project template to be copied
+4. **Template** (`copier-template/`): Project template to be copied
    - Generated projects use the published `vibetuner` and `@alltuner/vibetuner` packages
    - Template files use `.j2` extension for Jinja2 processing
+   - A `template/` symlink exists for backwards compatibility
 
 ### Generated Project Architecture
 
@@ -145,7 +146,7 @@ The template generates a FastAPI application with this structure:
 
 ### Template Development
 
-1. Make changes to files in `template/`
+1. Make changes to files in `copier-template/`
 2. Test with `copier copy . /tmp/test-project`
 3. Use `just bump-patch` for versioning
 4. Create PR with `just pr`
@@ -179,8 +180,8 @@ The template generates a FastAPI application with this structure:
 - **`pyproject.toml`**: Root project metadata (minimal, no dependencies)
 - **`vibetuner-py/pyproject.toml`**: Python package dependencies and metadata
 - **`vibetuner-js/package.json`**: JavaScript package dependencies and metadata
-- **`template/pyproject.toml.j2`**: Generated project Python dependencies (uses `vibetuner` from PyPI)
-- **`template/package.json.j2`**: Generated project JavaScript dependencies (uses `@alltuner/vibetuner` from npm)
+- **`copier-template/pyproject.toml.j2`**: Generated project Python dependencies (uses `vibetuner` from PyPI)
+- **`copier-template/package.json.j2`**: Generated project JavaScript dependencies (uses `@alltuner/vibetuner` from npm)
 
 ### Static Assets
 
@@ -193,14 +194,14 @@ The template generates a FastAPI application with this structure:
 ### Adding New Template Features
 
 1. Update `copier.yml` with new configuration options
-2. Add template files in `template/` directory
+2. Add template files in `copier-template/` directory
 3. Use Jinja2 conditionals for optional features: `{% if enable_feature %}`
 4. Test with different configuration combinations
 
 ### Modifying Generated Project Structure
 
-1. Edit files in `template/src/{{ project_slug }}/`
-2. Update imports and dependencies in `template/pyproject.toml.j2`
+1. Edit files in `copier-template/src/{{ project_slug }}/`
+2. Update imports and dependencies in `copier-template/pyproject.toml.j2`
 3. Modify Docker build steps if needed
 4. Update corresponding justfile commands
 

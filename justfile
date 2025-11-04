@@ -108,3 +108,18 @@ clean:
     rm -rf /tmp/vibetuner-test
     rm -rf vibetuner-py/dist
     rm -rf vibetuner-js/*.tgz
+    rm -rf _site
+
+# Serve documentation locally with live reload
+docs-serve:
+    cd vibetuner-py && uv run mkdocs serve
+
+# Build documentation
+docs-build:
+    cd vibetuner-py && uv run mkdocs build --site-dir ../_site
+
+# Deploy documentation (triggers automatically on tag push, use this for manual testing)
+docs-deploy:
+    @echo "Documentation is deployed automatically on tag push to GitHub Pages"
+    @echo "For manual deployment, push a tag: git tag v0.0.x && git push origin v0.0.x"
+    @echo "Or manually trigger the workflow at: https://github.com/alltuner/vibetuner/actions/workflows/docs.yml"

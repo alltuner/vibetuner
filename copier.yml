@@ -1,7 +1,7 @@
 _preserve_symlinks: True
 _skip_if_exists:
   - .env
-_subdirectory: template
+_subdirectory: copier-template
 _templates_suffix: .j2
 
 company_name:

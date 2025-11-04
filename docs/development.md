@@ -1,15 +1,16 @@
-# Development Guide
+# Development Workflow
 
-This guide covers development workflows for working on Vibetuner itself, not for using Vibetuner to create projects (see [README.md](./README.md) for that).
+This guide covers development workflows for working on **Vibetuner itself**, not for using Vibetuner to create projects.
+
+For documentation on using Vibetuner to build applications, see the [Development Guide](development-guide.md).
 
 ## Prerequisites
 
-You need:
 - **Python 3.11+**: For the vibetuner-py package
 - **uv**: Python package manager (`curl -LsSf https://astral.sh/uv/install.sh | sh`)
 - **bun**: JavaScript package manager (`curl -fsSL https://bun.sh/install | bash`)
 - **git**: Version control
-- **gh CLI** (optional): For creating PRs (`brew install gh` or https://cli.github.com/)
+- **gh CLI** (optional): For creating PRs (`brew install gh` or [cli.github.com](https://cli.github.com/))
 
 ## Project Structure
 
@@ -27,6 +28,8 @@ vibetuner/
 ├── template/              # → Symlink to copier-template/ (backwards compat)
 ├── copier.yml             # Template configuration
 ├── justfile               # Development commands
+├── docs/                  # MkDocs documentation
+├── mkdocs.yml             # Documentation configuration
 └── .github/workflows/     # CI/CD for publishing
 ```
 
@@ -92,6 +95,23 @@ cd /tmp/my-test-project
 just dev  # Starts Docker development environment
 ```
 
+**Note**: Template files are in `copier-template/` directory. A `template/` symlink exists for backwards compatibility.
+
+### Working on Documentation
+
+```bash
+# Serve docs locally with live reload
+just docs-serve
+
+# Build docs
+just docs-build
+
+# Deploy docs to GitHub Pages
+just docs-deploy
+```
+
+Visit [localhost:8000](http://localhost:8000) to view the documentation site.
+
 ### Adding New Features
 
 1. **Create a feature branch**:
@@ -104,11 +124,13 @@ just dev  # Starts Docker development environment
    - JavaScript dependencies: `vibetuner-js/package.json`
    - Template files: `copier-template/`
    - Template configuration: `copier.yml`
+   - Documentation: `docs/`
 
 3. **Test your changes**:
    ```bash
    just format           # Format and check code
    just test-scaffold    # Test scaffolding
+   just docs-build       # Test docs build
    ```
 
 4. **Commit your changes**:
@@ -154,6 +176,7 @@ When you push a tag (e.g., `v0.0.2`), GitHub Actions will:
 1. Build both Python and JavaScript packages
 2. Publish `vibetuner` to PyPI
 3. Publish `@alltuner/vibetuner` to npm
+4. Deploy documentation to GitHub Pages
 
 The workflow is in `.github/workflows/publish.yml`.
 
@@ -205,6 +228,13 @@ just dev
 - Keep templates simple and readable
 - Use descriptive variable names in `copier.yml`
 
+### Documentation
+
+- Use Markdown for all documentation
+- Follow existing structure and style
+- Link to external resources where appropriate
+- Keep examples concise and practical
+
 ### Commit Messages
 
 Follow this pattern:
@@ -253,6 +283,13 @@ Check:
 3. Redis running (if job queue enabled): `docker compose up redis -d`
 4. Environment variables set: Copy `.env.local` to `.env` and configure
 
+### Documentation build fails
+
+Check:
+1. MkDocs dependencies installed: `cd vibetuner-py && uv sync --group dev`
+2. All referenced files exist
+3. No broken internal links
+
 ## Project Philosophy
 
 When contributing, keep these principles in mind:
@@ -284,9 +321,9 @@ The scaffolding project itself doesn't require mise - just `uv` and `bun`.
 
 ## Getting Help
 
-- **Issues**: https://github.com/alltuner/vibetuner/issues
+- **Issues**: [github.com/alltuner/vibetuner/issues](https://github.com/alltuner/vibetuner/issues)
 - **Discussions**: Open an issue for questions
-- **Contributing**: See [CONTRIBUTING.md](./CONTRIBUTING.md)
+- **Contributing**: See [CONTRIBUTING.md](contributing.md)
 
 ## Useful Commands Reference
 
@@ -297,6 +334,11 @@ just sync                # Sync all dependencies
 just format              # Format and check code
 just test-scaffold       # Test scaffolding locally
 just clean               # Clean test artifacts
+
+# Documentation
+just docs-serve          # Serve docs with live reload
+just docs-build          # Build docs
+just docs-deploy         # Deploy docs to GitHub Pages
 
 # Releases
 just bump-patch          # Bump patch version
