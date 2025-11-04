@@ -4,7 +4,8 @@ Understanding the technologies behind Vibetuner.
 
 ## Overview
 
-Vibetuner combines modern, production-tested technologies into a cohesive stack optimized for rapid development and deployment.
+Vibetuner combines modern, production-tested technologies into a cohesive stack
+optimized for rapid development and deployment.
 
 ## Backend Stack
 
@@ -17,7 +18,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Pydantic integration for validation
 - Type hints and IDE support
 - High performance (comparable to Node.js/Go)
-
 **Links:**
 - [fastapi.tiangolo.com](https://fastapi.tiangolo.com/)
 - [GitHub](https://github.com/tiangolo/fastapi)
@@ -31,7 +31,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Horizontal scaling with sharding
 - Change streams for real-time features
 - ACID transactions support
-
 **Links:**
 - [mongodb.com](https://www.mongodb.com/)
 - [Documentation](https://docs.mongodb.com/)
@@ -45,7 +44,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Automatic validation
 - Migration support
 - Query builder with type hints
-
 **Links:**
 - [beanie-odm.dev](https://beanie-odm.dev/)
 - [GitHub](https://github.com/roman-right/beanie)
@@ -58,7 +56,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Lower memory footprint
 - Built-in process management
 - Hot reload in development
-
 **Links:**
 - [GitHub](https://github.com/emmett-framework/granian)
 
@@ -70,7 +67,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - JSON Schema generation
 - Settings management
 - Clear error messages
-
 **Links:**
 - [docs.pydantic.dev](https://docs.pydantic.dev/)
 - [GitHub](https://github.com/pydantic/pydantic)
@@ -86,7 +82,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Minimal client-side complexity
 - Works with any backend
 - Small footprint (~14kb)
-
 **Links:**
 - [htmx.org](https://htmx.org/)
 - [GitHub](https://github.com/bigskysoftware/htmx)
@@ -100,7 +95,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Automatic purging of unused CSS
 - Responsive design made simple
 - Customizable design system
-
 **Links:**
 - [tailwindcss.com](https://tailwindcss.com/)
 - [GitHub](https://github.com/tailwindlabs/tailwindcss)
@@ -114,7 +108,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - No JavaScript required
 - Semantic class names
 - Accessibility built-in
-
 **Links:**
 - [daisyui.com](https://daisyui.com/)
 - [GitHub](https://github.com/saadeghi/daisyui)
@@ -128,7 +121,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Filters and functions
 - i18n integration
 - Sandboxed execution
-
 **Links:**
 - [jinja.palletsprojects.com](https://jinja.palletsprojects.com/)
 - [GitHub](https://github.com/pallets/jinja)
@@ -144,7 +136,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Pub/sub messaging
 - Persistence options
 - Simple to deploy
-
 **Links:**
 - [redis.io](https://redis.io/)
 - [GitHub](https://github.com/redis/redis)
@@ -158,7 +149,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Job scheduling
 - Retry logic
 - Web UI for monitoring
-
 **Links:**
 - [GitHub](https://github.com/tastyware/streaq)
 
@@ -172,7 +162,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Reliable dependency resolution
 - Compatible with pip/requirements.txt
 - Built in Rust
-
 **Links:**
 - [docs.astral.sh/uv](https://docs.astral.sh/uv/)
 - [GitHub](https://github.com/astral-sh/uv)
@@ -185,7 +174,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Built-in bundler, transpiler, test runner
 - Drop-in Node.js replacement
 - Native TypeScript support
-
 **Links:**
 - [bun.sh](https://bun.sh/)
 - [GitHub](https://github.com/oven-sh/bun)
@@ -198,7 +186,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Cross-platform
 - Environment variable support
 - Recipe dependencies
-
 **Links:**
 - [just.systems](https://just.systems/)
 - [GitHub](https://github.com/casey/just)
@@ -211,7 +198,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Drop-in replacement
 - Comprehensive rules
 - Automatic fixes
-
 **Links:**
 - [docs.astral.sh/ruff](https://docs.astral.sh/ruff/)
 - [GitHub](https://github.com/astral-sh/ruff)
@@ -223,7 +209,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Formats Jinja2/Django templates
 - Finds common errors
 - Enforces consistency
-
 **Links:**
 - [djlint.com](https://djlint.com/)
 - [GitHub](https://github.com/Riverside-Healthcare/djLint)
@@ -239,7 +224,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - OpenID Connect
 - JWT handling
 - Well-maintained
-
 **Links:**
 - [authlib.org](https://authlib.org/)
 - [GitHub](https://github.com/lepture/authlib)
@@ -254,7 +238,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Dependency isolation
 - Easy scaling
 - Production-ready
-
 **Links:**
 - [docker.com](https://www.docker.com/)
 - [Documentation](https://docs.docker.com/)
@@ -267,7 +250,6 @@ Vibetuner combines modern, production-tested technologies into a cohesive stack 
 - Conditional templating
 - Git integration
 - Jinja2 templates
-
 **Links:**
 - [copier.readthedocs.io](https://copier.readthedocs.io/)
 - [GitHub](https://github.com/copier-org/copier)

@@ -1,17 +1,16 @@
-<div align="center">
-  <img src="https://alltuner.com/statics/img/all-tuner-logo.svg" alt="All Tuner Labs" width="200"/>
+# Vibetuner
 
-  # Vibetuner
+![All Tuner Labs](https://alltuner.com/statics/img/all-tuner-logo.svg)
 
-  **Production-ready FastAPI + MongoDB + HTMX project scaffolding in seconds**
+## Production-ready FastAPI + MongoDB + HTMX project scaffolding in seconds
 
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
-  Vibetuner generates full-stack web applications with authentication, database, frontend, Docker deployment, and CLI tools pre-configured.
+Vibetuner generates full-stack web applications with authentication, database,
+frontend, Docker deployment, and CLI tools pre-configured.
 
-  Built by [All Tuner Labs](https://alltuner.com) for rapid iteration and modern development.
-</div>
+Built by [All Tuner Labs](https://alltuner.com) for rapid iteration and modern development.
 
 ## ✨ What You Get
 
@@ -22,6 +21,7 @@ cd my-project && just dev
 ```
 
 **In 30 seconds you have:**
+
 - ✅ FastAPI backend with async support
 - ✅ MongoDB with Beanie ODM
 - ✅ OAuth + magic link authentication
@@ -77,6 +77,7 @@ Visit `http://localhost:8000` - your app is running!
 ## 📦 Tech Stack
 
 ### Backend
+
 - **[FastAPI](https://fastapi.tiangolo.com/)** - Modern async web framework
 - **[MongoDB](https://www.mongodb.com/)** - Document database with [Beanie ODM](https://beanie-odm.dev/)
 - **[Granian](https://github.com/emmett-framework/granian)** - High-performance ASGI server
@@ -84,12 +85,14 @@ Visit `http://localhost:8000` - your app is running!
 - **[Streaq](https://github.com/tastyware/streaq)** - Background job processing (optional)
 
 ### Frontend
+
 - **[HTMX](https://htmx.org/)** - Dynamic HTML without complex JavaScript
 - **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
 - **[DaisyUI](https://daisyui.com/)** - Beautiful Tailwind components
 - **[Jinja2](https://jinja.palletsprojects.com/)** - Template engine with i18n
 
 ### DevOps
+
 - **[Docker](https://www.docker.com/)** - Multi-stage builds for dev/prod
 - **[uv](https://docs.astral.sh/uv/)** - Fast Python package management
 - **[bun](https://bun.sh/)** - Fast JavaScript tooling
@@ -97,15 +100,20 @@ Visit `http://localhost:8000` - your app is running!
 
 ### Why These Choices?
 
-**FastAPI + MongoDB**: Async-first, flexible schema, fast iteration, great for rapid prototyping that scales to production.
+**FastAPI + MongoDB**: Async-first, flexible schema, fast iteration, great for
+rapid prototyping that scales to production.
 
-**HTMX over React/Vue**: Simplicity wins. Server-rendered HTML with sprinkles of interactivity. Less complexity, faster development, easier to reason about.
+**HTMX over React/Vue**: Simplicity wins. Server-rendered HTML with sprinkles
+of interactivity. Less complexity, faster development, easier to reason about.
 
-**Tailwind + DaisyUI**: Utility-first CSS is fast once you learn it. DaisyUI provides components without JavaScript bloat.
+**Tailwind + DaisyUI**: Utility-first CSS is fast once you learn it. DaisyUI
+provides components without JavaScript bloat.
 
-**Docker-first**: Consistent environments, easy deployment, no "works on my machine" problems.
+**Docker-first**: Consistent environments, easy deployment, no "works on my
+machine" problems.
 
-**uv + bun**: Speed matters. Both are order-of-magnitude faster than pip/npm. Fast lockfiles, fast installs, fast everything.
+**uv + bun**: Speed matters. Both are order-of-magnitude faster than pip/npm.
+Fast lockfiles, fast installs, fast everything.
 
 **Beanie ODM**: Pydantic models are your database models. Type-safe, validated, async. No impedance mismatch.
 
@@ -140,7 +148,7 @@ just build-prod       # Test production build
 
 Generated projects separate framework code from your code:
 
-```
+```text
 my-app/
 ├── src/vibetuner/          # Core framework (immutable)
 │   ├── frontend/           # FastAPI app, auth, middleware
@@ -202,9 +210,11 @@ SECRET_KEY=your-secret-key
 
 ## 📚 Documentation
 
-- **[Development Guide](./DEVELOPMENT.md)** - For contributing to Vibetuner
-- **[Contributing](./CONTRIBUTING.md)** - Contribution guidelines
-- **[AGENTS.md](./AGENTS.md)** - Detailed architecture and workflows
+- **[Development Guide](docs/development-guide.md)** – Daily workflow for generated projects
+- **[CLI Reference](docs/cli-reference.md)** – Usage for `vibetuner scaffold` and `vibetuner run`
+- **[Scaffolding Reference](docs/scaffolding.md)** – Copier prompts and update commands
+- **[Contributing](./CONTRIBUTING.md)** – Contribution guidelines
+- **[Assistant Guidance](./CLAUDE.md)** – Tips for AI coding partners
 
 ## 📦 Packages
 
@@ -241,10 +251,10 @@ See [LICENSE](./LICENSE) for details.
 
 ## 🔗 Links
 
-- **Repository**: https://github.com/alltuner/vibetuner
-- **Issues**: https://github.com/alltuner/vibetuner/issues
-- **PyPI**: https://pypi.org/project/vibetuner/
-- **npm**: https://www.npmjs.com/package/@alltuner/vibetuner
+- **Repository**: <https://github.com/alltuner/vibetuner>
+- **Issues**: <https://github.com/alltuner/vibetuner/issues>
+- **PyPI**: <https://pypi.org/project/vibetuner/>
+- **npm**: <https://www.npmjs.com/package/@alltuner/vibetuner>
 
 ## 👨‍💻 Credits
 
@@ -254,4 +264,6 @@ Main contributor: David Poblador i Garcia ([@davidpoblador](https://github.com/d
 
 ---
 
-**Made with ❤️ for rapid prototyping and production deployments**
+## Made with ❤️ for rapid prototyping and production deployments
+
+<!-- markdownlint-enable MD013 MD033 MD036 MD041 -->

@@ -1,11 +1,12 @@
 # Vibetuner
 
-**Production-ready FastAPI + MongoDB + HTMX project scaffolding in seconds**
+## Production-ready FastAPI + MongoDB + HTMX Project Scaffolding in Seconds
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-
-Vibetuner generates full-stack web applications with authentication, database, frontend, Docker deployment, and CLI tools pre-configured. Built by [All Tuner Labs](https://alltuner.com) for rapid iteration and modern development.
+Vibetuner generates full-stack web applications with authentication, database,
+frontend, Docker deployment, and CLI tools pre-configured. Built by
+[All Tuner Labs](https://alltuner.com) for rapid iteration and modern development.
 
 ## What You Get
 
@@ -15,7 +16,7 @@ cd my-project && just dev
 # → Full application running at http://localhost:8000
 ```
 
-**In 30 seconds you have:**
+### In 30 Seconds You Have
 
 - ✅ FastAPI backend with async support
 - ✅ MongoDB with Beanie ODM
@@ -29,7 +30,8 @@ cd my-project && just dev
 
 ## Core Principles
 
-**Born from real needs** at [All Tuner Labs](https://alltuner.com) when spawning new projects:
+Born from real needs at [All Tuner Labs](https://alltuner.com) when spawning new
+projects:
 
 - **Simplicity**: Minimal boilerplate, clear conventions, obvious patterns
 - **Speed**: Sub-second hot reload, one command to start, fast iteration
@@ -41,11 +43,14 @@ cd my-project && just dev
 - **[Quick Start](quick-start.md)** - Get started in 5 minutes
 - **[Development Guide](development-guide.md)** - Daily development workflow
 - **[Tech Stack](tech-stack.md)** - Technologies and why we chose them
+- **[CLI Reference](cli-reference.md)** - Command-line usage for `vibetuner`
+- **[Scaffolding Reference](scaffolding.md)** - Template prompts and update workflow
 - **[Contributing](contributing.md)** - Help improve Vibetuner
 
 ## Tech Stack
 
 ### Backend
+
 - **[FastAPI](https://fastapi.tiangolo.com/)** - Modern async web framework
 - **[MongoDB](https://www.mongodb.com/)** - Document database with [Beanie ODM](https://beanie-odm.dev/)
 - **[Granian](https://github.com/emmett-framework/granian)** - High-performance ASGI server
@@ -53,12 +58,14 @@ cd my-project && just dev
 - **[Streaq](https://github.com/tastyware/streaq)** - Background job processing (optional)
 
 ### Frontend
+
 - **[HTMX](https://htmx.org/)** - Dynamic HTML without complex JavaScript
 - **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
 - **[DaisyUI](https://daisyui.com/)** - Beautiful Tailwind components
 - **[Jinja2](https://jinja.palletsprojects.com/)** - Template engine with i18n
 
 ### DevOps
+
 - **[Docker](https://www.docker.com/)** - Multi-stage builds for dev/prod
 - **[uv](https://docs.astral.sh/uv/)** - Fast Python package management
 - **[bun](https://bun.sh/)** - Fast JavaScript tooling
@@ -68,7 +75,7 @@ cd my-project && just dev
 
 Generated projects separate framework code from your code:
 
-```
+```text
 my-app/
 ├── src/vibetuner/          # Core framework (immutable)
 │   ├── frontend/           # FastAPI app, auth, middleware
@@ -92,5 +99,4 @@ my-app/
 ## License
 
 MIT License - Copyright (c) 2025 All Tuner Labs, S.L.
-
 Created by David Poblador i Garcia ([@davidpoblador](https://github.com/davidpoblador) | [davidpoblador.com](https://davidpoblador.com/))

@@ -46,7 +46,6 @@ If you don't have `uv` installed:
 ```bash
 # macOS/Linux
 curl -LsSf https://astral.sh/uv/install.sh | sh
-
 # Windows
 powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
@@ -66,7 +65,6 @@ Download Docker Desktop from [docker.com/products/docker-desktop](https://www.do
 ```bash
 # Ubuntu/Debian
 curl -fsSL https://get.docker.com | sh
-
 # Start Docker
 sudo systemctl start docker
 sudo systemctl enable docker
@@ -83,13 +81,10 @@ Test that everything works:
 ```bash
 # Check Python version
 python --version  # Should be 3.11 or higher
-
 # Check uv
 uv --version
-
 # Check Docker (optional)
 docker --version
-
 # Test Vibetuner
 uvx vibetuner --help
 ```
@@ -124,10 +119,8 @@ Install Python 3.11 or higher:
 ```bash
 # macOS with Homebrew
 brew install python@3.11
-
 # Ubuntu/Debian
 sudo apt install python3.11
-
 # Or use uv to manage Python versions
 uv python install 3.11
 ```

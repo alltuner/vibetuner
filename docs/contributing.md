@@ -20,7 +20,9 @@ While we welcome feedback and are happy to see community interest, please note:
 - **Breaking changes may occur** - We prioritize our internal requirements
 - **No guarantees on feature requests** - We'll consider them, but can't commit to implementing everything
 
-That said, we do appreciate good contributions that align with our core beliefs (simplicity, speed, modern stack, assistant-friendly) and will do our best to review them when time allows.
+That said, we do appreciate good contributions that align with our core beliefs
+(simplicity, speed, modern stack, assistant-friendly) and will do our best to
+review them when time allows.
 
 ## Ways to Contribute
 
@@ -53,15 +55,12 @@ Documentation improvements are always welcome and generally easier to accept tha
 # Clone the repository
 git clone https://github.com/alltuner/vibetuner
 cd vibetuner
-
 # Set up Python package
 cd vibetuner-py
 uv sync
-
 # Set up JavaScript package
 cd ../vibetuner-js
 bun install
-
 # Test the scaffold command
 uv run --directory ../vibetuner-py vibetuner scaffold new /tmp/test-project
 ```
@@ -83,10 +82,8 @@ Before submitting:
 # Format Python code
 cd vibetuner-py
 ruff format .
-
 # Check for issues
 ruff check .
-
 # Test scaffold command
 uv run vibetuner scaffold new /tmp/test-project --defaults
 cd /tmp/test-project
@@ -103,6 +100,8 @@ Open an issue for questions or clarifications. We'll do our best to respond when
 
 ## Final Note
 
-We built Vibetuner to solve our own problems, and we're sharing it in case it helps others. We'll maintain it as our needs evolve, and we'll consider community input when it makes sense. But this remains primarily an internal tool that happens to be open source.
-
+We built Vibetuner to solve our own problems, and we're sharing it in case it
+helps others. We'll maintain it as our needs evolve, and we'll consider
+community input when it makes sense. But this remains primarily an internal tool
+that happens to be open source.
 Thanks for understanding!

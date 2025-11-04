@@ -34,31 +34,25 @@ APP_NAME=My Application
 SECRET_KEY=your-production-secret-key
 DEBUG=false
 ENVIRONMENT=production
-
 # Database
 DATABASE_URL=mongodb://user:password@mongodb-host:27017/myapp?authSource=admin
-
 # Redis (if background jobs enabled)
 REDIS_URL=redis://redis-host:6379/0
-
 # Email
 SMTP_HOST=smtp.sendgrid.net
 SMTP_PORT=587
 SMTP_USER=apikey
 SMTP_PASSWORD=your-sendgrid-api-key
 FROM_EMAIL=noreply@example.com
-
 # OAuth
 GOOGLE_CLIENT_ID=your-production-client-id
 GOOGLE_CLIENT_SECRET=your-production-secret
 GITHUB_CLIENT_ID=your-github-client-id
 GITHUB_CLIENT_SECRET=your-github-secret
-
 # Session
 SESSION_COOKIE_SECURE=true
 SESSION_COOKIE_SAMESITE=lax
 SESSION_MAX_AGE=2592000
-
 # Storage (if using S3)
 AWS_ACCESS_KEY_ID=your-access-key
 AWS_SECRET_ACCESS_KEY=your-secret-key
@@ -88,6 +82,7 @@ docker compose -f compose.prod.yml up -d
 ```
 
 This starts:
+
 - MongoDB with persistence
 - Redis (if enabled)
 - Your application
@@ -102,33 +97,33 @@ Example deployment:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myapp
+name: myapp
 spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: myapp
-  template:
-    metadata:
-      labels:
-        app: myapp
-    spec:
-      containers:
-      - name: web
-        image: ghcr.io/yourorg/myapp:latest
-        ports:
-        - containerPort: 8000
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: myapp-secrets
-              key: database-url
-        - name: SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: myapp-secrets
-              key: secret-key
+replicas: 3
+selector:
+matchLabels:
+app: myapp
+template:
+metadata:
+labels:
+app: myapp
+spec:
+containers:
+- name: web
+image: ghcr.io/yourorg/myapp:latest
+ports:
+- containerPort: 8000
+env:
+- name: DATABASE_URL
+valueFrom:
+secretKeyRef:
+name: myapp-secrets
+key: database-url
+- name: SECRET_KEY
+valueFrom:
+secretKeyRef:
+name: myapp-secrets
+key: secret-key
 ```
 
 ### Cloud Platforms
@@ -138,17 +133,13 @@ spec:
 ```bash
 # Install flyctl
 brew install flyctl
-
 # Login
 flyctl auth login
-
 # Launch app
 flyctl launch
-
 # Set secrets
 flyctl secrets set SECRET_KEY=your-secret-key
 flyctl secrets set DATABASE_URL=mongodb://...
-
 # Deploy
 flyctl deploy
 ```
@@ -177,7 +168,7 @@ flyctl deploy
 4. Whitelist application IP addresses
 5. Get connection string:
 
-```
+```text
 mongodb+srv://user:password@cluster.mongodb.net/myapp?retryWrites=true&w=majority
 ```
 
@@ -186,18 +177,17 @@ mongodb+srv://user:password@cluster.mongodb.net/myapp?retryWrites=true&w=majorit
 ```yaml
 # docker-compose.yml
 services:
-  mongodb:
-    image: mongo:7
-    volumes:
-      - mongodb_data:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secure-password
-    ports:
-      - "27017:27017"
-
+mongodb:
+image: mongo:7
 volumes:
-  mongodb_data:
+- mongodb_data:/data/db
+environment:
+MONGO_INITDB_ROOT_USERNAME: admin
+MONGO_INITDB_ROOT_PASSWORD: secure-password
+ports:
+- "27017:27017"
+volumes:
+mongodb_data:
 ```
 
 ## Redis Setup (Optional)
@@ -214,15 +204,14 @@ Required if background jobs are enabled.
 
 ```yaml
 services:
-  redis:
-    image: redis:7-alpine
-    volumes:
-      - redis_data:/data
-    ports:
-      - "6379:6379"
-
+redis:
+image: redis:7-alpine
 volumes:
-  redis_data:
+- redis_data:/data
+ports:
+- "6379:6379"
+volumes:
+redis_data:
 ```
 
 ## Reverse Proxy
@@ -232,24 +221,23 @@ volumes:
 ```nginx
 # /etc/nginx/sites-available/myapp
 server {
-    listen 80;
-    server_name example.com;
-
-    location / {
-        proxy_pass http://localhost:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+listen 80;
+server_name example.com;
+location / {
+proxy_pass http://localhost:8000;
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+}
 }
 ```
 
 ### Caddy
 
-```
+```text
 example.com {
-    reverse_proxy localhost:8000
+reverse_proxy localhost:8000
 }
 ```
 
@@ -260,7 +248,6 @@ example.com {
 ```bash
 # Install certbot
 sudo apt install certbot python3-certbot-nginx
-
 # Get certificate
 sudo certbot --nginx -d example.com
 ```
@@ -280,7 +267,6 @@ caddy run --config Caddyfile
 ```bash
 # Docker
 docker compose logs -f web
-
 # Kubernetes
 kubectl logs -f deployment/myapp
 ```
@@ -297,9 +283,9 @@ Returns:
 
 ```json
 {
-  "status": "healthy",
-  "database": "connected",
-  "redis": "connected"
+"status": "healthy",
+"database": "connected",
+"redis": "connected"
 }
 ```
 
@@ -317,7 +303,6 @@ Returns:
 ```bash
 # Manual backup
 mongodump --uri="mongodb://..." --out=/backups/$(date +%Y%m%d)
-
 # Restore
 mongorestore --uri="mongodb://..." /backups/20240101
 ```
@@ -340,10 +325,10 @@ Run multiple instances behind a load balancer:
 ```yaml
 # docker-compose.yml
 services:
-  web:
-    image: myapp:latest
-    deploy:
-      replicas: 3
+web:
+image: myapp:latest
+deploy:
+replicas: 3
 ```
 
 ### Session Storage
@@ -359,6 +344,7 @@ SESSION_REDIS_URL = settings.REDIS_URL
 ### Database Scaling
 
 MongoDB Atlas provides:
+
 - Automatic scaling
 - Read replicas
 - Sharding for large datasets
@@ -380,17 +366,14 @@ Add Redis caching for expensive operations:
 
 ```python
 from redis import asyncio as aioredis
-
 redis = aioredis.from_url(settings.REDIS_URL)
-
 async def get_popular_posts():
-    cached = await redis.get("popular_posts")
-    if cached:
-        return json.loads(cached)
-
-    posts = await Post.find().sort(-Post.views).limit(10).to_list()
-    await redis.setex("popular_posts", 3600, json.dumps(posts))
-    return posts
+cached = await redis.get("popular_posts")
+if cached:
+return json.loads(cached)
+posts = await Post.find().sort(-Post.views).limit(10).to_list()
+await redis.setex("popular_posts", 3600, json.dumps(posts))
+return posts
 ```
 
 ### Database Indexes
@@ -399,15 +382,14 @@ Add indexes for frequently queried fields:
 
 ```python
 class Post(Document):
-    title: str
-    published_at: datetime
-
-    class Settings:
-        name = "posts"
-        indexes = [
-            IndexModel([("published_at", -1)]),
-            IndexModel([("title", "text")]),
-        ]
+title: str
+published_at: datetime
+class Settings:
+name = "posts"
+indexes = [
+IndexModel([("published_at", -1)]),
+IndexModel([("title", "text")]),
+]
 ```
 
 ## Troubleshooting
@@ -415,6 +397,7 @@ class Post(Document):
 ### Application Won't Start
 
 Check:
+
 1. Environment variables are set correctly
 2. Database is accessible
 3. Ports aren't already in use
@@ -423,6 +406,7 @@ Check:
 ### Database Connection Errors
 
 Check:
+
 1. `DATABASE_URL` is correct
 2. Network connectivity
 3. Database credentials
@@ -431,6 +415,7 @@ Check:
 ### Static Assets Not Loading
 
 Check:
+
 1. Assets were compiled during build
 2. `STATIC_URL` is correct
 3. CDN is configured properly
@@ -438,6 +423,7 @@ Check:
 ### High Memory Usage
 
 Consider:
+
 1. Reducing worker processes
 2. Enabling connection pooling
 3. Adding caching layer
@@ -450,27 +436,23 @@ Consider:
 ```yaml
 # .github/workflows/deploy.yml
 name: Deploy
-
 on:
-  push:
-    tags:
-      - 'v*'
-
+push:
+tags:
+- 'v*'
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build and push Docker image
-        run: |
-          docker build -t myapp:${{ github.ref_name }} .
-          docker push myapp:${{ github.ref_name }}
-
-      - name: Deploy to production
-        run: |
-          # Deploy to your platform
-          kubectl set image deployment/myapp web=myapp:${{ github.ref_name }}
+deploy:
+runs-on: ubuntu-latest
+steps:
+- uses: actions/checkout@v4
+- name: Build and push Docker image
+run: |
+docker build -t myapp:${{ github.ref_name }} .
+docker push myapp:${{ github.ref_name }}
+- name: Deploy to production
+run: |
+# Deploy to your platform
+kubectl set image deployment/myapp web=myapp:${{ github.ref_name }}
 ```
 
 ## Next Steps

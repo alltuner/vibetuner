@@ -15,6 +15,7 @@ just dev
 ```
 
 This starts:
+
 - MongoDB database
 - Redis (if background jobs enabled)
 - FastAPI application with auto-reload
@@ -29,7 +30,6 @@ Run services locally without Docker:
 ```bash
 # Terminal 1: Frontend assets
 bun dev
-
 # Terminal 2: Backend server
 just local-dev
 ```
@@ -45,19 +45,16 @@ Create a new file in `src/app/frontend/routes/`:
 ```python
 # src/app/frontend/routes/blog.py
 from fastapi import APIRouter
-
 router = APIRouter(prefix="/blog", tags=["blog"])
-
 @router.get("/")
 async def list_posts():
-    return {"posts": []}
+return {"posts": []}
 ```
 
 Register in `src/app/frontend/__init__.py`:
 
 ```python
 from app.frontend.routes import blog
-
 app.include_router(blog.router)
 ```
 
@@ -69,21 +66,18 @@ Create models in `src/app/models/`:
 # src/app/models/post.py
 from beanie import Document
 from pydantic import Field
-
 class Post(Document):
-    title: str
-    content: str
-    published: bool = Field(default=False)
-
-    class Settings:
-        name = "posts"
+title: str
+content: str
+published: bool = Field(default=False)
+class Settings:
+name = "posts"
 ```
 
 Register in `src/app/models/__init__.py`:
 
 ```python
 from app.models.post import Post
-
 __all__ = ["Post"]
 ```
 
@@ -96,20 +90,18 @@ Add templates in `templates/`:
 ```html
 <!-- templates/blog/list.html.jinja -->
 {% extends "base/skeleton.html.jinja" %}
-
 {% block content %}
-<div class="container mx-auto">
-  <h1 class="text-3xl font-bold">Blog Posts</h1>
-
-  <div class="grid gap-4">
-    {% for post in posts %}
-    <article class="card">
-      <h2>{{ post.title }}</h2>
-      <div>{{ post.content }}</div>
-    </article>
-    {% endfor %}
-  </div>
-</div>
+    <div class="container mx-auto">
+        <h1 class="text-3xl font-bold">Blog Posts</h1>
+        <div class="grid gap-4">
+            {% for post in posts %}
+                <article class="card">
+                    <h2>{{ post.title }}</h2>
+                    <div>{{ post.content }}</div>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
 ```
 
@@ -120,11 +112,10 @@ If you enabled background jobs, create tasks in `src/app/tasks/`:
 ```python
 # src/app/tasks/email.py
 from vibetuner.services.email import send_email
-
 async def send_welcome_email(user_id: str):
-    # Fetch user from database
-    # Send welcome email
-    pass
+# Fetch user from database
+# Send welcome email
+pass
 ```
 
 Queue jobs from your routes:
@@ -132,12 +123,11 @@ Queue jobs from your routes:
 ```python
 from streaq import queue
 from app.tasks.email import send_welcome_email
-
 @router.post("/signup")
 async def signup(email: str):
-    # Create user
-    await queue(send_welcome_email, user.id)
-    return {"message": "Welcome email queued"}
+# Create user
+await queue(send_welcome_email, user.id)
+return {"message": "Welcome email queued"}
 ```
 
 ### Styling with Tailwind
@@ -149,9 +139,8 @@ Vibetuner uses Tailwind CSS + DaisyUI. Edit `assets/config.css` for custom style
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 .btn-custom {
-  @apply btn btn-primary rounded-full;
+@apply btn btn-primary rounded-full;
 }
 ```
 
@@ -163,16 +152,12 @@ Vibetuner uses HTMX for interactive features without JavaScript:
 
 ```html
 <!-- Load more posts -->
-<button
-  hx-get="/blog?page=2"
-  hx-target="#posts"
-  hx-swap="beforeend"
-  class="btn btn-primary">
-  Load More
-</button>
-
+<button hx-get="/blog?page=2"
+        hx-target="#posts"
+        hx-swap="beforeend"
+        class="btn btn-primary">Load More</button>
 <div id="posts">
-  <!-- Posts will be appended here -->
+    <!-- Posts will be appended here -->
 </div>
 ```
 
@@ -181,10 +166,10 @@ Server endpoint:
 ```python
 @router.get("/blog")
 async def list_posts(page: int = 1):
-    posts = await Post.find().skip((page - 1) * 10).limit(10).to_list()
-    return templates.TemplateResponse("blog/posts.html.jinja", {
-        "posts": posts
-    })
+posts = await Post.find().skip((page - 1) * 10).limit(10).to_list()
+return templates.TemplateResponse("blog/posts.html.jinja", {
+"posts": posts
+})
 ```
 
 ## Internationalization
@@ -232,7 +217,6 @@ just compile-locales
 
 ```python
 from starlette_babel import gettext as _
-
 message = _("Welcome to {app}", app=app_name)
 ```
 
@@ -243,7 +227,6 @@ message = _("Welcome to {app}", app=app_name)
 ```bash
 # Docker mode
 docker compose logs -f web
-
 # Local mode
 # Logs print to stdout
 ```
@@ -283,14 +266,12 @@ Integration tests should use real MongoDB (not mocks):
 ```python
 import pytest
 from app.models import Post
-
 @pytest.mark.asyncio
 async def test_create_post():
-    post = Post(title="Test", content="Content")
-    await post.insert()
-
-    found = await Post.get(post.id)
-    assert found.title == "Test"
+post = Post(title="Test", content="Content")
+await post.insert()
+found = await Post.get(post.id)
+assert found.title == "Test"
 ```
 
 ## Code Quality
@@ -302,6 +283,7 @@ just format
 ```
 
 Runs:
+
 - `ruff format` for Python
 - `djlint` for templates
 
@@ -312,6 +294,7 @@ just lint
 ```
 
 Runs:
+
 - `ruff check` for Python
 - Type checking
 - Template validation
@@ -333,7 +316,6 @@ Edit as needed:
 DATABASE_URL=mongodb://localhost:27017/myapp
 SECRET_KEY=your-secret-key-here
 DEBUG=true
-
 # OAuth (optional)
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
@@ -348,6 +330,20 @@ DATABASE_URL=mongodb://prod-server:27017/myapp
 SECRET_KEY=very-secret-key
 DEBUG=false
 ```
+
+## Keeping the Scaffold Up to Date
+
+When new versions of the template ship, update your project using either:
+
+- `vibetuner scaffold update` – works from anywhere; replays Copier with your
+saved answers.
+- `just update-scaffolding` – runs inside the generated project and wraps
+`copier update` plus dependency sync.
+
+Both commands modify tracked files, so commit or stash your work beforehand and
+review the changes afterward. See the
+[Scaffolding Reference](scaffolding.md#updating-existing-projects) for a deeper
+walkthrough.
 
 ## Dependency Management
 
