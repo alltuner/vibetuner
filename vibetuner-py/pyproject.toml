@@ -1,8 +1,35 @@
 [project]
 name = "vibetuner"
-description = "Blessed Python dependencies for Vibetuner projects"
+description = "Core Python framework and blessed dependencies for production-ready FastAPI + MongoDB + HTMX projects"
 version = "0.0.1-dev"
+readme = "README.md"
 requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "All Tuner Labs, S.L."},
+]
+keywords = [
+    "fastapi",
+    "mongodb",
+    "htmx",
+    "web-framework",
+    "scaffolding",
+    "oauth",
+    "background-jobs",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Framework :: FastAPI",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
 dependencies = [
     # These are the base dependencies of AllTuner's blessed stack
     "aioboto3>=15.5.0",
@@ -33,6 +60,12 @@ dependencies = [
 
 [project.scripts]
 vibetuner = "vibetuner.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/alltuner/vibetuner"
+Documentation = "https://github.com/alltuner/vibetuner#readme"
+Repository = "https://github.com/alltuner/vibetuner"
+Issues = "https://github.com/alltuner/vibetuner/issues"
 
 [project.optional-dependencies]
 dev = [

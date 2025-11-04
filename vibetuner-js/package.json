@@ -1,16 +1,18 @@
 {
   "name": "@alltuner/vibetuner",
   "version": "0.0.1-dev",
-  "description": "Blessed JavaScript/frontend build dependencies for Vibetuner projects",
+  "description": "Blessed JavaScript/frontend build dependencies for production-ready Vibetuner projects",
   "keywords": [
     "tailwindcss",
     "htmx",
     "daisyui",
     "frontend",
-    "build-tools"
+    "build-tools",
+    "web-framework",
+    "fastapi"
   ],
   "license": "MIT",
-  "author": "AllTuner",
+  "author": "All Tuner Labs, S.L.",
   "repository": {
     "type": "git",
     "url": "https://github.com/alltuner/vibetuner",

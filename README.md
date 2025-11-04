@@ -264,4 +264,4 @@ Copyright (c) 2025 All Tuner Labs, S.L.
 
 Created and maintained by [All Tuner Labs, S.L.](https://alltuner.com)
 
-Main contributor: David Poblador ([@davidpoblador](https://github.com/davidpoblador))
+Main contributor: David Poblador i Garcia ([@davidpoblador](https://github.com/davidpoblador) | [davidpoblador.com](https://davidpoblador.com/))
