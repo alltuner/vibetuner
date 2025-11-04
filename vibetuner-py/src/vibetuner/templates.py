@@ -3,13 +3,7 @@ from typing import Any, Dict, Optional
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
-from .paths import (
-    app_templates,
-    core_templates,
-    email_templates,
-    frontend_templates,
-    markdown_templates,
-)
+from . import paths
 
 
 def _get_base_paths_for_namespace(
@@ -22,19 +16,19 @@ def _get_base_paths_for_namespace(
 
     # Map known namespaces to their predefined paths
     if namespace == "email":
-        return email_templates
+        return paths.email_templates
     if namespace == "markdown":
-        return markdown_templates
+        return paths.markdown_templates
     if namespace == "frontend":
-        return frontend_templates
+        return paths.frontend_templates
 
     # Default for unknown or None namespace
     # Only include app_templates if project root has been set
-    paths = []
-    if app_templates is not None:
-        paths.append(app_templates)
-    paths.append(core_templates)
-    return paths
+    path_list = []
+    if paths.app_templates is not None:
+        path_list.append(paths.app_templates)
+    path_list.append(paths.core_templates)
+    return path_list
 
 
 def _build_search_paths(

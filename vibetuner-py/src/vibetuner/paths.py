@@ -1,112 +1,222 @@
 from importlib.resources import files
 from pathlib import Path
+from typing import Self
+
+from pydantic import BaseModel, computed_field, model_validator
+
 
 # Package-relative paths (for bundled templates in the vibetuner package)
 _package_files = files("vibetuner")
 _package_templates_traversable = _package_files / "templates"
 
-# Convert to Path when actually used (handles both filesystem and zip-based packages)
+
 def _get_package_templates_path() -> Path:
     """Get package templates path, works for both installed and editable installs."""
-    # For most cases, we can convert directly to Path
-    # For zip files, importlib.resources handles extraction automatically
     try:
         return Path(str(_package_templates_traversable))
     except (TypeError, ValueError):
-        # If we can't convert to Path, we're in a zip or similar
-        # In this case, we'll need to use as_file() context manager when accessing
-        # For now, raise an error - we can enhance this later if needed
         raise RuntimeError(
             "Package templates are in a non-filesystem location. "
             "This is not yet supported."
         )
 
 
+# Package templates always available
 package_templates = _get_package_templates_path()
-
-# Project root (set at runtime by the application using vibetuner)
-# When None, only package templates are available
-root: Path | None = None
-fallback_path = "defaults"
+core_templates = package_templates  # Alias for backwards compatibility
 
 
+class PathSettings(BaseModel):
+    """Path settings with lazy auto-detection of project root."""
+
+    root: Path | None = None
+    fallback_path: str = "defaults"
+
+    @model_validator(mode="after")
+    def detect_project_root(self) -> Self:
+        """Auto-detect project root if not explicitly set."""
+        if self.root is None:
+            detected = self._find_project_root()
+            if detected is not None:
+                self.root = detected
+        return self
+
+    @staticmethod
+    def _find_project_root() -> Path | None:
+        """Find project root by searching for marker files."""
+        markers = [".copier-answers.yml", "pyproject.toml", ".git"]
+        current = Path.cwd()
+
+        for parent in [current, *current.parents]:
+            if any((parent / marker).exists() for marker in markers):
+                return parent
+
+        return None
+
+    # Project-specific paths (only available if root is set)
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def templates(self) -> Path | None:
+        """Project templates directory."""
+        return self.root / "templates" if self.root else None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def app_templates(self) -> Path | None:
+        """Deprecated: use templates instead."""
+        return self.templates
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def locales(self) -> Path | None:
+        """Project locales directory."""
+        return self.root / "locales" if self.root else None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def config_vars(self) -> Path | None:
+        """Copier answers file."""
+        return self.root / ".copier-answers.yml" if self.root else None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def assets(self) -> Path | None:
+        """Project assets directory."""
+        return self.root / "assets" if self.root else None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def statics(self) -> Path | None:
+        """Project static assets directory."""
+        return self.root / "assets" / "statics" if self.root else None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def css(self) -> Path | None:
+        """Project CSS directory."""
+        return self.root / "assets" / "statics" / "css" if self.root else None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def js(self) -> Path | None:
+        """Project JavaScript directory."""
+        return self.root / "assets" / "statics" / "js" if self.root else None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def favicons(self) -> Path | None:
+        """Project favicons directory."""
+        return self.root / "assets" / "statics" / "favicons" if self.root else None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def img(self) -> Path | None:
+        """Project images directory."""
+        return self.root / "assets" / "statics" / "img" if self.root else None
+
+    # Template paths (always return a list, project + package)
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def frontend_templates(self) -> list[Path]:
+        """Frontend template search paths (project overrides, then package)."""
+        paths = []
+        if self.root:
+            project_path = self.root / "templates" / "frontend"
+            if project_path.exists():
+                paths.append(project_path)
+        paths.append(package_templates / "frontend")
+        return paths
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def email_templates(self) -> list[Path]:
+        """Email template search paths (project overrides, then package)."""
+        paths = []
+        if self.root:
+            project_path = self.root / "templates" / "email"
+            if project_path.exists():
+                paths.append(project_path)
+        paths.append(package_templates / "email")
+        return paths
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def markdown_templates(self) -> list[Path]:
+        """Markdown template search paths (project overrides, then package)."""
+        paths = []
+        if self.root:
+            project_path = self.root / "templates" / "markdown"
+            if project_path.exists():
+                paths.append(project_path)
+        paths.append(package_templates / "markdown")
+        return paths
+
+    def set_root(self, project_root: Path) -> None:
+        """Explicitly set project root (overrides auto-detection)."""
+        self.root = project_root
+
+    def to_template_path_list(self, path: Path) -> list[Path]:
+        """Convert path to list with fallback."""
+        return [path, path / self.fallback_path]
+
+    def fallback_static_default(self, static_type: str, file_name: str) -> Path:
+        """Return a fallback path for a static file."""
+        if self.statics is None:
+            raise RuntimeError(
+                "Project root not detected. Cannot access static assets."
+            )
+
+        paths_to_check = [
+            self.statics / static_type / file_name,
+            self.statics / self.fallback_path / static_type / file_name,
+        ]
+
+        for path in paths_to_check:
+            if path.exists():
+                return path
+
+        raise FileNotFoundError(
+            f"Could not find {file_name} in any of the fallback paths: {paths_to_check}"
+        )
+
+
+# Global settings instance with lazy auto-detection
+_settings = PathSettings()
+
+
+# Backwards-compatible module-level API
 def set_project_root(project_root: Path) -> None:
-    """Set the project root directory for the application using vibetuner.
-
-    This enables access to project-specific templates, assets, and locales.
-    Must be called before accessing project-specific paths.
-    """
-    global root, templates, app_templates, locales, config_vars
-    global assets, statics, css, js, favicons, img
-    global frontend_templates, email_templates, markdown_templates
-
-    root = project_root
-
-    # Update project-specific paths
-    templates = root / "templates"
-    app_templates = templates  # Deprecated: projects now use templates/ directly
-    locales = root / "locales"
-    config_vars = root / ".copier-answers.yml"
-
-    # Update asset paths
-    assets = root / "assets"
-    statics = assets / "statics"
-    css = statics / "css"
-    js = statics / "js"
-    favicons = statics / "favicons"
-    img = statics / "img"
-
-    # Update template lists to include project overrides
-    frontend_templates = [templates / "frontend", package_templates / "frontend"]
-    email_templates = [templates / "email", package_templates / "email"]
-    markdown_templates = [templates / "markdown", package_templates / "markdown"]
+    """Set the project root directory explicitly."""
+    _settings.set_root(project_root)
 
 
 def to_template_path_list(path: Path) -> list[Path]:
-    return [
-        path,
-        path / fallback_path,
-    ]
+    """Convert path to list with fallback."""
+    return _settings.to_template_path_list(path)
 
 
 def fallback_static_default(static_type: str, file_name: str) -> Path:
-    """Return a fallback path for a file."""
-    if root is None:
-        raise RuntimeError(
-            "Project root not set. Call set_project_root() before accessing assets."
-        )
-
-    paths_to_check = [
-        statics / static_type / file_name,
-        statics / fallback_path / static_type / file_name,
-    ]
-
-    for path in paths_to_check:
-        if path.exists():
-            return path
-
-    raise FileNotFoundError(
-        f"Could not find {file_name} in any of the fallback paths: {paths_to_check}"
-    )
+    """Return a fallback path for a static file."""
+    return _settings.fallback_static_default(static_type, file_name)
 
 
-# Core templates point to package (always available)
-core_templates = package_templates
+# Expose settings instance for direct access
+paths = _settings
 
-# Template paths - initially only package templates, updated when set_project_root() is called
-frontend_templates = [package_templates / "frontend"]
-email_templates = [package_templates / "email"]
-markdown_templates = [package_templates / "markdown"]
-
-# Project-specific paths - will be None until set_project_root() is called
-# These get updated by set_project_root()
-templates: Path | None = None
-app_templates: Path | None = None
-locales: Path | None = None
-config_vars: Path | None = None
-assets: Path | None = None
-statics: Path | None = None
-css: Path | None = None
-js: Path | None = None
-favicons: Path | None = None
-img: Path | None = None
+# Module-level variables that delegate to settings (backwards compatibility)
+# Access like: from vibetuner.paths import frontend_templates
+# Or better: from vibetuner.paths import paths; paths.frontend_templates
+root = _settings.root
+templates = _settings.templates
+app_templates = _settings.app_templates
+locales = _settings.locales
+config_vars = _settings.config_vars
+assets = _settings.assets
+statics = _settings.statics
+css = _settings.css
+js = _settings.js
+favicons = _settings.favicons
+img = _settings.img
+frontend_templates = _settings.frontend_templates
+email_templates = _settings.email_templates
+markdown_templates = _settings.markdown_templates
