@@ -29,6 +29,28 @@ node_modules/
 
 
 ############################################################
+# Editor Temporary Files
+############################################################
+# Vim
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+
+# Emacs
+\#*\#
+.\#*
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+
+############################################################
 # Template Specific
 ############################################################
 .git
