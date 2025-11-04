@@ -81,11 +81,7 @@ pr:
     COMMITS=$(git log main..HEAD --pretty=format:"- %s")
 
     # Create PR body
-    BODY="## Changes
-
-$COMMITS
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+    printf -v BODY "## Changes\n\n%s\n\nGenerated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>" "$COMMITS"
 
     gh pr create --fill --body "$BODY" --base main
 
@@ -112,11 +108,19 @@ clean:
 
 # Serve documentation locally with live reload
 docs-serve:
-    cd vibetuner-py && uv sync --group docs && cd .. && uv run --directory vibetuner-py mkdocs serve
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd vibetuner-py && uv sync --group docs
+    cd ..
+    vibetuner-py/.venv/bin/mkdocs serve
 
 # Build documentation
 docs-build:
-    cd vibetuner-py && uv sync --group docs && cd .. && uv run --directory vibetuner-py mkdocs build --site-dir _site
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd vibetuner-py && uv sync --group docs
+    cd ..
+    vibetuner-py/.venv/bin/mkdocs build --site-dir _site
 
 # Deploy documentation (triggers automatically on tag push, use this for manual testing)
 docs-deploy:
