@@ -243,15 +243,6 @@ vibetuner scaffold update
 vibetuner scaffold update /path/to/my-project
 ```
 
-## Examples
-
-See the [examples](./examples) directory for sample projects demonstrating:
-
-- Blog with authentication
-- E-commerce with background jobs
-- Multi-language documentation site
-- REST API with MongoDB
-
 ## Contributing
 
 We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
@@ -273,4 +264,4 @@ Copyright (c) 2025 All Tuner Labs, S.L.
 
 Created and maintained by [All Tuner Labs, S.L.](https://alltuner.com)
 
-Main contributor: David Poblador (@dpoblador)
+Main contributor: David Poblador ([@davidpoblador](https://github.com/davidpoblador))
