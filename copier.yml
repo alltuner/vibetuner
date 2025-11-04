@@ -8,16 +8,19 @@ company_name:
   type: str
   help: Your company name
   placeholder: Company Name, S.L.
+  default: "Acme Corp"
 
 author_name:
   type: str
   help: Your full name
   placeholder: FirstName LastName
+  default: "Developer"
 
 author_email:
   type: str
   help: Your email address
   placeholder: hello@example.com
+  default: "dev@example.com"
 
 project_name:
   type: str
@@ -59,6 +62,7 @@ supported_languages:
   type: yaml
   help: List of 2 letter lang codes in JSON format of supported languages (in addition to English)
   multiline: true
+  default: []
 
 enable_job_queue:
   type: bool

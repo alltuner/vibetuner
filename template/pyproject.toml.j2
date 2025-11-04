@@ -2,7 +2,11 @@
 name = "{{ project_slug }}"
 dynamic = ["version"]
 description = "{{ project_description }}"
-authors = [{ name = "{{ author_name }}", email = "{{ author_email }}" }]
+{% if author_name or author_email -%}
+authors = [
+  {%- if author_name and author_email %} name = "{{ author_name }}", email = "{{ author_email }}" {%- elif author_name %} name = "{{ author_name }}" {%- else %} email = "{{ author_email }}" {%- endif %}
+]
+{%- endif %}
 readme = "README.md"
 requires-python = ">={{ python_version }}"
 dependencies = [

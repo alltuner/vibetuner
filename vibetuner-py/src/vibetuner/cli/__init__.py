@@ -9,6 +9,7 @@ import typer
 from rich.console import Console
 
 from vibetuner.cli.run import run_app
+from vibetuner.cli.scaffold import scaffold_app
 from vibetuner.config import settings
 from vibetuner.logging import LogLevel, setup_logging
 
@@ -61,6 +62,7 @@ def callback(log_level: LogLevel | None = LOG_LEVEL_OPTION) -> None:
 
 
 app.add_typer(run_app, name="run")
+app.add_typer(scaffold_app, name="scaffold")
 
 try:
     import_module("app.cli")
