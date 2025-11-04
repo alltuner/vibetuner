@@ -28,7 +28,7 @@ This module contains the scaffolding's core task components:
 
 Tasks are only available if job queue was enabled during scaffolding.
 
-The worker is defined in `src/vibetuner/tasks/worker.py` and should be imported from there in your app tasks.
+The worker is defined in `vibetuner.tasks.worker` and should be imported from there in your app tasks.
 
 ## User Task Pattern (for reference)
 

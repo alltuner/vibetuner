@@ -70,7 +70,6 @@ def dev(
 
         # Define paths to watch for changes
         reload_paths = [
-            Path("src/vibetuner"),
             Path("src/app"),
             Path("templates/frontend"),
             Path("templates/email"),
