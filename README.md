@@ -71,23 +71,23 @@ Visit `http://localhost:8000` - your app is running!
 ## 📦 Tech Stack
 
 ### Backend
-- **FastAPI** - Modern async web framework
-- **MongoDB** - Document database with Beanie ODM
-- **Granian** - High-performance ASGI server
-- **Redis** - Caching and task queue (optional)
-- **Streaq** - Background job processing (optional)
+- **[FastAPI](https://fastapi.tiangolo.com/)** - Modern async web framework
+- **[MongoDB](https://www.mongodb.com/)** - Document database with [Beanie ODM](https://beanie-odm.dev/)
+- **[Granian](https://github.com/emmett-framework/granian)** - High-performance ASGI server
+- **[Redis](https://redis.io/)** - Caching and task queue (optional)
+- **[Streaq](https://github.com/performancemedia/streaq)** - Background job processing (optional)
 
 ### Frontend
-- **HTMX** - Dynamic HTML without complex JavaScript
-- **Tailwind CSS** - Utility-first CSS framework
-- **DaisyUI** - Beautiful Tailwind components
-- **Jinja2** - Template engine with i18n
+- **[HTMX](https://htmx.org/)** - Dynamic HTML without complex JavaScript
+- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
+- **[DaisyUI](https://daisyui.com/)** - Beautiful Tailwind components
+- **[Jinja2](https://jinja.palletsprojects.com/)** - Template engine with i18n
 
 ### DevOps
-- **Docker** - Multi-stage builds for dev/prod
-- **uv** - Fast Python package management
-- **bun** - Fast JavaScript tooling
-- **just** - Command runner
+- **[Docker](https://www.docker.com/)** - Multi-stage builds for dev/prod
+- **[uv](https://docs.astral.sh/uv/)** - Fast Python package management
+- **[bun](https://bun.sh/)** - Fast JavaScript tooling
+- **[just](https://just.systems/)** - Command runner
 
 ### Why These Choices?
 
