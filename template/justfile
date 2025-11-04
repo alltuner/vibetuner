@@ -21,12 +21,12 @@ dev: install-deps
 # Runs the dev environment locally without Docker
 [group('Local Development')]
 local-dev PORT="8000": install-deps
-    @atl run dev --port {{ PORT }}
+    @vibetuner run dev --port {{ PORT }}
 
 # Runs the task worker locally without Docker
 [group('Local Development')]
 worker-dev: install-deps
-    @atl run dev worker
+    @vibetuner run dev worker
 
 # Builds the dev image with COMPOSE_BAKE set
 [group('CI/CD')]
