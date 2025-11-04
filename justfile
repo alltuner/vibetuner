@@ -112,11 +112,11 @@ clean:
 
 # Serve documentation locally with live reload
 docs-serve:
-    cd vibetuner-py && uv run mkdocs serve
+    cd vibetuner-py && uv sync --group docs && cd .. && uv run --directory vibetuner-py mkdocs serve
 
 # Build documentation
 docs-build:
-    cd vibetuner-py && uv run mkdocs build --site-dir ../_site
+    cd vibetuner-py && uv sync --group docs && cd .. && uv run --directory vibetuner-py mkdocs build --site-dir _site
 
 # Deploy documentation (triggers automatically on tag push, use this for manual testing)
 docs-deploy:

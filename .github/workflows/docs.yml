@@ -32,15 +32,13 @@ jobs:
       - name: Install dependencies
         run: |
           cd vibetuner-py
-          uv sync --group dev
+          uv sync --group docs
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Build docs
-        run: |
-          cd vibetuner-py
-          uv run mkdocs build --strict --site-dir ../_site
+        run: uv run --directory vibetuner-py mkdocs build --strict --site-dir _site
 
       - name: Add CNAME for custom domain
         run: echo "vibetuner.alltuner.com" > _site/CNAME

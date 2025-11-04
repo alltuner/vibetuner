@@ -58,7 +58,6 @@ markdown_extensions:
 
 plugins:
   - search
-  - social
 
 nav:
   - Home: index.md
