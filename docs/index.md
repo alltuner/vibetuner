@@ -43,6 +43,27 @@ cd my-project && just dev
 - **[Tech Stack](tech-stack.md)** - Technologies and why we chose them
 - **[Contributing](contributing.md)** - Help improve Vibetuner
 
+## Tech Stack
+
+### Backend
+- **[FastAPI](https://fastapi.tiangolo.com/)** - Modern async web framework
+- **[MongoDB](https://www.mongodb.com/)** - Document database with [Beanie ODM](https://beanie-odm.dev/)
+- **[Granian](https://github.com/emmett-framework/granian)** - High-performance ASGI server
+- **[Redis](https://redis.io/)** - Caching and task queue (optional)
+- **[Streaq](https://github.com/tastyware/streaq)** - Background job processing (optional)
+
+### Frontend
+- **[HTMX](https://htmx.org/)** - Dynamic HTML without complex JavaScript
+- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
+- **[DaisyUI](https://daisyui.com/)** - Beautiful Tailwind components
+- **[Jinja2](https://jinja.palletsprojects.com/)** - Template engine with i18n
+
+### DevOps
+- **[Docker](https://www.docker.com/)** - Multi-stage builds for dev/prod
+- **[uv](https://docs.astral.sh/uv/)** - Fast Python package management
+- **[bun](https://bun.sh/)** - Fast JavaScript tooling
+- **[just](https://just.systems/)** - Command runner
+
 ## Project Structure
 
 Generated projects separate framework code from your code:
