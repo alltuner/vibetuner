@@ -75,7 +75,7 @@ Visit `http://localhost:8000` - your app is running!
 - **[MongoDB](https://www.mongodb.com/)** - Document database with [Beanie ODM](https://beanie-odm.dev/)
 - **[Granian](https://github.com/emmett-framework/granian)** - High-performance ASGI server
 - **[Redis](https://redis.io/)** - Caching and task queue (optional)
-- **[Streaq](https://github.com/performancemedia/streaq)** - Background job processing (optional)
+- **[Streaq](https://github.com/tastyware/streaq)** - Background job processing (optional)
 
 ### Frontend
 - **[HTMX](https://htmx.org/)** - Dynamic HTML without complex JavaScript
