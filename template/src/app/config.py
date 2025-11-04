@@ -1,5 +1,4 @@
 from pydantic_settings import SettingsConfigDict
-
 from vibetuner.config import CoreConfiguration, _load_project_config
 
 
