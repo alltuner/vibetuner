@@ -66,11 +66,11 @@ clean:
 # Serve documentation locally with live reload
 [group('Documentation')]
 docs-serve:
-    uv sync --directory vibetuner-py --only-group docs
-    uv run --directory vibetuner-py mkdocs serve
+    uv sync --only-group docs
+    uv run mkdocs serve
 
 # Build documentation
 [group('Documentation')]
 docs-build:
-    uv sync --directory vibetuner-py --only-group docs
-    uv run --directory vibetuner-py mkdocs build --site-dir _site
+    uv sync --only-group docs
+    uv run mkdocs build --site-dir _site

@@ -5,6 +5,10 @@ requires-python = ">=3.11"
 
 [dependency-groups]
 dev = [
-  "vibetuner[dev]>=2.8.3",
+  "vibetuner[dev]>=2.9.1",
   # Add below this line any dev dependencies you need for development
+]
+docs = [
+  "mkdocs>=1.6.1",
+  "mkdocs-material>=9.6.23",
 ]
