@@ -93,6 +93,17 @@ def new(
             key, value = item.split("=", 1)
             data_dict[key] = value
 
+    # When using defaults, provide sensible default values for required fields
+    if defaults:
+        default_values = {
+            "company_name": "Acme Corp",
+            "author_name": "Developer",
+            "author_email": "dev@example.com",
+            "supported_languages": [],
+        }
+        # Merge: user overrides take precedence over defaults
+        data_dict = {**default_values, **data_dict}
+
     # Run copier
     try:
         console.print(f"\n[green]Creating new project in: {destination}[/green]\n")
@@ -102,6 +113,7 @@ def new(
             dst_path=destination,
             data=data_dict if data_dict else None,
             defaults=defaults,
+            quiet=defaults,  # Suppress prompts when using defaults
             unsafe=True,  # Allow running post-generation tasks
         )
 
