@@ -52,13 +52,26 @@
   color: #7a2f45;
 }
 
-/* Custom link colors for dark mode - lighter for better readability */
+/* Custom link colors for dark mode - use white-smoke for readability */
 [data-md-color-scheme="slate"] .md-content a {
-  color: #e89bb3;
+  color: var(--white-smoke);
 }
 
 [data-md-color-scheme="slate"] .md-content a:hover {
-  color: #f5b6ca;
+  color: var(--taupe-gray);
+}
+
+/* Sidebar navigation links in dark mode */
+[data-md-color-scheme="slate"] .md-nav__link {
+  color: var(--white-smoke);
+}
+
+[data-md-color-scheme="slate"] .md-nav__link:hover {
+  color: var(--taupe-gray);
+}
+
+[data-md-color-scheme="slate"] .md-nav__link--active {
+  color: var(--white-smoke);
 }
 
 /* Custom header logo sizing */
