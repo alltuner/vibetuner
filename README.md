@@ -1,11 +1,17 @@
-# Vibetuner
+<div align="center">
+  <img src="https://alltuner.com/statics/img/all-tuner-logo.svg" alt="All Tuner Labs" width="200"/>
 
-> **Production-ready FastAPI + MongoDB + HTMX project scaffolding in seconds**
+  # Vibetuner
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+  **Production-ready FastAPI + MongoDB + HTMX project scaffolding in seconds**
 
-Vibetuner generates full-stack web applications with authentication, database, frontend, Docker deployment, and CLI tools pre-configured. Built by [All Tuner Labs](https://alltuner.com) for rapid iteration and modern development.
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+
+  Vibetuner generates full-stack web applications with authentication, database, frontend, Docker deployment, and CLI tools pre-configured.
+
+  Built by [All Tuner Labs](https://alltuner.com) for rapid iteration and modern development.
+</div>
 
 ## ✨ What You Get
 

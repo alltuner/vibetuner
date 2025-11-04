@@ -2991,8 +2991,6 @@ dev = [
     { name = "gh-bin" },
     { name = "granian", extra = ["pname", "reload"] },
     { name = "just-bin" },
-    { name = "mkdocs" },
-    { name = "mkdocs-material" },
     { name = "pre-commit" },
     { name = "pysemver" },
     { name = "ruff" },
@@ -3004,6 +3002,12 @@ dev = [
     { name = "types-authlib" },
     { name = "types-pyyaml" },
     { name = "uv-bump" },
+]
+
+[package.dev-dependencies]
+docs = [
+    { name = "mkdocs" },
+    { name = "mkdocs-material" },
 ]
 
 [package.metadata]
@@ -3028,8 +3032,6 @@ requires-dist = [
     { name = "itsdangerous", specifier = ">=2.2.0" },
     { name = "just-bin", marker = "extra == 'dev'", specifier = ">=1.43.0" },
     { name = "loguru", specifier = ">=0.7.3" },
-    { name = "mkdocs", marker = "extra == 'dev'", specifier = ">=1.6.0" },
-    { name = "mkdocs-material", marker = "extra == 'dev'", specifier = ">=9.5.0" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.3.0" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.12.3" },
     { name = "pydantic-extra-types", extras = ["pycountry"], specifier = ">=2.10.6" },
@@ -3054,6 +3056,12 @@ requires-dist = [
     { name = "uv-bump", marker = "extra == 'dev'", specifier = ">=0.3.1" },
 ]
 provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+docs = [
+    { name = "mkdocs", specifier = ">=1.6.0" },
+    { name = "mkdocs-material", specifier = ">=9.5.0" },
+]
 
 [[package]]
 name = "virtualenv"
