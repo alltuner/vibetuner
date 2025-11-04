@@ -2,7 +2,8 @@ from importlib.resources import files
 from pathlib import Path
 from typing import Self
 
-from pydantic import BaseModel, computed_field, model_validator
+from pydantic import computed_field, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 # Package-relative paths (for bundled templates in the vibetuner package)
@@ -26,8 +27,14 @@ package_templates = _get_package_templates_path()
 core_templates = package_templates  # Alias for backwards compatibility
 
 
-class PathSettings(BaseModel):
+class PathSettings(BaseSettings):
     """Path settings with lazy auto-detection of project root."""
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        extra="ignore",
+        validate_default=True,
+    )
 
     root: Path | None = None
     fallback_path: str = "defaults"
