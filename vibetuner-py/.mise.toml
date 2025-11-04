@@ -1,0 +1,10 @@
+[settings]
+
+[settings.python]
+uv_venv_auto = true
+
+[tools]
+uv = "latest"
+bun = "latest"
+just = "latest"
+gh = "latest"

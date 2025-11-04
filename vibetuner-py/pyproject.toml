@@ -2,7 +2,7 @@
 name = "vibetuner"
 description = "Blessed Python dependencies for Vibetuner projects"
 version = "0.0.1-dev"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     # These are the base dependencies of AllTuner's blessed stack
     "aioboto3>=15.5.0",
