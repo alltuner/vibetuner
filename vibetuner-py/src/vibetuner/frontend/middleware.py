@@ -66,7 +66,7 @@ def user_preference_selector(conn: HTTPConnection) -> str | None:
 
 
 shared_translator = get_translator()
-if locales_path.exists() and locales_path.is_dir():
+if locales_path is not None and locales_path.exists() and locales_path.is_dir():
     # Load translations from the locales directory
     shared_translator.load_from_directories([locales_path])
 

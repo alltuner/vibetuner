@@ -17,14 +17,19 @@ from pydantic import (
 from pydantic_extra_types.language_code import LanguageAlpha2
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from vibetuner.paths import config_vars as config_vars_path
-from vibetuner.versioning import version
+from .paths import config_vars as config_vars_path
+from .versioning import version
 
 
 current_year: int = datetime.now().year
 
 
 def _load_project_config() -> "ProjectConfiguration":
+    if config_vars_path is None:
+        raise RuntimeError(
+            "Project root not detected. Cannot load project configuration. "
+            "Ensure you're running from within a project directory with .copier-answers.yml"
+        )
     if not config_vars_path.exists():
         return ProjectConfiguration()
     return ProjectConfiguration(

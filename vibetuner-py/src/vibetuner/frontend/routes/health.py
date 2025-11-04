@@ -22,6 +22,10 @@ def health_ping():
 @router.get("/id")
 def health_instance_id():
     """Instance identification endpoint for distinguishing app instances"""
+    if root_path is None:
+        raise RuntimeError(
+            "Project root not detected. Cannot provide instance information."
+        )
     return {
         "app": settings.project.project_slug,
         "port": int(os.environ.get("PORT", 8000)),

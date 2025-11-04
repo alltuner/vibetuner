@@ -21,8 +21,8 @@ def register_router(router: APIRouter) -> None:
 
 
 try:
-    import app.frontend.oauth as _app_oauth  # noqa: F401
-    import app.frontend.routes as _app_routes  # noqa: F401
+    import app.frontend.oauth as _app_oauth  # noqa: F401  # type: ignore[unresolved-import]
+    import app.frontend.routes as _app_routes  # noqa: F401  # type: ignore[unresolved-import]
 except (ImportError, ModuleNotFoundError):
     pass
 

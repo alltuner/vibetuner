@@ -19,7 +19,7 @@ def _get_package_templates_path() -> Path:
         raise RuntimeError(
             "Package templates are in a non-filesystem location. "
             "This is not yet supported."
-        )
+        ) from None
 
 
 # Package templates always available
