@@ -61,68 +61,68 @@ class PathSettings(BaseSettings):
         return None
 
     # Project-specific paths (only available if root is set)
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def templates(self) -> Path | None:
         """Project templates directory."""
         return self.root / "templates" if self.root else None
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def app_templates(self) -> Path | None:
         """Deprecated: use templates instead."""
         return self.templates
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def locales(self) -> Path | None:
         """Project locales directory."""
         return self.root / "locales" if self.root else None
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def config_vars(self) -> Path | None:
         """Copier answers file."""
         return self.root / ".copier-answers.yml" if self.root else None
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def assets(self) -> Path | None:
         """Project assets directory."""
         return self.root / "assets" if self.root else None
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def statics(self) -> Path | None:
         """Project static assets directory."""
         return self.root / "assets" / "statics" if self.root else None
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def css(self) -> Path | None:
         """Project CSS directory."""
         return self.root / "assets" / "statics" / "css" if self.root else None
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def js(self) -> Path | None:
         """Project JavaScript directory."""
         return self.root / "assets" / "statics" / "js" if self.root else None
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def favicons(self) -> Path | None:
         """Project favicons directory."""
         return self.root / "assets" / "statics" / "favicons" if self.root else None
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def img(self) -> Path | None:
         """Project images directory."""
         return self.root / "assets" / "statics" / "img" if self.root else None
 
     # Template paths (always return a list, project + package)
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def frontend_templates(self) -> list[Path]:
         """Frontend template search paths (project overrides, then package)."""
@@ -134,7 +134,7 @@ class PathSettings(BaseSettings):
         paths.append(package_templates / "frontend")
         return paths
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def email_templates(self) -> list[Path]:
         """Email template search paths (project overrides, then package)."""
@@ -146,7 +146,7 @@ class PathSettings(BaseSettings):
         paths.append(package_templates / "email")
         return paths
 
-    @computed_field  # type: ignore[prop-decorator]
+    @computed_field
     @property
     def markdown_templates(self) -> list[Path]:
         """Markdown template search paths (project overrides, then package)."""
