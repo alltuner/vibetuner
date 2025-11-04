@@ -66,17 +66,11 @@ clean:
 # Serve documentation locally with live reload
 [group('Documentation')]
 docs-serve:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    cd vibetuner-py && uv sync --only-group docs
-    cd ..
-    vibetuner-py/.venv/bin/mkdocs serve
+    uv sync --directory vibetuner-py --only-group docs
+    uv run --directory vibetuner-py mkdocs serve
 
 # Build documentation
 [group('Documentation')]
 docs-build:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    cd vibetuner-py && uv sync --only-group docs
-    cd ..
-    vibetuner-py/.venv/bin/mkdocs build --site-dir _site
+    uv sync --directory vibetuner-py --only-group docs
+    uv run --directory vibetuner-py mkdocs build --site-dir _site
