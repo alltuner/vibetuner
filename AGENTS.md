@@ -13,18 +13,26 @@ Python web applications using AllTuner's blessed stack:
 - **OAuth + Magic Link authentication**
 - **Background task processing** with Redis/Streaq
 - **Internationalization** support
-- **Dependency management**: Uses `prototuner` package for Python dependencies
-  and `vibetuner` package for JavaScript (build-time) dependencies
+- **Dependency management**: Uses `vibetuner` package for Python dependencies
+  and `@alltuner/vibetuner` package for JavaScript (build-time) dependencies
 
 ## Essential Commands
 
 ### Scaffolding Template Management
 
 ```bash
-# Main development commands for the scaffolding itself
+# Create new projects
+uvx vibetuner scaffold new my-project              # Interactive mode
+uvx vibetuner scaffold new my-project --defaults   # Non-interactive with defaults
+vibetuner scaffold update                          # Update existing project
+
+# Development commands for the scaffolding itself
 just --list                    # List all available commands
-just bump-patch               # Version bump the scaffolding template
-just pr                       # Create pull request for template changes
+just sync                      # Sync all dependencies (Python + JS)
+just format                    # Format and check code
+just bump-patch                # Version bump the scaffolding template
+just pr                        # Create pull request for template changes
+just test-scaffold             # Test scaffold command locally
 ```
 
 ### Generated Project Commands (in template/)
@@ -55,24 +63,50 @@ just compile-locales         # Compile .po files to .mo
 
 ## Architecture Overview
 
-### Template Structure
+### Project Structure
 
-- **Root**: Copier configuration (`copier.yml`) and template management
-- **template/**: The actual project template that gets generated
-- **template/src/{{ project_slug }}/**: Main Python application code
+Vibetuner consists of three main components:
+
+1. **Scaffolding System** (root): Copier template configuration
+   - `copier.yml`: Template questions and configuration
+   - `justfile`: Project management commands
+   - `.claude/commands/`: Claude Code slash commands
+   - `.github/workflows/`: CI/CD for publishing packages
+
+2. **Python Package** (`vibetuner-py/`): Core framework
+   - `src/vibetuner/`: Complete web application framework
+   - `src/vibetuner/cli/`: CLI with scaffold and run commands
+   - Published to PyPI as `vibetuner`
+
+3. **JavaScript Package** (`vibetuner-js/`): Frontend dependencies
+   - Bundles Tailwind CSS, DaisyUI, HTMX, and build tools
+   - Published to npm as `@alltuner/vibetuner`
+
+4. **Template** (`template/`): Project template to be copied
+   - Generated projects use the published `vibetuner` and `@alltuner/vibetuner` packages
+   - Template files use `.j2` extension for Jinja2 processing
 
 ### Generated Project Architecture
 
 The template generates a FastAPI application with this structure:
 
-#### Backend (`src/{{ project_slug }}/`)
+#### Backend
 
-- **`frontend/`**: FastAPI app with routes, templates, middleware
-- **`models/`**: Beanie ODM models for MongoDB
-- **`services/`**: Business logic (email, external APIs)
-- **`tasks/`**: Background job processing with Streaq
-- **`cli/`**: Typer-based command line interface
-- **Core files**: `config.py` (Pydantic settings), `paths.py`, `logging.py`
+- **`src/vibetuner/`**: Immutable core framework (from vibetuner package)
+  - `frontend/`: FastAPI app, routes, auth, middleware
+  - `models/`: User, OAuth, core models
+  - `services/`: Email (SES), blob storage (S3)
+  - `tasks/`: Background job infrastructure
+  - `cli/`: CLI framework (scaffold, run commands)
+  - Core files: `config.py`, `mongo.py`, `logging.py`
+
+- **`src/app/`**: Your application code
+  - `frontend/routes/`: Your HTTP routes
+  - `models/`: Your MongoDB models
+  - `services/`: Your business logic
+  - `tasks/`: Your background jobs
+  - `cli/`: Your CLI commands
+  - `config.py`: App-specific configuration
 
 #### Frontend
 
@@ -142,9 +176,11 @@ The template generates a FastAPI application with this structure:
 ### Configuration Files
 
 - **`copier.yml`**: Template configuration and user prompts
-- **`pyproject.toml`**: Scaffolding dependencies (minimal)
-- **`template/pyproject.toml.j2`**: Generated project Python dependencies (uses `prototuner` from GitHub)
-- **`template/package.json`**: Generated project JavaScript dependencies (uses `prototuner` from GitHub)
+- **`pyproject.toml`**: Root project metadata (minimal, no dependencies)
+- **`vibetuner-py/pyproject.toml`**: Python package dependencies and metadata
+- **`vibetuner-js/package.json`**: JavaScript package dependencies and metadata
+- **`template/pyproject.toml.j2`**: Generated project Python dependencies (uses `vibetuner` from PyPI)
+- **`template/package.json.j2`**: Generated project JavaScript dependencies (uses `@alltuner/vibetuner` from npm)
 
 ### Static Assets
 
