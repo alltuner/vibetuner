@@ -5,9 +5,7 @@
 Vibetuner generates full-stack web applications with authentication, database,
 frontend, Docker deployment, and CLI tools pre-configured.
 
-![All Tuner Labs](https://alltuner.com/statics/img/vibetuner-horizontal-logo.png)
-
-Built by [All Tuner Labs](https://alltuner.com) for rapid iteration and modern development.
+Built by [All Tuner Labs](https://www.alltuner.com) for rapid iteration and modern development.
 
 ## ✨ What You Get
 
@@ -255,12 +253,12 @@ See [LICENSE](./LICENSE) for details.
 
 ## 👨‍💻 Credits
 
-Created and maintained by [All Tuner Labs, S.L.](https://alltuner.com)
-
-Main contributor: David Poblador i Garcia ([@davidpoblador](https://github.com/davidpoblador) | [davidpoblador.com](https://davidpoblador.com/))
+Created and maintained by [All Tuner Labs, S.L.](https://alltuner.com) and
+David Poblador i Garcia ([@davidpoblador](https://github.com/davidpoblador) |
+[davidpoblador.com](https://davidpoblador.com/))
 
 ---
 
-## Made with ❤️ for rapid prototyping and production deployments
+Made with ❤️ for rapid prototyping and production deployments
 
-<!-- markdownlint-enable MD013 MD033 MD036 MD041 -->
+![All Tuner Labs](https://alltuner.com/statics/img/vibetuner-horizontal-logo.png)
