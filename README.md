@@ -1,6 +1,6 @@
 # Vibetuner
 
-![All Tuner Labs](https://alltuner.com/statics/img/all-tuner-logo.svg)
+![All Tuner Labs](https://alltuner.com/statics/img/vibetuner-horizontal-logo.png)
 
 ## Production-ready FastAPI + MongoDB + HTMX project scaffolding in seconds
 
