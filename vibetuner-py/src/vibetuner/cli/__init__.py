@@ -10,7 +10,6 @@ from rich.console import Console
 
 from vibetuner.cli.run import run_app
 from vibetuner.cli.scaffold import scaffold_app
-from vibetuner.config import settings
 from vibetuner.logging import LogLevel, setup_logging
 
 
@@ -44,7 +43,16 @@ class AsyncTyper(typer.Typer):
         return partial(self.maybe_run_async, decorator)
 
 
-app = AsyncTyper(help=f"{settings.project.project_name.title()} CLI")
+def _get_app_help():
+    try:
+        from vibetuner.config import settings
+
+        return f"{settings.project.project_name.title()} CLI"
+    except (RuntimeError, ImportError):
+        return "Vibetuner CLI"
+
+
+app = AsyncTyper(help=_get_app_help())
 
 LOG_LEVEL_OPTION = typer.Option(
     LogLevel.INFO,
@@ -68,3 +76,4 @@ try:
     import_module("app.cli")
 except (ImportError, ModuleNotFoundError):
     pass
+# Cache buster

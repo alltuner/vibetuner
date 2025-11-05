@@ -4,7 +4,13 @@ dynamic = ["version"]
 description = "{{ project_description }}"
 {% if author_name or author_email -%}
 authors = [
-  {%- if author_name and author_email %} name = "{{ author_name }}", email = "{{ author_email }}" {%- elif author_name %} name = "{{ author_name }}" {%- else %} email = "{{ author_email }}" {%- endif %}
+  {%- if author_name and author_email %}
+  { name = "{{ author_name }}", email = "{{ author_email }}" },
+  {%- elif author_name %}
+  { name = "{{ author_name }}" },
+  {%- else %}
+  { email = "{{ author_email }}" },
+  {%- endif %}
 ]
 {%- endif %}
 readme = "README.md"
