@@ -10,11 +10,13 @@
     "vibetuner-py": {
       "release-type": "python",
       "package-name": "vibetuner",
+      "component": "",
       "changelog-section": "Python Package"
     },
     "vibetuner-js": {
       "release-type": "node",
       "package-name": "@alltuner/vibetuner",
+      "component": "",
       "changelog-section": "JavaScript Package"
     }
   }
