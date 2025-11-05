@@ -15,16 +15,6 @@ scaffold_app = typer.Typer(
 )
 
 
-def get_template_path() -> Path:
-    """Get the path to the vibetuner template directory."""
-    # This file is at: vibetuner-py/src/vibetuner/cli/scaffold.py
-    # Template is at: ./ (root of repo)
-    current_file = Path(__file__).resolve()
-    # Go up: scaffold.py -> cli -> vibetuner -> src -> vibetuner-py -> repo_root
-    template_path = current_file.parent.parent.parent.parent.parent
-    return template_path
-
-
 @scaffold_app.command(name="new")
 def new(
     destination: Annotated[
@@ -34,14 +24,6 @@ def new(
             exists=False,
         ),
     ],
-    template: Annotated[
-        str | None,
-        typer.Option(
-            "--template",
-            "-t",
-            help="Template source (git URL, local path, or github:user/repo). Defaults to local vibetuner template.",
-        ),
-    ] = None,
     defaults: Annotated[
         bool,
         typer.Option(
@@ -70,25 +52,19 @@ def new(
 
         # Override specific values
         vibetuner scaffold new my-project --data project_name="My App" --data python_version="3.13"
-
-        # Use a different template source
-        vibetuner scaffold new my-project --template gh:alltuner/vibetuner
-        vibetuner scaffold new my-project --template /path/to/template
     """
-    # Determine template source
-    if template is None:
-        template_src = get_template_path()
-        console.print(f"[dim]Using local template: {template_src}[/dim]")
-    else:
-        template_src = template
-        console.print(f"[dim]Using template: {template_src}[/dim]")
+    # Use the official vibetuner template from GitHub
+    template_src = "gh:alltuner/vibetuner"
+    console.print("[dim]Using vibetuner template from GitHub[/dim]")
 
     # Parse data overrides
     data_dict = {}
     if data:
         for item in data:
             if "=" not in item:
-                console.print(f"[red]Error: Invalid data format '{item}'. Expected key=value[/red]")
+                console.print(
+                    f"[red]Error: Invalid data format '{item}'. Expected key=value[/red]"
+                )
                 raise typer.Exit(code=1)
             key, value = item.split("=", 1)
             data_dict[key] = value
@@ -117,24 +93,24 @@ def new(
             unsafe=True,  # Allow running post-generation tasks
         )
 
-        console.print(f"\n[green]✓ Project created successfully![/green]")
-        console.print(f"\nNext steps:")
+        console.print("\n[green]✓ Project created successfully![/green]")
+        console.print("\nNext steps:")
         console.print(f"  cd {destination}")
-        console.print(f"  just dev")
+        console.print("  just dev")
 
     except Exception as e:
         console.print(f"[red]Error creating project: {e}[/red]")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None
 
 
 @scaffold_app.command(name="update")
 def update(
     path: Annotated[
-        Path,
+        Path | None,
         typer.Argument(
             help="Path to the project to update",
         ),
-    ] = Path.cwd(),
+    ] = None,
     skip_answered: Annotated[
         bool,
         typer.Option(
@@ -160,6 +136,9 @@ def update(
         # Re-prompt for all questions
         vibetuner scaffold update --no-skip-answered
     """
+    if path is None:
+        path = Path.cwd()
+
     if not path.exists():
         console.print(f"[red]Error: Directory does not exist: {path}[/red]")
         raise typer.Exit(code=1)
@@ -168,7 +147,7 @@ def update(
     answers_file = path / ".copier-answers.yml"
     if not answers_file.exists():
         console.print(
-            f"[red]Error: Not a copier project (missing .copier-answers.yml)[/red]"
+            "[red]Error: Not a copier project (missing .copier-answers.yml)[/red]"
         )
         console.print(f"[yellow]Directory: {path}[/yellow]")
         raise typer.Exit(code=1)
@@ -182,8 +161,8 @@ def update(
             unsafe=True,  # Allow running post-generation tasks
         )
 
-        console.print(f"\n[green]✓ Project updated successfully![/green]")
+        console.print("\n[green]✓ Project updated successfully![/green]")
 
     except Exception as e:
         console.print(f"[red]Error updating project: {e}[/red]")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None
