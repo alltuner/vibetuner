@@ -104,7 +104,7 @@ jobs:
         run: uv publish --dry-run
 
       - name: Upload Python distribution artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: python-dist
           path: vibetuner-py/dist/
@@ -141,7 +141,7 @@ jobs:
         run: bun pm pack
 
       - name: Upload JS distribution artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: js-dist
           path: vibetuner-js/*.tgz
