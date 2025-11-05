@@ -42,6 +42,7 @@ just dev
 ```
 
 This will generate a complete project with:
+
 - Pre-configured FastAPI application
 - Authentication system (OAuth + magic links)
 - MongoDB models and configuration
@@ -161,8 +162,8 @@ See [LICENSE](https://github.com/alltuner/vibetuner/blob/main/LICENSE) for detai
 
 ## Links
 
-- **Main Repository**: https://github.com/alltuner/vibetuner
-- **Documentation**: https://github.com/alltuner/vibetuner#readme
-- **Issues**: https://github.com/alltuner/vibetuner/issues
-- **PyPI**: https://pypi.org/project/vibetuner/
-- **npm Package**: https://www.npmjs.com/package/@alltuner/vibetuner
+- **Main Repository**: <https://github.com/alltuner/vibetuner>
+- **Documentation**: <https://github.com/alltuner/vibetuner#readme>
+- **Issues**: <https://github.com/alltuner/vibetuner/issues>
+- **PyPI**: <https://pypi.org/project/vibetuner/>
+- **npm Package**: <https://www.npmjs.com/package/@alltuner/vibetuner>

@@ -73,6 +73,115 @@ uv run --directory ../vibetuner-py vibetuner scaffold new /tmp/test-project
 - **Templates**: Use djlint for Jinja2 templates
 - **Commits**: Clear, concise messages describing the "why"
 
+## PR Title Format (Important!)
+
+This project uses **Release Please** for automated changelog generation. Since we squash PRs, the **PR title becomes the commit message** that determines version bumps and changelog entries.
+
+### Required Format
+
+```text
+<type>[optional scope]: <description>
+```
+
+### Supported Types and Version Impact
+
+| Type | Description | Version Impact |
+|------|-------------|----------------|
+| `feat` | New features | **MINOR** |
+| `fix` | Bug fixes | **PATCH** |
+| `docs` | Documentation changes | **PATCH** |
+| `chore` | Maintenance, dependencies | **PATCH** |
+| `refactor` | Code refactoring | **PATCH** |
+| `style` | Formatting, linting | **PATCH** |
+| `test` | Test changes | **PATCH** |
+| `perf` | Performance improvements | **MINOR** |
+| `ci` | CI/CD changes | **PATCH** |
+| `build` | Build system changes | **PATCH** |
+
+### Breaking Changes
+
+Add `!` to indicate breaking changes (triggers **MAJOR** version):
+
+- `feat!: remove deprecated API`
+- `fix!: change database schema`
+
+### Examples
+
+#### ✅ Good PR Titles
+
+```text
+feat: add OAuth authentication support
+fix: resolve Docker build failure
+docs: update installation guide
+chore: bump FastAPI dependency
+feat(auth): add Google OAuth provider
+feat!: remove deprecated authentication system
+```
+
+#### ❌ Bad PR Titles (Release Please can't categorize)
+
+```text
+Add OAuth
+Fix Docker
+Update docs
+Authentication changes
+OAuth implementation
+```
+
+### Why This Matters
+
+1. **Automatic Version Detection**: Release Please analyzes PR titles to determine if release should be MAJOR/MINOR/PATCH
+2. **Changelog Generation**: PR titles become professional changelog entries
+3. **Clean History**: Squashed commits follow conventional commit format
+4. **Team Communication**: Clear, standardized communication about changes
+
+### Quick Reference
+
+```bash
+# New Features → MINOR release
+feat: add new feature
+feat(scope): specific feature
+
+# Bug Fixes → PATCH release  
+fix: resolve issue
+fix(scope): specific fix
+
+# Breaking Changes → MAJOR release
+feat!: breaking change
+BREAKING CHANGE: description
+
+# Documentation → PATCH release
+docs: update documentation
+
+# Maintenance → PATCH release
+chore: update dependencies
+refactor: improve code structure
+```
+
+### Development Workflow
+
+During development, your local commit messages can be quick and informal:
+
+```bash
+git commit -m "wip"
+git commit -m "fix typo"
+git commit -m "more work"
+```
+
+The **PR title** is what matters for the final release. When creating a PR:
+
+```bash
+gh pr create --title "feat: add OAuth authentication support" --body "Detailed description..."
+```
+
+### Validation
+
+We have automated PR title validation that will:
+
+- ✅ Allow properly formatted titles
+- ❌ Block titles that don't follow conventional commit format
+- 💡 Provide helpful error messages to fix issues
+
 ## Testing
 
 Before submitting:

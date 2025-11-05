@@ -4,58 +4,48 @@ description = "Core Python framework and blessed dependencies for production-rea
 version = "0.0.1-dev"
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT"}
-authors = [
-    {name = "All Tuner Labs, S.L."},
-]
-keywords = [
-    "fastapi",
-    "mongodb",
-    "htmx",
-    "web-framework",
-    "scaffolding",
-    "oauth",
-    "background-jobs",
-]
+license = { text = "MIT" }
+authors = [{ name = "All Tuner Labs, S.L." }]
+keywords = ["fastapi", "mongodb", "htmx", "web-framework", "scaffolding", "oauth", "background-jobs"]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-    "Framework :: FastAPI",
-    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
-    "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Framework :: FastAPI",
+  "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
 ]
 dependencies = [
-    # These are the base dependencies of AllTuner's blessed stack
-    "aioboto3>=15.5.0",
-    "arel>=0.4.0",
-    "asyncer>=0.0.10",
-    "authlib>=1.6.5",
-    "beanie[zstd]>=2.0.0",
-    "click>=8.3.0",
-    "copier>=9.9.0,<9.9.1",
-    "email-validator>=2.3.0",
-    "fastapi[standard-no-fastapi-cloud-cli]>=0.121.0",
-    "granian[pname]>=2.5.6",
-    "httpx[http2]>=0.28.1",
-    "itsdangerous>=2.2.0",
-    "loguru>=0.7.3",
-    "pydantic[email]>=2.12.3",
-    "pydantic-extra-types[pycountry]>=2.10.6",
-    "pydantic-settings>=2.11.0",
-    "pyyaml>=6.0.3",
-    "redis[hiredis]>=7.0.1",
-    "rich>=14.2.0",
-    "sse-starlette>=3.0.3",
-    "starlette-babel>=1.0.3",
-    "starlette-htmx>=0.1.1",
-    "streaq[web]<6.0.0",
-    "typer-slim[standard]>=0.20.0",
+  # These are the base dependencies of AllTuner's blessed stack
+  "aioboto3>=15.5.0",
+  "arel>=0.4.0",
+  "asyncer>=0.0.10",
+  "authlib>=1.6.5",
+  "beanie[zstd]>=2.0.0",
+  "click>=8.3.0",
+  "copier>=9.9.0,<9.9.1",
+  "email-validator>=2.3.0",
+  "fastapi[standard-no-fastapi-cloud-cli]>=0.121.0",
+  "granian[pname]>=2.5.6",
+  "httpx[http2]>=0.28.1",
+  "itsdangerous>=2.2.0",
+  "loguru>=0.7.3",
+  "pydantic[email]>=2.12.3",
+  "pydantic-extra-types[pycountry]>=2.10.6",
+  "pydantic-settings>=2.11.0",
+  "pyyaml>=6.0.3",
+  "redis[hiredis]>=7.0.1",
+  "rich>=14.2.0",
+  "sse-starlette>=3.0.3",
+  "starlette-babel>=1.0.3",
+  "starlette-htmx>=0.1.1",
+  "streaq[web]<6.0.0",
+  "typer-slim[standard]>=0.20.0",
 ]
 
 [project.scripts]
@@ -66,28 +56,29 @@ Homepage = "https://github.com/alltuner/vibetuner"
 Documentation = "https://github.com/alltuner/vibetuner#readme"
 Repository = "https://github.com/alltuner/vibetuner"
 Issues = "https://github.com/alltuner/vibetuner/issues"
+Changelog = "https://github.com/alltuner/vibetuner/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [
-    # These are the development dependencies of AllTuner's blessed stack
-    "babel>=2.17.0",
-    "cloudflare>=4.3.1",
-    "djlint>=1.36.4",
-    "dunamai>=1.25.0",
-    "gh-bin>=2.81.0",
-    "granian[pname,reload]>=2.5.6",
-    "just-bin>=1.43.0",
-    "pre-commit>=4.3.0",
-    "pysemver>=0.5.0",
-    "ruff>=0.14.3",
-    "rumdl>=0.0.171",
-    "semver>=3.0.4",
-    "taplo>=0.9.3",
-    "ty>=0.0.1a25",
-    "types-aioboto3[s3,ses]>=15.5.0",
-    "types-authlib>=1.6.5.20251005",
-    "types-pyyaml>=6.0.12.20250915",
-    "uv-bump>=0.3.1",
+  # These are the development dependencies of AllTuner's blessed stack
+  "babel>=2.17.0",
+  "cloudflare>=4.3.1",
+  "djlint>=1.36.4",
+  "dunamai>=1.25.0",
+  "gh-bin>=2.81.0",
+  "granian[pname,reload]>=2.5.6",
+  "just-bin>=1.43.0",
+  "pre-commit>=4.3.0",
+  "pysemver>=0.5.0",
+  "ruff>=0.14.3",
+  "rumdl>=0.0.171",
+  "semver>=3.0.4",
+  "taplo>=0.9.3",
+  "ty>=0.0.1a25",
+  "types-aioboto3[s3,ses]>=15.5.0",
+  "types-authlib>=1.6.5.20251005",
+  "types-pyyaml>=6.0.12.20250915",
+  "uv-bump>=0.3.1",
 ]
 
 [build-system]
