@@ -26,7 +26,7 @@
     "tailwindcss": "^4.1.16",
     "@tailwindcss/cli": "^4.1.16",
     "@tailwindcss/typography": "^0.5.19",
-    "daisyui": "^5.4.3",
+    "daisyui": "^5.4.4",
     "htmx.org": "2.0.7",
     "htmx-ext-preload": "^2.1.2",
     "htmx-ext-sse": "^2.2.4",

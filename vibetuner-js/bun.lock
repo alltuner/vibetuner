@@ -7,7 +7,7 @@
         "@tailwindcss/cli": "^4.1.16",
         "@tailwindcss/typography": "^0.5.19",
         "concurrently": "^9.2.1",
-        "daisyui": "^5.4.2",
+        "daisyui": "^5.4.3",
         "htmx-ext-preload": "^2.1.2",
         "htmx-ext-sse": "^2.2.4",
         "htmx.org": "2.0.7",
@@ -104,7 +104,7 @@
 
     "cssesc": ["cssesc@3.0.0", "", { "bin": { "cssesc": "bin/cssesc" } }, "sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg=="],
 
-    "daisyui": ["daisyui@5.4.3", "", {}, "sha512-dfDCJnN4utErGoWfElgdEE252FtfHV9Mxj5Dq1+JzUq3nVkluWdF3JYykP0Xy/y/yArnPXYztO1tLNCow3kjmg=="],
+    "daisyui": ["daisyui@5.4.4", "", {}, "sha512-FEfdwmGdb3ZbtYN3OqaZn/RMarlZTPOv6mWpGUo7KX42RkcBanEZk5tgYp2ZgirKl7QvH8pCiwpuy55wi2dHyQ=="],
 
     "detect-libc": ["detect-libc@1.0.3", "", { "bin": { "detect-libc": "./bin/detect-libc.js" } }, "sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg=="],
 
