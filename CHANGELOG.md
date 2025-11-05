@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.0](https://github.com/alltuner/vibetuner/compare/v2.12.2...v2.13.0) (2025-11-05)
+
+
+### Features
+
+* simplify Renovate configuration to default settings ([#342](https://github.com/alltuner/vibetuner/issues/342)) ([76ffb0b](https://github.com/alltuner/vibetuner/commit/76ffb0b5261c8d9b8b6adab62166a2b81167ef6d))
+
 ## [2.12.2](https://github.com/alltuner/vibetuner/compare/v2.12.1...v2.12.2) (2025-11-05)
 
 
