@@ -82,6 +82,8 @@ nav:
     - Architecture: architecture.md
     - CLI Reference: cli-reference.md
     - Scaffolding Reference: scaffolding.md
+  - Project:
+    - Changelog: changelog.md
 
 extra:
   social:

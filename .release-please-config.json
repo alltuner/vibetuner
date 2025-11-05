@@ -1,0 +1,21 @@
+{
+  "packages": {
+    ".": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "simple",
+      "include-component-in-tag": false,
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true
+    },
+    "vibetuner-py": {
+      "release-type": "python",
+      "package-name": "vibetuner",
+      "changelog-section": "Python Package"
+    },
+    "vibetuner-js": {
+      "release-type": "node",
+      "package-name": "@alltuner/vibetuner",
+      "changelog-section": "JavaScript Package"
+    }
+  }
+}

@@ -41,17 +41,20 @@ bun dev  # Start frontend asset building with hot reload
 ## Included Dependencies
 
 ### Core Frontend Libraries
+
 - **Tailwind CSS** (4.1+): Modern utility-first CSS framework
 - **@tailwindcss/cli**: Command-line tool for Tailwind
 - **@tailwindcss/typography**: Beautiful typographic defaults
 - **DaisyUI** (5.4+): Tailwind CSS component library
 
 ### Interactivity
+
 - **HTMX** (2.0+): High-power tools for HTML
 - **htmx-ext-preload**: Preload extension for faster navigation
 - **htmx-ext-sse**: Server-sent events extension for real-time updates
 
 ### Build Tools
+
 - **concurrently**: Run multiple dev servers simultaneously
 
 ## Usage in Generated Projects
@@ -72,6 +75,7 @@ In a Vibetuner-generated project, the package is automatically configured:
 ```
 
 The frontend asset pipeline is preconfigured for:
+
 - Tailwind CSS compilation with DaisyUI
 - HTMX integration
 - Hot reload during development
@@ -142,8 +146,8 @@ See [LICENSE](https://github.com/alltuner/vibetuner/blob/main/LICENSE) for detai
 
 ## Links
 
-- **Main Repository**: https://github.com/alltuner/vibetuner
-- **Documentation**: https://github.com/alltuner/vibetuner#readme
-- **Issues**: https://github.com/alltuner/vibetuner/issues
-- **npm**: https://www.npmjs.com/package/@alltuner/vibetuner
-- **Python Package**: https://pypi.org/project/vibetuner/
+- **Main Repository**: <https://github.com/alltuner/vibetuner>
+- **Documentation**: <https://github.com/alltuner/vibetuner#readme>
+- **Issues**: <https://github.com/alltuner/vibetuner/issues>
+- **npm**: <https://www.npmjs.com/package/@alltuner/vibetuner>
+- **Python Package**: <https://pypi.org/project/vibetuner/>

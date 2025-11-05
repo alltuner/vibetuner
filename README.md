@@ -208,6 +208,7 @@ SECRET_KEY=your-secret-key
 - **[Development Guide](docs/development-guide.md)** – Daily workflow for generated projects
 - **[CLI Reference](docs/cli-reference.md)** – Usage for `vibetuner scaffold` and `vibetuner run`
 - **[Scaffolding Reference](docs/scaffolding.md)** – Copier prompts and update commands
+- **[Changelog](docs/changelog.md)** – Version history and release notes
 - **[Contributing](./CONTRIBUTING.md)** – Contribution guidelines
 - **[Assistant Guidance](./CLAUDE.md)** – Tips for AI coding partners
 
@@ -247,6 +248,7 @@ See [LICENSE](./LICENSE) for details.
 ## 🔗 Links
 
 - **Repository**: <https://github.com/alltuner/vibetuner>
+- **Changelog**: <https://github.com/alltuner/vibetuner/blob/main/CHANGELOG.md>
 - **Issues**: <https://github.com/alltuner/vibetuner/issues>
 - **PyPI**: <https://pypi.org/project/vibetuner/>
 - **npm**: <https://www.npmjs.com/package/@alltuner/vibetuner>

@@ -5,7 +5,7 @@ This package is automatically published to PyPI when a GitHub release is created
 ## Publishing Process
 
 1. **Create a GitHub Release**
-   - Go to https://github.com/alltuner/vibetuner/releases/new
+   - Go to <https://github.com/alltuner/vibetuner/releases/new>
    - Choose or create a tag (e.g., `v1.0.0`)
    - Write release notes
    - Optionally save as draft to review first
