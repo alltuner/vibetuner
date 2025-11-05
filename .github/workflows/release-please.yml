@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
   pull-requests: write
 
 jobs:
@@ -22,7 +23,7 @@ jobs:
       - name: Release Please
         uses: googleapis/release-please-action@v4
         with:
-          command: release-pr
+          skip-github-release: true
           token: ${{ secrets.GITHUB_TOKEN }}
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
