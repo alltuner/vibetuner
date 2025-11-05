@@ -39,6 +39,14 @@ def new(
             help="Override template variables in key=value format (can be used multiple times)",
         ),
     ] = None,
+    branch: Annotated[
+        str | None,
+        typer.Option(
+            "--branch",
+            "-b",
+            help="Use specific branch/tag from the vibetuner template repository",
+        ),
+    ] = None,
 ) -> None:
     """Create a new project from the vibetuner template.
 
@@ -52,10 +60,20 @@ def new(
 
         # Override specific values
         vibetuner scaffold new my-project --data project_name="My App" --data python_version="3.13"
+
+        # Use specific branch for testing
+        vibetuner scaffold new my-project --branch fix/scaffold-command
     """
     # Use the official vibetuner template from GitHub
     template_src = "gh:alltuner/vibetuner"
-    console.print("[dim]Using vibetuner template from GitHub[/dim]")
+    vcs_ref = branch or "main"  # Use specified branch or default to main
+
+    if branch:
+        console.print(
+            f"[dim]Using vibetuner template from GitHub ({branch} branch)[/dim]"
+        )
+    else:
+        console.print("[dim]Using vibetuner template from GitHub (main branch)[/dim]")
 
     # Parse data overrides
     data_dict = {}
@@ -91,6 +109,7 @@ def new(
             defaults=defaults,
             quiet=defaults,  # Suppress prompts when using defaults
             unsafe=True,  # Allow running post-generation tasks
+            vcs_ref=vcs_ref,  # Use the specified branch or default to main
         )
 
         console.print("\n[green]✓ Project created successfully![/green]")
