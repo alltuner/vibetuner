@@ -161,7 +161,7 @@ jobs:
 
     steps:
       - name: Download Python artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: python-dist
           path: dist/
@@ -189,7 +189,7 @@ jobs:
 
     steps:
       - name: Download JS artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: js-dist
           path: ./
