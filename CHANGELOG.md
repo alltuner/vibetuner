@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.13.1](https://github.com/alltuner/vibetuner/compare/v2.13.0...v2.13.1) (2025-11-05)
+
+
+### Miscellaneous Chores
+
+* release v2.13.1 ([#348](https://github.com/alltuner/vibetuner/issues/348)) ([a9c95c3](https://github.com/alltuner/vibetuner/commit/a9c95c36794471a6cf08e64ec749d73d94303ee1))
+
 ## [2.13.0](https://github.com/alltuner/vibetuner/compare/v2.12.2...v2.13.0) (2025-11-05)
 
 ### Features
