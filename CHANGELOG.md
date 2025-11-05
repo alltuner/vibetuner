@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.12.2](https://github.com/alltuner/vibetuner/compare/v2.12.1...v2.12.2) (2025-11-05)
+
+
+### Bug Fixes
+
+* remove component prefixes from release tags ([1095b32](https://github.com/alltuner/vibetuner/commit/1095b3298dea497c5b89469fd1ae96054e95d6d7))
+* remove component prefixes from release tags ([0ef87b3](https://github.com/alltuner/vibetuner/commit/0ef87b367f692d7bba2480f5500ab4927128276c))
+
 ## [2.12.1](https://github.com/alltuner/vibetuner/compare/v2.12.0...v2.12.1) (2025-11-05)
 
 
