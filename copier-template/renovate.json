@@ -1,6 +1,86 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
-  ]
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "enabledManagers": [
+    "npm",
+    "pip_requirements",
+    "poetry",
+    "pep621",
+    "github-actions",
+    "dockerfile",
+    "pre-commit"
+  ],
+  "baseBranches": ["main"],
+  "packageRules": [
+    {
+      "description": "Group Python dependencies in pyproject.toml files",
+      "matchManagers": ["pep621"],
+      "groupName": "Python dependencies",
+      "groupSlug": "python-deps"
+    },
+    {
+      "description": "Group JavaScript dependencies in package.json files",
+      "matchManagers": ["npm"],
+      "groupName": "JavaScript dependencies",
+      "groupSlug": "js-deps"
+    },
+    {
+      "description": "Group development dependencies",
+      "matchDepTypes": ["devDependencies", "dev"],
+      "groupName": "Development dependencies",
+      "groupSlug": "dev-deps"
+    },
+    {
+      "description": "Auto-merge minor and patch updates for non-breaking changes",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Require approval for major updates",
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "description": "Update vibetuner-js package dependencies together",
+      "matchPackagePatterns": ["@alltuner/vibetuner"],
+      "groupName": "Vibetuner packages",
+      "groupSlug": "vibetuner-packages"
+    },
+    {
+      "description": "Group Docker dependencies",
+      "matchManagers": ["dockerfile"],
+      "groupName": "Docker dependencies",
+      "groupSlug": "docker-deps"
+    },
+    {
+      "description": "Group GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions",
+      "groupSlug": "github-actions"
+    }
+  ],
+  "pip_requirements": {
+    "fileMatch": ["(^|/requirements\\.(txt|in)|pyproject\\.toml)$"]
+  },
+  "pep621": {
+    "fileMatch": ["(^|/)pyproject\\.toml$"]
+  },
+  "npm": {
+    "fileMatch": ["(^|/)package\\.json$"]
+  },
+  "prConcurrentLimit": 3,
+  "prHourlyLimit": 2,
+  "schedule": ["before 6am on monday"],
+  "timezone": "UTC",
+  "labels": ["dependencies"],
+  "assignees": ["@dpoblador"],
+  "reviewers": ["@dpoblador"],
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dependency Dashboard",
+  "suppressNotifications": ["prEditedNotification"]
 }
