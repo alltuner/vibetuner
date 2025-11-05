@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.13.2](https://github.com/alltuner/vibetuner/compare/v2.13.1...v2.13.2) (2025-11-05)
+
+
+### Bug Fixes
+
+* add push tag trigger to publish workflow ([3c9f01f](https://github.com/alltuner/vibetuner/commit/3c9f01f754282ce34417850955b0587bb403a2ff))
+* add push tag trigger to publish workflow ([635840f](https://github.com/alltuner/vibetuner/commit/635840fd5c273a146476ac285d8108340ec85ae8))
+* add workflow_dispatch trigger to publish workflow ([453afb0](https://github.com/alltuner/vibetuner/commit/453afb033c685884a50f28af24bf9709d6059b92))
+* add workflow_dispatch trigger to publish workflow ([587609e](https://github.com/alltuner/vibetuner/commit/587609ec61b8b0eecda2ad0309d8c62bfbc4c727))
+
 ## [2.13.1](https://github.com/alltuner/vibetuner/compare/v2.13.0...v2.13.1) (2025-11-05)
 
 
