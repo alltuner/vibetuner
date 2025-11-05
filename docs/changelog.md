@@ -24,10 +24,7 @@ The main changelog includes changes for all Vibetuner components:
 - **JavaScript Package** (`@alltuner/vibetuner`): Frontend dependencies
 - **Scaffolding Template**: Project template and configuration
 
-Each package also has its own changelog file that references the main changelog:
-
-- [Python Package Changelog](https://github.com/alltuner/vibetuner/blob/main/vibetuner-py/CHANGELOG.md)
-- [JavaScript Package Changelog](https://github.com/alltuner/vibetuner/blob/main/vibetuner-js/CHANGELOG.md)
+Changes are automatically categorized by which packages were affected in each release.
 
 ## 🤝 Contributing to Changelog
 
