@@ -1,16 +1,11 @@
 # Vibetuner
 
-![All Tuner Labs](https://alltuner.com/statics/img/all-tuner-logo.svg)
-
 ## Production-ready FastAPI + MongoDB + HTMX project scaffolding in seconds
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
 Vibetuner generates full-stack web applications with authentication, database,
 frontend, Docker deployment, and CLI tools pre-configured.
 
-Built by [All Tuner Labs](https://alltuner.com) for rapid iteration and modern development.
+Built by [All Tuner Labs](https://www.alltuner.com) for rapid iteration and modern development.
 
 ## ✨ What You Get
 
@@ -258,12 +253,12 @@ See [LICENSE](./LICENSE) for details.
 
 ## 👨‍💻 Credits
 
-Created and maintained by [All Tuner Labs, S.L.](https://alltuner.com)
-
-Main contributor: David Poblador i Garcia ([@davidpoblador](https://github.com/davidpoblador) | [davidpoblador.com](https://davidpoblador.com/))
+Created and maintained by [All Tuner Labs, S.L.](https://alltuner.com) and
+David Poblador i Garcia ([@davidpoblador](https://github.com/davidpoblador) |
+[davidpoblador.com](https://davidpoblador.com/))
 
 ---
 
-## Made with ❤️ for rapid prototyping and production deployments
+Made with ❤️ for rapid prototyping and production deployments
 
-<!-- markdownlint-enable MD013 MD033 MD036 MD041 -->
+![All Tuner Labs](https://alltuner.com/statics/img/vibetuner-horizontal-logo.png)
