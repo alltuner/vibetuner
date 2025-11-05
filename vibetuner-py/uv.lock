@@ -483,7 +483,7 @@ wheels = [
 
 [[package]]
 name = "copier"
-version = "9.9.0"
+version = "9.10.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama" },
@@ -500,9 +500,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "questionary" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bc/54/badd656b902a69915851caf0ad0dcb06682929f4e6a2f218acf15c373421/copier-9.9.0.tar.gz", hash = "sha256:db48d89bd30d957faa8c96fed757cb5718fdc0fe6b83bebb201424f448cb5216", size = 581833, upload-time = "2025-08-01T17:45:39.434Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/82/c6/1f61fe2b011347c0b9d7637d02ef3dc1c2874640a4fd5fb059ea8b5493f2/copier-9.10.3.tar.gz", hash = "sha256:6e965d8f719678ee3bc5e611ef0d1b182d6b01a3d5385a5f1ba43aaade51caf7", size = 598697, upload-time = "2025-10-17T18:26:04.217Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a1/95/dd0da5d106b3000c91614010f33ff4f3b6dc5a77eb11d6f01cd000228892/copier-9.9.0-py3-none-any.whl", hash = "sha256:d3484178560456fc3f138ec67349872dd2b378051c2360f95d7f31005ea9794d", size = 55985, upload-time = "2025-08-01T17:45:38.06Z" },
+    { url = "https://files.pythonhosted.org/packages/ed/f2/58ee35dbd55d0ffa13197365ec4725c36da2f7ec72eaa1dd154bfbd2676e/copier-9.10.3-py3-none-any.whl", hash = "sha256:7165239566f68e9e36c148f71e0552bf1e4911eef96bfa7cf33e6a0dbfed3c96", size = 56186, upload-time = "2025-10-17T18:26:02.856Z" },
 ]
 
 [[package]]
@@ -2718,7 +2718,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "0.0.1.dev0"
+version = "2.12.0"
 source = { editable = "." }
 dependencies = [
     { name = "aioboto3" },
@@ -2779,7 +2779,7 @@ requires-dist = [
     { name = "beanie", extras = ["zstd"], specifier = ">=2.0.0" },
     { name = "click", specifier = ">=8.3.0" },
     { name = "cloudflare", marker = "extra == 'dev'", specifier = ">=4.3.1" },
-    { name = "copier", specifier = ">=9.9.0,<9.9.1" },
+    { name = "copier", specifier = ">=9.10.3,<9.10.4" },
     { name = "djlint", marker = "extra == 'dev'", specifier = ">=1.36.4" },
     { name = "dunamai", marker = "extra == 'dev'", specifier = ">=1.25.0" },
     { name = "email-validator", specifier = ">=2.3.0" },
