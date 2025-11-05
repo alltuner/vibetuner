@@ -3,6 +3,7 @@ name: Publish vibetuner packages
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   # Detect what changed since last release
