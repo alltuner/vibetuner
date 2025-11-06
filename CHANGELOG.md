@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.15.0](https://github.com/alltuner/vibetuner/compare/v2.14.1...v2.15.0) (2025-11-06)
+
+
+### Features
+
+* add llms.txt and llms-full.txt for LLM integration ([#389](https://github.com/alltuner/vibetuner/issues/389)) ([34bf3bb](https://github.com/alltuner/vibetuner/commit/34bf3bb20621bad79e34164b58d217a1134a60e1))
+
 ## [2.14.1](https://github.com/alltuner/vibetuner/compare/v2.14.0...v2.14.1) (2025-11-06)
 
 
