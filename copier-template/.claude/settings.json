@@ -1,7 +1,19 @@
 {
   "sandbox": {
     "enabled": true,
-    "autoAllowBashIfSandboxed": true
+    "autoAllowBashIfSandboxed": true,
+    "excludedCommands": [
+      "docker",
+      "git",
+      "just",
+      "uv"
+    ],
+    "network": {
+      "allowLocalBinding": true,
+      "allowUnixSockets": [
+        "/var/run/docker.sock"
+      ]
+    }
   },
   "permissions": {
     "allow": [
