@@ -4,6 +4,20 @@ on:
   release:
     types: [published]
   workflow_call:
+  workflow_dispatch:
+    inputs:
+      force-python:
+        description: 'Force publish Python package'
+        type: boolean
+        default: false
+      force-js:
+        description: 'Force publish JS package'
+        type: boolean
+        default: false
+      version:
+        description: 'Version to publish (e.g., 1.2.3). Leave empty to use latest release.'
+        required: false
+        type: string
 
 jobs:
   # Detect what changed since last release
@@ -25,9 +39,24 @@ jobs:
       - name: Extract version from release
         id: version
         run: |
-          TAG=${GITHUB_REF#refs/tags/v}
-          echo "version=$TAG" >> $GITHUB_OUTPUT
-          echo "Release version: $TAG"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manual trigger
+            if [ -n "${{ github.event.inputs.version }}" ]; then
+              # Use provided version
+              VERSION="${{ github.event.inputs.version }}"
+              echo "Using manual version: $VERSION"
+            else
+              # Get latest release tag
+              VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
+              echo "Using latest release version: $VERSION"
+            fi
+          else
+            # Release event
+            VERSION=${GITHUB_REF#refs/tags/v}
+            echo "Using release event version: $VERSION"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Final version: $VERSION"
 
       - name: Detect changes
         id: changes
@@ -35,40 +64,66 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           echo "Detecting changes for release $VERSION"
 
-          # Get previous tag
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          # Check for manual force flags first
+          FORCE_PYTHON="${{ github.event.inputs.force-python }}"
+          FORCE_JS="${{ github.event.inputs.force-js }}"
 
-          if [ -n "$PREV_TAG" ]; then
-            echo "Comparing $PREV_TAG..$VERSION"
-            
-            # Check for REAL Python changes (exclude version files)
-            PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v "pyproject.toml" | wc -l)
-            if [ "$PYTHON_CHANGED" -gt 0 ]; then
-              echo "python=true" >> $GITHUB_OUTPUT
-              echo "✅ Python package has real changes"
-              echo "Changed files:"
-              git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v "pyproject.toml"
-            else
-              echo "python=false" >> $GITHUB_OUTPUT
-              echo "❌ Python package unchanged (only version files or no changes)"
-            fi
-            
-            # Check for REAL JavaScript changes (exclude version files)
-            JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v "package.json" | wc -l)
-            if [ "$JS_CHANGED" -gt 0 ]; then
-              echo "js=true" >> $GITHUB_OUTPUT
-              echo "✅ JavaScript package has real changes"
-              echo "Changed files:"
-              git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v "package.json"
-            else
-              echo "js=false" >> $GITHUB_OUTPUT
-              echo "❌ JavaScript package unchanged (only version files or no changes)"
-            fi
-          else
-            # First release - build both
-            echo "First release detected - building both packages"
+          # Python detection
+          if [ "$FORCE_PYTHON" = "true" ]; then
             echo "python=true" >> $GITHUB_OUTPUT
+            echo "🔧 Force publishing Python (manual override)"
+          else
+            # Get previous tag
+            PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+            if [ -n "$PREV_TAG" ]; then
+              echo "Comparing $PREV_TAG..HEAD for Python changes"
+
+              # Check for REAL Python changes (exclude version files)
+              PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v "pyproject.toml" | wc -l)
+              if [ "$PYTHON_CHANGED" -gt 0 ]; then
+                echo "python=true" >> $GITHUB_OUTPUT
+                echo "✅ Python package has real changes"
+                echo "Changed files:"
+                git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v "pyproject.toml"
+              else
+                echo "python=false" >> $GITHUB_OUTPUT
+                echo "❌ Python package unchanged (only version files or no changes)"
+              fi
+            else
+              # First release - build both
+              echo "First release detected - building Python package"
+              echo "python=true" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+          # JavaScript detection
+          if [ "$FORCE_JS" = "true" ]; then
             echo "js=true" >> $GITHUB_OUTPUT
+            echo "🔧 Force publishing JavaScript (manual override)"
+          else
+            # Get previous tag
+            PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+            if [ -n "$PREV_TAG" ]; then
+              echo "Comparing $PREV_TAG..HEAD for JavaScript changes"
+
+              # Check for REAL JavaScript changes (exclude version files)
+              JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v "package.json" | wc -l)
+              if [ "$JS_CHANGED" -gt 0 ]; then
+                echo "js=true" >> $GITHUB_OUTPUT
+                echo "✅ JavaScript package has real changes"
+                echo "Changed files:"
+                git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v "package.json"
+              else
+                echo "js=false" >> $GITHUB_OUTPUT
+                echo "❌ JavaScript package unchanged (only version files or no changes)"
+              fi
+            else
+              # First release - build both
+              echo "First release detected - building JavaScript package"
+              echo "js=true" >> $GITHUB_OUTPUT
+            fi
           fi
 
   # Conditional Python build
