@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.13.6](https://github.com/alltuner/vibetuner/compare/v2.13.5...v2.13.6) (2025-11-06)
+
+
+### Bug Fixes
+
+* sandboxing was a real productivity killer ([#382](https://github.com/alltuner/vibetuner/issues/382)) ([adb9429](https://github.com/alltuner/vibetuner/commit/adb94295be92c812260e4a4260e4bbe41323baff))
+
 ## [2.13.5](https://github.com/alltuner/vibetuner/compare/v2.13.4...v2.13.5) (2025-11-06)
 
 
