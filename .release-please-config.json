@@ -11,7 +11,8 @@
         {"type": "feat", "section": "Features"},
         {"type": "fix", "section": "Bug Fixes"},
         {"type": "refactor", "section": "Code Refactoring"},
-        {"type": "perf", "section": "Performance Improvements"}
+        {"type": "perf", "section": "Performance Improvements"},
+        {"type": "chore", "section": "Miscellaneous Chores"}
       ],
       "extra-files": [
         "vibetuner-py/pyproject.toml",
