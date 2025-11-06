@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.1](https://github.com/alltuner/vibetuner/compare/v2.14.0...v2.14.1) (2025-11-06)
+
+
+### Bug Fixes
+
+* make version updates idempotent in build steps ([#386](https://github.com/alltuner/vibetuner/issues/386)) ([a70550b](https://github.com/alltuner/vibetuner/commit/a70550bead2e0d806be5d90e8cc974d8e62f1e1b))
+
 ## [2.14.0](https://github.com/alltuner/vibetuner/compare/v2.13.6...v2.14.0) (2025-11-06)
 
 
