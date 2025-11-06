@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.15.1](https://github.com/alltuner/vibetuner/compare/v2.15.0...v2.15.1) (2025-11-06)
+
+
+### Miscellaneous Chores
+
+* remove temporary test workflow ([#391](https://github.com/alltuner/vibetuner/issues/391)) ([4b06f23](https://github.com/alltuner/vibetuner/commit/4b06f2364fe19453a4092c27100d5a222590b300))
+
 ## [2.15.0](https://github.com/alltuner/vibetuner/compare/v2.14.1...v2.15.0) (2025-11-06)
 
 
