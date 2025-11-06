@@ -34,7 +34,6 @@ The Copier-based template that generates new projects:
 - Generates complete project structure
 - Updates existing projects
 **Command**: `uvx vibetuner scaffold new my-app`
-**Note**: A `template/` symlink exists for backwards compatibility.
 
 ### 2. Python Package (`vibetuner`)
 

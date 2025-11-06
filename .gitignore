@@ -54,8 +54,8 @@ node_modules/
 # Template Specific
 ############################################################
 .git
-template/bun.lock
-template/uv.lock
+copier-template/bun.lock
+copier-template/uv.lock
 
 
 ############################################################

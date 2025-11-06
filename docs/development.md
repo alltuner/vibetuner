@@ -24,7 +24,6 @@ vibetuner/
 │   ├── src/vibetuner/     # → Symlink to vibetuner-py/src/vibetuner
 │   ├── src/app/           # User application space
 │   └── *.j2 files         # Jinja2 templates processed by Copier
-├── template/              # → Symlink to copier-template/ (backwards compat)
 ├── copier.yml             # Template configuration
 ├── justfile               # Development commands
 ├── docs/                  # MkDocs documentation
@@ -85,7 +84,6 @@ cd /tmp/my-test-project
 just dev  # Starts Docker development environment
 ```
 
-**Note**: Template files are in `copier-template/` directory. A `template/` symlink exists for backwards compatibility.
 For a catalog of template prompts and update flows, see the [Scaffolding Reference](scaffolding.md).
 
 ### Working on Documentation
