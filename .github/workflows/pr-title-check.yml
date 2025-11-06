@@ -39,4 +39,3 @@ jobs:
           # Don't ignore merge commits
           ignoreLabels: |
             skip-changelog
-            autorelease: pending
