@@ -9,6 +9,7 @@ exclude = [
 
   # We only have CLAUDE.md symlinks, hence we don't need to check
   "CLAUDE.md",
+  "CHANGELOG.md",
 ]
 
 # Rule-specific configurations
