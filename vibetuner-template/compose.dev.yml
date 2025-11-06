@@ -10,7 +10,6 @@ services:
       MONGO_INITDB_DATABASE: ${COMPOSE_PROJECT_NAME:-vibetuner}
     volumes:
       - mongo_data:/data/db
-      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
