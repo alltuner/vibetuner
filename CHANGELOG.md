@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.13.5](https://github.com/alltuner/vibetuner/compare/v2.13.4...v2.13.5) (2025-11-06)
+
+
+### Bug Fixes
+
+* convert relative links to absolute URLs in changelog docs ([#373](https://github.com/alltuner/vibetuner/issues/373)) ([a3ab5cb](https://github.com/alltuner/vibetuner/commit/a3ab5cbb99d165f44602ff5956f3f821cf863139))
+* include chore commits in changelog ([#379](https://github.com/alltuner/vibetuner/issues/379)) ([44ffea3](https://github.com/alltuner/vibetuner/commit/44ffea38f9e1e77713cbe7d62cb069ae0e32a0bb))
+* include refactor and perf commits in changelog ([#378](https://github.com/alltuner/vibetuner/issues/378)) ([f98e9df](https://github.com/alltuner/vibetuner/commit/f98e9df0b15621615ad2fe613b48057c9802465c))
+
+
+### Code Refactoring
+
+* remove template backwards compatibility symlink ([#377](https://github.com/alltuner/vibetuner/issues/377)) ([3ba7e11](https://github.com/alltuner/vibetuner/commit/3ba7e1111f7241cf45016b49e0c27ed3d69d10e4))
+
+
+### Miscellaneous Chores
+
+* add gh pr list and gh run list permissions ([#380](https://github.com/alltuner/vibetuner/issues/380)) ([6fb0642](https://github.com/alltuner/vibetuner/commit/6fb06423e1e201bc7f9e798185353343126eb912))
+* add permissions for uvx uv-bump and gh pr create ([#375](https://github.com/alltuner/vibetuner/issues/375)) ([27e392a](https://github.com/alltuner/vibetuner/commit/27e392a869b83816adc4c3100131776eecaa610f))
+* **deps:** update JavaScript and Python dependencies ([#374](https://github.com/alltuner/vibetuner/issues/374)) ([0370036](https://github.com/alltuner/vibetuner/commit/0370036ad1d242ac2bccd0eb03ba6c237b5e03b2))
+
 ## [2.13.4](https://github.com/alltuner/vibetuner/compare/v2.13.3...v2.13.4) (2025-11-06)
 
 
