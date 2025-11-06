@@ -70,27 +70,58 @@ jobs:
           FORCE_PYTHON="${{ github.event.inputs.force-python }}"
           FORCE_JS="${{ github.event.inputs.force-js }}"
 
+          # Determine version bump type
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            PREV_VERSION=${PREV_TAG#v}
+            echo "Previous version: $PREV_VERSION, Current version: $VERSION"
+            
+            # Extract version components
+            PREV_MAJOR=$(echo $PREV_VERSION | cut -d. -f1)
+            PREV_MINOR=$(echo $PREV_VERSION | cut -d. -f2)
+            CURR_MAJOR=$(echo $VERSION | cut -d. -f1)
+            CURR_MINOR=$(echo $VERSION | cut -d. -f2)
+            
+            # Determine if this is a minor or major version bump
+            if [ "$CURR_MAJOR" -gt "$PREV_MAJOR" ]; then
+              VERSION_TYPE="major"
+              echo "🔥 Major version bump detected"
+            elif [ "$CURR_MINOR" -gt "$PREV_MINOR" ]; then
+              VERSION_TYPE="minor" 
+              echo "🚀 Minor version bump detected"
+            else
+              VERSION_TYPE="patch"
+              echo "🔧 Patch version bump detected"
+            fi
+          else
+            VERSION_TYPE="minor"  # First release, treat as minor
+            echo "🎉 First release detected"
+          fi
+          
+          echo "version_type=$VERSION_TYPE" >> $GITHUB_OUTPUT
+
           # Python detection
           if [ "$FORCE_PYTHON" = "true" ]; then
             echo "python=true" >> $GITHUB_OUTPUT
             echo "🔧 Force publishing Python (manual override)"
           else
-            # Get previous tag
-            PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-
-            if [ -n "$PREV_TAG" ]; then
+            if [ "$VERSION_TYPE" = "minor" ] || [ "$VERSION_TYPE" = "major" ]; then
+              # Build unconditionally for minor/major releases
+              echo "python=true" >> $GITHUB_OUTPUT
+              echo "✅ Building Python package (unconditional for $VERSION_TYPE release)"
+            elif [ -n "$PREV_TAG" ]; then
               echo "Comparing $PREV_TAG..HEAD for Python changes"
 
-              # Check for REAL Python changes (exclude version files)
-              PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v "pyproject.toml" | wc -l)
+              # Check for REAL Python changes (exclude version and documentation files)
+              PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "(pyproject\.toml|README\.md|CHANGELOG\.md)" | wc -l)
               if [ "$PYTHON_CHANGED" -gt 0 ]; then
                 echo "python=true" >> $GITHUB_OUTPUT
                 echo "✅ Python package has real changes"
                 echo "Changed files:"
-                git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v "pyproject.toml"
+                git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "(pyproject\.toml|README\.md|CHANGELOG\.md)"
               else
                 echo "python=false" >> $GITHUB_OUTPUT
-                echo "❌ Python package unchanged (only version files or no changes)"
+                echo "❌ Python package unchanged (only version/docs files or no changes)"
               fi
             else
               # First release - build both
@@ -104,22 +135,23 @@ jobs:
             echo "js=true" >> $GITHUB_OUTPUT
             echo "🔧 Force publishing JavaScript (manual override)"
           else
-            # Get previous tag
-            PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-
-            if [ -n "$PREV_TAG" ]; then
+            if [ "$VERSION_TYPE" = "minor" ] || [ "$VERSION_TYPE" = "major" ]; then
+              # Build unconditionally for minor/major releases
+              echo "js=true" >> $GITHUB_OUTPUT
+              echo "✅ Building JavaScript package (unconditional for $VERSION_TYPE release)"
+            elif [ -n "$PREV_TAG" ]; then
               echo "Comparing $PREV_TAG..HEAD for JavaScript changes"
 
-              # Check for REAL JavaScript changes (exclude version files)
-              JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v "package.json" | wc -l)
+              # Check for REAL JavaScript changes (exclude version and documentation files)
+              JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "(package\.json|README\.md|CHANGELOG\.md)" | wc -l)
               if [ "$JS_CHANGED" -gt 0 ]; then
                 echo "js=true" >> $GITHUB_OUTPUT
                 echo "✅ JavaScript package has real changes"
                 echo "Changed files:"
-                git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v "package.json"
+                git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "(package\.json|README\.md|CHANGELOG\.md)"
               else
                 echo "js=false" >> $GITHUB_OUTPUT
-                echo "❌ JavaScript package unchanged (only version files or no changes)"
+                echo "❌ JavaScript package unchanged (only version/docs files or no changes)"
               fi
             else
               # First release - build both
