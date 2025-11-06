@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.13.4](https://github.com/alltuner/vibetuner/compare/v2.13.3...v2.13.4) (2025-11-06)
+
+
+### Bug Fixes
+
+* resolve workflow trigger and PR title validation issues ([#372](https://github.com/alltuner/vibetuner/issues/372)) ([42816c4](https://github.com/alltuner/vibetuner/commit/42816c45ac2c67dee655635b760b199a60c9d720))
+* trigger publish and docs workflows after release creation ([#370](https://github.com/alltuner/vibetuner/issues/370)) ([20ac331](https://github.com/alltuner/vibetuner/commit/20ac33178059ad31998af232befe29b676d08892))
+
 ## [2.13.3](https://github.com/alltuner/vibetuner/compare/v2.13.2...v2.13.3) (2025-11-06)
 
 
