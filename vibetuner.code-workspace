@@ -8,8 +8,8 @@
       }
     },
     {
-      "name": "Template",
-      "path": "template",
+      "name": "Copier Template",
+      "path": "copier-template",
       "settings": {
         "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
         "tailwindCSS.experimental.configFile": "${workspaceFolder}/config.css"
