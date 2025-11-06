@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.0](https://github.com/alltuner/vibetuner/compare/v2.13.6...v2.14.0) (2025-11-06)
+
+
+### Features
+
+* add manual workflow dispatch for force publishing ([#384](https://github.com/alltuner/vibetuner/issues/384)) ([49efdb8](https://github.com/alltuner/vibetuner/commit/49efdb8190df105a984a930652b5e03f5e498b54))
+
 ## [2.13.6](https://github.com/alltuner/vibetuner/compare/v2.13.5...v2.13.6) (2025-11-06)
 
 
