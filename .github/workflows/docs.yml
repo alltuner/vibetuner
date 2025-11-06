@@ -4,6 +4,11 @@ on:
   release:
     types: [published]
   workflow_call:
+  push:
+    branches: [main]
+    paths: 
+      - 'llms.txt'
+      - 'llms-full.txt'
 
 permissions:
   contents: read
@@ -32,7 +37,11 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Build docs
-        run: uv run --only-group docs mkdocs build --strict --site-dir _site
+        run: |
+          # Copy llms files to docs directory for MkDocs to include
+          cp llms.txt docs/
+          cp llms-full.txt docs/
+          uv run --only-group docs mkdocs build --strict --site-dir _site
 
       - name: Add CNAME for custom domain
         run: echo "vibetuner.alltuner.com" > _site/CNAME
