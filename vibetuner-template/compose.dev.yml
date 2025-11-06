@@ -2,8 +2,6 @@ services:
   mongo:
     image: mongo:8.0
     restart: unless-stopped
-    ports:
-      - "27017:27017"
     volumes:
       - mongo_data:/data/db
     healthcheck:
@@ -16,8 +14,6 @@ services:
   redis:
     image: redis:8.0-alpine
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
@@ -55,8 +51,14 @@ services:
       start_period: 5s
     ports:
       - "8000:8000"
-    env_file:
-      - .env
+    #    env_file:
+    #      - .env
+    environment:
+      #    mongodb_url: MongoDsn | None = None
+      #    redis_url: RedisDsn | None = None
+      - DEBUG=true
+      - MONGODB_URL=mongodb://mongo:27017
+      - REDIS_URL=redis://redis:6379
     develop:
       watch:
         - action: sync
