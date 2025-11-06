@@ -46,9 +46,9 @@ jobs:
               VERSION="${{ github.event.inputs.version }}"
               echo "Using manual version: $VERSION"
             else
-              # Get latest release tag
-              VERSION=$(git describe --tags --abbrev=0 | sed 's/^v//')
-              echo "Using latest release version: $VERSION"
+              # Get latest GitHub release (not just tag)
+              VERSION=$(gh release view --json tagName --jq '.tagName' | sed 's/^v//')
+              echo "Using latest GitHub release version: $VERSION"
             fi
           else
             # Release event
@@ -57,6 +57,8 @@ jobs:
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Final version: $VERSION"
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Detect changes
         id: changes
