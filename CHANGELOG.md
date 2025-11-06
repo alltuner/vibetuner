@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.15.2](https://github.com/alltuner/vibetuner/compare/v2.15.1...v2.15.2) (2025-11-06)
+
+
+### Bug Fixes
+
+* improve release workflow build logic ([#393](https://github.com/alltuner/vibetuner/issues/393)) ([b78ff09](https://github.com/alltuner/vibetuner/commit/b78ff0915730e4c68421505c07682362f95698cc))
+
 ## [2.15.1](https://github.com/alltuner/vibetuner/compare/v2.15.0...v2.15.1) (2025-11-06)
 
 
