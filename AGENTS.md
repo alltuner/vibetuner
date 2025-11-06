@@ -7,7 +7,8 @@ agents (Claude, Cursor, ChatGPT, etc.) that interact with this repository.
 
 ## PR Title Conventions for AI Assistants
 
-This project uses **Release Please** for automated changelog generation. When creating PRs, use **conventional commit format** for PR titles:
+This project uses **Release Please** for automated changelog generation.
+When creating PRs, use **conventional commit format** for PR titles:
 
 ### Required Format
 
@@ -48,8 +49,16 @@ feat!: remove deprecated authentication system
 ### Why This Matters
 
 - PR titles become commit messages after squash
-- Release Please analyzes these to determine version bumps
+- Every merged PR creates/updates a Release Please PR
+- Release happens when the Release Please PR is merged
 - Automatic changelog generation from PR titles
 - Professional release notes for users
+
+### Release Workflow
+
+1. Merge any PR → Release Please creates/updates a release PR
+2. Review the release PR (version bump + changelog)
+3. Merge the release PR when ready to release
+4. Release Please publishes the release and triggers package publishing
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for detailed guidelines.
