@@ -1,6 +1,5 @@
 _preserve_symlinks: True
-_skip_if_exists:
-  - .env
+
 _subdirectory: copier-template
 _templates_suffix: .j2
 
