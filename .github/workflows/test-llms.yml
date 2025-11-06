@@ -1,15 +1,7 @@
-name: Deploy Documentation
+name: Test LLMs Deployment
 
 on:
-  release:
-    types: [published]
-  workflow_call:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: 
-      - 'docs/llms.txt'
-      - 'docs/llms-full.txt'
 
 permissions:
   contents: read
