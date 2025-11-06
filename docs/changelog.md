@@ -4,7 +4,9 @@ This page contains the complete changelog for the Vibetuner project.
 
 ## 📋 Complete Changelog
 
-For the full changelog with all version history, release notes, and package-specific changes, see the **[main CHANGELOG.md](https://github.com/alltuner/vibetuner/blob/main/CHANGELOG.md)** file in the repository.
+For the full changelog with all version history, release notes, and package-specific changes,
+see the **[main CHANGELOG.md](https://github.com/alltuner/vibetuner/blob/main/CHANGELOG.md)**
+file in the repository.
 
 ## 🔄 How Updates Are Managed
 
@@ -28,7 +30,9 @@ Changes are automatically categorized by which packages were affected in each re
 
 ## 🤝 Contributing to Changelog
 
-When contributing to Vibetuner, please follow the [PR title guidelines](../CONTRIBUTING.md#pr-title-format-important) to ensure proper changelog generation.
+When contributing to Vibetuner, please follow the
+[PR title guidelines](https://github.com/alltuner/vibetuner/blob/main/CONTRIBUTING.md#pr-title-format-important)
+to ensure proper changelog generation.
 
 ### Quick Reference
 
@@ -57,8 +61,8 @@ refactor: improve code structure
 
 - **[Main Changelog](https://github.com/alltuner/vibetuner/blob/main/CHANGELOG.md)** – Complete version history
 - **[GitHub Releases](https://github.com/alltuner/vibetuner/releases)** – Release downloads and notes
-- **[Contributing Guidelines](../CONTRIBUTING.md)** – How to contribute
-- **[Agent Guidance](../AGENTS.md)** – Guidelines for AI assistants
+- **[Contributing Guidelines](https://github.com/alltuner/vibetuner/blob/main/CONTRIBUTING.md)** – How to contribute
+- **[Agent Guidance](https://github.com/alltuner/vibetuner/blob/main/AGENTS.md)** – Guidelines for AI assistants
 
 ---
 
