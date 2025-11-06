@@ -52,8 +52,8 @@ dependencies = [
 vibetuner = "vibetuner.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/alltuner/vibetuner"
-Documentation = "https://github.com/alltuner/vibetuner#readme"
+Homepage = "https://vibetuner.alltuner.com/"
+Documentation = "https://vibetuner.alltuner.com/"
 Repository = "https://github.com/alltuner/vibetuner"
 Issues = "https://github.com/alltuner/vibetuner/issues"
 Changelog = "https://github.com/alltuner/vibetuner/blob/main/CHANGELOG.md"
