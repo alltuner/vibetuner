@@ -146,7 +146,16 @@ jobs:
       - name: Update pyproject.toml version
         working-directory: vibetuner-py
         run: |
-          uv version "${{ needs.detect-changes.outputs.version }}"
+          TARGET_VERSION="${{ needs.detect-changes.outputs.version }}"
+          CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+
+          if [ "$CURRENT_VERSION" != "$TARGET_VERSION" ]; then
+            echo "Updating version from $CURRENT_VERSION to $TARGET_VERSION"
+            uv version "$TARGET_VERSION"
+          else
+            echo "Version already at $TARGET_VERSION, no update needed"
+          fi
+
           cat pyproject.toml
 
       - name: Build package
@@ -183,7 +192,16 @@ jobs:
       - name: Update package.json version
         working-directory: vibetuner-js
         run: |
-          bun pm version "${{ needs.detect-changes.outputs.version }}" --no-git-tag-version
+          TARGET_VERSION="${{ needs.detect-changes.outputs.version }}"
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+
+          if [ "$CURRENT_VERSION" != "$TARGET_VERSION" ]; then
+            echo "Updating version from $CURRENT_VERSION to $TARGET_VERSION"
+            bun pm version "$TARGET_VERSION" --no-git-tag-version
+          else
+            echo "Version already at $TARGET_VERSION, no update needed"
+          fi
+
           cat package.json
 
       - name: Install dependencies
