@@ -3,11 +3,6 @@ name: Publish vibetuner packages
 on:
   release:
     types: [published]
-  push:
-    tags:
-      - 'v*'
-  workflow_dispatch:
-
 jobs:
   # Detect what changed since last release
   detect-changes:
@@ -23,7 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0  # Need full history for git diff
+          fetch-depth: 0 # Need full history for git diff
 
       - name: Extract version from release
         id: version
@@ -37,10 +32,10 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           echo "Detecting changes for release $VERSION"
-          
+
           # Get previous tag
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          
+
           if [ -n "$PREV_TAG" ]; then
             echo "Comparing $PREV_TAG..$VERSION"
             
@@ -197,8 +192,8 @@ jobs:
       - name: Setup Node.js (for npm CLI)
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Verify npm version
         run: |
