@@ -1,0 +1,47 @@
+# Vibetuner
+
+> Vibetuner is a production-ready FastAPI + MongoDB + HTMX project scaffolding tool that generates full-stack web applications with authentication, database, frontend, Docker deployment, and CLI tools pre-configured in seconds. Built by All Tuner Labs for rapid iteration and modern development.
+
+Important notes:
+
+- Vibetuner consists of three packages: a Python framework (`vibetuner`), a JavaScript package (`@alltuner/vibetuner`), and a Copier scaffolding template
+- The framework separates immutable framework code (`src/vibetuner/`) from your application code (`src/app/`) for clean updates
+- HTMX is used instead of React/Vue for simplicity - server-rendered HTML with sprinkles of interactivity
+- All tools are chosen for speed: uv (Python), bun (JavaScript), Granian (ASGI server), Ruff (linting)
+- The project is designed to work excellently with AI coding assistants like Claude, Cursor, and ChatGPT
+
+## Quick Start
+
+- [Quick Start Guide](https://vibetuner.alltuner.com/quick-start.html.md): Get started with Vibetuner in 5 minutes
+- [Installation](https://vibetuner.alltuner.com/installation.html.md): Prerequisites and installation options
+- [Your First Project](https://vibetuner.alltuner.com/quick-start.html.md#create-your-first-project): Interactive project setup with `uvx vibetuner scaffold new`
+
+## Core Documentation
+
+- [Development Guide](https://vibetuner.alltuner.com/development-guide.html.md): Daily development workflow, adding routes, models, templates, and background jobs
+- [Architecture](https://vibetuner.alltuner.com/architecture.html.md): System design, three-package architecture, request flow, and core components
+- [Tech Stack](https://vibetuner.alltuner.com/tech-stack.html.md): Detailed information about all technologies used and why they were chosen
+- [Authentication](https://vibetuner.alltuner.com/authentication.html.md): OAuth and magic link authentication setup and configuration
+
+## Reference
+
+- [CLI Reference](https://vibetuner.alltuner.com/cli-reference.html.md): Complete reference for `vibetuner scaffold` and `vibetuner run` commands
+- [Scaffolding Reference](https://vibetuner.alltuner.com/scaffolding.html.md): Template prompts, post-generation tasks, and updating existing projects
+- [Deployment](https://vibetuner.alltuner.com/deployment.html.md): Docker production builds, environment configuration, and deployment options
+
+## Development
+
+- [Contributing Guidelines](https://vibetuner.alltuner.com/contributing.html.md): How to contribute, code style, and PR title format (uses conventional commits)
+- [Assistant Guidance](https://vibetuner.alltuner.com/CLAUDE.html.md): Specific guidance for AI coding assistants working with Vibetuner projects
+- [Changelog](https://vibetuner.alltuner.com/changelog.html.md): Version history and release notes
+
+## Packages
+
+- [Python Package](https://pypi.org/project/vibetuner/): Core framework published to PyPI
+- [JavaScript Package](https://www.npmjs.com/package/@alltuner/vibetuner): Frontend dependencies published to npm
+- [Repository](https://github.com/alltuner/vibetuner): Source code and issue tracking
+
+## Optional
+
+- [Development Setup](https://vibetuner.alltuner.com/development.html.md): Setting up the development environment for contributing to Vibetuner itself
+- [Internal Documentation](https://github.com/alltuner/vibetuner/tree/main/docs): Raw documentation files and development notes
