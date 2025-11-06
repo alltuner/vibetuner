@@ -1,0 +1,41 @@
+name: PR Title Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate-title:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Validate PR title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Conventional commit types from your CLAUDE.md
+          types: |
+            feat
+            fix
+            docs
+            chore
+            refactor
+            style
+            test
+            perf
+            ci
+            build
+          # Require a colon after the type
+          requireScope: false
+          # Allow uppercase in subject (e.g., "API" is fine)
+          subjectPattern: ^.+$
+          # Custom error message
+          subjectPatternError: |
+            The subject must not be empty.
+          # Validate whole title format
+          validateSingleCommit: false
+          # Don't ignore merge commits
+          ignoreLabels: |
+            skip-changelog
