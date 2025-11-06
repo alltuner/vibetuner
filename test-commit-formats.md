@@ -9,3 +9,8 @@
 
 - Updated GitHub Actions dependencies
 - Improved CI/CD pipeline reliability
+
+## Dependency Updates
+
+- Updated Node.js to v24
+- Updated Actions dependencies
