@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.13.3](https://github.com/alltuner/vibetuner/compare/v2.13.2...v2.13.3) (2025-11-06)
+
+
+### Bug Fixes
+
+* configure release-please for unified monorepo releases ([#365](https://github.com/alltuner/vibetuner/issues/365)) ([9827da3](https://github.com/alltuner/vibetuner/commit/9827da3eccbf3a32afce54f13fc6a10626f8435f))
+* release workflow ([eaadbbe](https://github.com/alltuner/vibetuner/commit/eaadbbee47d7b87196a1ba6ebd8c2ab644ef8f00))
+
 ## [2.13.2](https://github.com/alltuner/vibetuner/compare/v2.13.1...v2.13.2) (2025-11-05)
 
 
