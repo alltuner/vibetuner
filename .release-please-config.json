@@ -6,19 +6,11 @@
       "include-component-in-tag": false,
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
-      "always-bump-patch": true
-    },
-    "vibetuner-py": {
-      "release-type": "python",
-      "package-name": "vibetuner",
-      "component": "",
-      "changelog-section": "Python Package"
-    },
-    "vibetuner-js": {
-      "release-type": "node",
-      "package-name": "@alltuner/vibetuner",
-      "component": "",
-      "changelog-section": "JavaScript Package"
+      "always-bump-patch": true,
+      "extra-files": [
+        "vibetuner-py/pyproject.toml",
+        "vibetuner-js/package.json"
+      ]
     }
   }
 }
