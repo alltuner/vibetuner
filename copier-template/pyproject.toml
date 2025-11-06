@@ -1,7 +1,7 @@
 [project]
-name = "vibetuner"
-requires-python = ">=3.13"
-version = "0.0.1"
+name = "vibetuner-template"
+requires-python = ">=3.11"
+version = "0.0.0-dev"
 dependencies = ["vibetuner"]
 
 [dependency-groups]
