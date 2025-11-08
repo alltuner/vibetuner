@@ -16,18 +16,18 @@
       }
     },
     {
-      "name": "vibetuner-py",
+      "name": "Python Package",
       "path": "vibetuner-py",
       "settings": {
         "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
       }
     },
     {
-      "name": "vibetuner-js",
+      "name": "JavaScript Package",
       "path": "vibetuner-js",
     },
     {
-      "name": "vibetuner-docs",
+      "name": "Documentation",
       "path": "vibetuner-docs",
     }
   ],
