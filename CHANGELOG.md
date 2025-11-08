@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.16.1](https://github.com/alltuner/vibetuner/compare/v2.16.0...v2.16.1) (2025-11-08)
+
+
+### Bug Fixes
+
+* resolve version extraction and simplify workflow dependencies ([#402](https://github.com/alltuner/vibetuner/issues/402)) ([bfab621](https://github.com/alltuner/vibetuner/commit/bfab6210aa777d8f04c63b04095770c38b3339b8))
+
 ## [2.16.0](https://github.com/alltuner/vibetuner/compare/v2.15.2...v2.16.0) (2025-11-08)
 
 
