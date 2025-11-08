@@ -1,0 +1,12 @@
+[project]
+name = "vibetuner-scaffolding"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = []
+
+vibetuner = { path = "./packages/vibetuner-py" }
+
+[dependency-groups]
+dev = [
+    "vibetuner[dev]>=2.15.1",
+]
