@@ -7,7 +7,7 @@
 include = ["src"]
 
 # Exclude common paths that don't need type checking
-exclude = ["**/node_modules", "**/__pycache__", ".git", ".venv", "**/.venv", "**/migrations"]
+exclude = ["**/node_modules", "**/__pycache__", ".git", ".venv", "**/.venv"]
 
 # Respect .gitignore files
 respect-ignore-files = true
