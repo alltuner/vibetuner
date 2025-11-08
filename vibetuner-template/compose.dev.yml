@@ -1,6 +1,6 @@
 services:
   mongo:
-    image: mongo:8.0
+    image: mongo:8.2
     restart: unless-stopped
     volumes:
       - mongo_data:/data/db
