@@ -5,7 +5,7 @@ site_author: All Tuner Labs, S.L.
 
 repo_url: https://github.com/alltuner/vibetuner
 repo_name: alltuner/vibetuner
-edit_uri: edit/main/docs/
+edit_uri: edit/main/vibetuner-docs/docs/
 
 theme:
   name: material

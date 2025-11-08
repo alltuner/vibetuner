@@ -8,8 +8,8 @@ on:
   push:
     branches: [main]
     paths: 
-      - 'docs/llms.txt'
-      - 'docs/llms-full.txt'
+      - 'vibetuner-docs/docs/llms.txt'
+      - 'vibetuner-docs/docs/llms-full.txt'
 
 permissions:
   contents: read
@@ -38,7 +38,8 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Build docs
-        run: uv run --only-group docs mkdocs build --strict --site-dir _site
+        working-directory: vibetuner-docs
+        run: uvx --with mkdocs-material mkdocs build --strict --site-dir ../_site
 
       - name: Add CNAME for custom domain
         run: echo "vibetuner.alltuner.com" > _site/CNAME

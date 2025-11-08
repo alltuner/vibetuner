@@ -25,6 +25,10 @@
     {
       "name": "vibetuner-js",
       "path": "vibetuner-js",
+    },
+    {
+      "name": "vibetuner-docs",
+      "path": "vibetuner-docs",
     }
   ],
   "settings": {

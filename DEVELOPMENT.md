@@ -4,11 +4,11 @@ The detailed contributor documentation now lives alongside the rest of the docs
 site.
 
 - **Working on the Vibetuner scaffold itself:**  
-  See `docs/development.md` (rendered at `/contributing/development/` in the site).
+  See `vibetuner-docs/docs/development.md` (rendered at `/contributing/development/` in the site).
 - **Developing inside a generated project:**  
-  Follow `docs/development-guide.md`.
+  Follow `vibetuner-docs/docs/development-guide.md`.
 - **Command reference:**  
-  Consult `docs/cli-reference.md` and `docs/scaffolding.md`.
+  Consult `vibetuner-docs/docs/cli-reference.md` and `vibetuner-docs/docs/scaffolding.md`.
 
 To browse the full documentation locally:
 
