@@ -107,7 +107,6 @@ vibetuner run prod worker
 The `[dev]` extra includes all tools needed for development:
 
 - **Ruff**: Fast linting and formatting
-- **djlint**: Template linting
 - **Babel**: i18n message extraction
 - **pre-commit**: Git hooks
 - **Type stubs**: For aioboto3, authlib, PyYAML

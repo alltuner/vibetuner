@@ -2542,7 +2542,7 @@ wheels = [
 [[package]]
 name = "vibetuner"
 version = "2.13.1"
-source = { editable = "." }
+source = { directory = "../vibetuner-py" }
 dependencies = [
     { name = "aioboto3" },
     { name = "arel" },
@@ -2636,6 +2636,25 @@ requires-dist = [
     { name = "uv-bump", marker = "extra == 'dev'", specifier = ">=0.3.1" },
 ]
 provides-extras = ["dev"]
+
+[[package]]
+name = "vibetuner-template"
+version = "0.0.0.dev0"
+source = { editable = "." }
+dependencies = [
+    { name = "vibetuner" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "vibetuner", extra = ["dev"] },
+]
+
+[package.metadata]
+requires-dist = [{ name = "vibetuner", directory = "../vibetuner-py" }]
+
+[package.metadata.requires-dev]
+dev = [{ name = "vibetuner", extras = ["dev"], directory = "../vibetuner-py" }]
 
 [[package]]
 name = "virtualenv"

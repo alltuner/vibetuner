@@ -4,4 +4,4 @@
 
 [src]
 # We exclude template, because that is linted from inside the project
-exclude = ["template"]
+exclude = ["vibetuner-template"]

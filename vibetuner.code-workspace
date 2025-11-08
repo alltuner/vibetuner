@@ -9,22 +9,26 @@
     },
     {
       "name": "Template",
-      "path": "template",
+      "path": "vibetuner-template",
       "settings": {
         "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
         "tailwindCSS.experimental.configFile": "${workspaceFolder}/config.css"
       }
     },
     {
-      "name": "vibetuner-py",
+      "name": "Python Package",
       "path": "vibetuner-py",
       "settings": {
         "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
       }
     },
     {
-      "name": "vibetuner-js",
+      "name": "JavaScript Package",
       "path": "vibetuner-js",
+    },
+    {
+      "name": "Documentation",
+      "path": "vibetuner-docs",
     }
   ],
   "settings": {

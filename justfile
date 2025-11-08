@@ -1,7 +1,7 @@
 # Vibetuner Scaffolding Project Management
 # Commands for version management and releases
 
-import 'copier-template/base.justfile'
+import 'vibetuner-template/base.justfile'
 
 # List all available commands
 default:
@@ -66,9 +66,9 @@ clean:
 # Serve documentation locally with live reload
 [group('Documentation')]
 docs-serve:
-    uv run --only-group docs mkdocs serve
+    cd vibetuner-docs && uvx --with mkdocs-material mkdocs serve
 
 # Build documentation
 [group('Documentation')]
 docs-build:
-    uv run --only-group docs mkdocs build --site-dir _site
+    cd vibetuner-docs && uvx --with mkdocs-material mkdocs build --site-dir ../_site

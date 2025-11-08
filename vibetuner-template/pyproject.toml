@@ -1,0 +1,18 @@
+[project]
+name = "vibetuner-template"
+requires-python = ">=3.11"
+version = "0.0.0-dev"
+dependencies = ["vibetuner"]
+
+[dependency-groups]
+dev = ["vibetuner[dev]"]
+
+[build-system]
+requires = ["uv_build>=0.9.1,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = ["app"]
+
+[tool.uv.sources]
+vibetuner = { path = "../vibetuner-py" }

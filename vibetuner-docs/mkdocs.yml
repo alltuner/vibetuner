@@ -1,0 +1,102 @@
+site_name: Vibetuner
+site_url: https://vibetuner.alltuner.com/
+site_description: Production-ready FastAPI + MongoDB + HTMX project scaffolding
+site_author: All Tuner Labs, S.L.
+
+repo_url: https://github.com/alltuner/vibetuner
+repo_name: alltuner/vibetuner
+edit_uri: edit/main/vibetuner-docs/docs/
+
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Quick Start: quick-start.md
+    - Installation: installation.md
+  - User Guide:
+    - Development: development-guide.md
+    - Authentication: authentication.md
+    - Deployment: deployment.md
+  - Contributing:
+    - Development Workflow: development.md
+    - Contributing Guidelines: contributing.md
+  - Reference:
+    - Tech Stack: tech-stack.md
+    - Architecture: architecture.md
+    - CLI Reference: cli-reference.md
+    - Scaffolding Reference: scaffolding.md
+  - Project:
+    - Changelog: changelog.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/alltuner/vibetuner
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/vibetuner/
+    - icon: fontawesome/brands/npm
+      link: https://www.npmjs.com/package/@alltuner/vibetuner
+  version:
+    provider: mike
+
+extra_css:
+  - stylesheets/extra.css
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js

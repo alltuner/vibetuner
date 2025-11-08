@@ -205,10 +205,10 @@ SECRET_KEY=your-secret-key
 
 ## 📚 Documentation
 
-- **[Development Guide](docs/development-guide.md)** – Daily workflow for generated projects
-- **[CLI Reference](docs/cli-reference.md)** – Usage for `vibetuner scaffold` and `vibetuner run`
-- **[Scaffolding Reference](docs/scaffolding.md)** – Copier prompts and update commands
-- **[Changelog](docs/changelog.md)** – Version history and release notes
+- **[Development Guide](vibetuner-docs/docs/development-guide.md)** – Daily workflow for generated projects
+- **[CLI Reference](vibetuner-docs/docs/cli-reference.md)** – Usage for `vibetuner scaffold` and `vibetuner run`
+- **[Scaffolding Reference](vibetuner-docs/docs/scaffolding.md)** – Copier prompts and update commands
+- **[Changelog](vibetuner-docs/docs/changelog.md)** – Version history and release notes
 - **[Contributing](./CONTRIBUTING.md)** – Contribution guidelines
 - **[Assistant Guidance](./CLAUDE.md)** – Tips for AI coding partners
 

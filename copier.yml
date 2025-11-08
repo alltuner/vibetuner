@@ -1,7 +1,7 @@
 _preserve_symlinks: True
 _skip_if_exists:
   - .env
-_subdirectory: copier-template
+_subdirectory: vibetuner-template
 _templates_suffix: .j2
 
 company_name:
@@ -52,7 +52,6 @@ python_version:
   help: Select your Python version
   default: "3.13"
   choices:
-    - "3.10"
     - "3.11"
     - "3.12"
     - "3.13"
