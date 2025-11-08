@@ -1,1 +1,1 @@
-docs/llms.txt
+vibetuner-docs/docs/llms.txt
