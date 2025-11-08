@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.16.0](https://github.com/alltuner/vibetuner/compare/v2.15.2...v2.16.0) (2025-11-08)
+
+
+### Features
+
+* add .env.j2 template for scaffolded projects ([#395](https://github.com/alltuner/vibetuner/issues/395)) ([da335b5](https://github.com/alltuner/vibetuner/commit/da335b5604e1c48fe1ab7c4ab129b1bc8f9a4e65))
+* add mongo and redis services to compose.dev.yml ([#397](https://github.com/alltuner/vibetuner/issues/397)) ([9c299f9](https://github.com/alltuner/vibetuner/commit/9c299f9c80d159fc59f1fefd3161ff29be3c00d9))
+* integrate docs publishing into unified publish workflow ([#401](https://github.com/alltuner/vibetuner/issues/401)) ([e615b43](https://github.com/alltuner/vibetuner/commit/e615b437bd14f38b9932d1e3464e8c0e0af28228))
+
+
+### Code Refactoring
+
+* simplify template structure and improve organization ([#398](https://github.com/alltuner/vibetuner/issues/398)) ([16f1b27](https://github.com/alltuner/vibetuner/commit/16f1b27f6c62cd2291f0f8f5485e3161078ea539))
+
+
+### Miscellaneous Chores
+
+* **deps:** update mongo docker tag to v8.2 ([#400](https://github.com/alltuner/vibetuner/issues/400)) ([f3c9f46](https://github.com/alltuner/vibetuner/commit/f3c9f466674b8574b830acef90d6907c9de9337a))
+
 ## [2.15.2](https://github.com/alltuner/vibetuner/compare/v2.15.1...v2.15.2) (2025-11-06)
 
 
