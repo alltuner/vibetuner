@@ -14,6 +14,10 @@ on:
         description: 'Force publish JS package'
         type: boolean
         default: false
+      force-docs:
+        description: 'Force publish documentation'
+        type: boolean
+        default: false
       version:
         description: 'Version to publish (e.g., 1.2.3). Leave empty to use latest release.'
         required: false
@@ -79,108 +83,73 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           echo "Detecting changes for release $VERSION"
 
-          # Check for manual force flags first
+          # Check for manual force flags
           FORCE_PYTHON="${{ github.event.inputs.force-python }}"
           FORCE_JS="${{ github.event.inputs.force-js }}"
+          FORCE_DOCS="${{ github.event.inputs.force-docs }}"
 
-          # Determine version bump type
+          # Get previous tag for change detection
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          if [ -n "$PREV_TAG" ]; then
-            PREV_VERSION=${PREV_TAG#v}
-            echo "Previous version: $PREV_VERSION, Current version: $VERSION"
-            
-            # Extract version components
-            PREV_MAJOR=$(echo $PREV_VERSION | cut -d. -f1)
-            PREV_MINOR=$(echo $PREV_VERSION | cut -d. -f2)
-            CURR_MAJOR=$(echo $VERSION | cut -d. -f1)
-            CURR_MINOR=$(echo $VERSION | cut -d. -f2)
-            
-            # Determine if this is a minor or major version bump
-            if [ "$CURR_MAJOR" -gt "$PREV_MAJOR" ]; then
-              VERSION_TYPE="major"
-              echo "🔥 Major version bump detected"
-            elif [ "$CURR_MINOR" -gt "$PREV_MINOR" ]; then
-              VERSION_TYPE="minor" 
-              echo "🚀 Minor version bump detected"
-            else
-              VERSION_TYPE="patch"
-              echo "🔧 Patch version bump detected"
-            fi
-          else
-            VERSION_TYPE="minor"  # First release, treat as minor
+
+          if [ -z "$PREV_TAG" ]; then
             echo "🎉 First release detected"
+          else
+            echo "Comparing changes from $PREV_TAG to HEAD"
           fi
-          
-          echo "version_type=$VERSION_TYPE" >> $GITHUB_OUTPUT
 
           # Python detection
           if [ "$FORCE_PYTHON" = "true" ]; then
             echo "python=true" >> $GITHUB_OUTPUT
             echo "🔧 Force publishing Python (manual override)"
-          else
-            if [ "$VERSION_TYPE" = "minor" ] || [ "$VERSION_TYPE" = "major" ]; then
-              # Build unconditionally for minor/major releases
+          elif [ -n "$PREV_TAG" ]; then
+            # Check for Python changes (exclude only version files)
+            PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "pyproject\.toml" | wc -l)
+            if [ "$PYTHON_CHANGED" -gt 0 ]; then
               echo "python=true" >> $GITHUB_OUTPUT
-              echo "✅ Building Python package (unconditional for $VERSION_TYPE release)"
-            elif [ -n "$PREV_TAG" ]; then
-              echo "Comparing $PREV_TAG..HEAD for Python changes"
-
-              # Check for REAL Python changes (exclude version and documentation files)
-              PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "(pyproject\.toml|README\.md|CHANGELOG\.md)" | wc -l)
-              if [ "$PYTHON_CHANGED" -gt 0 ]; then
-                echo "python=true" >> $GITHUB_OUTPUT
-                echo "✅ Python package has real changes"
-                echo "Changed files:"
-                git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "(pyproject\.toml|README\.md|CHANGELOG\.md)"
-              else
-                echo "python=false" >> $GITHUB_OUTPUT
-                echo "❌ Python package unchanged (only version/docs files or no changes)"
-              fi
+              echo "✅ Python package has changes"
+              echo "Changed files:"
+              git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "pyproject\.toml"
             else
-              # First release - build both
-              echo "First release detected - building Python package"
-              echo "python=true" >> $GITHUB_OUTPUT
+              echo "python=false" >> $GITHUB_OUTPUT
+              echo "❌ Python package unchanged (only version file changes)"
             fi
+          else
+            # First release - build Python
+            echo "python=true" >> $GITHUB_OUTPUT
+            echo "✅ Building Python package (first release)"
           fi
 
           # JavaScript detection
           if [ "$FORCE_JS" = "true" ]; then
             echo "js=true" >> $GITHUB_OUTPUT
             echo "🔧 Force publishing JavaScript (manual override)"
-          else
-            if [ "$VERSION_TYPE" = "minor" ] || [ "$VERSION_TYPE" = "major" ]; then
-              # Build unconditionally for minor/major releases
+          elif [ -n "$PREV_TAG" ]; then
+            # Check for JavaScript changes (exclude only version files)
+            JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "package\.json" | wc -l)
+            if [ "$JS_CHANGED" -gt 0 ]; then
               echo "js=true" >> $GITHUB_OUTPUT
-              echo "✅ Building JavaScript package (unconditional for $VERSION_TYPE release)"
-            elif [ -n "$PREV_TAG" ]; then
-              echo "Comparing $PREV_TAG..HEAD for JavaScript changes"
-
-              # Check for REAL JavaScript changes (exclude version and documentation files)
-              JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "(package\.json|README\.md|CHANGELOG\.md)" | wc -l)
-              if [ "$JS_CHANGED" -gt 0 ]; then
-                echo "js=true" >> $GITHUB_OUTPUT
-                echo "✅ JavaScript package has real changes"
-                echo "Changed files:"
-                git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "(package\.json|README\.md|CHANGELOG\.md)"
-              else
-                echo "js=false" >> $GITHUB_OUTPUT
-                echo "❌ JavaScript package unchanged (only version/docs files or no changes)"
-              fi
+              echo "✅ JavaScript package has changes"
+              echo "Changed files:"
+              git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "package\.json"
             else
-              # First release - build both
-              echo "First release detected - building JavaScript package"
-              echo "js=true" >> $GITHUB_OUTPUT
+              echo "js=false" >> $GITHUB_OUTPUT
+              echo "❌ JavaScript package unchanged (only version file changes)"
             fi
+          else
+            # First release - build JavaScript
+            echo "js=true" >> $GITHUB_OUTPUT
+            echo "✅ Building JavaScript package (first release)"
           fi
 
           # Documentation detection
-          if [ "$VERSION_TYPE" = "minor" ] || [ "$VERSION_TYPE" = "major" ]; then
-            # Build unconditionally for minor/major releases
+          # For release events, always deploy docs
+          if [ "${{ github.event_name }}" = "release" ]; then
             echo "docs=true" >> $GITHUB_OUTPUT
-            echo "✅ Building documentation (unconditional for $VERSION_TYPE release)"
+            echo "✅ Building documentation (GitHub release event)"
+          elif [ "$FORCE_DOCS" = "true" ]; then
+            echo "docs=true" >> $GITHUB_OUTPUT
+            echo "🔧 Force publishing documentation (manual override)"
           elif [ -n "$PREV_TAG" ]; then
-            echo "Comparing $PREV_TAG..HEAD for documentation changes"
-
             # Check for documentation changes
             DOCS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-docs/" | wc -l)
             if [ "$DOCS_CHANGED" -gt 0 ]; then
@@ -194,8 +163,8 @@ jobs:
             fi
           else
             # First release - build docs
-            echo "First release detected - building documentation"
             echo "docs=true" >> $GITHUB_OUTPUT
+            echo "✅ Building documentation (first release)"
           fi
 
   # Conditional Python build
