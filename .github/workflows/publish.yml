@@ -19,6 +19,14 @@ on:
         required: false
         type: string
 
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   # Detect what changed since last release
   detect-changes:
@@ -26,6 +34,7 @@ jobs:
     outputs:
       python-changed: ${{ steps.changes.outputs.python }}
       js-changed: ${{ steps.changes.outputs.js }}
+      docs-changed: ${{ steps.changes.outputs.docs }}
       version: ${{ steps.version.outputs.version }}
     permissions:
       contents: read
@@ -160,6 +169,31 @@ jobs:
             fi
           fi
 
+          # Documentation detection
+          if [ "$VERSION_TYPE" = "minor" ] || [ "$VERSION_TYPE" = "major" ]; then
+            # Build unconditionally for minor/major releases
+            echo "docs=true" >> $GITHUB_OUTPUT
+            echo "✅ Building documentation (unconditional for $VERSION_TYPE release)"
+          elif [ -n "$PREV_TAG" ]; then
+            echo "Comparing $PREV_TAG..HEAD for documentation changes"
+
+            # Check for documentation changes
+            DOCS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-docs/" | wc -l)
+            if [ "$DOCS_CHANGED" -gt 0 ]; then
+              echo "docs=true" >> $GITHUB_OUTPUT
+              echo "✅ Documentation has changes"
+              echo "Changed files:"
+              git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-docs/"
+            else
+              echo "docs=false" >> $GITHUB_OUTPUT
+              echo "❌ Documentation unchanged"
+            fi
+          else
+            # First release - build docs
+            echo "First release detected - building documentation"
+            echo "docs=true" >> $GITHUB_OUTPUT
+          fi
+
   # Conditional Python build
   build-python:
     needs: detect-changes
@@ -250,6 +284,43 @@ jobs:
           name: js-dist
           path: vibetuner-js/*.tgz
 
+  # Conditional Documentation build
+  build-docs:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.docs-changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build docs
+        working-directory: vibetuner-docs
+        run: uvx --with mkdocs-material mkdocs build --strict --site-dir ../_site
+
+      - name: Add CNAME for custom domain
+        run: echo "vibetuner.alltuner.com" > _site/CNAME
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
   # Conditional Python publish (blocks if any build fails)
   publish-python:
     needs: [detect-changes, build-python, build-js]
@@ -320,3 +391,26 @@ jobs:
           TARBALL=$(ls alltuner-vibetuner-*.tgz)
           echo "Publishing $TARBALL with trusted publishing"
           npm publish "./$TARBALL" --access public
+
+  # Conditional Documentation deploy (blocks if any build fails)
+  deploy-docs:
+    needs: [detect-changes, build-python, build-js, build-docs]
+    if: |
+      always() && 
+      needs.detect-changes.outputs.docs-changed == 'true' &&
+      (needs.build-docs.result == 'success' || needs.build-docs.result == 'skipped') &&
+      (needs.build-python.result != 'failure') &&
+      (needs.build-js.result != 'failure')
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
