@@ -26,7 +26,7 @@ Vibetuner consists of three components:
 
 ### 1. Scaffolding Template
 
-**Location**: Root repository (`copier.yml`, `copier-template/`)
+**Location**: Root repository (`copier.yml`, `vibetuner-template/`)
 The Copier-based template that generates new projects:
 
 - Interactive project setup

@@ -20,7 +20,7 @@ vibetuner/
 │   └── pyproject.toml     # Package metadata and dependencies
 ├── vibetuner-js/          # JavaScript package (published to npm)
 │   └── package.json       # Package metadata and dependencies
-├── copier-template/       # Copier template (the actual scaffolding)
+├── vibetuner-template/       # Copier template (the actual scaffolding)
 │   ├── src/vibetuner/     # → Symlink to vibetuner-py/src/vibetuner
 │   ├── src/app/           # User application space
 │   └── *.j2 files         # Jinja2 templates processed by Copier
@@ -110,7 +110,7 @@ just start-branch feature-name
 1. **Make your changes** in the appropriate location:
 - Python framework code: `vibetuner-py/src/vibetuner/`
 - JavaScript dependencies: `vibetuner-js/package.json`
-- Template files: `copier-template/`
+- Template files: `vibetuner-template/`
 - Template configuration: `copier.yml`
 - Documentation: `docs/`
 2. **Test your changes**:

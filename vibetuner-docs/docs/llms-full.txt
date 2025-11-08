@@ -262,7 +262,7 @@ Vibetuner generates full-stack web applications with clear separation between fr
 
 **1. Scaffolding Template**
 
-**Location**: Root repository (`copier.yml`, `copier-template/`)
+**Location**: Root repository (`copier.yml`, `vibetuner-template/`)
 The Copier-based template that generates new projects:
 
 - Interactive project setup
@@ -941,7 +941,7 @@ Published to npm, provides:
 **Source Code**: [github.com/alltuner/vibetuner](https://github.com/alltuner/vibetuner)
 
 Contains:
-- Scaffolding template (`copier-template/`)
+- Scaffolding template (`vibetuner-template/`)
 - Python package source (`vibetuner-py/`)
 - JavaScript package source (`vibetuner-js/`)
 - Documentation (`docs/`)

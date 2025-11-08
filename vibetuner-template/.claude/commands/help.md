@@ -8,11 +8,11 @@ allowed-tools: Bash(ls:*), Bash(grep:*), Bash(cat:*)
 
 Here are all available Claude commands in this project:
 
-!ls -1 /Users/dpoblador/repos/vibetuner/copier-template/.claude/commands/*.md | sed 's|.*/||; s|\.md$||' | sort
+!ls -1 /Users/dpoblador/repos/vibetuner/vibetuner-template/.claude/commands/*.md | sed 's|.*/||; s|\.md$||' | sort
 
 Let me show you what each command does:
 
-!for file in /Users/dpoblador/repos/vibetuner/copier-template/.claude/commands/*.md; do echo ""; echo "## /$(basename "$file" .md)"; grep "^description:" "$file" | sed 's/description: //'; done
+!for file in /Users/dpoblador/repos/vibetuner/vibetuner-template/.claude/commands/*.md; do echo ""; echo "## /$(basename "$file" .md)"; grep "^description:" "$file" | sed 's/description: //'; done
 
 **Usage:**
 

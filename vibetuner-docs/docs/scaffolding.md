@@ -5,7 +5,7 @@ Guidance for generating and updating projects with the Vibetuner Copier template
 ## Overview
 
 `vibetuner scaffold` wraps [Copier](https://copier.readthedocs.io/) to generate a
-fully configured project from the files in `copier-template/`. Answers to the
+fully configured project from the files in `vibetuner-template/`. Answers to the
 prompts below are stored in `.copier-answers.yml` inside the generated project,
 so subsequent updates can reuse them.
 

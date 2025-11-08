@@ -1,7 +1,7 @@
 # Vibetuner Scaffolding Project Management
 # Commands for version management and releases
 
-import 'copier-template/base.justfile'
+import 'vibetuner-template/base.justfile'
 
 # List all available commands
 default:
