@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.16.2](https://github.com/alltuner/vibetuner/compare/v2.16.1...v2.16.2) (2025-11-08)
+
+
+### Code Refactoring
+
+* simplify publish workflow logic ([#404](https://github.com/alltuner/vibetuner/issues/404)) ([b30cd32](https://github.com/alltuner/vibetuner/commit/b30cd3227957fa198963d2f4deec79a2fcc111ec))
+
 ## [2.16.1](https://github.com/alltuner/vibetuner/compare/v2.16.0...v2.16.1) (2025-11-08)
 
 
