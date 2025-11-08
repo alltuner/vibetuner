@@ -1,7 +1,7 @@
 repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
-    rev: 0.9.7
+    rev: 0.9.8
     hooks:
       # Update the uv lockfile
       - id: uv-lock
@@ -9,7 +9,7 @@ repos:
         stages: [pre-commit, post-checkout, post-merge, post-rewrite]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.14.3
+    rev: v0.14.4
     hooks:
       # Run the linter (check only, no auto-fix).
       - id: ruff-check
@@ -18,7 +18,7 @@ repos:
     hooks:
       - id: no-commit-to-branch
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.0.171  # Use the latest release tag
+    rev: v0.0.172  # Use the latest release tag
     hooks:
       - id: rumdl
         name: rumdl check
@@ -35,7 +35,7 @@ repos:
       - id: taplo-format
         args: [--check]
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v4.0.0
+    rev: v4.3.0
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]

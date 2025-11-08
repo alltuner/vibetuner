@@ -54,8 +54,8 @@ node_modules/
 # Template Specific
 ############################################################
 .git
-copier-template/bun.lock
-copier-template/uv.lock
+vibetuner-template/bun.lock
+vibetuner-template/uv.lock
 
 
 ############################################################

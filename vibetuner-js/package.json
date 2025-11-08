@@ -23,10 +23,10 @@
     "url": "https://github.com/alltuner/vibetuner/issues"
   },
   "dependencies": {
-    "tailwindcss": "^4.1.16",
-    "@tailwindcss/cli": "^4.1.16",
+    "tailwindcss": "^4.1.17",
+    "@tailwindcss/cli": "^4.1.17",
     "@tailwindcss/typography": "^0.5.19",
-    "daisyui": "^5.4.5",
+    "daisyui": "^5.4.7",
     "htmx.org": "2.0.8",
     "htmx-ext-preload": "^2.1.2",
     "htmx-ext-sse": "^2.2.4",
