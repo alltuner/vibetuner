@@ -102,16 +102,16 @@ jobs:
             echo "python=true" >> $GITHUB_OUTPUT
             echo "🔧 Force publishing Python (manual override)"
           elif [ -n "$PREV_TAG" ]; then
-            # Check for REAL Python changes (exclude version and documentation files)
-            PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "(pyproject\.toml|README\.md|CHANGELOG\.md)" | wc -l)
+            # Check for Python changes (exclude only version files)
+            PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "pyproject\.toml" | wc -l)
             if [ "$PYTHON_CHANGED" -gt 0 ]; then
               echo "python=true" >> $GITHUB_OUTPUT
-              echo "✅ Python package has real changes"
+              echo "✅ Python package has changes"
               echo "Changed files:"
-              git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "(pyproject\.toml|README\.md|CHANGELOG\.md)"
+              git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "pyproject\.toml"
             else
               echo "python=false" >> $GITHUB_OUTPUT
-              echo "❌ Python package unchanged (only version/docs files or no changes)"
+              echo "❌ Python package unchanged (only version file changes)"
             fi
           else
             # First release - build Python
@@ -124,16 +124,16 @@ jobs:
             echo "js=true" >> $GITHUB_OUTPUT
             echo "🔧 Force publishing JavaScript (manual override)"
           elif [ -n "$PREV_TAG" ]; then
-            # Check for REAL JavaScript changes (exclude version and documentation files)
-            JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "(package\.json|README\.md|CHANGELOG\.md)" | wc -l)
+            # Check for JavaScript changes (exclude only version files)
+            JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "package\.json" | wc -l)
             if [ "$JS_CHANGED" -gt 0 ]; then
               echo "js=true" >> $GITHUB_OUTPUT
-              echo "✅ JavaScript package has real changes"
+              echo "✅ JavaScript package has changes"
               echo "Changed files:"
-              git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "(package\.json|README\.md|CHANGELOG\.md)"
+              git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "package\.json"
             else
               echo "js=false" >> $GITHUB_OUTPUT
-              echo "❌ JavaScript package unchanged (only version/docs files or no changes)"
+              echo "❌ JavaScript package unchanged (only version file changes)"
             fi
           else
             # First release - build JavaScript
