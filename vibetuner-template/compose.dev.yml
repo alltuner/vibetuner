@@ -1,4 +1,29 @@
 services:
+  mongo:
+    image: mongo:8.0
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:8.0-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
   app:
     build:
       context: .
@@ -7,6 +32,11 @@ services:
         PYTHON_VERSION: ${PYTHON_VERSION}
         ENVIRONMENT: ${ENVIRONMENT:-development}
     image: ${COMPOSE_PROJECT_NAME}:dev
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     healthcheck:
       test:
         [
@@ -21,8 +51,14 @@ services:
       start_period: 5s
     ports:
       - "8000:8000"
-    env_file:
-      - .env
+    #    env_file:
+    #      - .env
+    environment:
+      #    mongodb_url: MongoDsn | None = None
+      #    redis_url: RedisDsn | None = None
+      - DEBUG=true
+      - MONGODB_URL=mongodb://mongo:27017
+      - REDIS_URL=redis://redis:6379
     develop:
       watch:
         - action: sync
@@ -32,5 +68,9 @@ services:
             - .venv/
         - action: rebuild
           path: ./uv.lock
+
+volumes:
+  mongo_data:
+  redis_data:
 # Above this line, nothing should be changed
 # End of file: do not remove this line or add any content below
