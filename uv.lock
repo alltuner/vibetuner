@@ -2790,7 +2790,7 @@ dev = [
 [package.metadata]
 
 [package.metadata.requires-dev]
-dev = [{ name = "vibetuner", extras = ["dev"], specifier = ">=2.15.1" }]
+dev = [{ name = "vibetuner", extras = ["dev"] }]
 
 [[package]]
 name = "virtualenv"

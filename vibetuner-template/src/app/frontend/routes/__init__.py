@@ -1,7 +1,6 @@
 from fastapi import (
     APIRouter,
 )
-
 from vibetuner.frontend import register_router
 
 

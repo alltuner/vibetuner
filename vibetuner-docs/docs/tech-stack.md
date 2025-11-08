@@ -202,17 +202,6 @@ optimized for rapid development and deployment.
 - [docs.astral.sh/ruff](https://docs.astral.sh/ruff/)
 - [GitHub](https://github.com/astral-sh/ruff)
 
-### djlint
-
-**Why:** Template linter and formatter.
-
-- Formats Jinja2/Django templates
-- Finds common errors
-- Enforces consistency
-**Links:**
-- [djlint.com](https://djlint.com/)
-- [GitHub](https://github.com/Riverside-Healthcare/djLint)
-
 ## Authentication
 
 ### Authlib

@@ -7,6 +7,4 @@ dependencies = []
 vibetuner = { path = "./packages/vibetuner-py" }
 
 [dependency-groups]
-dev = [
-    "vibetuner[dev]>=2.15.1",
-]
+dev = ["vibetuner[dev]"]

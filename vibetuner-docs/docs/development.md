@@ -212,7 +212,6 @@ just dev
 
 ### Templates
 
-- Use **djlint** for Jinja2 template formatting (included in vibetuner dev dependencies)
 - Keep templates simple and readable
 - Use descriptive variable names in `copier.yml`
 

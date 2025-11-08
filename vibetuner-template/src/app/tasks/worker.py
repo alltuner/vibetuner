@@ -1,7 +1,7 @@
 from streaq import Worker
+from vibetuner.tasks.context import lifespan
 
 from app.config import settings
-from vibetuner.tasks.context import lifespan
 
 
 worker = Worker(

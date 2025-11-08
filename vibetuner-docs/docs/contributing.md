@@ -71,7 +71,6 @@ For detailed development workflows, see the [Development Workflow](development.m
 
 - **Python**: Follow existing style, use Ruff for formatting
 - **JavaScript**: Follow existing style
-- **Templates**: Use djlint for Jinja2 templates
 - **Commits**: Clear, concise messages describing the "why"
 
 ## Testing

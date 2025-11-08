@@ -3,7 +3,6 @@
     "allow": [
       "Bash(cat:*)",
       "Bash(curl:*)",
-      "Bash(djlint:*)",
       "Bash(echo:*)",
       "Bash(find:*)",
       "Bash(gh pr create:*)",
@@ -73,7 +72,6 @@
       "WebFetch(domain:bun.sh)",
       "WebFetch(domain:copier.readthedocs.io)",
       "WebFetch(domain:daisyui.com)",
-      "WebFetch(domain:djlint.com)",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:docs.astral.sh)",
       "WebFetch(domain:docs.npmjs.com)",

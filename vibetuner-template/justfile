@@ -79,23 +79,13 @@ deploy-latest HOST: release
     ENABLE_WATCHTOWER={{ ENABLE_WATCHTOWER }} \
     docker compose -f compose.prod.yml up -d --remove-orphans --pull always
 
-# Lint Jinja templates with djlint (check only)
-[group('linting')]
-lint-jinja:
-    uv run djlint templates/ --check
-
 # Run all linting checks
 [group('linting')]
-lint: lint-md lint-py type-check lint-jinja lint-toml
-
-# Format Jinja templates with djlint
-[group('formatting')]
-format-jinja:
-    uv run djlint templates/ --reformat
+lint: lint-md lint-py type-check lint-toml
 
 # Format all code
 [group('formatting')]
-format: format-py format-jinja format-toml
+format: format-py format-toml
 
 # Complete i18n workflow: extract, update, and compile translations
 [group('localization')]

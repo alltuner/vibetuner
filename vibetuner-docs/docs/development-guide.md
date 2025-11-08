@@ -285,7 +285,6 @@ just format
 Runs:
 
 - `ruff format` for Python
-- `djlint` for templates
 
 ### Check Code
 
