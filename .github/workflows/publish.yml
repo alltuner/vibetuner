@@ -59,10 +59,14 @@ jobs:
               VERSION=$(gh release view --json tagName --jq '.tagName' | sed 's/^v//')
               echo "Using latest GitHub release version: $VERSION"
             fi
-          else
+          elif [ "${{ github.event_name }}" = "release" ]; then
             # Release event
             VERSION=${GITHUB_REF#refs/tags/v}
             echo "Using release event version: $VERSION"
+          else
+            # Push event - get latest release tag
+            VERSION=$(gh release view --json tagName --jq '.tagName' | sed 's/^v//')
+            echo "Using latest GitHub release version for push event: $VERSION"
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Final version: $VERSION"
@@ -321,14 +325,10 @@ jobs:
         with:
           path: _site
 
-  # Conditional Python publish (blocks if any build fails)
+  # Conditional Python publish
   publish-python:
-    needs: [detect-changes, build-python, build-js]
-    if: |
-      always() && 
-      needs.detect-changes.outputs.python-changed == 'true' &&
-      (needs.build-python.result == 'success' || needs.build-python.result == 'skipped') &&
-      (needs.build-js.result != 'failure')
+    needs: [detect-changes, build-python]
+    if: needs.detect-changes.outputs.python-changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -349,14 +349,10 @@ jobs:
       - name: Publish to PyPI
         run: uv publish
 
-  # Conditional JavaScript publish (blocks if any build fails)
+  # Conditional JavaScript publish
   publish-js:
-    needs: [detect-changes, build-python, build-js]
-    if: |
-      always() && 
-      needs.detect-changes.outputs.js-changed == 'true' &&
-      (needs.build-js.result == 'success' || needs.build-js.result == 'skipped') &&
-      (needs.build-python.result != 'failure')
+    needs: [detect-changes, build-js]
+    if: needs.detect-changes.outputs.js-changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -392,15 +388,10 @@ jobs:
           echo "Publishing $TARBALL with trusted publishing"
           npm publish "./$TARBALL" --access public
 
-  # Conditional Documentation deploy (blocks if any build fails)
+  # Conditional Documentation deploy
   deploy-docs:
-    needs: [detect-changes, build-python, build-js, build-docs]
-    if: |
-      always() && 
-      needs.detect-changes.outputs.docs-changed == 'true' &&
-      (needs.build-docs.result == 'success' || needs.build-docs.result == 'skipped') &&
-      (needs.build-python.result != 'failure') &&
-      (needs.build-js.result != 'failure')
+    needs: [detect-changes, build-docs]
+    if: needs.detect-changes.outputs.docs-changed == 'true'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
