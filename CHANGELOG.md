@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.2](https://github.com/alltuner/vibetuner/compare/v2.17.1...v2.17.2) (2025-11-10)
+
+
+### Bug Fixes
+
+* configure Release Please to update Python package versions ([#414](https://github.com/alltuner/vibetuner/issues/414)) ([67dfc5c](https://github.com/alltuner/vibetuner/commit/67dfc5ca79360c0dec0376b038a689649a5df4cc))
+
 ## [2.17.1](https://github.com/alltuner/vibetuner/compare/v2.17.0...v2.17.1) (2025-11-10)
 
 
