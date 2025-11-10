@@ -7,6 +7,11 @@ import 'vibetuner-template/base.justfile'
 default:
     @just --list
 
+# Update JavaScript dependencies in vibetuner-js
+[group('Dependencies')]
+update-js:
+    cd vibetuner-js && bun update
+
 # Create a GitHub release from the latest tag
 [group('gitflow')]
 gh-release:
