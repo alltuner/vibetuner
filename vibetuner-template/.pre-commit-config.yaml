@@ -5,7 +5,6 @@ repos:
     hooks:
       # Update the uv lockfile
       - id: uv-lock
-      - id: uv-sync
         stages: [pre-commit, post-checkout, post-merge, post-rewrite]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
@@ -18,7 +17,7 @@ repos:
     hooks:
       - id: no-commit-to-branch
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.0.172  # Use the latest release tag
+    rev: v0.0.172 # Use the latest release tag
     hooks:
       - id: rumdl
         name: rumdl check
@@ -34,8 +33,18 @@ repos:
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
-        args: [
-          feat, fix, docs, style, refactor, perf, test, build, ci, chore,
-          --optional-scopes,
-          --strict
-        ]
+        args:
+          [
+            feat,
+            fix,
+            docs,
+            style,
+            refactor,
+            perf,
+            test,
+            build,
+            ci,
+            chore,
+            --optional-scopes,
+            --strict,
+          ]
