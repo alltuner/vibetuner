@@ -6,6 +6,7 @@
       "Bash(echo:*)",
       "Bash(find:*)",
       "Bash(gh pr create:*)",
+      "Bash(gh pr diff:*)",
       "Bash(gh pr list:*)",
       "Bash(gh pr view:*)",
       "Bash(gh run list:*)",
