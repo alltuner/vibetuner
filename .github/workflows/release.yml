@@ -21,6 +21,24 @@ on:
         description: 'Version to publish (e.g., 1.2.3). Leave empty to use latest release.'
         required: false
         type: string
+  workflow_call:
+    inputs:
+      force-python:
+        description: 'Force publish Python package'
+        type: boolean
+        default: false
+      force-js:
+        description: 'Force publish JS package'
+        type: boolean
+        default: false
+      force-docs:
+        description: 'Force publish documentation'
+        type: boolean
+        default: false
+      version:
+        description: 'Version to publish (e.g., 1.2.3). Leave empty to use latest release.'
+        required: false
+        type: string
 
 permissions:
   contents: read
