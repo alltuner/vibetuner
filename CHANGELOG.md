@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.3](https://github.com/alltuner/vibetuner/compare/v2.17.2...v2.17.3) (2025-11-10)
+
+
+### Code Refactoring
+
+* simplify dependency management commands ([#416](https://github.com/alltuner/vibetuner/issues/416)) ([26a23d8](https://github.com/alltuner/vibetuner/commit/26a23d8f446766680b5cac38fcb0a887bc7ec309))
+
 ## [2.17.2](https://github.com/alltuner/vibetuner/compare/v2.17.1...v2.17.2) (2025-11-10)
 
 
