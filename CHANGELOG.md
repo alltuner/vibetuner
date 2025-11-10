@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.17.0](https://github.com/alltuner/vibetuner/compare/v2.16.2...v2.17.0) (2025-11-10)
+
+
+### Features
+
+* revamp CI workflows with sequential builds and version synchronization ([#408](https://github.com/alltuner/vibetuner/issues/408)) ([9cd8540](https://github.com/alltuner/vibetuner/commit/9cd8540694f9634bb6f5365115aa50af246db419))
+
+
+### Bug Fixes
+
+* add workflow_call trigger to make release.yml reusable ([#409](https://github.com/alltuner/vibetuner/issues/409)) ([5ac41f5](https://github.com/alltuner/vibetuner/commit/5ac41f5a729c99b205ba38ccb07f80a12a414ae0))
+* ensure builds always run and any build failure blocks all publishing ([#410](https://github.com/alltuner/vibetuner/issues/410)) ([b24e153](https://github.com/alltuner/vibetuner/commit/b24e1538fc682d3deb5665ed801f41e7aba286c1))
+
+
+### Code Refactoring
+
+* move change detection to publish phase for logical workflow ([#411](https://github.com/alltuner/vibetuner/issues/411)) ([8a62150](https://github.com/alltuner/vibetuner/commit/8a6215069cfd56995f889a30aa7a7d7396b9f52d))
+
+
+### Miscellaneous Chores
+
+* **deps:** update redis docker tag to v8.2 ([#406](https://github.com/alltuner/vibetuner/issues/406)) ([fe2cc99](https://github.com/alltuner/vibetuner/commit/fe2cc999c1aa22a0d523d30aeb601c31ff7d101d))
+
 ## [2.16.2](https://github.com/alltuner/vibetuner/compare/v2.16.1...v2.16.2) (2025-11-08)
 
 
