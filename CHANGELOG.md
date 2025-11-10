@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.4](https://github.com/alltuner/vibetuner/compare/v2.17.3...v2.17.4) (2025-11-10)
+
+
+### Code Refactoring
+
+* modularize justfile structure and remove base.justfile import ([#418](https://github.com/alltuner/vibetuner/issues/418)) ([9719fd1](https://github.com/alltuner/vibetuner/commit/9719fd1269c7407e4619566c288dc739ec45ec87))
+
 ## [2.17.3](https://github.com/alltuner/vibetuner/compare/v2.17.2...v2.17.3) (2025-11-10)
 
 
