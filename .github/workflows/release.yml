@@ -388,7 +388,7 @@ jobs:
 
   # Conditional Python publish
   publish-python:
-    needs: [prepare-release, detect-changes, build-python, build-js, build-docs]
+    needs: [detect-changes]
     if: needs.detect-changes.outputs.python-changed == 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -412,7 +412,7 @@ jobs:
 
   # Conditional JavaScript publish
   publish-js:
-    needs: [prepare-release, detect-changes, build-python, build-js, build-docs]
+    needs: [detect-changes]
     if: needs.detect-changes.outputs.js-changed == 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -451,7 +451,7 @@ jobs:
 
   # Conditional Documentation deploy
   deploy-docs:
-    needs: [prepare-release, detect-changes, build-python, build-js, build-docs]
+    needs: [detect-changes]
     if: needs.detect-changes.outputs.docs-changed == 'true'
     environment:
       name: github-pages
