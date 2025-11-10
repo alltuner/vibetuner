@@ -161,7 +161,7 @@ jobs:
 
   # Detect what changed since last release
   detect-changes:
-    needs: prepare-release
+    needs: [prepare-release, build-python, build-js, build-docs]
     runs-on: ubuntu-latest
     outputs:
       python-changed: ${{ steps.changes.outputs.python }}
