@@ -26,6 +26,12 @@ update-template:
 [group('Dependencies')]
 update-all: update-js update-py update-template
 
+# Update all dependencies and commit changes
+[group('Dependencies')]
+update-and-commit: update-all
+    @git add vibetuner-js/bun.lock vibetuner-py/pyproject.toml vibetuner-py/uv.lock vibetuner-template/uv.lock
+    @git commit -m "chore: update dependencies"
+
 # Create a GitHub release from the latest tag
 [group('gitflow')]
 gh-release:
