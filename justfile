@@ -29,7 +29,7 @@ update-all: update-js update-py update-template
 # Update all dependencies and commit changes
 [group('Dependencies')]
 update-and-commit: update-all
-    @git add vibetuner-js/package.json vibetuner-js/bun.lock vibetuner-py/pyproject.toml vibetuner-py/uv.lock vibetuner-template/pyproject.toml vibetuner-template/uv.lock
+    @git add pyproject.toml vibetuner-js/package.json vibetuner-js/bun.lock vibetuner-py/pyproject.toml vibetuner-py/uv.lock vibetuner-template/pyproject.toml vibetuner-template/uv.lock
     @git commit -m "chore: update dependencies"
 
 # Create a GitHub release from the latest tag
