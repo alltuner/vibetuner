@@ -12,6 +12,11 @@ default:
 update-js:
     cd vibetuner-js && bun update
 
+# Update Python dependencies in vibetuner-py
+[group('Dependencies')]
+update-py:
+    cd vibetuner-py && uvx uv-bump && uv lock --upgrade && uv sync
+
 # Create a GitHub release from the latest tag
 [group('gitflow')]
 gh-release:
