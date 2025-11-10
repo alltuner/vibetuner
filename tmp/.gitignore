@@ -1,0 +1,6 @@
+# Ignore everything in this directory
+*
+
+# But keep this file
+!.gitignore
+!.placeholder
