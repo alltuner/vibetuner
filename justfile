@@ -7,20 +7,6 @@ import 'vibetuner-template/base.justfile'
 default:
     @just --list
 
-# Sync Python dependencies in vibetuner-py
-[group('Dependencies')]
-sync-py:
-    cd vibetuner-py && uv sync
-
-# Sync JavaScript dependencies in vibetuner-js
-[group('Dependencies')]
-sync-js:
-    cd vibetuner-js && bun install
-
-# Sync all dependencies (scaffolding packages)
-[group('Dependencies')]
-sync: sync-py sync-js
-
 # Create a GitHub release from the latest tag
 [group('gitflow')]
 gh-release:
