@@ -282,7 +282,7 @@ jobs:
 
   # Conditional Python build
   build-python:
-    needs: [prepare-release, detect-changes]
+    needs: [prepare-release]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -316,7 +316,7 @@ jobs:
 
   # Conditional JavaScript build
   build-js:
-    needs: [prepare-release, detect-changes]
+    needs: [prepare-release]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -352,7 +352,7 @@ jobs:
 
   # Documentation build (always on release)
   build-docs:
-    needs: [prepare-release, detect-changes]
+    needs: [prepare-release]
     runs-on: ubuntu-latest
     permissions:
       contents: read
