@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.1](https://github.com/alltuner/vibetuner/compare/v2.17.0...v2.17.1) (2025-11-10)
+
+
+### Bug Fixes
+
+* add uv setup to prepare-release job ([#412](https://github.com/alltuner/vibetuner/issues/412)) ([43f3834](https://github.com/alltuner/vibetuner/commit/43f3834812c7a40eedfa3dc752bc214d97100249))
+
 ## [2.17.0](https://github.com/alltuner/vibetuner/compare/v2.16.2...v2.17.0) (2025-11-10)
 
 
