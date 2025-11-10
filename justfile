@@ -11,7 +11,7 @@ import 'vibetuner-template/.justfiles/formatting.justfile'
 # Type check Python files with ty (disabled by ty.toml)
 [group('linting')]
 type-check:
-    @:
+    @cd vibetuner-py && uv run ty check .
 
 ################################################################################
 # The following includes are relevant for the scaffolded projects, but not for #
