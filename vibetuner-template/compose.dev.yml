@@ -12,7 +12,7 @@ services:
       start_period: 10s
 
   redis:
-    image: redis:8.0-alpine
+    image: redis:8.2-alpine
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
