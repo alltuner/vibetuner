@@ -25,6 +25,8 @@ current_year: int = datetime.now().year
 
 
 def _load_project_config() -> "ProjectConfiguration":
+    import os
+
     if config_vars_path is None:
         raise RuntimeError(
             "Project root not detected. Cannot load project configuration. "
@@ -32,9 +34,18 @@ def _load_project_config() -> "ProjectConfiguration":
         )
     if not config_vars_path.exists():
         return ProjectConfiguration()
-    return ProjectConfiguration(
-        **yaml.safe_load(config_vars_path.read_text(encoding="utf-8"))
-    )
+
+    # Load YAML config but allow environment variables to override
+    yaml_data = yaml.safe_load(config_vars_path.read_text(encoding="utf-8"))
+
+    # Remove fields from YAML if they're set in environment variables
+    # This ensures env vars take precedence
+    if "MONGODB_URL" in os.environ:
+        yaml_data.pop("mongodb_url", None)
+    if "REDIS_URL" in os.environ:
+        yaml_data.pop("redis_url", None)
+
+    return ProjectConfiguration(**yaml_data)
 
 
 class ProjectConfiguration(BaseSettings):
