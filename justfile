@@ -29,8 +29,6 @@ test-local:
     [tool.uv.sources]
     vibetuner = { path = "../../vibetuner-py", editable = true }
     EOF
-    echo "Initializing git repository..."
-    just git-init test-project
     echo "Syncing dependencies with local vibetuner..."
     uv sync
     echo "Starting development environment..."
