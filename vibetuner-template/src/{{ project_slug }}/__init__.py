@@ -1,1 +1,1 @@
-# noqa
+# ruff: noqa: N999
