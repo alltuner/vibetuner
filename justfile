@@ -17,6 +17,11 @@ update-js:
 update-py:
     cd vibetuner-py && uvx uv-bump && uv lock --upgrade && uv sync
 
+# Update dependencies in vibetuner-template
+[group('Dependencies')]
+update-template:
+    cd vibetuner-template && uvx uv-bump && uv lock --upgrade && uv sync
+
 # Create a GitHub release from the latest tag
 [group('gitflow')]
 gh-release:
