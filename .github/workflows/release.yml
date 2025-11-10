@@ -265,7 +265,6 @@ jobs:
   # Conditional Python build
   build-python:
     needs: [prepare-release, detect-changes]
-    if: needs.detect-changes.outputs.python-changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -300,7 +299,6 @@ jobs:
   # Conditional JavaScript build
   build-js:
     needs: [prepare-release, detect-changes]
-    if: needs.detect-changes.outputs.js-changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -337,7 +335,6 @@ jobs:
   # Documentation build (always on release)
   build-docs:
     needs: [prepare-release, detect-changes]
-    if: needs.detect-changes.outputs.docs-changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
