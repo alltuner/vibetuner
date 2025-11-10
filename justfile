@@ -7,19 +7,30 @@ import 'vibetuner-template/base.justfile'
 default:
     @just --list
 
-# Sync Python dependencies in vibetuner-py
+# Update JavaScript dependencies in vibetuner-js
 [group('Dependencies')]
-sync-py:
-    cd vibetuner-py && uv sync
+update-js:
+    @cd vibetuner-js && bun update
 
-# Sync JavaScript dependencies in vibetuner-js
+# Update Python dependencies in vibetuner-py
 [group('Dependencies')]
-sync-js:
-    cd vibetuner-js && bun install
+update-py:
+    @cd vibetuner-py && uvx uv-bump && uv lock --upgrade && uv sync --all-extras
 
-# Sync all dependencies (scaffolding packages)
+# Update dependencies in vibetuner-template
 [group('Dependencies')]
-sync: sync-py sync-js
+update-template:
+    @cd vibetuner-template && uvx uv-bump && uv lock --upgrade && uv sync --all-extras
+
+# Update all package dependencies
+[group('Dependencies')]
+update-all: update-js update-py update-template
+
+# Update all dependencies and commit changes
+[group('Dependencies')]
+update-and-commit: update-all
+    @git add pyproject.toml vibetuner-js/package.json vibetuner-js/bun.lock vibetuner-py/pyproject.toml vibetuner-py/uv.lock vibetuner-template/pyproject.toml vibetuner-template/uv.lock
+    @git commit -m "chore: update dependencies"
 
 # Create a GitHub release from the latest tag
 [group('gitflow')]

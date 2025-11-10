@@ -675,7 +675,7 @@ wheels = [
 
 [[package]]
 name = "fastapi"
-version = "0.121.0"
+version = "0.121.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annotated-doc" },
@@ -683,9 +683,9 @@ dependencies = [
     { name = "starlette" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8c/e3/77a2df0946703973b9905fd0cde6172c15e0781984320123b4f5079e7113/fastapi-0.121.0.tar.gz", hash = "sha256:06663356a0b1ee93e875bbf05a31fb22314f5bed455afaaad2b2dad7f26e98fa", size = 342412, upload-time = "2025-11-03T10:25:54.818Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6b/a4/29e1b861fc9017488ed02ff1052feffa40940cb355ed632a8845df84ce84/fastapi-0.121.1.tar.gz", hash = "sha256:b6dba0538fd15dab6fe4d3e5493c3957d8a9e1e9257f56446b5859af66f32441", size = 342523, upload-time = "2025-11-08T21:48:14.068Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/dd/2c/42277afc1ba1a18f8358561eee40785d27becab8f80a1f945c0a3051c6eb/fastapi-0.121.0-py3-none-any.whl", hash = "sha256:8bdf1b15a55f4e4b0d6201033da9109ea15632cb76cf156e7b8b4019f2172106", size = 109183, upload-time = "2025-11-03T10:25:53.27Z" },
+    { url = "https://files.pythonhosted.org/packages/94/fd/2e6f7d706899cc08690c5f6641e2ffbfffe019e8f16ce77104caa5730910/fastapi-0.121.1-py3-none-any.whl", hash = "sha256:2c5c7028bc3a58d8f5f09aecd3fd88a000ccc0c5ad627693264181a3c33aa1fc", size = 109192, upload-time = "2025-11-08T21:48:12.458Z" },
 ]
 
 [package.optional-dependencies]
@@ -1475,7 +1475,7 @@ wheels = [
 
 [[package]]
 name = "pre-commit"
-version = "4.3.0"
+version = "4.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cfgv" },
@@ -1484,9 +1484,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "virtualenv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ff/29/7cf5bbc236333876e4b41f56e06857a87937ce4bf91e117a6991a2dbb02a/pre_commit-4.3.0.tar.gz", hash = "sha256:499fe450cc9d42e9d58e606262795ecb64dd05438943c62b66f6a8673da30b16", size = 193792, upload-time = "2025-08-09T18:56:14.651Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a6/49/7845c2d7bf6474efd8e27905b51b11e6ce411708c91e829b93f324de9929/pre_commit-4.4.0.tar.gz", hash = "sha256:f0233ebab440e9f17cabbb558706eb173d19ace965c68cdce2c081042b4fab15", size = 197501, upload-time = "2025-11-08T21:12:11.607Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5b/a5/987a405322d78a73b66e39e4a90e4ef156fd7141bf71df987e50717c321b/pre_commit-4.3.0-py2.py3-none-any.whl", hash = "sha256:2b0747ad7e6e967169136edffee14c16e148a778a54e4f967921aa1ebf2308d8", size = 220965, upload-time = "2025-08-09T18:56:13.192Z" },
+    { url = "https://files.pythonhosted.org/packages/27/11/574fe7d13acf30bfd0a8dd7fa1647040f2b8064f13f43e8c963b1e65093b/pre_commit-4.4.0-py2.py3-none-any.whl", hash = "sha256:b35ea52957cbf83dcc5d8ee636cbead8624e3a15fbfa61a370e42158ac8a5813", size = 226049, upload-time = "2025-11-08T21:12:10.228Z" },
 ]
 
 [[package]]
@@ -2057,17 +2057,17 @@ wheels = [
 
 [[package]]
 name = "rumdl"
-version = "0.0.172"
+version = "0.0.173"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/92/7c/404487f4834a3aae9c47423fe4837a4cfc68a8096488951d011f3c79edd7/rumdl-0.0.172.tar.gz", hash = "sha256:d2da0b5824530e24f0c227a4196dedc021ceef28418f3d87aad1c0c3594fd118", size = 1153734, upload-time = "2025-11-06T18:00:40.371Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b9/55/d6c40c1f8d613db554271095d502ef4644d9c9c057d4c0508a621f45a258/rumdl-0.0.173.tar.gz", hash = "sha256:cb43f713218caebdc62cbafdb017ced0c1fffa7316b5be81e7d77017be152150", size = 1179297, upload-time = "2025-11-08T21:26:25.639Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b1/4e/57374a52d35f9ec4fa285b11d8b2dd42c43332129efdf5ec249e5004fc00/rumdl-0.0.172-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:1ed0fe0642599b58acb3dfc932c34eafa0b78551fa60dcedb396c7a095444dec", size = 2775468, upload-time = "2025-11-06T18:00:34.194Z" },
-    { url = "https://files.pythonhosted.org/packages/88/03/88cdbfb38234f68b364e7b8deecb1403ffff16a66ce0fb34f259badc88e9/rumdl-0.0.172-py3-none-macosx_11_0_arm64.whl", hash = "sha256:02353629095b1fbb184ba5ebb14b67065ecc733675e8eab4070557b888f26dc6", size = 2622027, upload-time = "2025-11-06T18:00:28.472Z" },
-    { url = "https://files.pythonhosted.org/packages/a0/6b/ac669a0f03c688fe5caf80557a63db8ec8df664c7df523b7f75d2be9c7a8/rumdl-0.0.172-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:cae0b418aa1a8e43729cccc96196eaebbba40caaed856e66b5ffa7bbfeaf12f1", size = 2884429, upload-time = "2025-11-06T18:00:30.601Z" },
-    { url = "https://files.pythonhosted.org/packages/a1/a0/28b43c0d25c3f4206c889639a0e61de3e9eff81204e4e666897d08cc5143/rumdl-0.0.172-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5834c4b05ae932b87bf2020d3bed397890ed852e27f464ac62d4c83d2ed290d8", size = 3004793, upload-time = "2025-11-06T18:00:37.628Z" },
-    { url = "https://files.pythonhosted.org/packages/d0/81/09aa945a5951c0fd8c7964d11af7f36f791e6901ffe1ac8daed69aa88779/rumdl-0.0.172-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:140a3a7cdae9c4609e8b8b2951813d0fc29cc6500e3d9ae1bb150af14ecb7b36", size = 2884709, upload-time = "2025-11-06T18:00:32.443Z" },
-    { url = "https://files.pythonhosted.org/packages/eb/a7/7d12c1bc3b5c882374ef8bc22d43d6c2b2f1aa77157d9db868a9f58984ad/rumdl-0.0.172-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:bddfc8fa0fedcfce1c3602343d93a86f3ac044ee8d2c2b35d16cbff5fb98c0f2", size = 2995939, upload-time = "2025-11-06T18:00:39.129Z" },
-    { url = "https://files.pythonhosted.org/packages/66/3d/3ce56f39c76c7d164c7663c41c4e062ae65f7a563737d20d28cfbce43beb/rumdl-0.0.172-py3-none-win_amd64.whl", hash = "sha256:20045014a4fa687d583b2d806c953bb5cf94fadc568988358f7063fb9135221b", size = 2808376, upload-time = "2025-11-06T18:00:35.816Z" },
+    { url = "https://files.pythonhosted.org/packages/ad/16/7e922de98741960570e29dc63a3bf23a66850f8b8f07e6a2e3d0a8b98b34/rumdl-0.0.173-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:1945bd0dd747877a363430aa072b8e2d427c200cbc4b1897c76d3f927fc2710e", size = 2777773, upload-time = "2025-11-08T21:26:20.146Z" },
+    { url = "https://files.pythonhosted.org/packages/19/68/195caa7333ac8fcbf0e5658f4b1682795d9b50019566a612ecc85c4e762d/rumdl-0.0.173-py3-none-macosx_11_0_arm64.whl", hash = "sha256:9e67cd7966b667c1b0fdfdb62fa40b89512a4a6c450391953d177c48b414d27a", size = 2624911, upload-time = "2025-11-08T21:26:14.67Z" },
+    { url = "https://files.pythonhosted.org/packages/71/06/0ce06bfab3c883021690df7c933cbf6fd4c62bfba795c6b5d1b4bd52320c/rumdl-0.0.173-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9a98581b3051faa93f77596f459583c9bfc7a16504eab06acdbd4fad92f9d8a8", size = 2886977, upload-time = "2025-11-08T21:26:16.67Z" },
+    { url = "https://files.pythonhosted.org/packages/08/7a/7a04044937231459c741b877bc905b0cfc831273dd52978b31393703d513/rumdl-0.0.173-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7a5e891c8883e30aebc2f805ac6b13c56388adab854bca4bbf456851ce983d9a", size = 3010995, upload-time = "2025-11-08T21:26:22.873Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/d3/f54fe685647693c7569ddbb148cf76fd3c0c2922205d4268818bea206d14/rumdl-0.0.173-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:8e0ac920b6e5e5e0e3ce351291ce27cb51bb74ad235ce33abead99648ea34f37", size = 2886365, upload-time = "2025-11-08T21:26:18.612Z" },
+    { url = "https://files.pythonhosted.org/packages/8c/c2/978093ab82016f332a28fdc5976b480b47ec7c615dcb824f846e26cb9b98/rumdl-0.0.173-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:6e8312b7b9c9b0539e07df463d2d2a16c9cf4007ec8fdd36bbf7d30cf6c71671", size = 3001290, upload-time = "2025-11-08T21:26:24.401Z" },
+    { url = "https://files.pythonhosted.org/packages/68/41/4202959e6f4d101e2897f7a83c06bca9b509de16bb21a6d31820454a4665/rumdl-0.0.173-py3-none-win_amd64.whl", hash = "sha256:70b2879e700b11872bc4a12a660e168b9cc2cbac3bfd0a90b7ca67974e8b954a", size = 2810123, upload-time = "2025-11-08T21:26:21.334Z" },
 ]
 
 [[package]]
@@ -2541,7 +2541,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "2.13.1"
+version = "2.17.2"
 source = { editable = "." }
 dependencies = [
     { name = "aioboto3" },
@@ -2604,7 +2604,7 @@ requires-dist = [
     { name = "copier", specifier = ">=9.10.3,<9.10.4" },
     { name = "dunamai", marker = "extra == 'dev'", specifier = ">=1.25.0" },
     { name = "email-validator", specifier = ">=2.3.0" },
-    { name = "fastapi", extras = ["standard-no-fastapi-cloud-cli"], specifier = ">=0.121.0" },
+    { name = "fastapi", extras = ["standard-no-fastapi-cloud-cli"], specifier = ">=0.121.1" },
     { name = "gh-bin", marker = "extra == 'dev'", specifier = ">=2.81.0" },
     { name = "granian", extras = ["pname"], specifier = ">=2.5.7" },
     { name = "granian", extras = ["pname", "reload"], marker = "extra == 'dev'", specifier = ">=2.5.7" },
@@ -2612,7 +2612,7 @@ requires-dist = [
     { name = "itsdangerous", specifier = ">=2.2.0" },
     { name = "just-bin", marker = "extra == 'dev'", specifier = ">=1.43.0" },
     { name = "loguru", specifier = ">=0.7.3" },
-    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.3.0" },
+    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.4.0" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.12.4" },
     { name = "pydantic-extra-types", extras = ["pycountry"], specifier = ">=2.10.6" },
     { name = "pydantic-settings", specifier = ">=2.11.0" },
@@ -2621,7 +2621,7 @@ requires-dist = [
     { name = "redis", extras = ["hiredis"], specifier = ">=7.0.1" },
     { name = "rich", specifier = ">=14.2.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.14.4" },
-    { name = "rumdl", marker = "extra == 'dev'", specifier = ">=0.0.172" },
+    { name = "rumdl", marker = "extra == 'dev'", specifier = ">=0.0.173" },
     { name = "semver", marker = "extra == 'dev'", specifier = ">=3.0.4" },
     { name = "sse-starlette", specifier = ">=3.0.3" },
     { name = "starlette-babel", specifier = ">=1.0.3" },
