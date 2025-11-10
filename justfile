@@ -21,7 +21,7 @@ test-local:
     echo "Cleaning up old test project..."
     rm -rf ./tmp/test-project
     echo "Scaffolding new project with copier..."
-    copier copy -f --trust --defaults . ./tmp/test-project
+    copier copy -f --trust --defaults --skip-tasks . ./tmp/test-project
     cd ./tmp/test-project
     echo "Adding local vibetuner source override..."
     cat >> pyproject.toml << 'EOF'
@@ -29,6 +29,8 @@ test-local:
     [tool.uv.sources]
     vibetuner = { path = "../../vibetuner-py", editable = true }
     EOF
+    echo "Initializing git repository..."
+    just git-init test-project
     echo "Syncing dependencies with local vibetuner..."
     uv sync
     echo "Starting development environment..."
