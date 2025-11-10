@@ -161,7 +161,7 @@ jobs:
 
   # Detect what changed since last release
   detect-changes:
-    needs: prepare-release
+    needs: [prepare-release, build-python, build-js, build-docs]
     runs-on: ubuntu-latest
     outputs:
       python-changed: ${{ steps.changes.outputs.python }}
@@ -282,7 +282,7 @@ jobs:
 
   # Conditional Python build
   build-python:
-    needs: [prepare-release, detect-changes]
+    needs: [prepare-release]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -316,7 +316,7 @@ jobs:
 
   # Conditional JavaScript build
   build-js:
-    needs: [prepare-release, detect-changes]
+    needs: [prepare-release]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -352,7 +352,7 @@ jobs:
 
   # Documentation build (always on release)
   build-docs:
-    needs: [prepare-release, detect-changes]
+    needs: [prepare-release]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -388,7 +388,7 @@ jobs:
 
   # Conditional Python publish
   publish-python:
-    needs: [prepare-release, detect-changes, build-python, build-js, build-docs]
+    needs: [detect-changes]
     if: needs.detect-changes.outputs.python-changed == 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -412,7 +412,7 @@ jobs:
 
   # Conditional JavaScript publish
   publish-js:
-    needs: [prepare-release, detect-changes, build-python, build-js, build-docs]
+    needs: [detect-changes]
     if: needs.detect-changes.outputs.js-changed == 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -451,7 +451,7 @@ jobs:
 
   # Conditional Documentation deploy
   deploy-docs:
-    needs: [prepare-release, detect-changes, build-python, build-js, build-docs]
+    needs: [detect-changes]
     if: needs.detect-changes.outputs.docs-changed == 'true'
     environment:
       name: github-pages
