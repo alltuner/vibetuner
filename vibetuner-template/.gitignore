@@ -10,9 +10,9 @@
 # Bytecode and cache
 __pycache__/
 *.py[oc]
-.mypy_cache/
-.pytest_cache/
 .ruff_cache/
+.rumdl-cache/
+.uv-cache/
 
 # Build artifacts
 *.egg-info

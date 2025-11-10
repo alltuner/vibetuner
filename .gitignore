@@ -11,6 +11,14 @@
 __pycache__/
 *.py[oc]
 .ruff_cache/
+.rumdl-cache/
+.uv-cache/
+
+# Build artifacts
+*.egg-info
+build/
+dist/
+wheels/
 
 # Virtual environments
 .venv
