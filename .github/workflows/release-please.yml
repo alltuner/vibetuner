@@ -33,7 +33,7 @@ jobs:
   publish:
     needs: release-please
     if: needs.release-please.outputs.releases_created == 'true'
-    uses: ./.github/workflows/publish.yml
+    uses: ./.github/workflows/release.yml
     permissions:
       contents: read
       pages: write
