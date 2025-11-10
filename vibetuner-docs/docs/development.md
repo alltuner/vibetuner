@@ -86,6 +86,42 @@ just dev  # Starts Docker development environment
 
 For a catalog of template prompts and update flows, see the [Scaffolding Reference](scaffolding.md).
 
+### Testing Scaffold Changes from a Branch
+
+When working on scaffold changes, you can test the CLI directly from a branch without publishing:
+
+```bash
+# Test from the current branch (e.g., fix/scaffold-command)
+uvx git+https://github.com/alltuner/vibetuner@fix/scaffold-command#subdirectory=vibetuner-py scaffold new --help
+
+# Create a project using the branch
+uvx git+https://github.com/alltuner/vibetuner@fix/scaffold-command#subdirectory=vibetuner-py scaffold new /tmp/test-project
+```
+
+The CLI also supports a `-b` parameter to specify the branch dynamically:
+
+```bash
+# Specify branch with -b parameter
+uvx git+https://github.com/alltuner/vibetuner#subdirectory=vibetuner-py scaffold new -b fix/scaffold-command /tmp/test-project
+```
+
+This is particularly useful for:
+
+- Testing scaffold changes before merging a PR
+- Verifying bug fixes in the scaffold command
+- Sharing development versions with collaborators
+- CI/CD integration testing
+
+**Note for AI Assistants:** The repository includes a `tmp/` directory at the root with its
+contents automatically ignored by git. This directory is specifically for testing scaffold
+commands without needing to access external directories like `/tmp`, which can be problematic
+for some AI coding assistants:
+
+```bash
+# Test scaffolding in the repo's tmp directory
+uvx git+https://github.com/alltuner/vibetuner@BRANCH_NAME#subdirectory=vibetuner-py scaffold new ./tmp/test-project
+```
+
 ### Working on Documentation
 
 ```bash
