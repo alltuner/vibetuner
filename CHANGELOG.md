@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.5](https://github.com/alltuner/vibetuner/compare/v2.17.4...v2.17.5) (2025-11-10)
+
+
+### Miscellaneous Chores
+
+* cleanup repository structure and dependencies ([#420](https://github.com/alltuner/vibetuner/issues/420)) ([8b021ad](https://github.com/alltuner/vibetuner/commit/8b021ad2ddc1a82c95db04fc243a76dcc282b584))
+
 ## [2.17.4](https://github.com/alltuner/vibetuner/compare/v2.17.3...v2.17.4) (2025-11-10)
 
 
