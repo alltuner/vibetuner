@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.8](https://github.com/alltuner/vibetuner/compare/v2.17.7...v2.17.8) (2025-11-11)
+
+
+### Bug Fixes
+
+* restore configuration loader ([#426](https://github.com/alltuner/vibetuner/issues/426)) ([2d948e2](https://github.com/alltuner/vibetuner/commit/2d948e2ac4f0b4d64d9eacbf5572b45fee3a9830))
+
 ## [2.17.7](https://github.com/alltuner/vibetuner/compare/v2.17.6...v2.17.7) (2025-11-11)
 
 
