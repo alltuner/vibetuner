@@ -17,6 +17,8 @@ from pydantic import (
 from pydantic_extra_types.language_code import LanguageAlpha2
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from vibetuner.logging import logger
+
 from .paths import config_vars as config_vars_path
 from .versioning import version
 
@@ -99,7 +101,7 @@ class CoreConfiguration(BaseSettings):
 
     # Database and Cache URLs
     mongodb_url: MongoDsn = MongoDsn("mongodb://localhost:27017")
-    redis_url: RedisDsn = RedisDsn("redis://localhost:6379/0")
+    redis_url: RedisDsn = RedisDsn("redis://localhost:6379")
 
     aws_access_key_id: SecretStr | None = None
     aws_secret_access_key: SecretStr | None = None
@@ -132,3 +134,7 @@ class CoreConfiguration(BaseSettings):
 
 
 settings = CoreConfiguration()
+
+
+logger.info("Configuration loaded for project: {}", settings.project.project_name)
+logger.info("Configuration loaded for project: {}", settings.model_dump())
