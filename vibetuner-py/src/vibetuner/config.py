@@ -26,19 +26,23 @@ from .versioning import version
 current_year: int = datetime.now().year
 
 
+def _load_project_config() -> "ProjectConfiguration":
+    if config_vars_path is None:
+        raise RuntimeError(
+            "Project root not detected. Cannot load project configuration. "
+            "Ensure you're running from within a project directory with .copier-answers.yml"
+        )
+    if not config_vars_path.exists():
+        return ProjectConfiguration()
+
+    yaml_data = yaml.safe_load(config_vars_path.read_text(encoding="utf-8"))
+    return ProjectConfiguration(**yaml_data)
+
+
 class ProjectConfiguration(BaseSettings):
     @classmethod
     def from_project_config(cls) -> "ProjectConfiguration":
-        if config_vars_path is None:
-            raise RuntimeError(
-                "Project root not detected. Cannot load project configuration. "
-                "Ensure you're running from within a project directory with .copier-answers.yml"
-            )
-        if not config_vars_path.exists():
-            return ProjectConfiguration()
-
-        yaml_data = yaml.safe_load(config_vars_path.read_text(encoding="utf-8"))
-        return ProjectConfiguration(**yaml_data)
+        return _load_project_config()
 
     project_slug: str = "default_project"
     project_name: str = "default_project"
