@@ -17,6 +17,8 @@ from pydantic import (
 from pydantic_extra_types.language_code import LanguageAlpha2
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from vibetuner.logging import logger
+
 from .paths import config_vars as config_vars_path
 from .versioning import version
 
@@ -24,20 +26,20 @@ from .versioning import version
 current_year: int = datetime.now().year
 
 
-def _load_project_config() -> "ProjectConfiguration":
-    if config_vars_path is None:
-        raise RuntimeError(
-            "Project root not detected. Cannot load project configuration. "
-            "Ensure you're running from within a project directory with .copier-answers.yml"
-        )
-    if not config_vars_path.exists():
-        return ProjectConfiguration()
-    return ProjectConfiguration(
-        **yaml.safe_load(config_vars_path.read_text(encoding="utf-8"))
-    )
-
-
 class ProjectConfiguration(BaseSettings):
+    @classmethod
+    def from_project_config(cls) -> "ProjectConfiguration":
+        if config_vars_path is None:
+            raise RuntimeError(
+                "Project root not detected. Cannot load project configuration. "
+                "Ensure you're running from within a project directory with .copier-answers.yml"
+            )
+        if not config_vars_path.exists():
+            return ProjectConfiguration()
+
+        yaml_data = yaml.safe_load(config_vars_path.read_text(encoding="utf-8"))
+        return ProjectConfiguration(**yaml_data)
+
     project_slug: str = "default_project"
     project_name: str = "default_project"
 
@@ -46,9 +48,6 @@ class ProjectConfiguration(BaseSettings):
     # Language Related Settings
     supported_languages: set[LanguageAlpha2] | None = None
     default_language: LanguageAlpha2 = LanguageAlpha2("en")
-
-    mongodb_url: MongoDsn | None = None
-    redis_url: RedisDsn | None = None
 
     # AWS Parameters
     aws_default_region: str = "eu-central-1"
@@ -90,15 +89,19 @@ class ProjectConfiguration(BaseSettings):
         )
         return f"© {year_part}{f' {self.company_name}' if self.company_name else ''}"
 
-    model_config = SettingsConfigDict(extra="ignore")
+    model_config = SettingsConfigDict(case_sensitive=False, extra="ignore")
 
 
 class CoreConfiguration(BaseSettings):
-    project: ProjectConfiguration
+    project: ProjectConfiguration = ProjectConfiguration.from_project_config()
 
     debug: bool = False
     version: str = version
     session_key: SecretStr = SecretStr("ct-!secret-must-change-me")
+
+    # Database and Cache URLs
+    mongodb_url: MongoDsn = MongoDsn("mongodb://localhost:27017")
+    redis_url: RedisDsn = RedisDsn("redis://localhost:6379")
 
     aws_access_key_id: SecretStr | None = None
     aws_secret_access_key: SecretStr | None = None
@@ -130,4 +133,8 @@ class CoreConfiguration(BaseSettings):
     )
 
 
-settings = CoreConfiguration(project=_load_project_config())
+settings = CoreConfiguration()
+
+
+logger.info("Configuration loaded for project: {}", settings.project.project_name)
+logger.info("Configuration loaded for project: {}", settings.model_dump())

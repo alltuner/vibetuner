@@ -2057,17 +2057,17 @@ wheels = [
 
 [[package]]
 name = "rumdl"
-version = "0.0.173"
+version = "0.0.174"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b9/55/d6c40c1f8d613db554271095d502ef4644d9c9c057d4c0508a621f45a258/rumdl-0.0.173.tar.gz", hash = "sha256:cb43f713218caebdc62cbafdb017ced0c1fffa7316b5be81e7d77017be152150", size = 1179297, upload-time = "2025-11-08T21:26:25.639Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/67/7f/10551b09e04b8705a53d1d187ce48b74223f361f56b2b8339f1f5b46ad06/rumdl-0.0.174.tar.gz", hash = "sha256:9128c903b19378f3bd0a43c2e3be0e08a62021fa48a029db10e61256b6cc85fe", size = 1183729, upload-time = "2025-11-10T14:52:15.09Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ad/16/7e922de98741960570e29dc63a3bf23a66850f8b8f07e6a2e3d0a8b98b34/rumdl-0.0.173-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:1945bd0dd747877a363430aa072b8e2d427c200cbc4b1897c76d3f927fc2710e", size = 2777773, upload-time = "2025-11-08T21:26:20.146Z" },
-    { url = "https://files.pythonhosted.org/packages/19/68/195caa7333ac8fcbf0e5658f4b1682795d9b50019566a612ecc85c4e762d/rumdl-0.0.173-py3-none-macosx_11_0_arm64.whl", hash = "sha256:9e67cd7966b667c1b0fdfdb62fa40b89512a4a6c450391953d177c48b414d27a", size = 2624911, upload-time = "2025-11-08T21:26:14.67Z" },
-    { url = "https://files.pythonhosted.org/packages/71/06/0ce06bfab3c883021690df7c933cbf6fd4c62bfba795c6b5d1b4bd52320c/rumdl-0.0.173-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9a98581b3051faa93f77596f459583c9bfc7a16504eab06acdbd4fad92f9d8a8", size = 2886977, upload-time = "2025-11-08T21:26:16.67Z" },
-    { url = "https://files.pythonhosted.org/packages/08/7a/7a04044937231459c741b877bc905b0cfc831273dd52978b31393703d513/rumdl-0.0.173-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7a5e891c8883e30aebc2f805ac6b13c56388adab854bca4bbf456851ce983d9a", size = 3010995, upload-time = "2025-11-08T21:26:22.873Z" },
-    { url = "https://files.pythonhosted.org/packages/2e/d3/f54fe685647693c7569ddbb148cf76fd3c0c2922205d4268818bea206d14/rumdl-0.0.173-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:8e0ac920b6e5e5e0e3ce351291ce27cb51bb74ad235ce33abead99648ea34f37", size = 2886365, upload-time = "2025-11-08T21:26:18.612Z" },
-    { url = "https://files.pythonhosted.org/packages/8c/c2/978093ab82016f332a28fdc5976b480b47ec7c615dcb824f846e26cb9b98/rumdl-0.0.173-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:6e8312b7b9c9b0539e07df463d2d2a16c9cf4007ec8fdd36bbf7d30cf6c71671", size = 3001290, upload-time = "2025-11-08T21:26:24.401Z" },
-    { url = "https://files.pythonhosted.org/packages/68/41/4202959e6f4d101e2897f7a83c06bca9b509de16bb21a6d31820454a4665/rumdl-0.0.173-py3-none-win_amd64.whl", hash = "sha256:70b2879e700b11872bc4a12a660e168b9cc2cbac3bfd0a90b7ca67974e8b954a", size = 2810123, upload-time = "2025-11-08T21:26:21.334Z" },
+    { url = "https://files.pythonhosted.org/packages/05/84/e0e897e49cdd37a1f0f11e100ba96b93868ee5ae39c3ad8266fbe8734f3a/rumdl-0.0.174-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:7dba09a68f0f58b52ab8c32d410ae73cd38b04c540cf29841a9a88ed5ae763b8", size = 2854779, upload-time = "2025-11-10T14:52:09.271Z" },
+    { url = "https://files.pythonhosted.org/packages/4d/2c/d99c0c4e04951387881ecfec3fa00d770f6f4a4babc3c863d01ef17548b1/rumdl-0.0.174-py3-none-macosx_11_0_arm64.whl", hash = "sha256:c6979fd02d11af351d1937316d4c21d012af0c05e50b9f44a0a2a928971b4f91", size = 2735172, upload-time = "2025-11-10T14:52:02.235Z" },
+    { url = "https://files.pythonhosted.org/packages/4b/2a/cead937580ab60d2dd0a9f674dd21d85d513262405bcaca7db7579bb3939/rumdl-0.0.174-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d31fd97cf4bfabb090d9cb8deb24b29d9bf37fe06bdaed97c70cde32bb3b92b0", size = 3069207, upload-time = "2025-11-10T14:52:04.836Z" },
+    { url = "https://files.pythonhosted.org/packages/8d/44/b7b4d0c19c23f770916bbd0c48c28c97c124ef07385f4ef60a7bcdc94e08/rumdl-0.0.174-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cb688e6fe8381f6190fdd0b7b848de47e1a1627b11a5356c67be41b22ad6d2ca", size = 3106864, upload-time = "2025-11-10T14:52:12.589Z" },
+    { url = "https://files.pythonhosted.org/packages/e2/87/ef8a2774601c92a71838e72bd7f7914190a18ffcb9e199c8471fda27e154/rumdl-0.0.174-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:44cfdf26ba9c2c6cfdbb788f5eaf8ec72012cd9ce7d38a6d5bb113bbea0b76a2", size = 3070006, upload-time = "2025-11-10T14:52:06.6Z" },
+    { url = "https://files.pythonhosted.org/packages/74/6f/526a6295ca4cf4cae7b65a16d75831dd8e7d2c832360b676409ede3dcda0/rumdl-0.0.174-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:6ce56ca3b65d781108281ca729be0e259c900e46e387c2185041c462f0863fc3", size = 3105259, upload-time = "2025-11-10T14:52:13.831Z" },
+    { url = "https://files.pythonhosted.org/packages/6e/02/8ae2c06ea83dee775e16e384e1c0ca780026aa5f11e3467a6e086d3e3ea9/rumdl-0.0.174-py3-none-win_amd64.whl", hash = "sha256:1a919ff264b3e00cbbf6100cd43ae45f4d885a4674b34994fecf64e795640108", size = 2915007, upload-time = "2025-11-10T14:52:11.276Z" },
 ]
 
 [[package]]
@@ -2541,7 +2541,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "2.17.4"
+version = "2.17.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aioboto3" },
@@ -2569,9 +2569,9 @@ dependencies = [
     { name = "streaq", extra = ["web"] },
     { name = "typer-slim", extra = ["standard"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8b/7f/77f4ff550ac71b75cf2fbc13f279ae9b025431d735b7dd8684db47e5964a/vibetuner-2.17.4.tar.gz", hash = "sha256:95adc8afd19c40efebf757a457bb518ac91880018d03b3dc29f3812908f3b287", size = 48879, upload-time = "2025-11-10T14:16:33.261Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/ba/1ee2c9c85c5842425371c20dc381f6fd0ab96759c3c1153bf83a40fe7577/vibetuner-2.17.5.tar.gz", hash = "sha256:99445bd5d0907284f7a21c555c54de470c6494406cc6a18d21ca88bf50f035cd", size = 48874, upload-time = "2025-11-10T14:51:14.699Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/58/303556dd5786d0fbdd949569d222cfc9c58a91e32b44e71436956224bbcd/vibetuner-2.17.4-py3-none-any.whl", hash = "sha256:0529f837aecec3f00ce0d28598095214504b0b5cab937337d27d1b33bad98c53", size = 86691, upload-time = "2025-11-10T14:16:32.193Z" },
+    { url = "https://files.pythonhosted.org/packages/e0/21/a76fc1bb5ee986769ad2ad3ce02e1e1bfb001676ce7ac1863c0d2576f702/vibetuner-2.17.5-py3-none-any.whl", hash = "sha256:bbc6bd40eeb870930cdf219a594b9bf6f17ed5231fafc8894de876bb489e3508", size = 86690, upload-time = "2025-11-10T14:51:13.316Z" },
 ]
 
 [package.optional-dependencies]
@@ -2597,7 +2597,7 @@ dev = [
 
 [[package]]
 name = "vibetuner-scaffolding"
-version = "2.17.4"
+version = "2.17.5"
 source = { virtual = "." }
 
 [package.dev-dependencies]

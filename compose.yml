@@ -25,45 +25,18 @@ services:
       start_period: 5s
 
   app:
-    build:
-      context: .
-      args:
-        VERSION: ${VERSION:-0.0.0}
-        PYTHON_VERSION: ${PYTHON_VERSION}
-        ENVIRONMENT: ${ENVIRONMENT:-development}
-    image: ${COMPOSE_PROJECT_NAME}:dev
+    build: .
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017/
+      - REDIS_URL=redis://redis:6379/
     depends_on:
       mongo:
         condition: service_healthy
       redis:
         condition: service_healthy
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "python",
-          "-c",
-          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ping')",
-        ]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 5s
     ports:
       - "8000:8000"
-    environment:
-      - DEBUG=true
-      - MONGODB_URL=mongodb://mongo:27017
-      - REDIS_URL=redis://redis:6379
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /app
-          ignore:
-            - .venv/
-        - action: rebuild
-          path: ./uv.lock
+    restart: unless-stopped
 
 volumes:
   mongo_data:

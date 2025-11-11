@@ -62,3 +62,41 @@ feat!: remove deprecated authentication system
 4. Release Please publishes the release and triggers package publishing
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for detailed guidelines.
+
+## Testing Scaffold Changes from a Branch
+
+When working on scaffold-related changes (template updates, CLI improvements), you can test
+the scaffolding CLI directly from a branch without publishing to PyPI:
+
+```bash
+# Test scaffold command from a specific branch
+uvx git+https://github.com/alltuner/vibetuner@BRANCH_NAME#subdirectory=vibetuner-py scaffold new --help
+
+# Create a test project using the branch
+uvx git+https://github.com/alltuner/vibetuner@BRANCH_NAME#subdirectory=vibetuner-py scaffold new /tmp/test-project
+```
+
+The scaffold command also accepts a `-b` parameter to specify the branch dynamically:
+
+```bash
+# Specify branch with -b parameter (when available)
+uvx git+https://github.com/alltuner/vibetuner#subdirectory=vibetuner-py scaffold new -b BRANCH_NAME /tmp/test-project
+```
+
+**When to use this:**
+
+- Testing scaffold changes before merging a PR
+- Verifying bug fixes in template or CLI
+- Allowing others to test your changes before review
+- CI/CD integration testing
+
+**Note:** The repository includes a `tmp/` directory at the root with its contents
+automatically ignored by git. Use this directory for testing scaffold commands if you have
+difficulty accessing external directories like `/tmp`:
+
+```bash
+# Test scaffolding in the repo's tmp directory
+uvx git+https://github.com/alltuner/vibetuner@BRANCH_NAME#subdirectory=vibetuner-py scaffold new ./tmp/test-project
+```
+
+See `vibetuner-docs/docs/development.md` for complete development workflows.
