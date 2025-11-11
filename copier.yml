@@ -68,16 +68,6 @@ enable_job_queue:
   help: Do you want to enable job queuing?
   default: false
 
-redis_url:
-  type: str
-  help: Redis server URL
-  default: "redis://localhost:6379/"
-
-mongodb_url:
-  type: str
-  help: MongoDB server URL
-  default: "mongodb://user:password@localhost:27017/"
-
 enable_watchtower:
   type: bool
   help: Do you want to enable watchtower (containers self-reload on update)?

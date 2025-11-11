@@ -9,7 +9,7 @@ async def init_models() -> None:
     """Initialize MongoDB connection and register all Beanie models."""
 
     client: AsyncMongoClient = AsyncMongoClient(
-        host=str(settings.project.mongodb_url),
+        host=str(settings.mongodb_url),
         compressors=["zstd"],
     )
 

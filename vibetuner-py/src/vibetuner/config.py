@@ -24,31 +24,20 @@ from .versioning import version
 current_year: int = datetime.now().year
 
 
-def _load_project_config() -> "ProjectConfiguration":
-    import os
-
-    if config_vars_path is None:
-        raise RuntimeError(
-            "Project root not detected. Cannot load project configuration. "
-            "Ensure you're running from within a project directory with .copier-answers.yml"
-        )
-    if not config_vars_path.exists():
-        return ProjectConfiguration()
-
-    # Load YAML config but allow environment variables to override
-    yaml_data = yaml.safe_load(config_vars_path.read_text(encoding="utf-8"))
-
-    # Remove fields from YAML if they're set in environment variables
-    # This ensures env vars take precedence
-    if "MONGODB_URL" in os.environ:
-        yaml_data.pop("mongodb_url", None)
-    if "REDIS_URL" in os.environ:
-        yaml_data.pop("redis_url", None)
-
-    return ProjectConfiguration(**yaml_data)
-
-
 class ProjectConfiguration(BaseSettings):
+    @classmethod
+    def from_project_config(cls) -> "ProjectConfiguration":
+        if config_vars_path is None:
+            raise RuntimeError(
+                "Project root not detected. Cannot load project configuration. "
+                "Ensure you're running from within a project directory with .copier-answers.yml"
+            )
+        if not config_vars_path.exists():
+            return ProjectConfiguration()
+
+        yaml_data = yaml.safe_load(config_vars_path.read_text(encoding="utf-8"))
+        return ProjectConfiguration(**yaml_data)
+
     project_slug: str = "default_project"
     project_name: str = "default_project"
 
@@ -57,9 +46,6 @@ class ProjectConfiguration(BaseSettings):
     # Language Related Settings
     supported_languages: set[LanguageAlpha2] | None = None
     default_language: LanguageAlpha2 = LanguageAlpha2("en")
-
-    mongodb_url: MongoDsn | None = None
-    redis_url: RedisDsn | None = None
 
     # AWS Parameters
     aws_default_region: str = "eu-central-1"
@@ -101,17 +87,19 @@ class ProjectConfiguration(BaseSettings):
         )
         return f"© {year_part}{f' {self.company_name}' if self.company_name else ''}"
 
-    model_config = SettingsConfigDict(
-        case_sensitive=False, extra="ignore", env_file=".env"
-    )
+    model_config = SettingsConfigDict(case_sensitive=False, extra="ignore")
 
 
 class CoreConfiguration(BaseSettings):
-    project: ProjectConfiguration
+    project: ProjectConfiguration = ProjectConfiguration.from_project_config()
 
     debug: bool = False
     version: str = version
     session_key: SecretStr = SecretStr("ct-!secret-must-change-me")
+
+    # Database and Cache URLs
+    mongodb_url: MongoDsn = MongoDsn("mongodb://localhost:27017")
+    redis_url: RedisDsn = RedisDsn("redis://localhost:6379/0")
 
     aws_access_key_id: SecretStr | None = None
     aws_secret_access_key: SecretStr | None = None
@@ -143,4 +131,4 @@ class CoreConfiguration(BaseSettings):
     )
 
 
-settings = CoreConfiguration(project=_load_project_config())
+settings = CoreConfiguration()
