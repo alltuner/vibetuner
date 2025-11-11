@@ -73,7 +73,7 @@ AWS_REGION=us-east-1
 
 ## Deployment Options
 
-### Docker Compose
+### Docker Compose (Recommended)
 
 Use `compose.prod.yml` for production deployment:
 
@@ -86,77 +86,24 @@ This starts:
 - MongoDB with persistence
 - Redis (if enabled)
 - Your application
-- Nginx reverse proxy (optional)
 
-### Kubernetes
+### Simple Cloud Deployment
 
-Example deployment:
+For most use cases, Docker Compose deployment on a single VM is sufficient:
 
-```yaml
-# deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-name: myapp
-spec:
-replicas: 3
-selector:
-matchLabels:
-app: myapp
-template:
-metadata:
-labels:
-app: myapp
-spec:
-containers:
-- name: web
-image: ghcr.io/yourorg/myapp:latest
-ports:
-- containerPort: 8000
-env:
-- name: DATABASE_URL
-valueFrom:
-secretKeyRef:
-name: myapp-secrets
-key: database-url
-- name: SECRET_KEY
-valueFrom:
-secretKeyRef:
-name: myapp-secrets
-key: secret-key
-```
+1. **Choose a cloud provider** (DigitalOcean, Hetzner, AWS EC2, etc.)
+2. **Create a VM** with Docker installed
+3. **Deploy using Docker Compose** as shown above
+4. **Set up a reverse proxy** (Nginx or Caddy) for SSL
 
-### Cloud Platforms
+### Platform-as-a-Service Options
 
-#### Fly.io
+Some PaaS providers support Docker deployments:
 
-```bash
-# Install flyctl
-brew install flyctl
-# Login
-flyctl auth login
-# Launch app
-flyctl launch
-# Set secrets
-flyctl secrets set SECRET_KEY=your-secret-key
-flyctl secrets set DATABASE_URL=mongodb://...
-# Deploy
-flyctl deploy
-```
+- **Railway**: Connect GitHub repository, add MongoDB plugin, configure environment variables
+- **Render**: Create Web Service, connect repository, add environment variables
 
-#### Railway
-
-1. Connect GitHub repository
-2. Add MongoDB plugin
-3. Configure environment variables
-4. Deploy automatically on push
-
-#### Render
-
-1. Create new Web Service
-2. Connect repository
-3. Add environment variables
-4. Render will auto-deploy
+Note: These platforms may have limitations compared to full Docker Compose control.
 
 ## Database Setup
 
@@ -316,38 +263,26 @@ Use managed database backups or schedule with cron:
 0 2 * * * /scripts/backup-mongodb.sh
 ```
 
-## Scaling
+## Scaling Considerations
 
-### Horizontal Scaling
+### Basic Scaling
 
-Run multiple instances behind a load balancer:
+For simple scaling needs:
 
-```yaml
-# docker-compose.yml
-services:
-web:
-image: myapp:latest
-deploy:
-replicas: 3
-```
+1. **Upgrade server resources** (CPU, RAM)
+2. **Use MongoDB Atlas** for managed database scaling
+3. **Add Redis** for session storage and caching
 
-### Session Storage
+### Advanced Scaling
 
-Use Redis for session storage when running multiple instances:
+When you need to scale beyond a single server:
 
-```python
-# config.py
-SESSION_BACKEND = "redis"
-SESSION_REDIS_URL = settings.REDIS_URL
-```
+1. **Load balancer** (Nginx, Caddy, or cloud LB)
+2. **Multiple app instances** behind the load balancer
+3. **Redis for shared sessions**
+4. **MongoDB Atlas** for database scaling
 
-### Database Scaling
-
-MongoDB Atlas provides:
-
-- Automatic scaling
-- Read replicas
-- Sharding for large datasets
+Note: Advanced scaling requires careful planning and monitoring.
 
 ## Performance Optimization
 
@@ -431,28 +366,28 @@ Consider:
 
 ## CI/CD Pipeline
 
-### GitHub Actions Example
+### Basic GitHub Actions
 
 ```yaml
 # .github/workflows/deploy.yml
 name: Deploy
 on:
-push:
-tags:
-- 'v*'
+  push:
+    tags:
+      - 'v*'
 jobs:
-deploy:
-runs-on: ubuntu-latest
-steps:
-- uses: actions/checkout@v4
-- name: Build and push Docker image
-run: |
-docker build -t myapp:${{ github.ref_name }} .
-docker push myapp:${{ github.ref_name }}
-- name: Deploy to production
-run: |
-# Deploy to your platform
-kubectl set image deployment/myapp web=myapp:${{ github.ref_name }}
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build and push Docker image
+      run: |
+        docker build -t myapp:${{ github.ref_name }} .
+        docker push myapp:${{ github.ref_name }}
+    - name: Deploy to server
+      run: |
+        # SSH into your server and pull the new image
+        ssh user@your-server "cd /app && docker compose pull && docker compose up -d"
 ```
 
 ## Next Steps

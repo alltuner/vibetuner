@@ -148,7 +148,7 @@ async def create_post(
 
 ## Important Notes
 
-- **Never modify `src/vibetuner/`** - File issues at `https://github.com/alltuner/scaffolding`
+- **Never modify `src/vibetuner/`** - File issues at `https://github.com/alltuner/vibetuner`
 - **Always use type hints** - FastAPI and Beanie rely on them
 - **Run `ruff format .`** after changes - Keep code consistent
 - **Use async/await** - The stack is fully async

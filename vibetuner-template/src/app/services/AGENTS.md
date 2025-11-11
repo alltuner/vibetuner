@@ -387,6 +387,6 @@ class Configuration(BaseSettings):
 
 ## Need Help?
 
-- Core service changes: `https://github.com/alltuner/scaffolding`
+- Core service changes: `https://github.com/alltuner/vibetuner`
 - httpx docs: `https://www.python-httpx.org/`
 - FastAPI dependency injection: `https://fastapi.tiangolo.com/tutorial/dependencies/`

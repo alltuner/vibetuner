@@ -19,7 +19,7 @@ This module contains the scaffolding's core models:
 
 **For changes to core models:**
 
-- File an issue at `https://github.com/alltuner/scaffolding`
+- File an issue at `https://github.com/alltuner/vibetuner`
 - Core changes benefit all projects using the scaffolding
 
 **For your application models:**
@@ -144,7 +144,7 @@ print(order.user.email)  # Automatically loaded
 
 If you need to add fields to User or other core models:
 
-1. **Option A**: File an issue at `https://github.com/alltuner/scaffolding` for widely useful fields
+1. **Option A**: File an issue at `https://github.com/alltuner/vibetuner` for widely useful fields
 2. **Option B**: Create a related model in `src/app/models/` that links to the core model:
 
 ```python

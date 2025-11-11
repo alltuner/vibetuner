@@ -427,6 +427,6 @@ async def test_task_queue(db, user):
 
 ## Need Help?
 
-- Core task changes: `https://github.com/alltuner/scaffolding`
+- Core task changes: `https://github.com/alltuner/vibetuner`
 - Streaq docs: Check Streaq documentation
 - Async patterns: `https://docs.python.org/3/library/asyncio.html`

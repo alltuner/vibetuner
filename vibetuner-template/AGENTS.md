@@ -110,7 +110,7 @@ assets/statics/
 - Email service, blob storage
 - Base templates, middleware, default routes
 - MongoDB setup, logging, configuration
-- **Changes**: File issues at `https://github.com/alltuner/scaffolding`
+- **Changes**: File issues at `https://github.com/alltuner/vibetuner`
 
 **`src/app/`** - Your application space
 
@@ -328,7 +328,7 @@ def get_usr(e):
 ## Important Rules
 
 1. **Never modify** `src/vibetuner/` - It's immutable scaffolding code
-2. **File issues** at `https://github.com/alltuner/scaffolding` for core changes
+2. **File issues** at `https://github.com/alltuner/vibetuner` for core changes
 3. **All your code** goes in `src/app/` - This is your space
 4. **Always run** `ruff format .` after Python changes
 5. **Both processes required** for development: `bun dev` + `just local-dev`
