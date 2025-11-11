@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.9](https://github.com/alltuner/vibetuner/compare/v2.17.8...v2.17.9) (2025-11-11)
+
+
+### Bug Fixes
+
+* fix wrong path for tasks worker redis url ([#428](https://github.com/alltuner/vibetuner/issues/428)) ([0bd5fc1](https://github.com/alltuner/vibetuner/commit/0bd5fc1bf4cabb25ac95418397fcf547d96349e9))
+
 ## [2.17.8](https://github.com/alltuner/vibetuner/compare/v2.17.7...v2.17.8) (2025-11-11)
 
 
