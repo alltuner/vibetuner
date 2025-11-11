@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.6](https://github.com/alltuner/vibetuner/compare/v2.17.5...v2.17.6) (2025-11-11)
+
+
+### Bug Fixes
+
+* enable Docker local development with environment-based configuration ([#422](https://github.com/alltuner/vibetuner/issues/422)) ([c8222a7](https://github.com/alltuner/vibetuner/commit/c8222a759bed7769b2d2767206db7f6406ad1021))
+
 ## [2.17.5](https://github.com/alltuner/vibetuner/compare/v2.17.4...v2.17.5) (2025-11-10)
 
 
