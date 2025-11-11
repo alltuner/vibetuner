@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.10](https://github.com/alltuner/vibetuner/compare/v2.17.9...v2.17.10) (2025-11-11)
+
+
+### Miscellaneous Chores
+
+* better to ignore pyproject from the toml linter ([#430](https://github.com/alltuner/vibetuner/issues/430)) ([0dacfd2](https://github.com/alltuner/vibetuner/commit/0dacfd2cb464e616ce81dee1687b4e322cc0d1a6))
+
 ## [2.17.9](https://github.com/alltuner/vibetuner/compare/v2.17.8...v2.17.9) (2025-11-11)
 
 
