@@ -1,0 +1,137 @@
+{% extends "base/skeleton.html.jinja" %}
+{% block title %}
+    Debug - User Impersonation
+{% endblock title %}
+{% block body %}
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-base-content mb-2">User Impersonation</h1>
+            <p class="text-base-content/70">Switch between users in debug mode for testing purposes</p>
+            <div class="alert alert-warning mt-4">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="stroke-current shrink-0 h-6 w-6"
+                     fill="none"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <span>⚠️ Debug mode only - This feature is disabled in production</span>
+            </div>
+        </header>
+        <!-- Current User Status -->
+        {% if current_user_id %}
+            <div class="card bg-primary text-primary-content shadow-xl mb-6">
+                <div class="card-body">
+                    <h2 class="card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="h-6 w-6"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Currently Impersonating
+                    </h2>
+                    <p class="opacity-90">
+                        User ID: <code>{{ current_user_id }}</code>
+                    </p>
+                    <div class="card-actions justify-end">
+                        <form method="post" action="{{ url_for('debug.stop_impersonation') }}">
+                            <button type="submit" class="btn btn-secondary btn-sm">Stop Impersonation</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="stroke-current shrink-0 h-6 w-6"
+                     fill="none"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>No user currently impersonated. Select a user below to impersonate.</span>
+            </div>
+        {% endif %}
+        <!-- Users List -->
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-2xl mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-6 w-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                    </svg>
+                    Available Users ({{ users | length }})
+                </h2>
+                {% if users %}
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra w-full">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Name</th>
+                                    <th>ID</th>
+                                    <th>Created</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                    <tr class="{% if current_user_id == user.id|string %}bg-primary/20{% endif %}">
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                {% if current_user_id == user.id|string %}<div class="badge badge-primary badge-xs">CURRENT</div>{% endif %}
+                                                <span class="font-mono text-sm">{{ user.email or "No email" }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="font-medium">{{ user.name or "No name" }}</span>
+                                        </td>
+                                        <td>
+                                            <code class="text-xs bg-base-200 px-2 py-1 rounded">{{ user.id }}</code>
+                                        </td>
+                                        <td>
+                                            <span class="text-sm text-base-content/70">
+                                                {% if user.db_insert_dt %}
+                                                    {{ user.db_insert_dt.strftime("%Y-%m-%d %H:%M") }}
+                                                {% else %}
+                                                    Unknown
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if current_user_id != user.id|string %}
+                                                <form method="post"
+                                                      action="{{ url_for('debug.impersonate_user', user_id=user.id) }}"
+                                                      class="inline">
+                                                    <button type="submit" class="btn btn-outline btn-sm">Impersonate</button>
+                                                </form>
+                                            {% else %}
+                                                <span class="text-primary font-medium">Active</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="stroke-current shrink-0 h-6 w-6"
+                             fill="none"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        <span>No users found in the database.</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- Debug Navigation Footer -->
+        {% include "debug/components/debug_nav.html.jinja" %}
+    </div>
+{% endblock body %}

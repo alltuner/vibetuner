@@ -1,0 +1,85 @@
+{% extends "base/skeleton.html.jinja" %}
+{% block title %}
+    {{ _("Edit Profile") }}
+{% endblock title %}
+{% block body %}
+    <div class="min-h-screen bg-gray-50">
+        <div class="container mx-auto px-4 py-8">
+            <div class="max-w-2xl mx-auto">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">{{ _("Edit Profile") }}</h1>
+                    <p class="text-gray-600 mt-2">{{ _("Update your account information and preferences") }}</p>
+                </div>
+                <!-- Edit Form -->
+                <div class="bg-white shadow-lg rounded-lg p-6">
+                    <form method="post" action="{{ url_for("user_edit_submit") }}">
+                        <div class="space-y-6">
+                            <!-- Name Field -->
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">{{ _("Display Name") }}</label>
+                                <input type="text"
+                                       id="name"
+                                       name="name"
+                                       value="{{ user.name or '' }}"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                       required />
+                                <p class="text-sm text-gray-600 mt-1">{{ _("This name will be displayed throughout the application") }}</p>
+                            </div>
+                            <!-- Language Preference -->
+                            <div>
+                                <label for="language" class="block text-sm font-medium text-gray-700 mb-2">{{ _("Preferred Language") }}</label>
+                                <select id="language"
+                                        name="language"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">{{ _("Use browser default") }}</option>
+                                    {% for lang_code, lang_name in locale_names.items() %}
+                                        <option value="{{ lang_code }}"
+                                                {% if current_language and current_language == lang_code %}selected{% endif %}>
+                                            {{ lang_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <p class="text-sm text-gray-600 mt-1">{{ _("This will override browser language detection") }}</p>
+                            </div>
+                            <!-- Email (read-only) -->
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">{{ _("Email Address") }}</label>
+                                <input type="email"
+                                       id="email"
+                                       value="{{ user.email or '' }}"
+                                       class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-600"
+                                       readonly />
+                                <p class="text-sm text-gray-600 mt-1">{{ _("Email cannot be changed and is managed through your OAuth provider") }}</p>
+                            </div>
+                        </div>
+                        <!-- Form Actions -->
+                        <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+                            <a href="{{ url_for("user_profile") }}" class="btn btn-ghost">{{ _("Cancel") }}</a>
+                            <button type="submit" class="btn btn-primary">{{ _("Save Changes") }}</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- Additional Info Card -->
+                <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-600"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 viewBox="0 0 20 20"
+                                 fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-900">{{ _("About Language Preferences") }}</h3>
+                            <p class="mt-1 text-sm text-blue-700">
+                                {{ _("Your language preference will take priority over URL parameters, cookies, and browser settings. Leave empty to use automatic detection.") }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}

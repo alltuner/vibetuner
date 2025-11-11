@@ -1,0 +1,83 @@
+{% extends "base/skeleton.html.jinja" %}
+{% block title %}
+    Debug Dashboard
+{% endblock title %}
+{% block body %}
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-base-content mb-2">Debug Dashboard</h1>
+            <p class="text-base-content/70">Development and debugging tools for {{ project_name }}</p>
+        </header>
+        <!-- Debug Tools Grid -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- System Information -->
+            <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-primary flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                            </path>
+                        </svg>
+                        System Information
+                    </h2>
+                    <p class="text-base-content/70 mb-4">View application configuration, cookies, and runtime information</p>
+                    <div class="card-actions justify-end">
+                        <a href="{{ url_for("debug_info") }}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Database Collections -->
+            <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-primary flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4">
+                            </path>
+                        </svg>
+                        Database Collections
+                    </h2>
+                    <p class="text-base-content/70 mb-4">Explore MongoDB collections and their field schemas</p>
+                    <div class="card-actions justify-end">
+                        <a href="{{ url_for("debug_collections") }}"
+                           class="btn btn-primary btn-sm">View Schemas</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Version Information -->
+            <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-primary flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                            </path>
+                        </svg>
+                        Version Information
+                    </h2>
+                    <p class="text-base-content/70 mb-4">Check application version and build information</p>
+                    <div class="card-actions justify-end">
+                        <a href="{{ url_for("debug_version") }}" class="btn btn-primary btn-sm">View Version</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Health Check -->
+            <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-success flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z">
+                            </path>
+                        </svg>
+                        Health Check
+                    </h2>
+                    <p class="text-base-content/70 mb-4">Verify application health and API endpoint status</p>
+                    <div class="card-actions justify-end">
+                        <a href="{{ url_for("health_ping") }}" class="btn btn-success btn-sm">Check Health</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Debug Navigation Footer -->
+        {% include "debug/components/debug_nav.html.jinja" %}
+    </div>
+{% endblock body %}

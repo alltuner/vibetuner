@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="{{ request.state.language }}">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="{{ meta_description | default("") }}" />
+        <meta name="keywords" content="{{ meta_keywords | default("") }}" />
+        <meta name="color-scheme" content="light" />
+        <title>
+            {% block title %}
+            {% endblock title %}
+        </title>
+        <link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
+        <script src="{{ url_for('js', path='bundle.js').path }}"></script>
+        {% if umami_website_id and not DEBUG %}
+            <script defer src="/meta.js" data-website-id="{{ umami_website_id }}"></script>
+        {% endif %}
+        {% include "base/favicons.html.jinja" %}
+        {% include "base/opengraph.html.jinja" %}
+        {% block head %}
+        {% endblock head %}
+    </head>
+    <body hx-ext="preload" preload="mousedown" class="{{ BODY_CLASS }}">
+        {% block start_of_body %}
+        {% endblock start_of_body %}
+        {% block header %}
+            {% if not SKIP_HEADER %}
+                {% include "base/header.html.jinja" %}
+            {% endif %}
+        {% endblock header %}
+        {% block body %}
+        {% endblock body %}
+        {% block footer %}
+            {% if not SKIP_FOOTER %}
+                {% include "base/footer.html.jinja" %}
+            {% endif %}
+        {% endblock footer %}
+        {% if DEBUG %}{{ hotreload.script(url_for('hot-reload') ) | safe }}{% endif %}
+        {% block end_of_body %}
+        {% endblock end_of_body %}
+    </body>
+</html>

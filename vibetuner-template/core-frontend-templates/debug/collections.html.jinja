@@ -1,0 +1,103 @@
+{% extends "base/skeleton.html.jinja" %}
+{% block title %}
+    Database Collections Schema - Debug
+{% endblock title %}
+{% block body %}
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-base-content mb-2">Database Collections Schema</h1>
+            <p class="text-base-content/70">Overview of all MongoDB collections and their field schemas</p>
+        </header>
+        <!-- Collections Grid -->
+        <div class="grid gap-6">
+            {% for collection in collections %}
+                <div class="card bg-base-100 shadow-xl border border-base-200">
+                    <div class="card-body">
+                        <!-- Collection Header -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h2 class="card-title text-2xl text-primary">{{ collection.name }}</h2>
+                                <p class="text-sm text-base-content/60">Model: {{ collection.model_name }}</p>
+                            </div>
+                            <div class="badge badge-secondary">{{ collection.total_fields }} fields</div>
+                        </div>
+                        <!-- Fields Table -->
+                        <div class="overflow-x-auto">
+                            <table class="table table-zebra w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left w-48">Field Name</th>
+                                        <th class="text-left min-w-64">Type</th>
+                                        <th class="text-left">Description</th>
+                                        <th class="text-center w-24">Required</th>
+                                        <th class="text-left w-48">Constraints</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for field in collection.fields %}
+                                        <tr class="align-top">
+                                            <td>
+                                                <code class="text-sm bg-base-200 px-2 py-1 rounded font-mono">{{ field.name }}</code>
+                                            </td>
+                                            <td>
+                                                <div class="font-mono text-xs text-base-content/90 max-w-xs overflow-hidden break-all leading-tight">
+                                                    {{ field.type }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if field.description %}
+                                                    <div class="text-xs text-base-content/80 max-w-xs leading-tight">{{ field.description }}</div>
+                                                {% else %}
+                                                    <span class="text-xs text-base-content/40 italic">No description</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                {% if field.required %}
+                                                    <span class="badge badge-error badge-xs min-w-fit">Required</span>
+                                                {% else %}
+                                                    <span class="badge badge-ghost badge-xs min-w-fit">Optional</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if field.extra %}
+                                                    <div class="flex flex-wrap gap-1">
+                                                        {% for key, value in field.extra.items() %}
+                                                            {% if key == "enum" %}
+                                                                <div class="tooltip" data-tip="Values: {{ value | join(", ") }}">
+                                                                    <span class="badge badge-info badge-xs min-w-fit">enum({{ value | length }})</span>
+                                                                </div>
+                                                            {% elif key == "enum_count" %}
+                                                                <span class="badge badge-info badge-xs min-w-fit">enum({{ value }})</span>
+                                                            {% elif key == "default" %}
+                                                                <div class="tooltip" data-tip="Default: {{ value }}">
+                                                                    <span class="badge badge-success badge-xs min-w-fit">default</span>
+                                                                </div>
+                                                            {% elif key == "format" %}
+                                                                <span class="badge badge-warning badge-xs min-w-fit">{{ value }}</span>
+                                                            {% elif key == "pattern" %}
+                                                                <div class="tooltip" data-tip="{{ value }}">
+                                                                    <span class="badge badge-accent badge-xs min-w-fit">regex</span>
+                                                                </div>
+                                                            {% elif key in ["min", "max", "min_length", "max_length"] %}
+                                                                <span class="badge badge-neutral badge-xs min-w-fit">{{ key.replace('_', ' ') }}: {{ value }}</span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% else %}
+                                                    <span class="text-xs text-base-content/40">-</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <!-- Debug Navigation Footer -->
+        {% include "debug/components/debug_nav.html.jinja" %}
+    </div>
+{% endblock body %}
