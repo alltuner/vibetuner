@@ -503,6 +503,6 @@ python -m src.app.cli users list-users
 
 ## Need Help?
 
-- Core CLI changes: `https://github.com/alltuner/scaffolding`
+- Core CLI changes: `https://github.com/alltuner/vibetuner`
 - Typer docs: `https://typer.tiangolo.com/`
 - Rich docs: `https://rich.readthedocs.io/`

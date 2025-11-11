@@ -447,6 +447,6 @@ See the `jinja-htmx-frontend` agent for detailed HTMX patterns and template deve
 
 ## Need Help?
 
-- Core frontend changes: `https://github.com/alltuner/scaffolding`
+- Core frontend changes: `https://github.com/alltuner/vibetuner`
 - FastAPI docs: `https://fastapi.tiangolo.com/`
 - HTMX docs: `https://htmx.org/docs/`

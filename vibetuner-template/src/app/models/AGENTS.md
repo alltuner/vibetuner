@@ -302,6 +302,6 @@ Claude Code has MongoDB MCP access for:
 
 ## Need Help?
 
-- Core model changes: `https://github.com/alltuner/scaffolding`
+- Core model changes: `https://github.com/alltuner/vibetuner`
 - Beanie docs: `https://beanie-odm.dev/`
 - MongoDB docs: `https://www.mongodb.com/docs/`

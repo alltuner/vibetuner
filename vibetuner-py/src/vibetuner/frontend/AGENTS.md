@@ -22,7 +22,7 @@ This module contains the scaffolding's core frontend components:
 
 **For changes to core frontend:**
 
-- File an issue at `https://github.com/alltuner/scaffolding`
+- File an issue at `https://github.com/alltuner/vibetuner`
 - Core changes benefit all projects using the scaffolding
 
 **For your application routes:**
