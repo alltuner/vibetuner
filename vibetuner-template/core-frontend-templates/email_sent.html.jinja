@@ -1,0 +1,82 @@
+{% extends "base/skeleton.html.jinja" %}
+{% block title %}
+    {{ _("Check Your Email") }}
+{% endblock title %}
+{% block body %}
+    <div class="min-h-screen bg-gradient-to-br from-primary to-secondary flex items-center justify-center p-4">
+        <div class="card w-full max-w-md bg-base-100 shadow-2xl backdrop-blur-sm bg-opacity-95">
+            <div class="card-body text-center">
+                <!-- Success Icon -->
+                <div class="flex justify-center mb-6">
+                    <div class="bg-success/10 rounded-full p-4 animate-pulse">
+                        <svg class="w-12 h-12 text-success"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                </div>
+                <!-- Header -->
+                <h2 class="text-2xl font-bold text-base-content mb-4">{{ _("Check Your Email") }}</h2>
+                <!-- Main Message -->
+                <div class="space-y-4 mb-6">
+                    <p class="text-base-content/80">{{ _("We've sent a secure login link to") }}</p>
+                    <div class="bg-base-200/50 rounded-lg p-3 border border-base-300/50">
+                        <p class="font-semibold text-primary break-all">{{ email }}</p>
+                    </div>
+                    <div class="alert alert-info bg-info/10 border-info/20 text-left">
+                        <svg class="w-5 h-5 text-info shrink-0"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div class="text-sm">
+                            <p class="font-medium text-info">{{ _("Quick! Link expires in 15 minutes") }}</p>
+                            <p class="text-info/80">{{ _("Click the link in the email to sign in instantly.") }}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Troubleshooting -->
+                <div class="bg-warning/5 border border-warning/20 rounded-lg p-4 mb-6">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-warning shrink-0 mt-0.5"
+                             fill="none"
+                             stroke="currentColor"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        <div class="text-left">
+                            <p class="font-medium text-warning text-sm">{{ _("Don't see the email?") }}</p>
+                            <p class="text-warning/80 text-sm">{{ _("Check your spam folder or try signing in again.") }}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Action Buttons -->
+                <div class="space-y-3">
+                    <!-- Try Again Button -->
+                    <a href="{{ url_for("auth_login") }}{% if next %}?next={{ next }}{% endif %}"
+                       class="btn btn-outline btn-block gap-2 hover:btn-primary transition-all duration-300 hover:scale-[1.02]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        {{ _("Try Again") }}
+                    </a>
+                    <!-- Back to Home -->
+                    <a href="{{ url_for("homepage") }}"
+                       class="btn btn-ghost btn-block gap-2 text-base-content/70 hover:text-base-content transition-all duration-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        {{ _("Back to Home") }}
+                    </a>
+                </div>
+                <!-- Security Note -->
+                <div class="mt-6 pt-4 border-t border-base-300/30">
+                    <p class="text-xs text-base-content/50">🔒 {{ _("This link is secure and can only be used once") }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
