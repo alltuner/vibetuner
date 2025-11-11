@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.7](https://github.com/alltuner/vibetuner/compare/v2.17.6...v2.17.7) (2025-11-11)
+
+
+### Bug Fixes
+
+* resolve template synchronization for Tailwind CSS rebuilds ([#424](https://github.com/alltuner/vibetuner/issues/424)) ([f2ded92](https://github.com/alltuner/vibetuner/commit/f2ded924a70277eca356951aa2f4e2bfffa3f03b))
+
 ## [2.17.6](https://github.com/alltuner/vibetuner/compare/v2.17.5...v2.17.6) (2025-11-11)
 
 
