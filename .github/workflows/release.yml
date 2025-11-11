@@ -6,37 +6,37 @@ on:
   workflow_dispatch:
     inputs:
       force-python:
-        description: 'Force publish Python package'
+        description: "Force publish Python package"
         type: boolean
         default: false
       force-js:
-        description: 'Force publish JS package'
+        description: "Force publish JS package"
         type: boolean
         default: false
       force-docs:
-        description: 'Force publish documentation'
+        description: "Force publish documentation"
         type: boolean
         default: false
       version:
-        description: 'Version to publish (e.g., 1.2.3). Leave empty to use latest release.'
+        description: "Version to publish (e.g., 1.2.3). Leave empty to use latest release."
         required: false
         type: string
   workflow_call:
     inputs:
       force-python:
-        description: 'Force publish Python package'
+        description: "Force publish Python package"
         type: boolean
         default: false
       force-js:
-        description: 'Force publish JS package'
+        description: "Force publish JS package"
         type: boolean
         default: false
       force-docs:
-        description: 'Force publish documentation'
+        description: "Force publish documentation"
         type: boolean
         default: false
       version:
-        description: 'Version to publish (e.g., 1.2.3). Leave empty to use latest release.'
+        description: "Version to publish (e.g., 1.2.3). Leave empty to use latest release."
         required: false
         type: string
 
@@ -88,10 +88,10 @@ jobs:
             VERSION=$(gh release view --json tagName --jq '.tagName' | sed 's/^v//')
             echo "Using latest GitHub release version for push event: $VERSION"
           fi
-          
+
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Final version: $VERSION"
-          
+
           # Determine version bump type
           if [[ "$VERSION" =~ \.0$ ]]; then
             # Check if it's a major version (x.0.0)
@@ -119,7 +119,7 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           echo "Syncing version $VERSION across components..."
-          
+
           # Update vibetuner-py/pyproject.toml
           cd vibetuner-py
           CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
@@ -130,7 +130,7 @@ jobs:
             echo "vibetuner-py already at version $VERSION"
           fi
           cd ..
-          
+
           # Update vibetuner-js/package.json
           cd vibetuner-js
           CURRENT_VERSION=$(node -p "require('./package.json').version")
@@ -141,7 +141,7 @@ jobs:
             echo "vibetuner-js already at version $VERSION"
           fi
           cd ..
-          
+
           # Update vibetuner-template/pyproject.toml (not the template files)
           cd vibetuner-template
           CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
@@ -193,7 +193,7 @@ jobs:
           IS_MAJOR="${{ needs.prepare-release.outputs.is-major }}"
           IS_MINOR="${{ needs.prepare-release.outputs.is-minor }}"
           IS_PATCH="${{ needs.prepare-release.outputs.is-patch }}"
-          
+
           echo "Detecting changes for release $VERSION"
           echo "Version type: major=$IS_MAJOR, minor=$IS_MINOR, patch=$IS_PATCH"
 
@@ -432,17 +432,7 @@ jobs:
       - name: Setup Node.js (for npm CLI)
         uses: actions/setup-node@v6
         with:
-          node-version: "24"
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Verify npm version
-        run: |
-          npm --version
-          if [ $(npm --version | cut -d. -f1) -lt 11 ]; then
-            echo "Upgrading npm to v11.5.1+"
-            npm install -g npm@latest
-            npm --version
-          fi
+          node-version: "latest"
 
       - name: Publish to npm with trusted publishing
         env:

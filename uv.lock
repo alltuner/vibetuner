@@ -2541,7 +2541,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "2.17.8"
+version = "2.17.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aioboto3" },
@@ -2569,9 +2569,9 @@ dependencies = [
     { name = "streaq", extra = ["web"] },
     { name = "typer-slim", extra = ["standard"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ec/90/068bff9d6a2798b666f7802a682717c7dafb5a1ed40ac486e987987ca743/vibetuner-2.17.8.tar.gz", hash = "sha256:cd2bb94cfb14c9e0ea7299a49ed9ab2eb372e4c34c0665b14439d17ab6f23e70", size = 49020, upload-time = "2025-11-11T13:28:07.094Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ae/92/2ec0ea24bd97941b94844e1b2920671dd8a35c420ecefeac54cb65fb2fee/vibetuner-2.17.10.tar.gz", hash = "sha256:13f1d93be1c6950e643b7045a56dbc9c554b8f9327e6a2be4a8ad911b4ca683c", size = 49018, upload-time = "2025-11-11T15:37:47.849Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/81/a0/f5f6150168d63d5853808c88c3627a1583ab6bc6e54ed338f6dc76953502/vibetuner-2.17.8-py3-none-any.whl", hash = "sha256:05a5a7636f8d4b9046b28c6a4da2e2b61d3832094143d9e380d15ba942b52abb", size = 86829, upload-time = "2025-11-11T13:28:05.827Z" },
+    { url = "https://files.pythonhosted.org/packages/0d/16/dea068f3ee7e396a71e4d32df8e44b7daebe4ce54530f9c1c32fea8137ac/vibetuner-2.17.10-py3-none-any.whl", hash = "sha256:d8ed919dd33971e604e17b403ceba87045fd3afc4c6c1ea66e7cbcc77aaa82b6", size = 86837, upload-time = "2025-11-11T15:37:46.829Z" },
 ]
 
 [package.optional-dependencies]
@@ -2597,7 +2597,7 @@ dev = [
 
 [[package]]
 name = "vibetuner-scaffolding"
-version = "2.17.9"
+version = "2.17.10"
 source = { virtual = "." }
 
 [package.dev-dependencies]
