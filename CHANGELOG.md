@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.17.11](https://github.com/alltuner/vibetuner/compare/v2.17.10...v2.17.11) (2025-11-11)
+
+
+### Bug Fixes
+
+* detect merge conflicts when updating scaffolding ([#434](https://github.com/alltuner/vibetuner/issues/434)) ([3ddde7c](https://github.com/alltuner/vibetuner/commit/3ddde7c931b5ba222fcbea45fd3eda13404d91bf))
+
+
+### Miscellaneous Chores
+
+* configure renovate ([#436](https://github.com/alltuner/vibetuner/issues/436)) ([358601f](https://github.com/alltuner/vibetuner/commit/358601fe584238ff166a7b32da30fb3bbd04e36a))
+
+
+### CI/CD Changes
+
+* enable dependabot ([#437](https://github.com/alltuner/vibetuner/issues/437)) ([da83795](https://github.com/alltuner/vibetuner/commit/da837954b3bb6a7f0210af80579d6f8698d4a490))
+* fix trusted publishing ([#433](https://github.com/alltuner/vibetuner/issues/433)) ([0cd54ff](https://github.com/alltuner/vibetuner/commit/0cd54ff17882dde3426d8dd645e951dee96d8619))
+* get changelog properly populated with all commit types ([#438](https://github.com/alltuner/vibetuner/issues/438)) ([b0bfa11](https://github.com/alltuner/vibetuner/commit/b0bfa1133cdeb59ba9aa67a874631f8d9c30c053))
+
 ## [2.17.10](https://github.com/alltuner/vibetuner/compare/v2.17.9...v2.17.10) (2025-11-11)
 
 
