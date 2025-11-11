@@ -5,7 +5,7 @@ from app.config import settings
 
 
 worker = Worker(
-    redis_url=str(settings.project.redis_url),
+    redis_url=str(settings.redis_url),
     queue_name=(
         settings.project.project_slug
         if not settings.debug
