@@ -292,7 +292,7 @@ Works great with coding assistants:
 
 ## Version Requirements
 
-- **Python**: 3.11+
+- **Python**: 3.11+ (3.13 recommended)
 - **MongoDB**: 5.0+
 - **Redis**: 6.0+ (if using background jobs)
 - **Node.js**: Not required (bun replaces it)
