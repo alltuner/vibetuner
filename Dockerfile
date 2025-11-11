@@ -46,8 +46,6 @@ FROM frontend-base AS build-frontend
 
 WORKDIR /app
 
-COPY --from=python-base /vibetuner-py/src/vibetuner/templates/frontend core-templates/
-
 # Build production assets with Bun
 RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
     --mount=type=bind,source=vibetuner-template/config.css,target=config.css \
