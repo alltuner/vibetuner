@@ -1,1 +1,5 @@
-vibetuner-template/.mise.toml
+[tools]
+uv = "latest"
+bun = "latest"
+just = "latest"
+gh = "latest"
