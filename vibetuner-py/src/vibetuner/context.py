@@ -23,3 +23,6 @@ class Context(BaseModel):
     fqdn: str | None = settings.project.fqdn
 
     model_config = {"arbitrary_types_allowed": True}
+
+
+ctx = Context()

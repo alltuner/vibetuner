@@ -26,6 +26,6 @@ async def base_lifespan(app: FastAPI):
 
 
 try:
-    from app.frontend.lifespan import lifespan
+    from app.frontend.lifespan import lifespan  # ty: ignore
 except ImportError:
     lifespan = base_lifespan
