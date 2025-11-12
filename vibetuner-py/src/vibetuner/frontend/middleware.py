@@ -13,12 +13,12 @@ from starlette_babel import (
     LocaleMiddleware,
     get_translator,
 )
-from starlette_htmx.middleware import HtmxMiddleware  # type: ignore[import-untyped]
+from starlette_htmx.middleware import HtmxMiddleware
 
 from vibetuner.config import settings
+from vibetuner.context import ctx
 from vibetuner.paths import locales as locales_path
 
-from .context import ctx
 from .oauth import WebUser
 
 

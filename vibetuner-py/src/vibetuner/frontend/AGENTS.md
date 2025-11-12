@@ -12,7 +12,7 @@ This module contains the scaffolding's core frontend components:
 - **middleware.py** - Request/response middleware
 - **oauth.py** - OAuth provider integration
 - **email.py** - Magic link email authentication
-- **lifespan.py** - Application startup/shutdown lifecycle
+- **lifespan.py** - Application startup/shutdown lifecycle (extensible via `app/frontend/lifespan.py`)
 - **context.py** - Request context management
 - **hotreload.py** - Development hot-reload support
 

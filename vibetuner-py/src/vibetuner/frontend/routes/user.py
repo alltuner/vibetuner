@@ -3,9 +3,9 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic_extra_types.language_code import LanguageAlpha2
 from starlette.authentication import requires
 
+from vibetuner.context import ctx
 from vibetuner.models import UserModel
 
-from ..context import ctx
 from ..templates import render_template
 
 

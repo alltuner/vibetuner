@@ -21,6 +21,7 @@ src/app/frontend/
 │   ├── __init__.py     # Register routes (edit app_router)
 │   ├── dashboard.py    # Example route module
 │   └── api.py          # Example API routes
+├── lifespan.py         # Application startup/shutdown lifecycle (optional)
 └── oauth.py            # OAuth provider configuration
 ```
 
@@ -160,6 +161,45 @@ def get_oauth_providers() -> dict[str, OAuthProvider]:
         # Add more providers...
     }
 ```
+
+### Extending Application Lifespan
+
+The scaffolding provides a `base_lifespan` that handles core startup/shutdown tasks (MongoDB
+initialization, hot-reload, etc.). You can extend this by creating `lifespan.py` to add your own
+startup and shutdown logic:
+
+```python
+# src/app/frontend/lifespan.py
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from vibetuner.config import settings
+from vibetuner.frontend.lifespan import base_lifespan
+from vibetuner.logging import logger
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info(f"Starting {settings.project.project_name} frontend...")
+
+    # Add any startup tasks here (e.g., initialize cache, start background services)
+
+    async with base_lifespan(app):
+        yield
+        logger.info(f"Stopping {settings.project.project_name} frontend...")
+
+    # Add any teardown tasks here (e.g., close connections, cleanup resources)
+
+    logger.info(f"{settings.project.project_name} has shut down.")
+```
+
+**Key points:**
+
+- Your `lifespan` function wraps `base_lifespan` using `async with`
+- Add startup code before the `async with` block
+- Add teardown code after the `yield` inside the context manager
+- The base lifespan handles MongoDB, hot-reload, and other core tasks automatically
+- If you don't need custom lifecycle management, you can omit this file entirely
 
 ## Core Default Routes
 

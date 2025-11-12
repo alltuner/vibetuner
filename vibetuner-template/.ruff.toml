@@ -11,6 +11,7 @@ extend-select = [
   'S',      # flake8-bandit
   'W',      # pycodestyle
 ]
+ignore = ["N999"]
 
 [lint.isort]
 combine-as-imports = true
