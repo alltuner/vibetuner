@@ -2,9 +2,11 @@
 name = "vibetuner-scaffolding"
 version = "2.17.11"
 requires-python = ">=3.11"
-dependencies = []
 
-vibetuner = { path = "./packages/vibetuner-py" }
+[tool.uv.sources]
+vibetuner = { path = "vibetuner-py" }
 
 [dependency-groups]
-dev = ["vibetuner[dev]"]
+dev = [
+    "vibetuner[dev]",
+]
