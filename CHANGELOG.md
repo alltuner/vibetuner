@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.17.12](https://github.com/alltuner/vibetuner/compare/v2.17.11...v2.17.12) (2025-11-12)
+
+
+### Bug Fixes
+
+* adds yaml linter and simplifies the ignore logic for type checking ([#441](https://github.com/alltuner/vibetuner/issues/441)) ([30628bf](https://github.com/alltuner/vibetuner/commit/30628bf204e62de33a31035e6e73611d156feb36))
+* ensure jinja code is properly linted in scaffolded projects ([#439](https://github.com/alltuner/vibetuner/issues/439)) ([07cc301](https://github.com/alltuner/vibetuner/commit/07cc3016088f00a9199852473c9143da2ef55122))
+
 ## [2.17.11](https://github.com/alltuner/vibetuner/compare/v2.17.10...v2.17.11) (2025-11-11)
 
 
