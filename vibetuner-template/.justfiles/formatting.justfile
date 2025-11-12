@@ -8,6 +8,11 @@ format-py:
 format-toml:
     @uv run taplo fmt
 
+[group('formatting')]
+format-jinja:
+    @uv run djlint . --reformat
+
+
 # Format all code
 [group('formatting')]
-format: format-py format-toml
+format: format-py format-toml format-jinja
