@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.18.0](https://github.com/alltuner/vibetuner/compare/v2.17.12...v2.18.0) (2025-11-12)
+
+
+### Features
+
+* allow users to extend FastAPI lifespan ([#442](https://github.com/alltuner/vibetuner/issues/442)) ([14c3c18](https://github.com/alltuner/vibetuner/commit/14c3c187d955a89b2f3256a2ecf0b1c807c96e25))
+
+
+### Documentation Updates
+
+* reorganize agent documentation and add comprehensive justfile references ([#444](https://github.com/alltuner/vibetuner/issues/444)) ([2c1b1e5](https://github.com/alltuner/vibetuner/commit/2c1b1e5f0bb504349cf264357d883ef1b8c4b05c))
+
 ## [2.17.12](https://github.com/alltuner/vibetuner/compare/v2.17.11...v2.17.12) (2025-11-12)
 
 
