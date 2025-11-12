@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.18.1](https://github.com/alltuner/vibetuner/compare/v2.18.0...v2.18.1) (2025-11-12)
+
+
+### CI/CD Changes
+
+* consolidate release workflows into single file ([#445](https://github.com/alltuner/vibetuner/issues/445)) ([7548aaa](https://github.com/alltuner/vibetuner/commit/7548aaa752fce316692acedbd4dad376a54ddcc0))
+
 ## [2.18.0](https://github.com/alltuner/vibetuner/compare/v2.17.12...v2.18.0) (2025-11-12)
 
 
