@@ -1,4 +1,5 @@
 {% extends "base/skeleton.html.jinja" %}
+
 {% block title %}
     {{ _("Sign In") }}
 {% endblock title %}
@@ -27,13 +28,13 @@
                     </div>
                 {% endif %}
                 <!-- Divider -->
-                {% if has_oauth and providers and has_email %}
-                    <div class="divider text-base-content/50">{{ _("OR") }}</div>
-                {% endif %}
+                {% if has_oauth and providers and has_email %}<div class="divider text-base-content/50">{{ _("OR") }}</div>{% endif %}
                 <!-- Email Magic Link -->
                 {% if has_email %}
                     <div class="bg-base-200/50 rounded-2xl p-6 border border-base-300/50">
-                        <form method="post" class="space-y-4" action="{{ url_for("send_magic_link") }}">
+                        <form method="post"
+                              class="space-y-4"
+                              action="{{ url_for('send_magic_link') }}">
                             {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
                             <div class="form-control">
                                 <label class="label" for="email">
@@ -44,11 +45,14 @@
                                            id="email"
                                            name="email"
                                            class="input input-bordered w-full pr-12 focus:input-primary transition-all duration-300"
-                                           placeholder="{{ _("Enter your email address") }}"
+                                           placeholder="{{ _('Enter your email address') }}"
                                            required
                                            autocomplete="email" />
                                     <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                        <svg class="w-5 h-5 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 text-base-content/40"
+                                             fill="none"
+                                             stroke="currentColor"
+                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                         </svg>
                                     </div>
@@ -65,7 +69,10 @@
                                 <span>{{ _("Send Magic Link") }}</span>
                             </button>
                             <div class="alert alert-info bg-info/10 border-info/20">
-                                <svg class="w-5 h-5 text-info shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-info shrink-0"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <div class="text-sm">

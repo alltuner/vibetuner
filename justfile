@@ -8,10 +8,9 @@ import '.justfiles/docs.justfile'
 import 'vibetuner-template/.justfiles/linting.justfile'
 import 'vibetuner-template/.justfiles/formatting.justfile'
 
-# Type check Python files with ty (disabled by ty.toml)
+# Run all linting checks
 [group('linting')]
-type-check:
-    @cd vibetuner-py && uv run ty check .
+lint: lint-md lint-py lint-toml lint-jinja
 
 # Sync frontend templates and commit only those changes
 update-frontend-templates:

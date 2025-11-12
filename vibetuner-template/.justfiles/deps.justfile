@@ -10,7 +10,9 @@ update-repo-deps:
 [group('Dependencies')]
 update-and-commit-repo-deps: update-repo-deps
     @git add pyproject.toml uv.lock bun.lock package.json
-    @git commit -m "chore: update dependencies"
+    @git commit -m "chore: update dependencies" \
+        pyproject.toml uv.lock bun.lock package.json \
+        || echo "No changes to commit"
 
 # Install dependencies from lockfiles
 [group('Dependencies')]

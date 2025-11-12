@@ -1,4 +1,5 @@
 {% extends "base/skeleton.html.jinja" %}
+
 {% block title %}
     Debug Dashboard
 {% endblock title %}
@@ -23,7 +24,7 @@
                     </h2>
                     <p class="text-base-content/70 mb-4">View application configuration, cookies, and runtime information</p>
                     <div class="card-actions justify-end">
-                        <a href="{{ url_for("debug_info") }}" class="btn btn-primary btn-sm">View Details</a>
+                        <a href="{{ url_for('debug_info') }}" class="btn btn-primary btn-sm">View Details</a>
                     </div>
                 </div>
             </div>
@@ -39,7 +40,7 @@
                     </h2>
                     <p class="text-base-content/70 mb-4">Explore MongoDB collections and their field schemas</p>
                     <div class="card-actions justify-end">
-                        <a href="{{ url_for("debug_collections") }}"
+                        <a href="{{ url_for('debug_collections') }}"
                            class="btn btn-primary btn-sm">View Schemas</a>
                     </div>
                 </div>
@@ -56,7 +57,7 @@
                     </h2>
                     <p class="text-base-content/70 mb-4">Check application version and build information</p>
                     <div class="card-actions justify-end">
-                        <a href="{{ url_for("debug_version") }}" class="btn btn-primary btn-sm">View Version</a>
+                        <a href="{{ url_for('debug_version') }}" class="btn btn-primary btn-sm">View Version</a>
                     </div>
                 </div>
             </div>
@@ -72,12 +73,13 @@
                     </h2>
                     <p class="text-base-content/70 mb-4">Verify application health and API endpoint status</p>
                     <div class="card-actions justify-end">
-                        <a href="{{ url_for("health_ping") }}" class="btn btn-success btn-sm">Check Health</a>
+                        <a href="{{ url_for('health_ping') }}" class="btn btn-success btn-sm">Check Health</a>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Debug Navigation Footer -->
         {% include "debug/components/debug_nav.html.jinja" %}
+
     </div>
 {% endblock body %}

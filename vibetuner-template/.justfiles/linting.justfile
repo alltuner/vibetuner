@@ -18,6 +18,10 @@ type-check:
 lint-toml:
     @uv run taplo fmt --check
 
+[group('linting')]
+lint-jinja:
+    @uv run djlint . --lint
+
 # Run all linting checks
 [group('linting')]
-lint: lint-md lint-py type-check lint-toml
+lint: lint-md lint-py type-check lint-toml lint-jinja

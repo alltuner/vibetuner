@@ -1,4 +1,5 @@
 {% extends "base/skeleton.html.jinja" %}
+
 {% block title %}
     {{ _("User Profile") }}
 {% endblock title %}
@@ -108,7 +109,7 @@
                                         hx-get="/user/edit"
                                         hx-target="#main-content"
                                         hx-swap="innerHTML">{{ _("Edit Profile") }}</button>
-                                <a href="{{ url_for("auth_logout") }}" class="btn btn-outline btn-error">{{ _("Sign Out") }}</a>
+                                <a href="{{ url_for('auth_logout') }}" class="btn btn-outline btn-error">{{ _("Sign Out") }}</a>
                             </div>
                         </div>
                     </div>
