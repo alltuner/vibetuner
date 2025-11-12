@@ -1,6 +1,8 @@
 name: Release vibetuner packages
 
 on:
+  push:
+    branches: [main]
   release:
     types: [published]
   workflow_dispatch:
@@ -21,27 +23,11 @@ on:
         description: "Version to publish (e.g., 1.2.3). Leave empty to use latest release."
         required: false
         type: string
-  workflow_call:
-    inputs:
-      force-python:
-        description: "Force publish Python package"
-        type: boolean
-        default: false
-      force-js:
-        description: "Force publish JS package"
-        type: boolean
-        default: false
-      force-docs:
-        description: "Force publish documentation"
-        type: boolean
-        default: false
-      version:
-        description: "Version to publish (e.g., 1.2.3). Leave empty to use latest release."
-        required: false
-        type: string
 
 permissions:
-  contents: read
+  contents: write
+  issues: write
+  pull-requests: write
   id-token: write
   pages: write
 
@@ -50,8 +36,35 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Run Release Please on pushes to main
+  release-please:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release Please
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
+
   # Prepare release: extract version and sync across components
   prepare-release:
+    needs: [release-please]
+    if: |
+      always() &&
+      ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
+       github.event_name == 'release' ||
+       github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -164,7 +177,12 @@ jobs:
 
   # Detect what changed since last release
   detect-changes:
-    needs: [prepare-release, build-python, build-js, build-docs]
+    needs: [release-please, prepare-release, build-python, build-js, build-docs]
+    if: |
+      always() &&
+      ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
+       github.event_name == 'release' ||
+       github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     outputs:
       python-changed: ${{ steps.changes.outputs.python }}
@@ -285,7 +303,12 @@ jobs:
 
   # Conditional Python build
   build-python:
-    needs: [prepare-release]
+    needs: [release-please, prepare-release]
+    if: |
+      always() &&
+      ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
+       github.event_name == 'release' ||
+       github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -319,7 +342,12 @@ jobs:
 
   # Conditional JavaScript build
   build-js:
-    needs: [prepare-release]
+    needs: [release-please, prepare-release]
+    if: |
+      always() &&
+      ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
+       github.event_name == 'release' ||
+       github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -355,7 +383,12 @@ jobs:
 
   # Documentation build (always on release)
   build-docs:
-    needs: [prepare-release]
+    needs: [release-please, prepare-release]
+    if: |
+      always() &&
+      ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
+       github.event_name == 'release' ||
+       github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     permissions:
       contents: read
