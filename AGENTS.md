@@ -100,3 +100,52 @@ uvx git+https://github.com/alltuner/vibetuner@BRANCH_NAME#subdirectory=vibetuner
 ```
 
 See `vibetuner-docs/docs/development.md` for complete development workflows.
+
+## Repository Justfile Commands
+
+For developers working on the vibetuner repository itself, the root justfile provides commands for
+managing the monorepo.
+
+Run `just` to see all available commands.
+
+### Dependencies
+
+```bash
+just update-all              # Update all package dependencies (py, js, template, root)
+just update-and-commit       # Update all dependencies and commit changes
+just update-py               # Update Python dependencies in vibetuner-py
+just update-js               # Update JavaScript dependencies in vibetuner-js
+just update-template         # Update dependencies in vibetuner-template
+just update-root             # Update root scaffolding dependencies
+```
+
+### Documentation
+
+```bash
+just docs-serve              # Serve documentation locally with live reload
+just docs-build              # Build documentation site
+```
+
+### Code Quality
+
+```bash
+just format                  # Format all code (Python, Jinja, TOML, YAML)
+just format-py               # Format Python with ruff
+just format-jinja            # Format Jinja templates with djlint
+just format-toml             # Format TOML files with taplo
+just format-yaml             # Format YAML files with dprint
+
+just lint                    # Run all linting checks
+just lint-py                 # Lint Python with ruff
+just lint-jinja              # Lint Jinja with djlint
+just lint-md                 # Lint markdown files
+just lint-toml               # Lint TOML with taplo
+just lint-yaml               # Lint YAML with dprint
+just type-check              # Type check Python with ty
+```
+
+### Template Management
+
+```bash
+just update-frontend-templates  # Sync frontend templates and commit changes
+```

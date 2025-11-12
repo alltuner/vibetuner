@@ -1,165 +1,244 @@
-# Core Models Module
+# Models Module Development
 
-**IMMUTABLE SCAFFOLDING CODE** - These are the framework's core models that provide essential functionality.
+Core database models for the vibetuner framework. This guide is for **developers working on the
+framework**, not end users.
 
-## What's Here
+## Module Structure
 
-This module contains the scaffolding's core models:
-
-- **UserModel** - Base user model with authentication support
-- **OAuthAccountModel** - OAuth provider account linking
-- **EmailVerificationTokenModel** - Magic link authentication tokens
-- **BlobModel** - File storage and blob management
-- **Mixins** - Reusable model behaviors (TimeStampMixin, etc.)
-- **Types** - Common field types and validators
-
-## Important Rules
-
-⚠️  **DO NOT MODIFY** these core models directly.
-
-**For changes to core models:**
-
-- File an issue at `https://github.com/alltuner/vibetuner`
-- Core changes benefit all projects using the scaffolding
-
-**For your application models:**
-
-- Create them in `src/app/models/` instead
-- Import core models when needed: `from vibetuner.models import UserModel`
-- Use mixins from here: `from vibetuner.models.mixins import TimeStampMixin`
-
-## User Model Pattern (for reference)
-
-Your application models in `src/app/models/` should follow this pattern:
-
-```python
-from beanie import Document
-from pydantic import Field
-from vibetuner.models.mixins import TimeStampMixin
-
-class Product(Document, TimeStampMixin):
-    name: str
-    price: float = Field(gt=0)
-    stock: int = Field(ge=0)
-
-    class Settings:
-        name = "products"
-        indexes = ["name"]
+```text
+models/
+├── user.py                 # User accounts and authentication
+├── oauth.py                # OAuth provider accounts
+├── email_verification.py   # Email verification tokens
+├── blob.py                 # File storage metadata
+└── mixins.py               # Reusable model behaviors
 ```
 
-## Available Mixins
+## Key Models
 
-### TimeStampMixin
+### UserModel (user.py)
 
-Automatic timestamps for all models:
-
-- `db_insert_dt` - Created at (UTC)
-- `db_update_dt` - Updated at (UTC)
-- Methods: `age()`, `age_in()`, `is_older_than()`
-
-Import in your app models:
+The core user account model:
 
 ```python
-from vibetuner.models.mixins import TimeStampMixin
+class UserModel(Document, TimeStampMixin):
+    email: EmailStr
+    name: str | None
+    oauth_accounts: list[Link[OAuthAccount]]
+    # ... other fields
 ```
 
-## Queries
+**Key features:**
 
-### Finding Documents
+- Email-based identification
+- OAuth account linking (one-to-many)
+- Created/updated timestamps via TimeStampMixin
+- Indexed on email for fast lookup
 
-```python
-from beanie.operators import Eq, In, Gt, Lt
+**Used by:**
 
-# By ID (preferred method)
-product = await Product.get(product_id)
+- Authentication system
+- OAuth flows
+- Magic link authentication
+- User profile management
 
-# By field (use Beanie operators)
-product = await Product.find_one(Eq(Product.name, "Widget"))
-products = await Product.find(Lt(Product.price, 100)).to_list()
+### OAuthAccount (oauth.py)
 
-# Multiple conditions
-results = await Product.find(
-    Eq(Product.category, "electronics"),
-    Gt(Product.price, 50)
-).to_list()
-
-# With In operator
-products = await Product.find(
-    In(Product.category, ["electronics", "gadgets"])
-).to_list()
-```
-
-### Save/Delete
+Links users to OAuth providers:
 
 ```python
-# Create
-product = Product(name="Widget", price=9.99, stock=100)
-await product.insert()
-
-# Update
-product.price = 19.99
-await product.save()
-
-# Delete
-await product.delete()
-```
-
-### Aggregation
-
-```python
-results = await Product.aggregate([
-    {"$match": {"price": {"$gt": 50}}},
-    {"$group": {"_id": "$category", "total": {"$sum": 1}}}
-]).to_list()
-```
-
-## Indexes
-
-```python
-from pymongo import IndexModel, TEXT
-
-class Settings:
-    indexes = [
-        "field_name",  # Simple index
-        [("field1", 1), ("field2", -1)],  # Compound index
-        IndexModel([("text_field", TEXT)])  # Text search
-    ]
-```
-
-## Relationships
-
-```python
-from beanie import Link
-
-class Order(Document):
-    user: Link[User]
-    products: list[Link[Product]]
-
-# Fetch with relations
-order = await Order.get(order_id, fetch_links=True)
-print(order.user.email)  # Automatically loaded
-```
-
-## Extending Core Models
-
-If you need to add fields to User or other core models:
-
-1. **Option A**: File an issue at `https://github.com/alltuner/vibetuner` for widely useful fields
-2. **Option B**: Create a related model in `src/app/models/` that links to the core model:
-
-```python
-from beanie import Document, Link
-from vibetuner.models import UserModel
-
-class UserProfile(Document):
+class OAuthAccount(Document, TimeStampMixin):
+    provider: str  # "google", "github", etc.
+    provider_user_id: str
     user: Link[UserModel]
-    bio: str
-    avatar_url: str
-
-    class Settings:
-        name = "user_profiles"
+    # ... OAuth tokens and metadata
 ```
 
-## MongoDB MCP
+**Key features:**
 
-Claude Code has MongoDB MCP access for database operations, queries, and debugging.
+- Stores OAuth tokens and refresh tokens
+- Links to UserModel
+- Indexed on (provider, provider_user_id)
+- Handles account linking
+
+### EmailVerificationToken (email_verification.py)
+
+For magic link authentication:
+
+```python
+class EmailVerificationToken(Document):
+    email: EmailStr
+    token: str
+    expires_at: datetime
+```
+
+**Key features:**
+
+- Time-limited tokens
+- Automatic cleanup of expired tokens
+- One-time use (deleted after verification)
+
+### Blob (blob.py)
+
+File storage metadata:
+
+```python
+class Blob(Document, TimeStampMixin):
+    key: str  # S3 key or local path
+    content_type: str
+    size: int
+    uploaded_by: Link[UserModel] | None
+```
+
+**Key features:**
+
+- Tracks uploaded files
+- Links to uploader
+- Storage backend agnostic (S3, local, etc.)
+
+### TimeStampMixin (mixins.py)
+
+Reusable timestamp behavior:
+
+```python
+class TimeStampMixin:
+    db_insert_dt: datetime
+    db_update_dt: datetime
+```
+
+Applied to most models for auditing.
+
+## Development Guidelines
+
+### Adding New Core Models
+
+When adding models to the framework:
+
+1. **Consider necessity**: Should this be in the framework or user code?
+2. **Use mixins**: Apply TimeStampMixin if appropriate
+3. **Add indexes**: Index frequently queried fields
+4. **Link properly**: Use `Link[]` for relationships
+5. **Register**: Models are auto-discovered from `models/__init__.py`
+
+### Modifying Existing Models
+
+When changing core models:
+
+1. **Backward compatibility**: Consider existing data
+2. **Migration path**: Provide migration script if needed
+3. **Update indexes**: Modify `Settings.indexes` if needed
+4. **Test with data**: Create test data and verify changes
+5. **Document**: Update model docstrings
+
+### Model Best Practices
+
+**Indexing:**
+
+```python
+class MyModel(Document):
+    field1: str
+    field2: int
+
+    class Settings:
+        name = "my_collection"
+        indexes = ["field1", ("field1", "field2")]
+```
+
+**Relationships:**
+
+```python
+# Use Link for references
+owner: Link[UserModel]
+
+# Use list[Link] for one-to-many
+items: list[Link[Item]]
+```
+
+**Validation:**
+
+```python
+from pydantic import Field, validator
+
+class MyModel(Document):
+    email: EmailStr = Field(..., description="User email")
+
+    @validator("email")
+    def validate_email(cls, v):
+        # Custom validation
+        return v
+```
+
+## Testing
+
+Test model changes:
+
+```bash
+# Scaffold test project
+cd /Users/dpoblador/repos/vibetuner
+uv run --directory vibetuner-py vibetuner scaffold new /tmp/test --defaults
+cd /tmp/test
+
+# Start services
+just dev
+
+# Test in Python
+uv run python
+>>> from vibetuner.models import UserModel, OAuthAccount
+>>> # Test model operations
+```
+
+Test scenarios:
+
+1. **Create**: Create instances and save
+2. **Query**: Test find operations
+3. **Update**: Modify and save
+4. **Delete**: Remove instances
+5. **Relationships**: Test Link resolution
+6. **Indexes**: Verify index usage in queries
+
+## Common Pitfalls
+
+### Link Resolution
+
+```python
+# BAD: Doesn't resolve Link
+user = await UserModel.get(user_id)
+print(user.oauth_accounts)  # List of Link objects
+
+# GOOD: Fetch links
+user = await UserModel.get(user_id, fetch_links=True)
+print(user.oauth_accounts)  # List of OAuthAccount objects
+```
+
+### Index Coverage
+
+```python
+# BAD: Query without index
+await UserModel.find(MyModel.some_unindexed_field == "value").to_list()
+
+# GOOD: Add index first
+class MyModel(Document):
+    some_field: str
+    class Settings:
+        indexes = ["some_field"]
+```
+
+### Migration Safety
+
+When changing required fields:
+
+```python
+# BAD: Makes existing data invalid
+class UserModel(Document):
+    new_required_field: str  # Breaks existing users!
+
+# GOOD: Make optional initially
+class UserModel(Document):
+    new_required_field: str | None = None  # Add migration to populate
+```
+
+## Related Files
+
+- `vibetuner/mongo.py` - MongoDB connection setup
+- `vibetuner/frontend/lifespan.py` - Model registration
+- `vibetuner/frontend/deps.py` - User retrieval

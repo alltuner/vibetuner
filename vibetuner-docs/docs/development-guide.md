@@ -36,6 +36,80 @@ just local-dev
 
 Requires MongoDB and Redis running locally.
 
+## Justfile Commands Reference
+
+All project management tasks use `just` (command runner). Run `just` without arguments to see all
+available commands.
+
+### Development
+
+```bash
+just dev                     # Docker development with hot reload (recommended)
+just local-dev PORT=8000     # Local development without Docker
+just worker-dev              # Background worker (if background jobs enabled)
+```
+
+### Dependencies
+
+```bash
+just install-deps            # Install from lockfiles
+just update-repo-deps        # Update root scaffolding dependencies
+just update-and-commit-repo-deps  # Update deps and commit changes
+uv add package-name          # Add Python package
+bun add package-name         # Add JavaScript package
+```
+
+### Code Formatting
+
+```bash
+just format                  # Format ALL code (Python, Jinja, TOML, YAML)
+just format-py               # Format Python with ruff
+just format-jinja            # Format Jinja templates with djlint
+just format-toml             # Format TOML files with taplo
+just format-yaml             # Format YAML files with dprint
+```
+
+**IMPORTANT**: Always run `ruff format .` or `just format-py` after Python changes.
+
+### Code Linting
+
+```bash
+just lint                    # Lint ALL code
+just lint-py                 # Lint Python with ruff
+just lint-jinja              # Lint Jinja templates with djlint
+just lint-md                 # Lint markdown files
+just lint-toml               # Lint TOML files with taplo
+just lint-yaml               # Lint YAML files with dprint
+just type-check              # Type check Python with ty
+```
+
+### Localization (i18n)
+
+```bash
+just i18n                    # Full workflow: extract, update, compile
+just extract-translations    # Extract translatable strings
+just update-locale-files     # Update existing .po files
+just compile-locales         # Compile .po to .mo files
+just new-locale LANG         # Create new language (e.g., just new-locale es)
+just dump-untranslated DIR   # Export untranslated strings
+```
+
+### CI/CD & Deployment
+
+```bash
+just build-dev               # Build development Docker image
+just test-build-prod         # Test production build locally
+just build-prod              # Build production image (requires clean tagged commit)
+just release                 # Build and release production image
+just deploy-latest HOST      # Deploy to remote host
+```
+
+### Scaffolding Updates
+
+```bash
+just update-scaffolding      # Update project to latest vibetuner template
+```
+
 ## Common Tasks
 
 ### Adding New Routes

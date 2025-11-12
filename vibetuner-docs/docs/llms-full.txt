@@ -86,14 +86,71 @@ my-app/
 └── Dockerfile              # Production deployment
 ```
 
-### Common Commands
+### Justfile Commands
+
+All project management tasks use `just` (command runner). Run `just` to see all available commands.
+
+**Development:**
 
 ```bash
-just dev              # Docker development with hot reload
-just local-dev        # Local development (no Docker)
-just sync             # Sync dependencies
-just format           # Format code
-just build-prod       # Test production build
+just dev                     # Docker development with hot reload (recommended)
+just local-dev PORT=8000     # Local development without Docker
+just worker-dev              # Background worker (if background jobs enabled)
+```
+
+**Dependencies:**
+
+```bash
+just install-deps            # Install from lockfiles
+just update-repo-deps        # Update root scaffolding dependencies
+uv add package-name          # Add Python package
+bun add package-name         # Add JavaScript package
+```
+
+**Code Formatting:**
+
+```bash
+just format                  # Format ALL code (Python, Jinja, TOML, YAML)
+just format-py               # Format Python with ruff
+just format-jinja            # Format Jinja templates with djlint
+just format-toml             # Format TOML files with taplo
+just format-yaml             # Format YAML files with dprint
+```
+
+**IMPORTANT**: Always run `ruff format .` after Python changes.
+
+**Code Linting:**
+
+```bash
+just lint                    # Lint ALL code
+just lint-py                 # Lint Python with ruff
+just lint-jinja              # Lint Jinja templates
+just lint-md                 # Lint markdown files
+just type-check              # Type check Python with ty
+```
+
+**Localization:**
+
+```bash
+just i18n                    # Full workflow: extract, update, compile
+just extract-translations    # Extract translatable strings
+just compile-locales         # Compile .po to .mo files
+just new-locale LANG         # Create new language
+```
+
+**CI/CD & Deployment:**
+
+```bash
+just build-dev               # Build development Docker image
+just test-build-prod         # Test production build locally
+just build-prod              # Build production image
+just release                 # Build and release production image
+```
+
+**Scaffolding:**
+
+```bash
+just update-scaffolding      # Update project to latest vibetuner template
 ```
 
 ## Core Documentation
