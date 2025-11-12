@@ -10,10 +10,11 @@ from vibetuner.logging import logger
 async def lifespan(app: FastAPI):
     logger.info(f"Starting {settings.project.project_name} frontend...")
 
-    # Add any startup tasks here
-
+    # Tasks here are run before anything is available (even before DB access)
     async with base_lifespan(app):
+        # Tasks here are run after DB is available
         yield
+        # Tasks here are run on shutdown before vibetuner teardown
         logger.info(f"Stopping {settings.project.project_name} frontend...")
 
     # Add any teardown tasks here
