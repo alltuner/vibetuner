@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.18.2](https://github.com/alltuner/vibetuner/compare/v2.18.1...v2.18.2) (2025-11-12)
+
+
+### Miscellaneous Chores
+
+* add gh issue create to allowed tools without approval ([#453](https://github.com/alltuner/vibetuner/issues/453)) ([da8363e](https://github.com/alltuner/vibetuner/commit/da8363e631491ee71230befadc62ccab9090fe28))
+
+
+### Documentation Updates
+
+* clarify lifespan execution stages with inline comments ([#455](https://github.com/alltuner/vibetuner/issues/455)) ([f80abee](https://github.com/alltuner/vibetuner/commit/f80abee468356c57d25ee1894d4fd63e6afb1328))
+
 ## [2.18.1](https://github.com/alltuner/vibetuner/compare/v2.18.0...v2.18.1) (2025-11-12)
 
 
