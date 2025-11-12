@@ -3,8 +3,8 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="{{ meta_description | default("") }}" />
-        <meta name="keywords" content="{{ meta_keywords | default("") }}" />
+        <meta name="description" content="{{ meta_description | default('') }}" />
+        <meta name="keywords" content="{{ meta_keywords | default('') }}" />
         <meta name="color-scheme" content="light" />
         <title>
             {% block title %}
@@ -17,6 +17,7 @@
         {% endif %}
         {% include "base/favicons.html.jinja" %}
         {% include "base/opengraph.html.jinja" %}
+
         {% block head %}
         {% endblock head %}
     </head>
@@ -26,6 +27,7 @@
         {% block header %}
             {% if not SKIP_HEADER %}
                 {% include "base/header.html.jinja" %}
+
             {% endif %}
         {% endblock header %}
         {% block body %}
@@ -33,6 +35,7 @@
         {% block footer %}
             {% if not SKIP_FOOTER %}
                 {% include "base/footer.html.jinja" %}
+
             {% endif %}
         {% endblock footer %}
         {% if DEBUG %}{{ hotreload.script(url_for('hot-reload') ) | safe }}{% endif %}
