@@ -13,7 +13,7 @@ services:
     networks:
       - default
       - alltuner-network
-    command: ['prod', 'worker']
+    command: ["prod", "worker"]
     labels:
       managed_by: "all-tuner"
       com.centurylinklabs.watchtower.enable: "${ENABLE_WATCHTOWER:-false}"
@@ -43,7 +43,7 @@ services:
           "run",
           "python",
           "-c",
-          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ping')"
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ping')",
         ]
       interval: 10s
       timeout: 3s

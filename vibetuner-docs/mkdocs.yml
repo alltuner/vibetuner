@@ -68,22 +68,22 @@ plugins:
 nav:
   - Home: index.md
   - Getting Started:
-    - Quick Start: quick-start.md
-    - Installation: installation.md
+      - Quick Start: quick-start.md
+      - Installation: installation.md
   - User Guide:
-    - Development: development-guide.md
-    - Authentication: authentication.md
-    - Deployment: deployment.md
+      - Development: development-guide.md
+      - Authentication: authentication.md
+      - Deployment: deployment.md
   - Contributing:
-    - Development Workflow: development.md
-    - Contributing Guidelines: contributing.md
+      - Development Workflow: development.md
+      - Contributing Guidelines: contributing.md
   - Reference:
-    - Tech Stack: tech-stack.md
-    - Architecture: architecture.md
-    - CLI Reference: cli-reference.md
-    - Scaffolding Reference: scaffolding.md
+      - Tech Stack: tech-stack.md
+      - Architecture: architecture.md
+      - CLI Reference: cli-reference.md
+      - Scaffolding Reference: scaffolding.md
   - Project:
-    - Changelog: changelog.md
+      - Changelog: changelog.md
 
 extra:
   social:

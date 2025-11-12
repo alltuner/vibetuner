@@ -8,10 +8,6 @@ import '.justfiles/docs.justfile'
 import 'vibetuner-template/.justfiles/linting.justfile'
 import 'vibetuner-template/.justfiles/formatting.justfile'
 
-# Run all linting checks
-[group('linting')]
-lint: lint-md lint-py lint-toml lint-jinja
-
 # Sync frontend templates and commit only those changes
 update-frontend-templates:
     @echo "🔄 Syncing frontend templates..."
