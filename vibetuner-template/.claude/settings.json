@@ -37,6 +37,7 @@
       "Bash(readlink:*)",
       "Bash(rg:*)",
       "Bash(ruff:*)",
+      "Bash(rumdl:*)",
       "Bash(sed:*)",
       "Bash(tail:*)",
       "Bash(time:*)",
