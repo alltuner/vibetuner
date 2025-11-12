@@ -8,3 +8,7 @@ import '.justfiles/i18n.justfile'
 import '.justfiles/linting.justfile'
 import '.justfiles/formatting.justfile'
 import '.justfiles/scaffolding.justfile'
+
+# Run all linting checks
+[group('linting')]
+lint: type-check lint-md lint-py lint-toml lint-jinja
