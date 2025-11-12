@@ -1,113 +1,187 @@
-# Core Frontend Module
+# Frontend Module Development
 
-**IMMUTABLE SCAFFOLDING CODE** - This is the framework's core frontend infrastructure.
+This is the core frontend infrastructure for the vibetuner framework. This guide is for **developers
+working on the framework**, not end users.
 
-## What's Here
+## Module Structure
 
-This module contains the scaffolding's core frontend components:
-
-- **routes/** - Essential default routes (auth, health, debug, language, user, meta)
-- **templates.py** - Template rendering with automatic context injection
-- **deps.py** - FastAPI dependencies (authentication, language, etc.)
-- **middleware.py** - Request/response middleware
-- **oauth.py** - OAuth provider integration
-- **email.py** - Magic link email authentication
-- **lifespan.py** - Application startup/shutdown lifecycle (extensible via `app/frontend/lifespan.py`)
-- **context.py** - Request context management
-- **hotreload.py** - Development hot-reload support
-
-## Important Rules
-
-⚠️  **DO NOT MODIFY** these core frontend components directly.
-
-**For changes to core frontend:**
-
-- File an issue at `https://github.com/alltuner/vibetuner`
-- Core changes benefit all projects using the scaffolding
-
-**For your application routes:**
-
-- Create them in `src/app/frontend/routes/` instead
-- Import core components when needed:
-  - `from vibetuner.frontend.deps import get_current_user`
-  - `from vibetuner.frontend.templates import render_template`
-
-## User Route Pattern (for reference)
-
-Your application routes in `src/app/frontend/routes/` should follow this pattern:
-
-```python
-# src/app/frontend/routes/dashboard.py
-from fastapi import APIRouter, Request, Depends
-from vibetuner.frontend.deps import get_current_user
-from vibetuner.frontend.templates import render_template
-
-router = APIRouter()
-
-@router.get("/dashboard")
-async def dashboard(request: Request, user=Depends(get_current_user)):
-    return render_template("dashboard.html.jinja", request, {"user": user})
+```text
+frontend/
+├── routes/          # Default routes (auth, health, debug, lang, user, meta)
+├── deps.py          # FastAPI dependencies (authentication, language, etc.)
+├── middleware.py    # Request/response middleware
+├── oauth.py         # OAuth provider integration
+├── email.py         # Magic link email authentication
+├── lifespan.py      # Application startup/shutdown lifecycle
+├── context.py       # Request context management
+├── hotreload.py     # Development hot-reload support
+└── templates.py     # Template rendering utilities (moved to root)
 ```
 
-## Template Rendering
+## Key Components
 
-```python
-# Automatic context in every template:
-{
-    "request": request,
-    "DEBUG": settings.DEBUG,
-    "hotreload": hotreload,  # Dev mode
-    # ... plus your custom context
-}
-```
+### routes/
 
-### Template Filters
+Default routes that every scaffolded project gets:
 
-- `{{ datetime | timeago }}` - "2 hours ago"
-- `{{ datetime | format_date }}` - "January 15, 2024"
-- `{{ text | markdown }}` - Convert Markdown to HTML
+- **auth.py** - OAuth and magic link authentication flows
+- **health.py** - Health check endpoints
+- **debug.py** - Debug information (only in DEBUG mode)
+- **lang.py** - Language selection
+- **user.py** - User profile management
+- **meta.py** - Metadata endpoints
 
-## Core Dependencies Available
+Users extend these by creating routes in `src/app/frontend/routes/`.
 
-Import these from `vibetuner.frontend.deps`:
+### deps.py
 
-- `get_current_user` - Require authenticated user (raises 403 if not authenticated)
-- `get_current_user_optional` - Optional auth check (returns None if not authenticated)
+FastAPI dependency injection functions:
+
+- `get_current_user` - Require authentication (raises 403 if not authenticated)
+- `get_current_user_optional` - Optional auth (returns None if not authenticated)
 - `LangDep` - Current language from cookie/header
 - `MagicCookieDep` - Magic link cookie for authentication
 
-## HTMX Patterns
+These are imported by user code for route protection.
 
-```html
-<!-- Partial updates -->
-<button hx-post="/api/action" hx-target="#result">Click</button>
+### middleware.py
 
-<!-- Form submission -->
-<form hx-post="/submit" hx-swap="outerHTML">...</form>
+Request/response middleware:
 
-<!-- Polling -->
-<div hx-get="/status" hx-trigger="every 2s">...</div>
-```
+- HTMX middleware (request/response helpers)
+- Session middleware (secure cookie-based sessions)
+- i18n middleware (internationalization)
+- Context middleware (request context variables)
 
-## Default Routes Provided
+### oauth.py
 
-The following routes are automatically available (DO NOT MODIFY):
+OAuth provider integration using Authlib. Supports:
 
-- **/auth/*** - OAuth and magic link authentication
-- **/health/ping** - Health check endpoint
-- **/debug/** - Debug info (only in DEBUG mode)
-- **/lang/** - Language selection
-- **/user/** - User profile routes
-- **/meta/** - Metadata endpoints
+- Google OAuth
+- GitHub OAuth
+- Generic OAuth providers
 
-## Development
+Configuration via environment variables (CLIENT_ID, CLIENT_SECRET).
 
-**CRITICAL**: Both processes required:
+### email.py
+
+Magic link authentication:
+
+- Generate secure tokens
+- Send magic link emails
+- Validate and consume tokens
+- Create/update user accounts
+
+### lifespan.py
+
+FastAPI lifespan management:
+
+- MongoDB connection setup
+- Redis connection (if background jobs enabled)
+- Streaq worker initialization (if background jobs enabled)
+- Model registration with Beanie
+
+Users can extend via `src/app/frontend/lifespan.py` using `extend_lifespan` decorator.
+
+### context.py
+
+Request context management using contextvars. Provides:
+
+- Current user context
+- Request context
+- Language context
+
+Accessible throughout the request lifecycle without passing parameters.
+
+### hotreload.py
+
+Development hot-reload support. Watches:
+
+- `src/app/` - User application code
+- `templates/` - Template files
+
+Triggers server reload on file changes in dev mode.
+
+## Development Guidelines
+
+### Adding New Routes
+
+When adding new default routes:
+
+1. Create route file in `routes/`
+2. Register in `routes/__init__.py`
+3. Test that it doesn't conflict with user routes
+4. Document in user-facing AGENTS.md (in scaffolded projects)
+
+### Modifying Dependencies
+
+When changing FastAPI dependencies:
+
+1. Ensure backward compatibility
+2. Test with existing scaffolded projects
+3. Update type hints
+4. Document changes in CHANGELOG
+
+### Middleware Changes
+
+When modifying middleware:
+
+1. Consider performance impact
+2. Test with HTMX interactions
+3. Verify session security
+4. Test i18n functionality
+
+### OAuth Provider Changes
+
+When adding/modifying OAuth:
+
+1. Test authentication flow end-to-end
+2. Verify token handling
+3. Test account linking
+4. Document required environment variables
+
+## Testing
+
+Test changes by scaffolding a new project:
 
 ```bash
-# Terminal 1: Frontend assets
-bun dev
-
-# Terminal 2: Backend server
-just local-dev
+cd /Users/dpoblador/repos/vibetuner
+uv run --directory vibetuner-py vibetuner scaffold new /tmp/test --defaults
+cd /tmp/test
+just dev
 ```
+
+Test scenarios:
+
+1. **Authentication**: OAuth login, magic link, logout
+2. **Protected routes**: Access with/without auth
+3. **HTMX**: Partial updates, form submissions
+4. **Hot reload**: Code changes trigger reload
+5. **i18n**: Language switching
+
+## Common Pitfalls
+
+### Session Security
+
+- Always use secure cookies in production
+- Set proper SameSite attributes
+- Validate session tokens
+
+### HTMX Middleware
+
+- Don't break HTMX request/response headers
+- Test partial updates
+- Verify swap behaviors
+
+### Context Management
+
+- Use contextvars for request-scoped data
+- Don't leak context between requests
+- Clean up context properly
+
+## Related Files
+
+- `vibetuner/config.py` - Framework configuration
+- `vibetuner/templates.py` - Template rendering (root level)
+- `vibetuner/models/user.py` - User model
+- `vibetuner/models/oauth.py` - OAuth account model
