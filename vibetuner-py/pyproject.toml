@@ -84,3 +84,8 @@ dev = [
 [build-system]
 requires = ["uv_build>=0.9,<0.10"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+# Exclude development documentation files from the built package
+# These files are for repository contributors, not end users
+wheel-exclude = ["**/AGENTS.md", "**/CLAUDE.md"]
