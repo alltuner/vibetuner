@@ -2,10 +2,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from vibetuner.context import ctx
 from vibetuner.logging import logger
 from vibetuner.mongo import init_models
 
-from .context import ctx
 from .hotreload import hotreload
 
 

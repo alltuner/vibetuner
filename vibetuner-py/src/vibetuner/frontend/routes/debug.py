@@ -10,10 +10,10 @@ from fastapi.responses import (
     RedirectResponse,
 )
 
+from vibetuner.context import ctx
 from vibetuner.models import UserModel
 from vibetuner.models.registry import get_all_models
 
-from ..context import ctx
 from ..deps import MAGIC_COOKIE_NAME
 from ..templates import render_template
 
