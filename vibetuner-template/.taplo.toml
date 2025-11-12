@@ -5,7 +5,7 @@
 include = ["**/*.toml"]
 
 # Exclude common directories that shouldn't be formatted
-exclude = ["**/node_modules/**", "**/.venv/**", "**/venv/**", "**/__pycache__/**", "pyproject.toml"]
+exclude = ["**/node_modules/**", "**/.venv/**", "**/venv/**", "**/__pycache__/**", "**/pyproject.toml"]
 
 # Formatting options
 [formatting]
