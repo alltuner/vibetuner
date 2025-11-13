@@ -215,15 +215,37 @@ jobs:
           VERSION="${{ steps.plan.outputs.version }}"
           
           # Update Python version
-          sed -i.bak "s/^version = .*/version = \"$VERSION\"/" vibetuner-py/pyproject.toml
+          cd vibetuner-py
+          CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          if [ "$CURRENT_VERSION" != "$VERSION" ]; then
+            echo "Updating vibetuner-py from $CURRENT_VERSION to $VERSION"
+            uv version "$VERSION"
+          else
+            echo "vibetuner-py already at version $VERSION"
+          fi
+          cd ..
           
           # Update JS version
           cd vibetuner-js
-          bun version $VERSION
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          if [ "$CURRENT_VERSION" != "$VERSION" ]; then
+            echo "Updating vibetuner-js from $CURRENT_VERSION to $VERSION"
+            bun pm version "$VERSION" --no-git-tag-version
+          else
+            echo "vibetuner-js already at version $VERSION"
+          fi
           cd ..
           
           # Update template version
-          sed -i.bak "s/^version = .*/version = \"$VERSION\"/" vibetuner-template/pyproject.toml
+          cd vibetuner-template
+          CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          if [ "$CURRENT_VERSION" != "$VERSION" ]; then
+            echo "Updating vibetuner-template from $CURRENT_VERSION to $VERSION"
+            uv version "$VERSION"
+          else
+            echo "vibetuner-template already at version $VERSION"
+          fi
+          cd ..
           
           echo "Updated all components to version $VERSION"
 
