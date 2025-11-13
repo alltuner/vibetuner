@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.19.3](https://github.com/alltuner/vibetuner/compare/v2.19.2...v2.19.3) (2025-11-13)
+
+
+### Bug Fixes
+
+* restore npm trusted publishing for JS package ([#472](https://github.com/alltuner/vibetuner/issues/472)) ([bd77cfb](https://github.com/alltuner/vibetuner/commit/bd77cfb46af692e9d5861d92d96f8c25a73fab79))
+
+
+### Code Refactoring
+
+* simplify version parsing in release workflow ([#470](https://github.com/alltuner/vibetuner/issues/470)) ([8c79d5f](https://github.com/alltuner/vibetuner/commit/8c79d5f9c0929ea67acd04f756e476bb5c41f8c7))
+
 ## [2.19.2](https://github.com/alltuner/vibetuner/compare/v2.19.1...v2.19.2) (2025-11-13)
 
 
