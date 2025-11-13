@@ -214,36 +214,29 @@ jobs:
         run: |
           VERSION="${{ steps.plan.outputs.version }}"
           
-          # Update Python version
-          cd vibetuner-py
-          CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
-          if [ "$CURRENT_VERSION" != "$VERSION" ]; then
-            echo "Updating vibetuner-py from $CURRENT_VERSION to $VERSION"
-            uv version "$VERSION"
-          else
-            echo "vibetuner-py already at version $VERSION"
-          fi
-          cd ..
+          # Update Python packages
+          for dir in vibetuner-py vibetuner-template; do
+            echo "Checking $dir..."
+            cd "$dir"
+            CURRENT_VERSION=$(uv version --short)
+            if [ "$CURRENT_VERSION" != "$VERSION" ]; then
+              echo "Updating $dir from $CURRENT_VERSION to $VERSION"
+              uv version "$VERSION"
+            else
+              echo "$dir already at version $VERSION"
+            fi
+            cd ..
+          done
           
-          # Update JS version
+          # Update JS package
+          echo "Checking vibetuner-js..."
           cd vibetuner-js
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          CURRENT_VERSION=$(bun pm pkg get version | tr -d '"')
           if [ "$CURRENT_VERSION" != "$VERSION" ]; then
             echo "Updating vibetuner-js from $CURRENT_VERSION to $VERSION"
             bun pm version "$VERSION" --no-git-tag-version
           else
             echo "vibetuner-js already at version $VERSION"
-          fi
-          cd ..
-          
-          # Update template version
-          cd vibetuner-template
-          CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
-          if [ "$CURRENT_VERSION" != "$VERSION" ]; then
-            echo "Updating vibetuner-template from $CURRENT_VERSION to $VERSION"
-            uv version "$VERSION"
-          else
-            echo "vibetuner-template already at version $VERSION"
           fi
           cd ..
           
