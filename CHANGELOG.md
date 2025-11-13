@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.20.0](https://github.com/alltuner/vibetuner/compare/v2.19.6...v2.20.0) (2025-11-13)
+
+
+### Features
+
+* add actionlint job to justfile ([#483](https://github.com/alltuner/vibetuner/issues/483)) ([0f2b0e0](https://github.com/alltuner/vibetuner/commit/0f2b0e0c63ea2721ef7c797a45c520547d51a1c5))
+* add CLI version command with project-aware display ([#480](https://github.com/alltuner/vibetuner/issues/480)) ([5652e5f](https://github.com/alltuner/vibetuner/commit/5652e5f9501d8d567dbe8d698b203d86321e2269))
+
+
+### Bug Fixes
+
+* configure UV cache dependency glob for monorepo structure ([#482](https://github.com/alltuner/vibetuner/issues/482)) ([54a19b9](https://github.com/alltuner/vibetuner/commit/54a19b97a8e6730c94eec43ac9c1e1dbb81535ed))
+
 ## [2.19.6](https://github.com/alltuner/vibetuner/compare/v2.19.5...v2.19.6) (2025-11-13)
 
 
