@@ -1,5 +1,6 @@
 # ABOUTME: Core CLI setup with AsyncTyper wrapper and base configuration
 # ABOUTME: Provides main CLI entry point and logging configuration
+import importlib.metadata
 import inspect
 from functools import partial, wraps
 from importlib import import_module
@@ -7,6 +8,7 @@ from importlib import import_module
 import asyncer
 import typer
 from rich.console import Console
+from rich.table import Table
 
 from vibetuner.cli.run import run_app
 from vibetuner.cli.scaffold import scaffold_app
@@ -67,6 +69,44 @@ LOG_LEVEL_OPTION = typer.Option(
 def callback(log_level: LogLevel | None = LOG_LEVEL_OPTION) -> None:
     """Initialize logging and other global settings."""
     setup_logging(level=log_level)
+
+
+@app.command()
+def version(
+    show_app: bool = typer.Option(
+        False,
+        "--app",
+        "-a",
+        help="Show app settings version even if not in a project directory",
+    ),
+) -> None:
+    """Show version information."""
+    try:
+        # Get vibetuner package version
+        vibetuner_version = importlib.metadata.version("vibetuner")
+    except importlib.metadata.PackageNotFoundError:
+        vibetuner_version = "unknown"
+
+    # Create table for nice display
+    table = Table(title="Version Information")
+    table.add_column("Component", style="cyan", no_wrap=True)
+    table.add_column("Version", style="green", no_wrap=True)
+
+    # Always show vibetuner package version
+    table.add_row("vibetuner package", vibetuner_version)
+
+    # Show app version if requested or if in a project
+    try:
+        from vibetuner.config import CoreConfiguration
+
+        settings = CoreConfiguration()
+        table.add_row(f"{settings.project.project_name} settings", settings.version)
+    except Exception:
+        if show_app:
+            table.add_row("app settings", "not in project directory")
+        # else: don't show app version if not in project and not requested
+
+    console.print(table)
 
 
 app.add_typer(run_app, name="run")
