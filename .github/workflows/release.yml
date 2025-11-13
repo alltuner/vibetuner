@@ -36,8 +36,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Run Release Please on pushes to main
-  release-please:
+  # Create releases via Release Please
+  create-releases:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
@@ -49,7 +49,7 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Release Please
+      - name: Create releases
         id: release
         uses: googleapis/release-please-action@v4
         with:
@@ -57,20 +57,20 @@ jobs:
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
 
-  # Prepare release: extract version and sync across components
-  prepare-release:
-    needs: [release-please]
+  # Determine what needs to be released
+  plan-release:
+    needs: [create-releases]
     if: |
       always() &&
-      ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
+      ((needs.create-releases.result == 'success' && needs.create-releases.outputs.releases_created == 'true') ||
        github.event_name == 'release' ||
        github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.version.outputs.version }}
-      is-major: ${{ steps.version.outputs.is-major }}
-      is-minor: ${{ steps.version.outputs.is-minor }}
-      is-patch: ${{ steps.version.outputs.is-patch }}
+      version: ${{ steps.plan.outputs.version }}
+      python-needed: ${{ steps.plan.outputs.python-needed }}
+      js-needed: ${{ steps.plan.outputs.js-needed }}
+      docs-needed: ${{ steps.plan.outputs.docs-needed }}
     permissions:
       contents: read
 
@@ -83,9 +83,10 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
-      - name: Extract version and bump type
-        id: version
+      - name: Plan release
+        id: plan
         run: |
+          # Get version
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             if [ -n "${{ github.event.inputs.version }}" ]; then
               VERSION="${{ github.event.inputs.version }}"
@@ -98,339 +99,288 @@ jobs:
             VERSION=${GITHUB_REF#refs/tags/v}
             echo "Using release event version: $VERSION"
           else
-            VERSION=$(gh release view --json tagName --jq '.tagName' | sed 's/^v//')
-            echo "Using latest GitHub release version for push event: $VERSION"
+            VERSION="${{ needs.create-releases.outputs.version --raw }}"
+            echo "Using release-please version: $VERSION"
+          fi
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_ENV
+          
+          # Determine version type
+          if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.0$ ]] && [[ "$VERSION" != ^1\.0\.0$ ]]; then
+            IS_MINOR="true"
+            IS_MAJOR="false"
+          elif [[ "$VERSION" =~ ^1\.0\.0$ ]]; then
+            IS_MAJOR="true"
+            IS_MINOR="false"
+          else
+            IS_MAJOR="false"
+            IS_MINOR="false"
+          fi
+          
+          echo "Version type: major=$IS_MAJOR, minor=$IS_MINOR"
+
+          # Check force flags
+          FORCE_PYTHON="${{ github.event.inputs.force-python || 'false' }}"
+          FORCE_JS="${{ github.event.inputs.force-js || 'false' }}"
+          FORCE_DOCS="${{ github.event.inputs.force-docs || 'false' }}"
+          
+          echo "🔍 Force flags: python=$FORCE_PYTHON, js=$FORCE_JS, docs=$FORCE_DOCS"
+
+          # Get previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            echo "🎉 First release detected"
+            BUILD_ALL="true"
+          else
+            echo "Comparing changes from $PREV_TAG to HEAD"
+            BUILD_ALL="false"
+          fi
+          
+          # Major/minor versions build everything
+          if [ "$IS_MAJOR" = "true" ] || [ "$IS_MINOR" = "true" ]; then
+            BUILD_ALL="true"
+            echo "🚀 Major/minor version - building all packages"
           fi
 
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Final version: $VERSION"
-
-          # Determine version bump type
-          if [[ "$VERSION" =~ \.0$ ]]; then
-            # Check if it's a major version (x.0.0)
-            if [[ "$VERSION" =~ ^[0-9]+\.0\.0$ ]]; then
-              echo "is-major=true" >> $GITHUB_OUTPUT
-              echo "is-minor=false" >> $GITHUB_OUTPUT
-              echo "is-patch=false" >> $GITHUB_OUTPUT
-              echo "Major version detected: $VERSION"
+          # Determine what needs building
+          PYTHON_NEEDED="false"
+          JS_NEEDED="false"
+          DOCS_NEEDED="false"
+          
+          # Python
+          if [ "$FORCE_PYTHON" = "true" ]; then
+            PYTHON_NEEDED="true"
+            echo "🔧 Force building Python"
+          elif [ "$BUILD_ALL" = "true" ]; then
+            PYTHON_NEEDED="true"
+            echo "✅ Building Python (major/minor version)"
+          elif [ -n "$PREV_TAG" ]; then
+            PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "pyproject\.toml" | wc -l)
+            if [ "$PYTHON_CHANGED" -gt 0 ]; then
+              PYTHON_NEEDED="true"
+              echo "✅ Python has changes"
             else
-              echo "is-major=false" >> $GITHUB_OUTPUT
-              echo "is-minor=true" >> $GITHUB_OUTPUT
-              echo "is-patch=false" >> $GITHUB_OUTPUT
-              echo "Minor version detected: $VERSION"
+              echo "❌ Python unchanged (only version files)"
             fi
           else
-            echo "is-major=false" >> $GITHUB_OUTPUT
-            echo "is-minor=false" >> $GITHUB_OUTPUT
-            echo "is-patch=true" >> $GITHUB_OUTPUT
-            echo "Patch version detected: $VERSION"
+            PYTHON_NEEDED="true"
+            echo "✅ Building Python (first release)"
           fi
+          
+          # JavaScript
+          if [ "$FORCE_JS" = "true" ]; then
+            JS_NEEDED="true"
+            echo "🔧 Force building JavaScript"
+          elif [ "$BUILD_ALL" = "true" ]; then
+            JS_NEEDED="true"
+            echo "✅ Building JavaScript (major/minor version)"
+          elif [ -n "$PREV_TAG" ]; then
+            JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "package\.json" | wc -l)
+            if [ "$JS_CHANGED" -gt 0 ]; then
+              JS_NEEDED="true"
+              echo "✅ JavaScript has changes"
+            else
+              echo "❌ JavaScript unchanged (only version files)"
+            fi
+          else
+            JS_NEEDED="true"
+            echo "✅ Building JavaScript (first release)"
+          fi
+          
+          # Documentation (always build for releases)
+          if [ "$FORCE_DOCS" = "true" ]; then
+            DOCS_NEEDED="true"
+            echo "🔧 Force building documentation"
+          elif [ "${{ github.event_name }}" = "release" ]; then
+            DOCS_NEEDED="true"
+            echo "✅ Building documentation (GitHub release)"
+          else
+            DOCS_NEEDED="true"
+            echo "✅ Building documentation (workflow dispatch)"
+          fi
+          
+          echo "python-needed=$PYTHON_NEEDED" >> $GITHUB_OUTPUT
+          echo "js-needed=$JS_NEEDED" >> $GITHUB_OUTPUT
+          echo "docs-needed=$DOCS_NEEDED" >> $GITHUB_OUTPUT
+
+      - name: Sync versions
         env:
           GH_TOKEN: ${{ github.token }}
-
-      - name: Sync versions across components
         run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          echo "Syncing version $VERSION across components..."
-
-          # Update vibetuner-py/pyproject.toml
-          cd vibetuner-py
-          CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
-          if [ "$CURRENT_VERSION" != "$VERSION" ]; then
-            echo "Updating vibetuner-py from $CURRENT_VERSION to $VERSION"
-            uv version "$VERSION"
-          else
-            echo "vibetuner-py already at version $VERSION"
-          fi
-          cd ..
-
-          # Update vibetuner-js/package.json
+          VERSION="${{ steps.plan.outputs.version }}"
+          
+          # Update Python version
+          sed -i.bak "s/^version = .*/version = \"$VERSION\"/" vibetuner-py/pyproject.toml
+          
+          # Update JS version
           cd vibetuner-js
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
-          if [ "$CURRENT_VERSION" != "$VERSION" ]; then
-            echo "Updating vibetuner-js from $CURRENT_VERSION to $VERSION"
-            bun pm version "$VERSION" --no-git-tag-version
-          else
-            echo "vibetuner-js already at version $VERSION"
-          fi
+          bun version $VERSION
           cd ..
+          
+          # Update template version
+          sed -i.bak "s/^version = .*/version = \"$VERSION\"/" vibetuner-template/pyproject.toml
+          
+          echo "Updated all components to version $VERSION"
 
-          # Update vibetuner-template/pyproject.toml (not the template files)
-          cd vibetuner-template
-          CURRENT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
-          if [ "$CURRENT_VERSION" != "$VERSION" ]; then
-            echo "Updating vibetuner-template from $CURRENT_VERSION to $VERSION"
-            uv version "$VERSION"
-          else
-            echo "vibetuner-template already at version $VERSION"
-          fi
-          cd ..
-
-      - name: Upload versioned files
+      - name: Upload version files
         uses: actions/upload-artifact@v5
         with:
-          name: versioned-files
+          name: version-files
           path: |
             vibetuner-py/pyproject.toml
             vibetuner-js/package.json
             vibetuner-template/pyproject.toml
 
-  # Detect what changed since last release
-  detect-changes:
-    needs: [release-please, prepare-release, build-python, build-js, build-docs]
-    if: |
-      always() &&
-      ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
-       github.event_name == 'release' ||
-       github.event_name == 'workflow_dispatch')
-    runs-on: ubuntu-latest
-    outputs:
-      python-changed: ${{ steps.changes.outputs.python }}
-      js-changed: ${{ steps.changes.outputs.js }}
-      docs-changed: ${{ steps.changes.outputs.docs }}
-      should-build-all: ${{ steps.changes.outputs.should-build-all }}
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Download versioned files
-        uses: actions/download-artifact@v6
-        with:
-          name: versioned-files
-          path: ./
-
-      - name: Detect changes
-        id: changes
-        run: |
-          VERSION="${{ needs.prepare-release.outputs.version }}"
-          IS_MAJOR="${{ needs.prepare-release.outputs.is-major }}"
-          IS_MINOR="${{ needs.prepare-release.outputs.is-minor }}"
-          IS_PATCH="${{ needs.prepare-release.outputs.is-patch }}"
-
-          echo "Detecting changes for release $VERSION"
-          echo "Version type: major=$IS_MAJOR, minor=$IS_MINOR, patch=$IS_PATCH"
-
-          # Check for manual force flags (GitHub Actions booleans are "true"/"false")
-          FORCE_PYTHON="${{ github.event.inputs.force-python || 'false' }}"
-          FORCE_JS="${{ github.event.inputs.force-js || 'false' }}"
-          FORCE_DOCS="${{ github.event.inputs.force-docs || 'false' }}"
-
-          echo "🔍 Debug: Force flags: python=$FORCE_PYTHON, js=$FORCE_JS, docs=$FORCE_DOCS"
-
-          # Get previous tag for change detection
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-
-          # Determine if we should build everything (major/minor versions)
-          SHOULD_BUILD_ALL="false"
-          if [ "$IS_MAJOR" = "true" ] || [ "$IS_MINOR" = "true" ]; then
-            SHOULD_BUILD_ALL="true"
-            echo "🚀 Major/minor version detected - building all packages"
-          fi
-
-          if [ -z "$PREV_TAG" ]; then
-            echo "🎉 First release detected"
-            SHOULD_BUILD_ALL="true"
-          else
-            echo "Comparing changes from $PREV_TAG to HEAD"
-          fi
-
-          echo "should-build-all=$SHOULD_BUILD_ALL" >> $GITHUB_OUTPUT
-
-          # Python detection
-          if [ "$FORCE_PYTHON" = "true" ]; then
-            echo "python=true" >> $GITHUB_OUTPUT
-            echo "🔧 Force publishing Python (manual override)"
-          elif [ "$SHOULD_BUILD_ALL" = "true" ]; then
-            echo "python=true" >> $GITHUB_OUTPUT
-            echo "✅ Building Python package (major/minor version)"
-          elif [ -n "$PREV_TAG" ]; then
-            # Check for Python changes (exclude only version files)
-            PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "pyproject\.toml" | wc -l)
-            if [ "$PYTHON_CHANGED" -gt 0 ]; then
-              echo "python=true" >> $GITHUB_OUTPUT
-              echo "✅ Python package has changes"
-              echo "Changed files:"
-              git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "pyproject\.toml"
-            else
-              echo "python=false" >> $GITHUB_OUTPUT
-              echo "❌ Python package unchanged (only version file changes)"
-            fi
-          else
-            # First release - build Python
-            echo "python=true" >> $GITHUB_OUTPUT
-            echo "✅ Building Python package (first release)"
-          fi
-
-          # JavaScript detection
-          if [ "$FORCE_JS" = "true" ]; then
-            echo "js=true" >> $GITHUB_OUTPUT
-            echo "🔧 Force publishing JavaScript (manual override)"
-          elif [ "$SHOULD_BUILD_ALL" = "true" ]; then
-            echo "js=true" >> $GITHUB_OUTPUT
-            echo "✅ Building JavaScript package (major/minor version)"
-          elif [ -n "$PREV_TAG" ]; then
-            # Check for JavaScript changes (exclude only version files)
-            JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "package\.json" | wc -l)
-            if [ "$JS_CHANGED" -gt 0 ]; then
-              echo "js=true" >> $GITHUB_OUTPUT
-              echo "✅ JavaScript package has changes"
-              echo "Changed files:"
-              git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "package\.json"
-            else
-              echo "js=false" >> $GITHUB_OUTPUT
-              echo "❌ JavaScript package unchanged (only version file changes)"
-            fi
-          else
-            # First release - build JavaScript
-            echo "js=true" >> $GITHUB_OUTPUT
-            echo "✅ Building JavaScript package (first release)"
-          fi
-
-          # Documentation detection - always build on release
-          if [ "$FORCE_DOCS" = "true" ]; then
-            echo "docs=true" >> $GITHUB_OUTPUT
-            echo "🔧 Force publishing documentation (manual override)"
-          elif [ "${{ github.event_name }}" = "release" ]; then
-            echo "docs=true" >> $GITHUB_OUTPUT
-            echo "✅ Building documentation (GitHub release event)"
-          else
-            echo "docs=true" >> $GITHUB_OUTPUT
-            echo "✅ Building documentation (workflow dispatch)"
-          fi
-
-  # Conditional Python build
+  # Build Python package
   build-python:
-    needs: [release-please, prepare-release, detect-changes]
+    needs: [create-releases, plan-release]
     if: |
       always() &&
-      ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
+      ((needs.create-releases.result == 'success' && needs.create-releases.outputs.releases_created == 'true') ||
        github.event_name == 'release' ||
        github.event_name == 'workflow_dispatch') &&
-      needs.detect-changes.outputs.python-changed == 'true'
+      needs.plan-release.outputs.python-needed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
+    outputs:
+      success: ${{ steps.build.outcome }}
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Download versioned files
+      - name: Download version files
         uses: actions/download-artifact@v6
         with:
-          name: versioned-files
+          name: version-files
           path: ./
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
       - name: Build package
+        id: build
         working-directory: vibetuner-py
-        run: uv build
+        run: |
+          uv build
+          echo "Build completed successfully"
 
-      - name: Verify package (dry-run)
+      - name: Verify package
         working-directory: vibetuner-py
         run: uv publish --dry-run
 
-      - name: Upload Python distribution artifacts
+      - name: Upload Python artifacts
         uses: actions/upload-artifact@v5
         with:
           name: python-dist
           path: vibetuner-py/dist/
 
-  # Conditional JavaScript build
+  # Build JavaScript package
   build-js:
-    needs: [release-please, prepare-release, detect-changes]
+    needs: [create-releases, plan-release]
     if: |
       always() &&
-      ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
+      ((needs.create-releases.result == 'success' && needs.create-releases.outputs.releases_created == 'true') ||
        github.event_name == 'release' ||
        github.event_name == 'workflow_dispatch') &&
-      needs.detect-changes.outputs.js-changed == 'true'
+      needs.plan-release.outputs.js-needed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
+    outputs:
+      success: ${{ steps.build.outcome }}
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Download versioned files
+      - name: Download version files
         uses: actions/download-artifact@v6
         with:
-          name: versioned-files
+          name: version-files
           path: ./
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
 
       - name: Install dependencies
+        id: build
         working-directory: vibetuner-js
-        run: bun install
+        run: |
+          bun install
+          bun pm pack
+          echo "Build completed successfully"
 
-      - name: Pack package
-        working-directory: vibetuner-js
-        run: bun pm pack
-
-      - name: Upload JS distribution artifacts
+      - name: Upload JS artifacts
         uses: actions/upload-artifact@v5
         with:
           name: js-dist
           path: vibetuner-js/*.tgz
 
-  # Documentation build (always on release)
+  # Build documentation
   build-docs:
-    needs: [release-please, prepare-release, detect-changes]
+    needs: [create-releases, plan-release]
     if: |
       always() &&
-      ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
+      ((needs.create-releases.result == 'success' && needs.create-releases.outputs.releases_created == 'true') ||
        github.event_name == 'release' ||
        github.event_name == 'workflow_dispatch') &&
-      needs.detect-changes.outputs.docs-changed == 'true'
+      needs.plan-release.outputs.docs-needed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pages: write
       id-token: write
-
+    outputs:
+      success: ${{ steps.build.outcome }}
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Download version files
+        uses: actions/download-artifact@v6
+        with:
+          name: version-files
+          path: ./
+
       - name: Install uv
         uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
 
-      - name: Set up Python
-        run: uv python install
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Build docs
+        id: build
         working-directory: vibetuner-docs
-        run: uvx --with mkdocs-material mkdocs build --strict --site-dir ../_site
+        run: |
+          uv run mkdocs build
+          echo "Build completed successfully"
 
-      - name: Add CNAME for custom domain
-        run: echo "vibetuner.alltuner.com" > _site/CNAME
+      - name: Add CNAME
+        if: github.event_name == 'release'
+        run: |
+          echo "vibetuner.ai" > vibetuner-docs/site/CNAME
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+      - name: Upload docs artifacts
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: vibetuner-docs/site
 
-  # Conditional Python publish
+  # Publish Python package
   publish-python:
-    needs: [detect-changes]
-    if: needs.detect-changes.outputs.python-changed == 'true'
+    needs: [build-python]
+    if: |
+      always() &&
+      needs.build-python.result == 'success' &&
+      (github.event_name == 'release' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -445,20 +395,20 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: false
 
       - name: Publish to PyPI
         run: uv publish
 
-  # Conditional JavaScript publish
+  # Publish JavaScript package
   publish-js:
-    needs: [detect-changes]
-    if: needs.detect-changes.outputs.js-changed == 'true'
+    needs: [build-js]
+    if: |
+      always() &&
+      needs.build-js.result == 'success' &&
+      (github.event_name == 'release' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
 
     steps:
       - name: Download JS artifacts
@@ -467,29 +417,23 @@ jobs:
           name: js-dist
           path: ./
 
-      - name: Setup Node.js (for npm CLI)
-        uses: actions/setup-node@v6
-        with:
-          node-version: "latest"
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
 
-      - name: Publish to npm with trusted publishing
+      - name: Publish to npm
+        run: bun pm publish --access public
         env:
-          NPM_CONFIG_PROVENANCE: true
-        run: |
-          TARBALL=$(ls alltuner-vibetuner-*.tgz)
-          echo "Publishing $TARBALL with trusted publishing"
-          npm publish "./$TARBALL" --access public
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  # Conditional Documentation deploy
+  # Deploy documentation
   deploy-docs:
-    needs: [detect-changes]
-    if: needs.detect-changes.outputs.docs-changed == 'true'
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    needs: [build-docs]
+    if: |
+      always() &&
+      needs.build-docs.result == 'success' &&
+      github.event_name == 'release'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       pages: write
       id-token: write
 
