@@ -93,8 +93,14 @@ jobs:
               VERSION="${{ github.event.inputs.version }}"
               echo "Using manual version: $VERSION"
             else
-              VERSION=$(gh release view --json tagName --jq '.tagName' | sed 's/^v//')
-              echo "Using latest GitHub release version: $VERSION"
+              VERSION=$(gh release view --json tagName --jq '.tagName' | sed 's/^v//' 2>/dev/null || echo "")
+              if [ -n "$VERSION" ]; then
+                echo "Using latest GitHub release version: $VERSION"
+              else
+                echo "❌ No version provided and no GitHub releases found"
+                echo "Please provide a version when triggering workflow_dispatch"
+                exit 1
+              fi
             fi
           elif [ "${{ github.event_name }}" = "release" ]; then
             VERSION=${GITHUB_REF#refs/tags/v}
@@ -219,6 +225,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION="${{ steps.plan.outputs.version }}"
+          
+          # Validate version is set
+          if [ -z "$VERSION" ]; then
+            echo "❌ VERSION is not set, cannot sync versions"
+            exit 1
+          fi
+          
+          echo "🔄 Syncing all components to version: $VERSION"
           
           # Update Python packages
           for dir in vibetuner-py vibetuner-template; do
