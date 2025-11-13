@@ -3,6 +3,12 @@ revision = 3
 requires-python = ">=3.11"
 
 [[package]]
+name = "actionlint-py"
+version = "1.7.8.24"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6b/ed/145fc39da0082e2ccc3c22809f93183be7e8dc30e0584beb50e24677b952/actionlint_py-1.7.8.24.tar.gz", hash = "sha256:deaa63961618d45e52c455c63145d5904c3dd13a3a3f31c76af588e83caf6b5a", size = 12045, upload-time = "2025-10-12T08:24:38.446Z" }
+
+[[package]]
 name = "aioboto3"
 version = "15.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2722,7 +2728,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "2.18.2"
+version = "2.18.4"
 source = { directory = "vibetuner-py" }
 dependencies = [
     { name = "aioboto3" },
@@ -2822,18 +2828,22 @@ provides-extras = ["dev"]
 
 [[package]]
 name = "vibetuner-scaffolding"
-version = "2.18.2"
+version = "2.18.4"
 source = { virtual = "." }
 
 [package.dev-dependencies]
 dev = [
+    { name = "actionlint-py" },
     { name = "vibetuner", extra = ["dev"] },
 ]
 
 [package.metadata]
 
 [package.metadata.requires-dev]
-dev = [{ name = "vibetuner", extras = ["dev"], directory = "vibetuner-py" }]
+dev = [
+    { name = "actionlint-py", specifier = ">=1.7.8.24" },
+    { name = "vibetuner", extras = ["dev"], directory = "vibetuner-py" },
+]
 
 [[package]]
 name = "virtualenv"

@@ -8,5 +8,6 @@ vibetuner = { path = "vibetuner-py" }
 
 [dependency-groups]
 dev = [
+    "actionlint-py>=1.7.8.24",
     "vibetuner[dev]",
 ]
