@@ -205,6 +205,9 @@ jobs:
           echo "js-needed=$JS_NEEDED" >> $GITHUB_OUTPUT
           echo "docs-needed=$DOCS_NEEDED" >> $GITHUB_OUTPUT
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Sync versions
         env:
           GH_TOKEN: ${{ github.token }}
