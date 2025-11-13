@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.18.4](https://github.com/alltuner/vibetuner/compare/v2.18.3...v2.18.4) (2025-11-13)
+
+
+### Bug Fixes
+
+* properly handle force flags in release workflow ([#458](https://github.com/alltuner/vibetuner/issues/458)) ([589a205](https://github.com/alltuner/vibetuner/commit/589a20558007c98902c9b5315f67df5877e4b192))
+
 ## [2.18.3](https://github.com/alltuner/vibetuner/compare/v2.18.2...v2.18.3) (2025-11-13)
 
 
