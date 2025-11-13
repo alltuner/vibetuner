@@ -141,4 +141,3 @@ settings = CoreConfiguration()
 
 
 logger.info("Configuration loaded for project: {}", settings.project.project_name)
-logger.info("Configuration loaded for project: {}", settings.model_dump())
