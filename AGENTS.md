@@ -136,6 +136,7 @@ just format-toml             # Format TOML files with taplo
 just format-yaml             # Format YAML files with dprint
 
 just lint                    # Run all linting checks
+just lint-gh                 # Lint GitHub Actions workflows with actionlint
 just lint-py                 # Lint Python with ruff
 just lint-jinja              # Lint Jinja with djlint
 just lint-md                 # Lint markdown files
