@@ -428,6 +428,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
 
     steps:
       - name: Download JS artifacts
@@ -436,13 +437,18 @@ jobs:
           name: js-dist
           path: ./
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup Node.js (for npm CLI)
+        uses: actions/setup-node@v6
+        with:
+          node-version: "latest"
 
-      - name: Publish to npm
-        run: bun pm publish --access public
+      - name: Publish to npm with trusted publishing
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
+        run: |
+          TARBALL=$(ls alltuner-vibetuner-*.tgz)
+          echo "Publishing $TARBALL with trusted publishing"
+          npm publish "./$TARBALL" --access public
 
   # Deploy documentation
   deploy-docs:
