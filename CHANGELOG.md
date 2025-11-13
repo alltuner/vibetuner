@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.2](https://github.com/alltuner/vibetuner/compare/v2.19.1...v2.19.2) (2025-11-13)
+
+
+### Bug Fixes
+
+* use uvx with mkdocs-material for docs build ([#468](https://github.com/alltuner/vibetuner/issues/468)) ([3de7b1e](https://github.com/alltuner/vibetuner/commit/3de7b1ed44d29f5c9e2d8e6711f11b212302c131))
+
 ## [2.19.1](https://github.com/alltuner/vibetuner/compare/v2.19.0...v2.19.1) (2025-11-13)
 
 
