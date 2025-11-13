@@ -387,7 +387,7 @@ jobs:
         id: build
         working-directory: vibetuner-docs
         run: |
-          uv run mkdocs build
+          uvx --with mkdocs-material mkdocs build --strict --site-dir site
           echo "Build completed successfully"
 
       - name: Add CNAME
