@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.22.0](https://github.com/alltuner/vibetuner/compare/v2.21.2...v2.22.0) (2025-11-13)
+
+
+### Features
+
+* add markdown formatting support with rumdl ([#493](https://github.com/alltuner/vibetuner/issues/493)) ([2e707c3](https://github.com/alltuner/vibetuner/commit/2e707c37c69942a2e39f4349d1fb36f6f855e105))
+
 ## [2.21.2](https://github.com/alltuner/vibetuner/compare/v2.21.1...v2.21.2) (2025-11-13)
 
 
