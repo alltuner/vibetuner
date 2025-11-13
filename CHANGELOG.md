@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.21.1](https://github.com/alltuner/vibetuner/compare/v2.21.0...v2.21.1) (2025-11-13)
+
+
+### Bug Fixes
+
+* remove cache-dependency-glob from publish-python job ([#490](https://github.com/alltuner/vibetuner/issues/490)) ([faa6ff8](https://github.com/alltuner/vibetuner/commit/faa6ff8166158837279136ab22a6c2c371381d3a))
+
+
+### Miscellaneous Chores
+
+* remove test file for minor release verification ([#488](https://github.com/alltuner/vibetuner/issues/488)) ([39b2be1](https://github.com/alltuner/vibetuner/commit/39b2be158c8ade7372ac0cfe094fbc03cfff4007))
+
 ## [2.21.0](https://github.com/alltuner/vibetuner/compare/v2.20.0...v2.21.0) (2025-11-13)
 
 
