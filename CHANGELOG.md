@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.23.0](https://github.com/alltuner/vibetuner/compare/v2.22.0...v2.23.0) (2025-11-13)
+
+
+### Features
+
+* add /issue command for GitHub issue workflow ([#499](https://github.com/alltuner/vibetuner/issues/499)) ([25d7fb7](https://github.com/alltuner/vibetuner/commit/25d7fb7d27980768c0cedd99a8c487f7572ccecc))
+* add pr-create slash command ([#495](https://github.com/alltuner/vibetuner/issues/495)) ([ec961da](https://github.com/alltuner/vibetuner/commit/ec961dac507befae06df8d00da9733a8f9899da6))
+* **allowlist:** add gh issue view and gh issue edit commands ([#504](https://github.com/alltuner/vibetuner/issues/504)) ([7a4fd25](https://github.com/alltuner/vibetuner/commit/7a4fd2572b5699126faeae14821ea3c7793853e2)), closes [#502](https://github.com/alltuner/vibetuner/issues/502)
+
+
+### Bug Fixes
+
+* **hooks:** replace missing format-files.sh with just format ([#503](https://github.com/alltuner/vibetuner/issues/503)) ([8553571](https://github.com/alltuner/vibetuner/commit/855357179896321c7c6288a6c7a0640e5467c960)), closes [#500](https://github.com/alltuner/vibetuner/issues/500)
+
+
+### Miscellaneous Chores
+
+* add git stash commands to Claude Code allowlist ([#501](https://github.com/alltuner/vibetuner/issues/501)) ([6dc7526](https://github.com/alltuner/vibetuner/commit/6dc7526b582283168eb9bf66460bf76da48cf449)), closes [#498](https://github.com/alltuner/vibetuner/issues/498)
+* add git switch to Claude Code allow list ([#497](https://github.com/alltuner/vibetuner/issues/497)) ([bf7c75f](https://github.com/alltuner/vibetuner/commit/bf7c75f85210cf9f5c6dbb76d0e58118d93fd9fe))
+
 ## [2.22.0](https://github.com/alltuner/vibetuner/compare/v2.21.2...v2.22.0) (2025-11-13)
 
 
