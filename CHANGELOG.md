@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.5](https://github.com/alltuner/vibetuner/compare/v2.19.4...v2.19.5) (2025-11-13)
+
+
+### Bug Fixes
+
+* handle missing version in workflow_dispatch ([#475](https://github.com/alltuner/vibetuner/issues/475)) ([dbe1f25](https://github.com/alltuner/vibetuner/commit/dbe1f252d05ef583754336a96f54a7e224a02e64))
+
 ## [2.19.4](https://github.com/alltuner/vibetuner/compare/v2.19.3...v2.19.4) (2025-11-13)
 
 
