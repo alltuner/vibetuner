@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.19.1](https://github.com/alltuner/vibetuner/compare/v2.19.0...v2.19.1) (2025-11-13)
+
+
+### Bug Fixes
+
+* improve release workflow with Bun setup and proper version commands ([#465](https://github.com/alltuner/vibetuner/issues/465)) ([1f84ed2](https://github.com/alltuner/vibetuner/commit/1f84ed2bc6ce65933f80a4ba672bf5f301430d14))
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/upload-pages-artifact action to v4 ([#467](https://github.com/alltuner/vibetuner/issues/467)) ([5a7e978](https://github.com/alltuner/vibetuner/commit/5a7e978d81eea93929e7c57f00bf87007a8fc511))
+
 ## [2.19.0](https://github.com/alltuner/vibetuner/compare/v2.18.4...v2.19.0) (2025-11-13)
 
 
