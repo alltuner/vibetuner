@@ -135,15 +135,44 @@ jobs:
           if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.0$ ]] && [[ "$VERSION" != ^1\.0\.0$ ]]; then
             IS_MINOR="true"
             IS_MAJOR="false"
+            IS_PATCH="false"
           elif [[ "$VERSION" =~ ^1\.0\.0$ ]]; then
             IS_MAJOR="true"
             IS_MINOR="false"
+            IS_PATCH="false"
           else
             IS_MAJOR="false"
             IS_MINOR="false"
+            IS_PATCH="true"
           fi
           
-          echo "Version type: major=$IS_MAJOR, minor=$IS_MINOR"
+          echo "Version type: major=$IS_MAJOR, minor=$IS_MINOR, patch=$IS_PATCH"
+
+          # For patch versions, check if there are meaningful changes
+          if [ "$IS_PATCH" = "true" ] && [ -n "$PREV_TAG" ]; then
+            echo "🔍 Checking for meaningful changes in patch version..."
+            
+            # Check for changes in all packages (excluding version files)
+            PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "pyproject\.toml" | wc -l)
+            JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "package\.json" | wc -l)
+            TEMPLATE_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-template/" | grep -v -E "pyproject\.toml|package\.json" | wc -l)
+            DOCS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-docs/" | wc -l)
+            
+            TOTAL_CHANGED=$((PYTHON_CHANGED + JS_CHANGED + TEMPLATE_CHANGED + DOCS_CHANGED))
+            
+            if [ "$TOTAL_CHANGED" -eq 0 ]; then
+              echo "❌ No meaningful changes found in patch version"
+              echo "Only version file changes detected - skipping release"
+              echo "version=" >> $GITHUB_OUTPUT
+              echo "python-needed=false" >> $GITHUB_OUTPUT
+              echo "js-needed=false" >> $GITHUB_OUTPUT
+              echo "docs-needed=false" >> $GITHUB_OUTPUT
+              exit 0
+            else
+              echo "✅ Found meaningful changes in patch version"
+              echo "Python: $PYTHON_CHANGED, JS: $JS_CHANGED, Template: $TEMPLATE_CHANGED, Docs: $DOCS_CHANGED"
+            fi
+          fi
 
           # Check force flags
           FORCE_PYTHON="${{ github.event.inputs.force-python || 'false' }}"
