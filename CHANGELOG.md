@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.19.0](https://github.com/alltuner/vibetuner/compare/v2.18.4...v2.19.0) (2025-11-13)
+
+
+### Features
+
+* simplify release workflow structure ([#460](https://github.com/alltuner/vibetuner/issues/460)) ([67efee9](https://github.com/alltuner/vibetuner/commit/67efee9372843ac4e4ecf8512469eb3332db2af8))
+
+
+### Bug Fixes
+
+* resolve GitHub Actions syntax errors ([#463](https://github.com/alltuner/vibetuner/issues/463)) ([7bec8e8](https://github.com/alltuner/vibetuner/commit/7bec8e8352ee0dfb1a31c7548c80764b6606db65))
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/setup-python action to v6 ([#462](https://github.com/alltuner/vibetuner/issues/462)) ([85e5e99](https://github.com/alltuner/vibetuner/commit/85e5e996d5ca2d0cf514e5b9a66877683c15c692))
+
 ## [2.18.4](https://github.com/alltuner/vibetuner/compare/v2.18.3...v2.18.4) (2025-11-13)
 
 
