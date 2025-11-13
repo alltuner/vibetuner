@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.6](https://github.com/alltuner/vibetuner/compare/v2.19.5...v2.19.6) (2025-11-13)
+
+
+### Bug Fixes
+
+* add GH_TOKEN to plan-release step for gh CLI ([#477](https://github.com/alltuner/vibetuner/issues/477)) ([5ebaadb](https://github.com/alltuner/vibetuner/commit/5ebaadbc95c049b998ec4e90e79a54bb7a7b1375))
+
 ## [2.19.5](https://github.com/alltuner/vibetuner/compare/v2.19.4...v2.19.5) (2025-11-13)
 
 
