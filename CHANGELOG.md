@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.4](https://github.com/alltuner/vibetuner/compare/v2.19.3...v2.19.4) (2025-11-13)
+
+
+### Bug Fixes
+
+* correct documentation deployment logic ([#473](https://github.com/alltuner/vibetuner/issues/473)) ([49ee4ab](https://github.com/alltuner/vibetuner/commit/49ee4abe8fafb94752237b52027aabf2925c0915))
+
 ## [2.19.3](https://github.com/alltuner/vibetuner/compare/v2.19.2...v2.19.3) (2025-11-13)
 
 
