@@ -18,6 +18,11 @@ format-jinja:
 format-yaml:
     @uvx --from dprint-py dprint fmt --plugins https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.1.wasm
 
+# Format Markdown files with rumdl
+[group('Code quality: formatting')]
+format-md:
+    @rumdl fmt
+
 # Format all code
 [group('Code quality: formatting')]
-format: format-py format-toml format-jinja
+format: format-py format-toml format-jinja format-md
