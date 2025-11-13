@@ -100,7 +100,7 @@ def version(
         from vibetuner.config import CoreConfiguration
 
         settings = CoreConfiguration()
-        table.add_row("app settings", settings.version)
+        table.add_row(f"{settings.project.project_name} settings", settings.version)
     except Exception:
         if show_app:
             table.add_row("app settings", "not in project directory")
