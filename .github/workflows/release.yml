@@ -514,22 +514,6 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
-        with:
-          cache-dependency-glob: |
-            vibetuner-py/**/*requirements*.txt
-            vibetuner-py/**/*requirements*.in
-            vibetuner-py/**/*constraints*.txt
-            vibetuner-py/**/*constraints*.in
-            vibetuner-py/**/pyproject.toml
-            vibetuner-py/**/uv.lock
-            vibetuner-py/**/*.py.lock
-            vibetuner-template/**/*requirements*.txt
-            vibetuner-template/**/*requirements*.in
-            vibetuner-template/**/*constraints*.txt
-            vibetuner-template/**/*constraints*.in
-            vibetuner-template/**/pyproject.toml
-            vibetuner-template/**/uv.lock
-            vibetuner-template/**/*.py.lock
 
       - name: Publish to PyPI
         run: uv publish
