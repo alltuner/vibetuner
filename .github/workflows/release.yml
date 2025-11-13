@@ -305,12 +305,13 @@ jobs:
 
   # Conditional Python build
   build-python:
-    needs: [release-please, prepare-release]
+    needs: [release-please, prepare-release, detect-changes]
     if: |
       always() &&
       ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
        github.event_name == 'release' ||
-       github.event_name == 'workflow_dispatch')
+       github.event_name == 'workflow_dispatch') &&
+      needs.detect-changes.outputs.python-changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -344,12 +345,13 @@ jobs:
 
   # Conditional JavaScript build
   build-js:
-    needs: [release-please, prepare-release]
+    needs: [release-please, prepare-release, detect-changes]
     if: |
       always() &&
       ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
        github.event_name == 'release' ||
-       github.event_name == 'workflow_dispatch')
+       github.event_name == 'workflow_dispatch') &&
+      needs.detect-changes.outputs.js-changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -385,12 +387,13 @@ jobs:
 
   # Documentation build (always on release)
   build-docs:
-    needs: [release-please, prepare-release]
+    needs: [release-please, prepare-release, detect-changes]
     if: |
       always() &&
       ((needs.release-please.result == 'success' && needs.release-please.outputs.releases_created == 'true') ||
        github.event_name == 'release' ||
-       github.event_name == 'workflow_dispatch')
+       github.event_name == 'workflow_dispatch') &&
+      needs.detect-changes.outputs.docs-changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
