@@ -23,6 +23,7 @@
       "Bash(git pull:*)",
       "Bash(git push:*)",
       "Bash(git status:*)",
+      "Bash(git switch:*)",
       "Bash(git tag:*)",
       "Bash(grep:*)",
       "Bash(head:*)",
