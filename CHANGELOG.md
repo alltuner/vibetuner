@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.18.3](https://github.com/alltuner/vibetuner/compare/v2.18.2...v2.18.3) (2025-11-13)
+
+
+### Bug Fixes
+
+* fixes bug [#449](https://github.com/alltuner/vibetuner/issues/449) ([#456](https://github.com/alltuner/vibetuner/issues/456)) ([8d7d879](https://github.com/alltuner/vibetuner/commit/8d7d8790fbfd49ddb987e74ab12b3fa1b3021afb))
+
 ## [2.18.2](https://github.com/alltuner/vibetuner/compare/v2.18.1...v2.18.2) (2025-11-12)
 
 
