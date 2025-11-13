@@ -215,10 +215,12 @@ jobs:
           echo "Detecting changes for release $VERSION"
           echo "Version type: major=$IS_MAJOR, minor=$IS_MINOR, patch=$IS_PATCH"
 
-          # Check for manual force flags
-          FORCE_PYTHON="${{ github.event.inputs.force-python }}"
-          FORCE_JS="${{ github.event.inputs.force-js }}"
-          FORCE_DOCS="${{ github.event.inputs.force-docs }}"
+          # Check for manual force flags (GitHub Actions booleans are "true"/"false")
+          FORCE_PYTHON="${{ github.event.inputs.force-python || 'false' }}"
+          FORCE_JS="${{ github.event.inputs.force-js || 'false' }}"
+          FORCE_DOCS="${{ github.event.inputs.force-docs || 'false' }}"
+
+          echo "🔍 Debug: Force flags: python=$FORCE_PYTHON, js=$FORCE_JS, docs=$FORCE_DOCS"
 
           # Get previous tag for change detection
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
