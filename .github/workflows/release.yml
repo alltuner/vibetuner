@@ -231,7 +231,7 @@ jobs:
           # Update JS package
           echo "Checking vibetuner-js..."
           cd vibetuner-js
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          CURRENT_VERSION=$(bun pm pkg get version | tr -d '"')
           if [ "$CURRENT_VERSION" != "$VERSION" ]; then
             echo "Updating vibetuner-js from $CURRENT_VERSION to $VERSION"
             bun pm version "$VERSION" --no-git-tag-version
