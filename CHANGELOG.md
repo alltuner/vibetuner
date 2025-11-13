@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.21.2](https://github.com/alltuner/vibetuner/compare/v2.21.1...v2.21.2) (2025-11-13)
+
+
+### Miscellaneous Chores
+
+* cleanup release workflow ([#491](https://github.com/alltuner/vibetuner/issues/491)) ([58f256e](https://github.com/alltuner/vibetuner/commit/58f256e04ce9682f2548a4d4db7aeff7e8c35ae1))
+
 ## [2.21.1](https://github.com/alltuner/vibetuner/compare/v2.21.0...v2.21.1) (2025-11-13)
 
 
