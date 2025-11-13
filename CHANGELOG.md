@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.21.0](https://github.com/alltuner/vibetuner/compare/v2.20.0...v2.21.0) (2025-11-13)
+
+
+### Features
+
+* add test file for minor release trigger verification ([#487](https://github.com/alltuner/vibetuner/issues/487)) ([6735294](https://github.com/alltuner/vibetuner/commit/67352949ff017d00530c7643ac3ca84299eefcf5))
+
+
+### Bug Fixes
+
+* enable publishing for release-please releases on push events ([#484](https://github.com/alltuner/vibetuner/issues/484)) ([b97f2b8](https://github.com/alltuner/vibetuner/commit/b97f2b8626ea3aa593545805be71133b0a874d28))
+* prevent patch releases when no meaningful changes ([#485](https://github.com/alltuner/vibetuner/issues/485)) ([72795d1](https://github.com/alltuner/vibetuner/commit/72795d155569a00f32b6860873dd4a9dddc34767))
+
 ## [2.20.0](https://github.com/alltuner/vibetuner/compare/v2.19.6...v2.20.0) (2025-11-13)
 
 
