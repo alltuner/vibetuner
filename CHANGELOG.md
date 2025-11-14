@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.24.0](https://github.com/alltuner/vibetuner/compare/v2.23.0...v2.24.0) (2025-11-14)
+
+
+### Features
+
+* add OpenCode integration with enhanced tooling support ([#508](https://github.com/alltuner/vibetuner/issues/508)) ([6bff852](https://github.com/alltuner/vibetuner/commit/6bff8520dd126fb897e49edbbf23e3d5d104d6d7))
+* improve dynamic import logging across vibetuner ([#507](https://github.com/alltuner/vibetuner/issues/507)) ([29a606b](https://github.com/alltuner/vibetuner/commit/29a606b8c0a305a2936164f3fdf48b702a1645ae))
+
+
+### Miscellaneous Chores
+
+* update dependencies to latest versions ([#506](https://github.com/alltuner/vibetuner/issues/506)) ([903b985](https://github.com/alltuner/vibetuner/commit/903b98555a3ffbda2d4a4b09f097ecffc7cef5b6))
+
 ## [2.23.0](https://github.com/alltuner/vibetuner/compare/v2.22.0...v2.23.0) (2025-11-13)
 
 
