@@ -79,10 +79,7 @@
       "command": ["uv", "run", "djlint", "$FILE", "--reformat"],
       "extensions": [".html", ".jinja", ".jinja2"]
     },
-    "dprint-yaml": {
-      "command": ["uvx", "--from", "dprint-py", "dprint", "fmt", "--plugins", "https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.1.wasm", "$FILE"],
-      "extensions": [".yaml", ".yml"]
-    },
+
     "rumdl": {
       "command": ["uv", "run", "rumdl", "fmt", "$FILE"],
       "extensions": [".md"]
