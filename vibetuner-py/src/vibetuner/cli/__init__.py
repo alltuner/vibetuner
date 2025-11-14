@@ -12,7 +12,7 @@ from rich.table import Table
 
 from vibetuner.cli.run import run_app
 from vibetuner.cli.scaffold import scaffold_app
-from vibetuner.logging import LogLevel, setup_logging
+from vibetuner.logging import LogLevel, logger, setup_logging
 
 
 console = Console()
@@ -114,6 +114,12 @@ app.add_typer(scaffold_app, name="scaffold")
 
 try:
     import_module("app.cli")
-except (ImportError, ModuleNotFoundError):
+except ModuleNotFoundError:
+    # Silent pass for missing app.cli module (expected in some projects)
     pass
+except ImportError as e:
+    # Log warning for any import error (including syntax errors, missing dependencies, etc.)
+    logger.warning(
+        f"Failed to import app.cli: {e}. User CLI commands will not be available."
+    )
 # Cache buster
