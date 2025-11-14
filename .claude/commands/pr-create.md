@@ -1,3 +1,8 @@
+---
+description: Create a pull request with systematic workflow
+allowed-tools: Bash(git:*), Bash(gh:*), Read, Edit, Write
+---
+
 # Create Pull Request
 
 Create a pull request following a systematic workflow that ensures proper branching,

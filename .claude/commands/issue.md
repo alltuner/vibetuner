@@ -1,3 +1,9 @@
+---
+argument-hint: [issue-number]
+description: Work on a GitHub issue with systematic workflow
+allowed-tools: Bash(git:*), Bash(gh:*), TodoWrite, Read, Edit, Write
+---
+
 # Work on GitHub Issue
 
 Work on a GitHub issue following a systematic workflow that ensures proper branching,
