@@ -71,6 +71,10 @@
     }
   },
   "formatter": {
+    "ruff": {
+      "command": ["uv", "run", "ruff", "format", "$FILE"],
+      "extensions": [".py", ".pyi"]
+    },
     "taplo": {
       "command": ["uv", "run", "taplo", "fmt", "$FILE"],
       "extensions": [".toml"]
