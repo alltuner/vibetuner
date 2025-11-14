@@ -1,7 +1,5 @@
 ---
-argument-hint: [issue-number]
 description: Work on a GitHub issue with systematic workflow
-allowed-tools: Bash(git:*), Bash(gh:*), TodoWrite, Read, Edit, Write
 ---
 
 # Work on GitHub Issue
@@ -27,8 +25,8 @@ task tracking, conventional commits, and clean git state.
 
 ### Step 0: Fetch and Analyze Issue
 
-1. Fetch issue details: `gh issue view <number>`
-2. Auto-assign issue: `gh issue edit <number> --add-assignee @me`
+1. Fetch issue details: !`gh issue view $1`
+2. Auto-assign issue: !`gh issue edit $1 --add-assignee @me`
 3. Analyze the issue to understand:
    - What type of work is this? (feature, fix, refactor, etc.)
    - What is the scope?
@@ -39,15 +37,15 @@ task tracking, conventional commits, and clean git state.
 
 Check current git state:
 
-- `git status` - check for staged, unstaged, and untracked changes
+- !`git status` - check for staged, unstaged, and untracked changes
 
 **If working directory is dirty:**
 
-1. Get current branch: `git branch --show-current`
-2. Stage all changes: `git add -A`
+1. Get current branch: !`git branch --show-current`
+2. Stage all changes: !`git add -A`
 3. Commit with WIP message, skipping pre-commit hooks:
-   `git commit -m "WIP: save progress before switching to issue <number>" --no-verify`
-4. Verify clean state: `git status` should show clean working tree
+   !`git commit -m "WIP: save progress before switching to issue $1" --no-verify`
+4. Verify clean state: !`git status` should show clean working tree
 
 **If working directory is clean:**
 
@@ -55,13 +53,13 @@ Check current git state:
 
 ### Step 2: Create Issue Branch
 
-1. Fetch latest: `git fetch origin`
+1. Fetch latest: !`git fetch origin`
 2. Determine branch name from issue:
    - Format: `<type>/<number>-<short-description>`
    - Type based on issue analysis (feat, fix, refactor, etc.)
    - Description: kebab-case, 2-4 words max
    - Examples: `feat/344-add-auth`, `fix/342-oauth-bug`, `chore/100-update-deps`
-3. Create and switch to new branch: `git switch -c <branch-name> origin/main`
+3. Create and switch to new branch: !`git switch -c <branch-name> origin/main`
 
 ### Step 3: Plan the Work
 
@@ -94,19 +92,19 @@ Check current git state:
 
 1. Run tests if applicable
 2. Verify all TodoWrite tasks are completed
-3. Ensure working tree is clean: `git status`
-4. Review commits: `git log origin/main..HEAD`
+3. Ensure working tree is clean: !`git status`
+4. Review commits: !`git log origin/main..HEAD`
 
 ### Step 6: Push and Create PR
 
-1. Push branch: `git push -u origin <branch-name>`
+1. Push branch: !`git push -u origin <branch-name>`
 2. Prepare PR details:
    - **Title**: Use conventional commit format matching the primary change
      - Single commit: use that commit message
      - Multiple commits: synthesize a clear title representing all changes
    - **Body**: Include:
      - Brief summary of changes (bullet points)
-     - `Closes #<issue-number>` to auto-link the issue
+     - `Closes #$1` to auto-link the issue
      - Any testing or verification performed
 3. Create PR:
 
@@ -139,5 +137,5 @@ If any step failed, clearly explain:
 - ALWAYS skip pre-commit hooks ONLY for WIP commits using `--no-verify`
 - NEVER skip pre-commit hooks for implementation commits
 - ALWAYS wait for approval on non-trivial changes
-- ALWAYS link PR to issue with "Closes #<number>"
+- ALWAYS link PR to issue with "Closes #$1"
 - ALWAYS use TodoWrite to track work
