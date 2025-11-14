@@ -4,10 +4,12 @@ from fastapi import APIRouter, Depends as Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+import vibetuner.frontend.lifespan as lifespan_module
 from vibetuner import paths
+from vibetuner.logging import logger
 
 from .deps import LangDep as LangDep, MagicCookieDep as MagicCookieDep
-from .lifespan import ctx, lifespan
+from .lifespan import ctx
 from .middleware import middlewares
 from .routes import auth, debug, health, language, meta, user
 from .templates import render_template
@@ -28,8 +30,14 @@ try:
     from .routes.auth import register_oauth_routes
 
     register_oauth_routes()
-except (ImportError, ModuleNotFoundError):
+except ModuleNotFoundError:
+    # Silent pass for missing app.frontend.oauth or app.frontend.routes modules (expected in some projects)
     pass
+except ImportError as e:
+    # Log warning for any import error (including syntax errors, missing dependencies, etc.)
+    logger.warning(
+        f"Failed to import app.frontend.oauth or app.frontend.routes: {e}. OAuth and custom routes will not be available."
+    )
 
 
 dependencies: list[Any] = [
@@ -38,7 +46,7 @@ dependencies: list[Any] = [
 
 app = FastAPI(
     debug=ctx.DEBUG,
-    lifespan=lifespan,
+    lifespan=lifespan_module.lifespan,
     docs_url=None,
     redoc_url=None,
     openapi_url=None,

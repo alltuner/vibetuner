@@ -27,5 +27,10 @@ async def base_lifespan(app: FastAPI):
 
 try:
     from app.frontend.lifespan import lifespan  # ty: ignore
-except ImportError:
+except ModuleNotFoundError:
+    # Silent pass for missing app.frontend.lifespan module (expected in some projects)
+    lifespan = base_lifespan
+except ImportError as e:
+    # Log warning for any import error (including syntax errors, missing dependencies, etc.)
+    logger.warning(f"Failed to import app.frontend.lifespan: {e}. Using base lifespan.")
     lifespan = base_lifespan
