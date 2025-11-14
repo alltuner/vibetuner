@@ -84,7 +84,7 @@
       "extensions": [".yaml", ".yml"]
     },
     "rumdl": {
-      "command": ["rumdl", "fmt", "$FILE"],
+      "command": ["uv", "run", "rumdl", "fmt", "$FILE"],
       "extensions": [".md"]
     }
   },

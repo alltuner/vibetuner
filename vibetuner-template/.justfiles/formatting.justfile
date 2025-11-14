@@ -21,7 +21,7 @@ format-yaml:
 # Format Markdown files with rumdl
 [group('Code quality: formatting')]
 format-md:
-    @rumdl fmt
+    @uv run rumdl fmt
 
 # Format all code
 [group('Code quality: formatting')]
