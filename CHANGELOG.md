@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.26.1](https://github.com/alltuner/vibetuner/compare/v2.26.0...v2.26.1) (2025-11-15)
+
+
+### Bug Fixes
+
+* release-please fails without that file ([#516](https://github.com/alltuner/vibetuner/issues/516)) ([46285ea](https://github.com/alltuner/vibetuner/commit/46285eae28d2f2b1848a3ea555708be23806a43d))
+
 ## [2.26.0](https://github.com/alltuner/vibetuner/compare/v2.25.0...v2.26.0) (2025-11-15)
 
 
