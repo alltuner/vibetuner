@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.26.2](https://github.com/alltuner/vibetuner/compare/v2.26.1...v2.26.2) (2025-11-15)
+
+
+### Bug Fixes
+
+* bootstrap Release Please for template ([#518](https://github.com/alltuner/vibetuner/issues/518)) ([ce07e3c](https://github.com/alltuner/vibetuner/commit/ce07e3ca014d8772b11d6910931f693d07d610b0))
+
 ## [2.26.1](https://github.com/alltuner/vibetuner/compare/v2.26.0...v2.26.1) (2025-11-15)
 
 
