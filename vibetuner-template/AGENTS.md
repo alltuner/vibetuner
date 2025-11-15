@@ -2,6 +2,72 @@
 
 FastAPI + MongoDB + HTMX web application scaffolded from AllTuner's template.
 
+## PR Title Conventions for AI Assistants
+
+This project uses **Release Please** for automated changelog generation and versioning.
+When creating PRs, use **conventional commit format** for PR titles:
+
+### Required Format
+
+```text
+<type>[optional scope]: <description>
+```
+
+### Supported Types
+
+- `feat:` New features (triggers MINOR version)
+- `fix:` Bug fixes (triggers PATCH version)
+- `docs:` Documentation changes (triggers PATCH version)
+- `chore:` Maintenance, dependencies (triggers PATCH version)
+- `refactor:` Code refactoring (triggers PATCH version)
+- `style:` Formatting, linting (triggers PATCH version)
+- `test:` Test changes (triggers PATCH version)
+- `perf:` Performance improvements (triggers MINOR version)
+- `ci:` CI/CD changes (triggers PATCH version)
+- `build:` Build system changes (triggers PATCH version)
+
+### Breaking Changes
+
+Add `!` to indicate breaking changes (triggers MAJOR version):
+
+- `feat!: remove deprecated API`
+- `fix!: change database schema`
+
+### Examples
+
+```text
+feat: add OAuth authentication support
+fix: resolve Docker build failure
+docs: update installation guide
+chore: bump FastAPI dependency
+feat!: remove deprecated authentication system
+```
+
+### Why This Matters
+
+- PR titles become commit messages after squash
+- Every merged PR creates/updates a Release Please PR
+- Release happens when the Release Please PR is merged
+- Automatic changelog generation from PR titles
+- Professional release notes for users
+
+### Release Workflow
+
+1. Merge any PR → Release Please creates/updates a release PR
+2. Review the release PR (version bump + changelog)
+3. Merge the release PR when ready to release
+4. Release Please creates a GitHub release with a git tag
+5. The git tag is automatically picked up by `uv-dynamic-versioning` for builds
+
+### Versioning
+
+This project uses **git tags** for versioning:
+
+- Release Please manages git tags (e.g., `v1.2.3`)
+- `uv-dynamic-versioning` reads the git tag to set package version
+- No manual version file updates needed
+- Build system automatically uses the latest git tag
+
 ## Tech Stack
 
 **Backend**: FastAPI, MongoDB (Beanie ODM), Redis (optional)
