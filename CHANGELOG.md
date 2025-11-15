@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.26.0](https://github.com/alltuner/vibetuner/compare/v2.25.0...v2.26.0) (2025-11-15)
+
+
+### Features
+
+* add Release Please integration to vibetuner-template ([#514](https://github.com/alltuner/vibetuner/issues/514)) ([cb30061](https://github.com/alltuner/vibetuner/commit/cb300616e662109b217cff71fe2eb3b7a998b826))
+
 ## [2.25.0](https://github.com/alltuner/vibetuner/compare/v2.24.1...v2.25.0) (2025-11-15)
 
 
