@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.26.3](https://github.com/alltuner/vibetuner/compare/v2.26.2...v2.26.3) (2025-11-15)
+
+
+### Miscellaneous Chores
+
+* remove backwards compatibility for legacy template and module locations ([#520](https://github.com/alltuner/vibetuner/issues/520)) ([35ca29c](https://github.com/alltuner/vibetuner/commit/35ca29cd6bef7f1c248a181a3bf063ebe1a4d3ee))
+
 ## [2.26.2](https://github.com/alltuner/vibetuner/compare/v2.26.1...v2.26.2) (2025-11-15)
 
 
