@@ -5,6 +5,8 @@ from typing import Self
 from pydantic import computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from vibetuner.logging import logger
+
 
 # Package-relative paths (for bundled templates in the vibetuner package)
 _package_files = files("vibetuner")
@@ -20,6 +22,35 @@ def _get_package_templates_path() -> Path:
             "Package templates are in a non-filesystem location. "
             "This is not yet supported."
         ) from None
+
+
+def create_core_templates_symlink(target: Path) -> None:
+    """Create or update a 'core' symlink pointing to the package templates directory."""
+
+    try:
+        source = _get_package_templates_path().resolve()
+    except RuntimeError as e:
+        logger.error(f"Cannot create symlink: {e}")
+        return
+
+    # Case 1: target does not exist → create symlink
+    if not target.exists():
+        target.symlink_to(source, target_is_directory=True)
+        logger.info(f"Created symlink '{target}' → '{source}'")
+        return
+
+    # Case 2: exists but is not a symlink → error
+    if not target.is_symlink():
+        logger.error(f"Cannot create symlink: '{target}' exists and is not a symlink.")
+        raise FileExistsError(
+            f"Cannot create symlink: '{target}' exists and is not a symlink."
+        )
+
+    # Case 3: is a symlink but points somewhere else → update it
+    if target.resolve() != source:
+        target.unlink()
+        target.symlink_to(source, target_is_directory=True)
+        logger.info(f"Updated symlink '{target}' → '{source}'")
 
 
 # Package templates always available
@@ -158,10 +189,6 @@ class PathSettings(BaseSettings):
         paths.append(package_templates / "markdown")
         return paths
 
-    def set_root(self, project_root: Path) -> None:
-        """Explicitly set project root (overrides auto-detection)."""
-        self.root = project_root
-
     def to_template_path_list(self, path: Path) -> list[Path]:
         """Convert path to list with fallback."""
         return [path, path / self.fallback_path]
@@ -189,12 +216,6 @@ class PathSettings(BaseSettings):
 
 # Global settings instance with lazy auto-detection
 _settings = PathSettings()
-
-
-# Backwards-compatible module-level API
-def set_project_root(project_root: Path) -> None:
-    """Set the project root directory explicitly."""
-    _settings.set_root(project_root)
 
 
 def to_template_path_list(path: Path) -> list[Path]:
