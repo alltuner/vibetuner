@@ -209,14 +209,9 @@ src/
     └── tasks/               # ✅ ADD YOUR BACKGROUND JOBS
 
 templates/
-├── app/                    # ✅ YOUR CUSTOM TEMPLATES
-│   ├── frontend/          # Your frontend template overrides
-│   ├── email/             # Your email template overrides
-│   └── markdown/          # Your markdown template overrides
-└── vibetuner/             # ⚠️  DO NOT MODIFY - scaffolding templates
-    ├── frontend/          # Core frontend templates
-    ├── email/             # Core email templates
-    └── markdown/          # Core markdown templates
+├── frontend/              # ✅ YOUR CUSTOM FRONTEND TEMPLATES
+├── email/                 # ✅ YOUR CUSTOM EMAIL TEMPLATES
+└── markdown/              # ✅ YOUR CUSTOM MARKDOWN TEMPLATES
 
 assets/statics/
 ├── css/bundle.css          # Auto-generated from config.css
@@ -314,15 +309,20 @@ async def send_digest_email(user_id: str):
 
 ### Template Override
 
-To customize core templates, override them in your templates directory:
+To customize templates, create them in your templates directory:
 
 ```bash
-# Override footer by creating the same structure in your templates/ directory
-# templates/frontend/base/footer.html.jinja
+# Create custom frontend templates
+# templates/frontend/dashboard.html.jinja
+
+# Create custom email templates
+# templates/email/default/welcome.html.jinja
+
+# Create custom markdown templates
+# templates/markdown/default/terms.md.jinja
 ```
 
-The template system searches `templates/` first, then falls back to
-`vibetuner/templates/` (from the package).
+The template system searches `templates/{namespace}/` for your custom templates.
 
 ## Configuration
 
