@@ -4,7 +4,6 @@
     "CONTRIBUTING.md",
     "DEVELOPMENT.md", 
     "AGENTS.md",
-    "CLAUDE.md"
   ],
   "permission": {
     "bash": {
@@ -50,24 +49,6 @@
       "ty *": "allow",
       "uv *": "allow",
       "uvx uv-bump *": "allow"
-    },
-    "webfetch": {
-      "domain:beanie-odm.dev": "allow",
-      "domain:bun.com": "allow",
-      "domain:bun.sh": "allow",
-      "domain:copier.readthedocs.io": "allow",
-      "domain:daisyui.com": "allow",
-      "domain:docs.anthropic.com": "allow",
-      "domain:docs.astral.sh": "allow",
-      "domain:docs.npmjs.com": "allow",
-      "domain:fastapi.tiangolo.com": "allow",
-      "domain:github.blog": "allow",
-      "domain:github.com": "allow",
-      "domain:just.systems": "allow",
-      "domain:llm.datasette.io": "allow",
-      "domain:tailwindcss.com": "allow",
-      "domain:taplo.tamasfe.dev": "allow",
-      "domain:localhost": "allow"
     }
   },
   "formatter": {
