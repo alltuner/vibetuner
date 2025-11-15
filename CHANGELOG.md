@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.24.1](https://github.com/alltuner/vibetuner/compare/v2.24.0...v2.24.1) (2025-11-15)
+
+
+### Miscellaneous Chores
+
+* move custom commands to template directory ([#510](https://github.com/alltuner/vibetuner/issues/510)) ([dad108a](https://github.com/alltuner/vibetuner/commit/dad108ac5971c5e44fca0e311eea5f805c066969))
+
 ## [2.24.0](https://github.com/alltuner/vibetuner/compare/v2.23.0...v2.24.0) (2025-11-14)
 
 
