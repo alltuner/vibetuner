@@ -1,6 +1,7 @@
 _preserve_symlinks: True
 _skip_if_exists:
   - .env
+  - .release-please-manifest.json
 _subdirectory: vibetuner-template
 _templates_suffix: .j2
 
