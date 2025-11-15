@@ -4,6 +4,8 @@ import importlib.metadata
 import inspect
 from functools import partial, wraps
 from importlib import import_module
+from pathlib import Path
+from typing import Annotated
 
 import asyncer
 import typer
@@ -109,6 +111,21 @@ def version(
     console.print(table)
 
 
+@app.command()
+def core_template_symlink(
+    target: Annotated[
+        Path,
+        typer.Argument(
+            help="Path where the 'core' symlink should be created or updated",
+        ),
+    ],
+) -> None:
+    """Create or update a 'core' symlink to the package templates directory."""
+    from vibetuner.paths import create_core_templates_symlink
+
+    create_core_templates_symlink(target)
+
+
 app.add_typer(run_app, name="run")
 app.add_typer(scaffold_app, name="scaffold")
 
@@ -122,4 +139,3 @@ except ImportError as e:
     logger.warning(
         f"Failed to import app.cli: {e}. User CLI commands will not be available."
     )
-# Cache buster
