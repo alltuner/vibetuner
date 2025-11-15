@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.25.0](https://github.com/alltuner/vibetuner/compare/v2.24.1...v2.25.0) (2025-11-15)
+
+
+### Features
+
+* add symlink support for core frontend templates ([#512](https://github.com/alltuner/vibetuner/issues/512)) ([ec27d40](https://github.com/alltuner/vibetuner/commit/ec27d40801dc5dd8ad0b031f540bafb80eb361ce))
+
 ## [2.24.1](https://github.com/alltuner/vibetuner/compare/v2.24.0...v2.24.1) (2025-11-15)
 
 
