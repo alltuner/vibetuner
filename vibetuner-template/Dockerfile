@@ -28,6 +28,16 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=README.md,target=README.md \
     uv sync --locked --no-install-project --no-group dev
 
+# Copy frontend templates from the venv into /core-frontend-templates
+RUN set -e; \
+    FRONTEND_DIR="$(find .venv -type d -path '*site-packages/vibetuner/templates/frontend' -print -quit)"; \
+    if [ -z "$FRONTEND_DIR" ]; then \
+    echo "ERROR: vibetuner frontend templates directory not found" >&2; \
+    exit 1; \
+    fi; \
+    mkdir -p /core-frontend-templates; \
+    cp -a "$FRONTEND_DIR/." /core-frontend-templates/
+
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 2: Install Project with Version Information
 # ────────────────────────────────────────────────────────────────────────────────
@@ -85,6 +95,7 @@ RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
 FROM frontend-deps AS frontend-build
 
 COPY /templates/frontend/ templates/frontend/
+COPY --from=python-base /core-frontend-templates/ core-frontend-templates/
 
 # Build production assets with Bun
 RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
