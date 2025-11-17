@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.26.6](https://github.com/alltuner/vibetuner/compare/v2.26.5...v2.26.6) (2025-11-17)
+
+
+### Bug Fixes
+
+* improve annotation for async generators ([#526](https://github.com/alltuner/vibetuner/issues/526)) ([1309233](https://github.com/alltuner/vibetuner/commit/13092335569e1dba764e1a0ae3fbaa0042262d1d))
+
 ## [2.26.5](https://github.com/alltuner/vibetuner/compare/v2.26.4...v2.26.5) (2025-11-17)
 
 
