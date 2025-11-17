@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.27.0](https://github.com/alltuner/vibetuner/compare/v2.26.9...v2.27.0) (2025-11-17)
+
+
+### Features
+
+* add custom Jinja2 filter registration system ([#535](https://github.com/alltuner/vibetuner/issues/535)) ([64cc6d8](https://github.com/alltuner/vibetuner/commit/64cc6d8df843354ade7c3e1a0e29c88b56a7c6c2))
+
 ## [2.26.9](https://github.com/alltuner/vibetuner/compare/v2.26.8...v2.26.9) (2025-11-17)
 
 
