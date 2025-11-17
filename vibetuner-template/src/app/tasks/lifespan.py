@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 from vibetuner.config import settings
 from vibetuner.context import Context
@@ -11,7 +12,7 @@ class CustomContext(Context):
 
 
 @asynccontextmanager
-async def lifespan():
+async def lifespan() -> AsyncGenerator[CustomContext, None]:
     logger.info(f"Starting {settings.project.project_name} task worker...")
 
     # Tasks here are run before anything is available (even before DB access)

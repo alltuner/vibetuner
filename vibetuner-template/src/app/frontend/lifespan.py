@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from vibetuner.config import settings
@@ -7,7 +8,7 @@ from vibetuner.logging import logger
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info(f"Starting {settings.project.project_name} frontend...")
 
     # Tasks here are run before anything is available (even before DB access)
