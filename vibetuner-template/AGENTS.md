@@ -293,9 +293,11 @@ async def send_notification(user_email: str, message: str):
 
 ### Adding Background Tasks
 
+If background jobs are enabled, tasks use the `vibetuner.tasks.worker`:
+
 ```python
 # src/app/tasks/emails.py
-from app.tasks.worker import worker
+from vibetuner.tasks.worker import worker
 
 @worker.task()
 async def send_digest_email(user_id: str):
@@ -305,6 +307,14 @@ async def send_digest_email(user_id: str):
 # Queue from routes:
 # from app.tasks.emails import send_digest_email
 # task = await send_digest_email.enqueue(user.id)
+```
+
+**Important**: Register tasks by importing them in `src/app/tasks/__init__.py`:
+
+```python
+# src/app/tasks/__init__.py
+__all__ = ["emails"]
+from . import emails  # noqa: F401
 ```
 
 ### Template Override

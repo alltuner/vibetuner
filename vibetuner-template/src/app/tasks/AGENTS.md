@@ -25,15 +25,15 @@ would need to re-scaffold or file an issue to add task support.
 ```python
 # emails.py
 from vibetuner.models import UserModel
-from app.tasks.worker import worker
+from vibetuner.tasks.worker import worker
 from vibetuner.services.email import send_email
 
 @worker.task()
 async def send_welcome_email(user_id: str) -> dict[str, str]:
     """Send welcome email to new user."""
 
-    # Access context for HTTP client, etc.
-    # ctx = worker.context
+    # Access context (available after lifespan setup)
+    ctx = worker.context
 
     user = await UserModel.get(user_id)
     if not user:
@@ -61,19 +61,49 @@ async def send_daily_digest() -> dict:
     return {"sent_count": sent_count}
 ```
 
-## Worker Setup
+## Lifespan Setup
 
-The `worker.py` file sets up the Streaq worker:
+The `lifespan.py` file manages the task worker lifecycle:
 
 ```python
-# worker.py
-from vibetuner.tasks.worker import worker
+# lifespan.py
+from contextlib import asynccontextmanager
+from vibetuner.config import settings
+from vibetuner.context import Context
+from vibetuner.logging import logger
+from vibetuner.tasks.lifespan import base_lifespan
 
-# Import your task modules at the bottom
-# so the @worker.task() decorator can register them
-from . import emails  # noqa: E402, F401
-from . import reports  # noqa: E402, F401
-from . import cleanup  # noqa: E402, F401
+class CustomContext(Context):
+    # Add your custom context properties here
+    model_config = {"arbitrary_types_allowed": True}
+
+@asynccontextmanager
+async def lifespan():
+    logger.info(f"Starting {settings.project.project_name} task worker...")
+
+    # Tasks here run before anything is available (even before DB access)
+    async with base_lifespan() as worker_context:
+        # Tasks here run after DB is available
+        yield CustomContext(**worker_context.model_dump())
+        # Tasks here run on shutdown before vibetuner teardown
+        logger.info(f"Stopping {settings.project.project_name} task worker...")
+
+    # Add any teardown tasks here
+    logger.info(f"{settings.project.project_name} task worker has shut down.")
+```
+
+## Registering Tasks
+
+Import task modules in `__init__.py` so the `@worker.task()` decorator can register them:
+
+```python
+# __init__.py
+__all__ = [
+    # Import your task modules here
+    "emails",  # from . import emails
+    "reports",  # from . import reports
+    "cleanup",  # from . import cleanup
+]
 ```
 
 ## Queueing Tasks
@@ -100,18 +130,40 @@ async def signup(email: str):
 
 ## Task Context
 
-Access shared resources through worker context:
+Access shared resources through worker context (available after lifespan setup):
 
 ```python
+from vibetuner.tasks.worker import worker
+
 @worker.task()
 async def fetch_external_data(url: str) -> dict:
     """Fetch data from external API."""
 
-    # HTTP client is available in context
-    http_client = worker.context.http_client
+    # Context is available after lifespan completes
+    ctx = worker.context
 
-    response = await http_client.get(url)
-    return response.json()
+    # Access resources from context
+    # Note: ctx properties depend on your CustomContext in lifespan.py
+    return {"status": "completed"}
+```
+
+To add custom context properties, extend `CustomContext` in `lifespan.py`:
+
+```python
+# lifespan.py
+from httpx import AsyncClient
+
+class CustomContext(Context):
+    http_client: AsyncClient | None = None
+    model_config = {"arbitrary_types_allowed": True}
+
+@asynccontextmanager
+async def lifespan():
+    async with base_lifespan() as worker_context, AsyncClient() as http_client:
+        # Add custom properties to context
+        custom_ctx = CustomContext(**worker_context.model_dump())
+        custom_ctx.http_client = http_client
+        yield custom_ctx
 ```
 
 ## Task Management
@@ -170,7 +222,7 @@ task = await send_welcome_email.enqueue(
 ```python
 # emails.py
 from vibetuner.models import UserModel
-from app.tasks.worker import worker
+from vibetuner.tasks.worker import worker
 from vibetuner.services.email import send_email
 
 @worker.task()
@@ -328,17 +380,22 @@ Workers run as separate processes/containers alongside the web server.
 
 ## Task Registration
 
-**Critical**: Import task modules at the end of `worker.py`:
+**Critical**: Import task modules in `__init__.py` so decorators can register them:
 
 ```python
-# worker.py
-from vibetuner.tasks.worker import worker
+# __init__.py
+__all__ = [
+    "emails",
+    "reports",
+    "processing",
+    "cleanup",
+]
 
-# ⚠️ Import task modules LAST so decorators can register
-from . import emails  # noqa: E402, F401
-from . import reports  # noqa: E402, F401
-from . import processing  # noqa: E402, F401
-from . import cleanup  # noqa: E402, F401
+# This ensures tasks are registered when the package is imported
+from . import emails  # noqa: F401
+from . import reports  # noqa: F401
+from . import processing  # noqa: F401
+from . import cleanup  # noqa: F401
 ```
 
 ## Best Practices

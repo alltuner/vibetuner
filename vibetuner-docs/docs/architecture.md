@@ -209,16 +209,33 @@ await redis.setex(f"session:{session_id}", SESSION_MAX_AGE, json.dumps(session_d
 ### Background Jobs
 
 **Location**: `src/app/tasks/`
-Optional Redis-based background processing:
+Optional Redis-based background processing using Streaq:
 
 ```python
-# Define task
-async def send_email(user_id: str, template: str):
-user = await User.get(user_id)
-await email_service.send(user.email, template)
-# Queue task
-from streaq import queue
-await queue(send_email, user_id="123", template="welcome")
+# Define task in src/app/tasks/emails.py
+from vibetuner.tasks.worker import worker
+
+@worker.task()
+async def send_welcome_email(user_id: str):
+    user = await User.get(user_id)
+    await email_service.send(user.email, "welcome")
+    return {"status": "sent"}
+
+# Queue task from routes
+from app.tasks.emails import send_welcome_email
+task = await send_welcome_email.enqueue(user_id="123")
+```
+
+**Lifespan Management**: Tasks use `src/app/tasks/lifespan.py` for worker lifecycle:
+
+```python
+# src/app/tasks/lifespan.py
+@asynccontextmanager
+async def lifespan():
+    async with base_lifespan() as worker_context:
+        # Custom startup logic
+        yield CustomContext(**worker_context.model_dump())
+        # Custom shutdown logic
 ```
 
 Worker process runs separately:
