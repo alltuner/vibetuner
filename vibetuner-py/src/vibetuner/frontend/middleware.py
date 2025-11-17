@@ -126,7 +126,6 @@ class AuthBackend(AuthenticationBackend):
         return None
 
 
-# Until this line
 middlewares: list[Middleware] = [
     Middleware(TrustedHostMiddleware),
     Middleware(ForwardedProtocolMiddleware),
@@ -145,7 +144,4 @@ middlewares: list[Middleware] = [
     ),
     Middleware(AdjustLangCookieMiddleware),
     Middleware(AuthenticationMiddleware, backend=AuthBackend()),
-    # Add your middleware below this line
 ]
-
-# EOF
