@@ -179,6 +179,38 @@ Add templates in `templates/`:
 {% endblock %}
 ```
 
+### Adding Custom Template Filters
+
+Create custom Jinja2 filters in `src/app/frontend/templates.py`:
+
+```python
+# src/app/frontend/templates.py
+from vibetuner.frontend.templates import register_filter
+
+@register_filter()
+def uppercase(value):
+    """Convert value to uppercase"""
+    return str(value).upper()
+
+@register_filter("money")
+def format_money(value):
+    """Format value as USD currency"""
+    try:
+        return f"${float(value):,.2f}"
+    except (ValueError, TypeError):
+        return str(value)
+```
+
+Use in templates:
+
+```html
+<h1>{{ user.name | uppercase }}</h1>
+<p>Price: {{ product.price | money }}</p>
+```
+
+The `@register_filter()` decorator automatically registers filters with the Jinja
+environment. If no name is provided, the function name becomes the filter name.
+
 ### Adding Background Jobs
 
 If you enabled background jobs, create tasks in `src/app/tasks/`:
