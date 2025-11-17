@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.26.9](https://github.com/alltuner/vibetuner/compare/v2.26.8...v2.26.9) (2025-11-17)
+
+
+### Bug Fixes
+
+* docker build for core templates ([#532](https://github.com/alltuner/vibetuner/issues/532)) ([15338d5](https://github.com/alltuner/vibetuner/commit/15338d529819af24d625d1e6e8d3224da4f3bc6f))
+* fix compose config ([#534](https://github.com/alltuner/vibetuner/issues/534)) ([c63e35a](https://github.com/alltuner/vibetuner/commit/c63e35ade39e30c041604d6908212ce8379400bb))
+
 ## [2.26.8](https://github.com/alltuner/vibetuner/compare/v2.26.7...v2.26.8) (2025-11-17)
 
 
