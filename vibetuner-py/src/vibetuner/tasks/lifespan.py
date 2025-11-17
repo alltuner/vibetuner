@@ -7,7 +7,7 @@ from vibetuner.mongo import init_models
 
 
 @asynccontextmanager
-async def base_lifespan() -> AsyncGenerator[Context]:
+async def base_lifespan() -> AsyncGenerator[Context, None]:
     logger.info("Vibetuner task worker starting")
 
     await init_models()

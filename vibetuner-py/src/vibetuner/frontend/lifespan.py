@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 from fastapi import FastAPI
 
@@ -10,7 +11,7 @@ from .hotreload import hotreload
 
 
 @asynccontextmanager
-async def base_lifespan(app: FastAPI):
+async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Vibetuner frontend starting")
     if ctx.DEBUG:
         await hotreload.startup()
