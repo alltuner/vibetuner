@@ -17,7 +17,36 @@ from .hotreload import hotreload
 
 __all__ = [
     "render_static_template",
+    "register_filter",
 ]
+
+
+_filter_registry: dict[str, Any] = {}
+
+
+def register_filter(name: str | None = None):
+    """Decorator to register a custom Jinja2 filter.
+
+    Args:
+        name: Optional custom name for the filter. If not provided,
+              uses the function name.
+
+    Usage:
+        @register_filter()
+        def my_filter(value):
+            return value.upper()
+
+        @register_filter("custom_name")
+        def another_filter(value):
+            return value.lower()
+    """
+
+    def decorator(func):
+        filter_name = name or func.__name__
+        _filter_registry[filter_name] = func
+        return func
+
+    return decorator
 
 
 def timeago(dt):
@@ -171,4 +200,22 @@ jinja_env.filters["format_datetime"] = format_datetime
 jinja_env.filters["format_duration"] = format_duration
 jinja_env.filters["duration"] = format_duration
 
+# Import user-defined filters to trigger registration
+try:
+    import app.frontend.templates as _app_templates  # type: ignore[import-not-found] # noqa: F401
+except ModuleNotFoundError:
+    # Silent pass - templates module is optional
+    pass
+except ImportError as e:
+    from vibetuner.logging import logger
+
+    logger.warning(
+        f"Failed to import app.frontend.templates: {e}. Custom filters will not be available."
+    )
+
+# Apply all registered custom filters
+for filter_name, filter_func in _filter_registry.items():
+    jinja_env.filters[filter_name] = filter_func
+
+# Configure Jinja environment after all filters are registered
 configure_jinja_env(jinja_env)
