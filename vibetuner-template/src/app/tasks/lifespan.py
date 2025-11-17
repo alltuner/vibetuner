@@ -1,0 +1,26 @@
+from contextlib import asynccontextmanager
+
+from vibetuner.config import settings
+from vibetuner.context import Context
+from vibetuner.logging import logger
+from vibetuner.tasks.lifespan import base_lifespan
+
+
+class CustomContext(Context):
+    model_config = {"arbitrary_types_allowed": True}
+
+
+@asynccontextmanager
+async def lifespan():
+    logger.info(f"Starting {settings.project.project_name} task worker...")
+
+    # Tasks here are run before anything is available (even before DB access)
+    async with base_lifespan() as worker_context:
+        # Tasks here are run after DB is available
+        yield CustomContext(**worker_context.model_dump())
+        # Tasks here are run on shutdown before vibetuner teardown
+        logger.info(f"Stopping {settings.project.project_name} task worker...")
+
+    # Add any teardown tasks here
+
+    logger.info(f"{settings.project.project_name} task worker has shut down.")

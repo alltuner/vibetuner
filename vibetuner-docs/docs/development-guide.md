@@ -184,24 +184,45 @@ Add templates in `templates/`:
 If you enabled background jobs, create tasks in `src/app/tasks/`:
 
 ```python
-# src/app/tasks/email.py
+# src/app/tasks/emails.py
+from vibetuner.tasks.worker import worker
+from vibetuner.models import UserModel
 from vibetuner.services.email import send_email
+
+@worker.task()
 async def send_welcome_email(user_id: str):
-# Fetch user from database
-# Send welcome email
-pass
+    user = await UserModel.get(user_id)
+    if user:
+        await send_email(
+            to_email=user.email,
+            subject="Welcome!",
+            html_content="<h1>Welcome!</h1>"
+        )
+    return {"status": "sent"}
+```
+
+Register tasks in `src/app/tasks/__init__.py`:
+
+```python
+# src/app/tasks/__init__.py
+__all__ = ["emails"]
+from . import emails  # noqa: F401
 ```
 
 Queue jobs from your routes:
 
 ```python
-from streaq import queue
-from app.tasks.email import send_welcome_email
+from app.tasks.emails import send_welcome_email
+
 @router.post("/signup")
 async def signup(email: str):
-# Create user
-await queue(send_welcome_email, user.id)
-return {"message": "Welcome email queued"}
+    # Create user
+    user = await create_user(email)
+
+    # Queue background task
+    task = await send_welcome_email.enqueue(str(user.id))
+
+    return {"message": "Welcome email queued", "task_id": task.id}
 ```
 
 ### Styling with Tailwind

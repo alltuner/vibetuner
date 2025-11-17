@@ -1,7 +1,7 @@
 from streaq import Worker
 
 from vibetuner.config import settings
-from vibetuner.tasks.context import lifespan
+from vibetuner.tasks.lifespan import lifespan
 
 
 worker = Worker(
@@ -13,6 +13,3 @@ worker = Worker(
     ),
     lifespan=lifespan,
 )
-
-# Register tasks
-# use something like from . import task_module_name // noqa: E402, F401

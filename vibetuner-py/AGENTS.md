@@ -132,6 +132,35 @@ FastAPI lifespan management. This sets up:
 
 Users can extend this via `src/app/frontend/lifespan.py` in their projects.
 
+### `tasks/lifespan.py`
+
+Task worker lifespan management. This provides:
+
+- `base_lifespan()` - Core worker lifecycle (DB initialization, context setup)
+- `lifespan` - Automatically imports from `app.tasks.lifespan` with graceful fallback
+- Fallback to `base_lifespan` if user implementation is missing or broken
+
+Users extend this via `src/app/tasks/lifespan.py` in their projects:
+
+```python
+# User's src/app/tasks/lifespan.py
+@asynccontextmanager
+async def lifespan():
+    async with base_lifespan() as worker_context:
+        # Add custom startup/shutdown logic
+        yield CustomContext(**worker_context.model_dump())
+```
+
+### `tasks/worker.py`
+
+Streaq worker instance configured with:
+
+- Redis connection from settings
+- Queue name based on project slug
+- Lifespan from `tasks/lifespan.py`
+
+Users import this worker to define tasks: `from vibetuner.tasks.worker import worker`
+
 ### `paths.py`
 
 Path resolution utilities that handle both:
