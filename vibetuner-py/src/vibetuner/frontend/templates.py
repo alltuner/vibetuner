@@ -7,7 +7,7 @@ from starlette.responses import HTMLResponse
 from starlette_babel import gettext_lazy as _, gettext_lazy as ngettext
 from starlette_babel.contrib.jinja import configure_jinja_env
 
-from vibetuner.context import Context
+from vibetuner.context import ctx as data_ctx
 from vibetuner.paths import frontend_templates
 from vibetuner.templates import render_static_template
 from vibetuner.time import age_in_timedelta
@@ -18,8 +18,6 @@ from .hotreload import hotreload
 __all__ = [
     "render_static_template",
 ]
-
-data_ctx = Context()
 
 
 def timeago(dt):
