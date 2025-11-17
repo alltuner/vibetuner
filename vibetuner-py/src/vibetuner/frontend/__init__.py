@@ -23,8 +23,8 @@ def register_router(router: APIRouter) -> None:
 
 
 try:
-    import app.frontend.oauth as _app_oauth  # noqa: F401  # type: ignore[unresolved-import]
-    import app.frontend.routes as _app_routes  # noqa: F401  # type: ignore[unresolved-import]
+    import app.frontend.oauth as _app_oauth  # type: ignore[unresolved-import] # noqa: F401
+    import app.frontend.routes as _app_routes  # type: ignore[unresolved-import] # noqa: F401
 
     # Register OAuth routes after providers are registered
     from .routes.auth import register_oauth_routes
@@ -37,6 +37,20 @@ except ImportError as e:
     # Log warning for any import error (including syntax errors, missing dependencies, etc.)
     logger.warning(
         f"Failed to import app.frontend.oauth or app.frontend.routes: {e}. OAuth and custom routes will not be available."
+    )
+
+try:
+    from app.frontend.middleware import (
+        middlewares as app_middlewares,  # type: ignore[unresolved-import]
+    )
+
+    middlewares.extend(app_middlewares)
+except ModuleNotFoundError:
+    pass
+except ImportError as e:
+    # Log warning for any import error (including syntax errors, missing dependencies, etc.)
+    logger.warning(
+        f"Failed to import app.frontend.middleware: {e}. Additional middlewares will not be available."
     )
 
 
