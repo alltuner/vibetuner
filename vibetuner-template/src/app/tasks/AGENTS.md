@@ -92,18 +92,22 @@ async def lifespan():
     logger.info(f"{settings.project.project_name} task worker has shut down.")
 ```
 
-## Registering Tasks
+## Task Registration
 
-Import task modules in `__init__.py` so the `@worker.task()` decorator can register them:
+**Critical**: Import task modules in `__init__.py` so decorators can register them:
 
 ```python
 # __init__.py
 __all__ = [
-    # Import your task modules here
-    "emails",  # from . import emails
-    "reports",  # from . import reports
-    "cleanup",  # from . import cleanup
+    "emails",
+    "reports",
+    "cleanup",
 ]
+
+# This ensures tasks are registered when the package is imported
+from . import emails  # noqa: F401
+from . import reports  # noqa: F401
+from . import cleanup  # noqa: F401
 ```
 
 ## Queueing Tasks
@@ -377,26 +381,6 @@ Workers are started automatically with `just dev` if enabled.
 ### Production
 
 Workers run as separate processes/containers alongside the web server.
-
-## Task Registration
-
-**Critical**: Import task modules in `__init__.py` so decorators can register them:
-
-```python
-# __init__.py
-__all__ = [
-    "emails",
-    "reports",
-    "processing",
-    "cleanup",
-]
-
-# This ensures tasks are registered when the package is imported
-from . import emails  # noqa: F401
-from . import reports  # noqa: F401
-from . import processing  # noqa: F401
-from . import cleanup  # noqa: F401
-```
 
 ## Best Practices
 
