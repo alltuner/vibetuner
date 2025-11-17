@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.26.5](https://github.com/alltuner/vibetuner/compare/v2.26.4...v2.26.5) (2025-11-17)
+
+
+### Code Refactoring
+
+* **tasks:** migrate from context-based to lifespan-based pattern ([#524](https://github.com/alltuner/vibetuner/issues/524)) ([a84852c](https://github.com/alltuner/vibetuner/commit/a84852cb410c7196b0b4bba9ca78ea96dfd4b8b0))
+
 ## [2.26.4](https://github.com/alltuner/vibetuner/compare/v2.26.3...v2.26.4) (2025-11-17)
 
 
