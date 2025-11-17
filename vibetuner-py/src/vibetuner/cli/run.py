@@ -47,7 +47,7 @@ def dev(
 
         # Call streaq programmatically
         streaq_main(
-            worker_path="app.tasks.worker.worker",
+            worker_path="vibetuner.tasks.worker.worker",
             workers=1,
             reload=True,
             verbose=True,
@@ -123,7 +123,7 @@ def prod(
 
         # Call streaq programmatically
         streaq_main(
-            worker_path="app.tasks.worker.worker",
+            worker_path="vibetuner.tasks.worker.worker",
             workers=workers_count,
             reload=False,
             verbose=False,
