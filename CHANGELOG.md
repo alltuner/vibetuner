@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.26.7](https://github.com/alltuner/vibetuner/compare/v2.26.6...v2.26.7) (2025-11-17)
+
+
+### Bug Fixes
+
+* allow custom middlewares ([#528](https://github.com/alltuner/vibetuner/issues/528)) ([658f36a](https://github.com/alltuner/vibetuner/commit/658f36ae3ad3d75fa34d62e7781c00e509370726))
+
 ## [2.26.6](https://github.com/alltuner/vibetuner/compare/v2.26.5...v2.26.6) (2025-11-17)
 
 
