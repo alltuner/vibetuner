@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.26.8](https://github.com/alltuner/vibetuner/compare/v2.26.7...v2.26.8) (2025-11-17)
+
+
+### Bug Fixes
+
+* allow frontend to have a custom context ([#530](https://github.com/alltuner/vibetuner/issues/530)) ([9014f9f](https://github.com/alltuner/vibetuner/commit/9014f9faf2c8f78bc89c4a26929e44a45d64fa75))
+
 ## [2.26.7](https://github.com/alltuner/vibetuner/compare/v2.26.6...v2.26.7) (2025-11-17)
 
 
