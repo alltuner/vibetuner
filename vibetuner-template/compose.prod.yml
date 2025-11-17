@@ -2,10 +2,8 @@ networks:
   alltuner-network:
     external: true
     name: alltuner-network
-
 services:
   worker:
-    profiles: ["worker"]
     image: alltuner-docker-registry.long-python.ts.net/${COMPOSE_PROJECT_NAME}:latest
     restart: unless-stopped
     env_file:
