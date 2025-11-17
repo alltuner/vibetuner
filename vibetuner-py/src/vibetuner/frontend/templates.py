@@ -200,8 +200,6 @@ jinja_env.filters["format_datetime"] = format_datetime
 jinja_env.filters["format_duration"] = format_duration
 jinja_env.filters["duration"] = format_duration
 
-configure_jinja_env(jinja_env)
-
 # Import user-defined filters to trigger registration
 try:
     import app.frontend.templates as _app_templates  # type: ignore[import-not-found] # noqa: F401
@@ -218,3 +216,6 @@ except ImportError as e:
 # Apply all registered custom filters
 for filter_name, filter_func in _filter_registry.items():
     jinja_env.filters[filter_name] = filter_func
+
+# Configure Jinja environment after all filters are registered
+configure_jinja_env(jinja_env)
