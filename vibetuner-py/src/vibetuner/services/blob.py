@@ -6,18 +6,13 @@ To extend blob functionality, create wrapper services in the parent services dir
 
 import mimetypes
 from pathlib import Path
-from typing import Literal
 
 import aioboto3
-from aiobotocore.config import AioConfig
 
 from vibetuner.config import settings
 from vibetuner.models import BlobModel
 from vibetuner.models.blob import BlobStatus
-
-
-S3_SERVICE_NAME: Literal["s3"] = "s3"
-DEFAULT_CONTENT_TYPE: str = "application/octet-stream"
+from vibetuner.services.s3_storage import DEFAULT_CONTENT_TYPE, S3StorageService
 
 
 class BlobService:
@@ -34,25 +29,22 @@ class BlobService:
             raise ValueError(
                 "R2 bucket endpoint URL, access key, and secret key must be set in settings."
             )
-        self.session = session or aioboto3.Session(
-            aws_access_key_id=settings.r2_access_key.get_secret_value(),
-            aws_secret_access_key=settings.r2_secret_key.get_secret_value(),
-            region_name=settings.r2_default_region,
-        )
-        self.endpoint_url = str(settings.r2_bucket_endpoint_url)
-        self.config = AioConfig(
-            request_checksum_calculation="when_required",
-            response_checksum_validation="when_required",
-        )
 
-        if not default_bucket:
-            if settings.r2_default_bucket_name is None:
-                raise ValueError(
-                    "Default bucket name must be provided either in settings or as an argument."
-                )
-            self.default_bucket = settings.r2_default_bucket_name
-        else:
-            self.default_bucket = default_bucket
+        bucket = default_bucket or settings.r2_default_bucket_name
+        if bucket is None:
+            raise ValueError(
+                "Default bucket name must be provided either in settings or as an argument."
+            )
+
+        self.storage = S3StorageService(
+            endpoint_url=str(settings.r2_bucket_endpoint_url),
+            access_key=settings.r2_access_key.get_secret_value(),
+            secret_key=settings.r2_secret_key.get_secret_value(),
+            region=settings.r2_default_region,
+            default_bucket=bucket,
+            session=session,
+        )
+        self.default_bucket = bucket
 
     async def put_object(
         self,
@@ -80,17 +72,12 @@ class BlobService:
             raise ValueError("Blob ID must be set before uploading to R2.")
 
         try:
-            async with self.session.client(
-                service_name=S3_SERVICE_NAME,
-                endpoint_url=self.endpoint_url,
-                config=self.config,
-            ) as s3_client:
-                await s3_client.put_object(
-                    Bucket=bucket,
-                    Key=blob.full_path,
-                    Body=body,
-                    ContentType=content_type,
-                )
+            await self.storage.put_object(
+                key=blob.full_path,
+                body=body,
+                content_type=content_type,
+                bucket=bucket,
+            )
             blob.status = BlobStatus.UPLOADED
         except Exception:
             blob.status = BlobStatus.ERROR
@@ -144,16 +131,10 @@ class BlobService:
         if not blob:
             raise ValueError(f"Blob not found: {key}")
 
-        async with self.session.client(
-            service_name=S3_SERVICE_NAME,
-            endpoint_url=self.endpoint_url,
-            config=self.config,
-        ) as s3_client:
-            response = await s3_client.get_object(
-                Bucket=blob.bucket,
-                Key=blob.full_path,
-            )
-            return await response["Body"].read()
+        return await self.storage.get_object(
+            key=blob.full_path,
+            bucket=blob.bucket,
+        )
 
     async def delete_object(self, key: str) -> None:
         """Delete an object from the R2 bucket"""
