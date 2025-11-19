@@ -112,9 +112,6 @@ FROM python:${PYTHON_VERSION}-slim AS runtime
 
 ARG ENVIRONMENT=development
 
-COPY --from=mwader/static-ffmpeg:7.1.1 /ffmpeg /usr/local/bin/
-COPY --from=mwader/static-ffmpeg:7.1.1 /ffprobe /usr/local/bin/
-
 WORKDIR /app
 
 # Copy Python virtual environment with all dependencies and project
