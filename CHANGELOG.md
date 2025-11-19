@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.28.3](https://github.com/alltuner/vibetuner/compare/v2.28.2...v2.28.3) (2025-11-19)
+
+
+### Bug Fixes
+
+* **email:** replace blocking boto3 with async aioboto3 in SESEmailService ([#552](https://github.com/alltuner/vibetuner/issues/552)) ([9f3243b](https://github.com/alltuner/vibetuner/commit/9f3243be6311317a3b558326eb60b9f8c08c75ef)), closes [#451](https://github.com/alltuner/vibetuner/issues/451)
+
+
+### Miscellaneous Chores
+
+* remove unused ffmpeg dependency from Dockerfile ([#549](https://github.com/alltuner/vibetuner/issues/549)) ([d2cf0be](https://github.com/alltuner/vibetuner/commit/d2cf0be716496dc474e7037dd95f92fb28c0a657)), closes [#505](https://github.com/alltuner/vibetuner/issues/505)
+
 ## [2.28.2](https://github.com/alltuner/vibetuner/compare/v2.28.1...v2.28.2) (2025-11-19)
 
 
