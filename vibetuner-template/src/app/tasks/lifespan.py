@@ -20,9 +20,9 @@ async def lifespan() -> AsyncGenerator[Context, None]:
         base_lifespan() as worker_ctx,
     ):
         # Tasks here are run after DB is available
-        yield Context(
-            **worker_ctx.model_dump(),
-        )
+        ctx = Context(**worker_ctx.model_dump())
+
+        yield ctx
         # Tasks here are run on shutdown before vibetuner teardown
         logger.info(f"Stopping {settings.project.project_name} task worker...")
 
