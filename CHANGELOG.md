@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.28.2](https://github.com/alltuner/vibetuner/compare/v2.28.1...v2.28.2) (2025-11-19)
+
+
+### Code Refactoring
+
+* **services:** extract S3 operations into reusable storage service ([#546](https://github.com/alltuner/vibetuner/issues/546)) ([3814174](https://github.com/alltuner/vibetuner/commit/3814174af4ffc5006886be028b1c7139e220aaee))
+
 ## [2.28.1](https://github.com/alltuner/vibetuner/compare/v2.28.0...v2.28.1) (2025-11-19)
 
 
