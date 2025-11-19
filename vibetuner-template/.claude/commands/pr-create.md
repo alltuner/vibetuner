@@ -128,5 +128,5 @@ If any step failed, clearly explain:
 - ALWAYS respect the conventional commit type list: `feat`, `fix`, `refactor`,
   `perf`, `chore`, `docs`, `ci`, `style`, `build`
 - ALWAYS choose the most appropriate type based on actual changes
-- NEVER skip pre-commit hooks
+- NEVER skip pre-commit (prek) hooks
 - NEVER bypass git safety protocols
