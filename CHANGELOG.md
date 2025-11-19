@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.28.0](https://github.com/alltuner/vibetuner/compare/v2.27.1...v2.28.0) (2025-11-19)
+
+
+### Features
+
+* replace pre-commit with prek ([#541](https://github.com/alltuner/vibetuner/issues/541)) ([fb3ddc2](https://github.com/alltuner/vibetuner/commit/fb3ddc2dc7cba9aae19caa16bbe16abc22cabcee))
+
 ## [2.27.1](https://github.com/alltuner/vibetuner/compare/v2.27.0...v2.27.1) (2025-11-19)
 
 
