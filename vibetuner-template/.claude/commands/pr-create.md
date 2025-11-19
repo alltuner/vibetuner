@@ -25,6 +25,13 @@ Run these commands in parallel to understand the current state:
 
 - `git branch --show-current` - detect current branch name
 - `git status` - check for staged, unstaged, and untracked changes
+- `git log --oneline origin/main..HEAD` - check for commits not on main
+
+**IMPORTANT**: Check if there are any release commits (e.g., "chore(main): release X.Y.Z") in the commit list. If so:
+
+- These should NOT be on a feature branch
+- You will need to rebase after creating your commit to remove them (see Step 5)
+- DO NOT include release-related file changes in your commit
 
 Assume that both staged and unstaged changes present when this command starts must be included in this PR.
 
@@ -67,8 +74,15 @@ Assume that both staged and unstaged changes present when this command starts mu
 
 ### Step 3: Stage and Commit
 
-1. Stage all relevant changes: `git add -A`
+1. Stage all relevant changes:
+   - **IMPORTANT**: NEVER stage release-related files: `.release-please-manifest.json`,
+     `CHANGELOG.md`, version changes in `pyproject.toml` or `package.json`
+   - Use `git add` with explicit file paths for each file you want to commit
+   - If you must use `git add -A`, immediately check `git status` and unstage any
+     release-related files with `git restore --staged <file>`
 2. Verify staged changes: `git diff --cached` should show exactly what you intend to commit
+   - **VERIFY**: Ensure NO release-related files are staged
+     (`.release-please-manifest.json`, `CHANGELOG.md`, version bumps)
 3. Create commit with the conventional commit message: `git commit -m "<type>(optional-scope): <description>"`
 4. If no changes exist (clean index and working tree), skip this step and explain that there were no changes to commit
 
@@ -86,9 +100,15 @@ Assume that both staged and unstaged changes present when this command starts mu
 ### Step 5: Prepare and Push the Branch
 
 1. Fetch latest changes: `git fetch origin`
-2. If necessary and safe, rebase: `git rebase origin/main`
-3. Push branch to origin: `git push -u origin <branch-name>`
-4. If push fails (branch exists, rejected, etc.), explain and stop - do NOT force-push
+2. Check for unwanted commits: `git log --oneline origin/main..HEAD`
+   - If there are release commits (e.g., "chore(main): release X.Y.Z"), you MUST rebase
+3. Rebase onto main to clean up history: `git rebase origin/main`
+   - This will remove duplicate commits that are already on main
+   - Git will skip commits that are already applied
+4. Push branch to origin:
+   - First push: `git push -u origin <branch-name>`
+   - After rebase: `git push --force-with-lease origin <branch-name>`
+5. If push fails (branch exists, rejected, etc.), explain and stop
 
 ### Step 6: Create the Pull Request
 
