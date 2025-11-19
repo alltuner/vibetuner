@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.28.1](https://github.com/alltuner/vibetuner/compare/v2.28.0...v2.28.1) (2025-11-19)
+
+
+### Miscellaneous Chores
+
+* **deps:** update python docker tag ([#479](https://github.com/alltuner/vibetuner/issues/479)) ([20836ba](https://github.com/alltuner/vibetuner/commit/20836ba14de4377f55051fc0d3b98e767f5cc4bc))
+* update dependencies ([#545](https://github.com/alltuner/vibetuner/issues/545)) ([fe6b255](https://github.com/alltuner/vibetuner/commit/fe6b255d79388e5de5a6718e5f48bb6a6129f98a))
+
 ## [2.28.0](https://github.com/alltuner/vibetuner/compare/v2.27.1...v2.28.0) (2025-11-19)
 
 
