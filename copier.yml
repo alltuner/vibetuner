@@ -82,5 +82,5 @@ _tasks:
     when: "{{ _copier_operation == 'copy' }}"
   - command: [mise, trust]
     when: "{{ _copier_operation == 'copy' }}"
-  - command: [uv, run, pre-commit, install]
+  - command: [uv, run, prek, install]
     when: "{{ _copier_operation == 'copy' }}"
