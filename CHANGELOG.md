@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.27.1](https://github.com/alltuner/vibetuner/compare/v2.27.0...v2.27.1) (2025-11-19)
+
+
+### Bug Fixes
+
+* make context management for tasks a bit nicer to extend ([#539](https://github.com/alltuner/vibetuner/issues/539)) ([0c420fd](https://github.com/alltuner/vibetuner/commit/0c420fdefac682512eca643aa0707338f759bd9d))
+
+
+### Miscellaneous Chores
+
+* bump rumdl from 0.0.177 to 0.0.178 in /vibetuner-py ([#537](https://github.com/alltuner/vibetuner/issues/537)) ([e944739](https://github.com/alltuner/vibetuner/commit/e94473911c38d42dd8ca7fbcaf723c80e0d6e457))
+* **deps:** update redis docker tag to v8.4 ([#538](https://github.com/alltuner/vibetuner/issues/538)) ([a07c799](https://github.com/alltuner/vibetuner/commit/a07c799825556b1b689420042ef22cf3f88afb2c))
+
 ## [2.27.0](https://github.com/alltuner/vibetuner/compare/v2.26.9...v2.27.0) (2025-11-17)
 
 
