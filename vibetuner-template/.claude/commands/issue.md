@@ -45,7 +45,7 @@ Check current git state:
 
 1. Get current branch: `git branch --show-current`
 2. Stage all changes: `git add -A`
-3. Commit with WIP message, skipping pre-commit hooks:
+3. Commit with WIP message, skipping pre-commit (prek) hooks:
    `git commit -m "WIP: save progress before switching to issue <number>" --no-verify`
 4. Verify clean state: `git status` should show clean working tree
 
@@ -86,7 +86,7 @@ Check current git state:
 2. Commit work in logical chunks following conventional commit format:
    - Each significant piece of functionality = separate commit
    - Each commit message: `<type>(optional-scope): <description>`
-   - Never skip pre-commit hooks for implementation commits
+   - Never skip pre-commit (prek) hooks for implementation commits
 3. Keep working tree clean between major steps
 4. Update TodoWrite to mark tasks as in_progress/completed
 
@@ -136,8 +136,8 @@ If any step failed, clearly explain:
 
 - NEVER run destructive commands (`git reset --hard`, `git push --force`) without explicit instruction
 - ALWAYS use conventional commit types: `feat`, `fix`, `refactor`, `perf`, `chore`, `docs`, `ci`, `style`, `build`
-- ALWAYS skip pre-commit hooks ONLY for WIP commits using `--no-verify`
-- NEVER skip pre-commit hooks for implementation commits
+- ALWAYS skip pre-commit (prek) hooks ONLY for WIP commits using `--no-verify`
+- NEVER skip pre-commit (prek) hooks for implementation commits
 - ALWAYS wait for approval on non-trivial changes
 - ALWAYS link PR to issue with "Closes #<number>"
 - ALWAYS use TodoWrite to track work

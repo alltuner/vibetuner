@@ -108,7 +108,7 @@ The `[dev]` extra includes all tools needed for development:
 
 - **Ruff**: Fast linting and formatting
 - **Babel**: i18n message extraction
-- **pre-commit**: Git hooks
+- **pre-commit**: Git hooks (prek is a fast pre-commit drop-in replacement)
 - **Type stubs**: For aioboto3, authlib, PyYAML
 - And more...
 
