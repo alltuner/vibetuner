@@ -150,3 +150,23 @@ just type-check              # Type check Python with ty
 ```bash
 just update-frontend-templates  # Sync frontend templates and commit changes
 ```
+
+## Markdown Line Length
+
+This project enforces a **120 character line limit** for markdown files using `rumdl`.
+
+When editing markdown files:
+
+- Keep lines under 120 characters
+- Break long lines at natural points (commas, list items, sentence boundaries)
+- Indent continuation lines consistently with their parent items
+- Pre-commit hooks will catch violations before commit
+
+Example of properly wrapped markdown:
+
+```markdown
+1. Stage all relevant changes:
+   - **IMPORTANT**: NEVER stage release-related files: `.release-please-manifest.json`,
+     `CHANGELOG.md`, version changes in `pyproject.toml` or `package.json`
+   - Use `git add` with explicit file paths for each file you want to commit
+```
