@@ -33,24 +33,27 @@ def create_core_templates_symlink(target: Path) -> None:
         logger.error(f"Cannot create symlink: {e}")
         return
 
-    # Case 1: target does not exist → create symlink
+    # Case 1: target is already a symlink → check if it needs updating
+    if target.is_symlink():
+        if target.resolve() != source:
+            target.unlink()
+            target.symlink_to(source, target_is_directory=True)
+            logger.info(f"Updated symlink '{target}' → '{source}'")
+        else:
+            logger.debug(f"Symlink '{target}' already points to '{source}'")
+        return
+
+    # Case 2: target does not exist → create symlink
     if not target.exists():
         target.symlink_to(source, target_is_directory=True)
         logger.info(f"Created symlink '{target}' → '{source}'")
         return
 
-    # Case 2: exists but is not a symlink → error
-    if not target.is_symlink():
-        logger.error(f"Cannot create symlink: '{target}' exists and is not a symlink.")
-        raise FileExistsError(
-            f"Cannot create symlink: '{target}' exists and is not a symlink."
-        )
-
-    # Case 3: is a symlink but points somewhere else → update it
-    if target.resolve() != source:
-        target.unlink()
-        target.symlink_to(source, target_is_directory=True)
-        logger.info(f"Updated symlink '{target}' → '{source}'")
+    # Case 3: exists but is not a symlink → error
+    logger.error(f"Cannot create symlink: '{target}' exists and is not a symlink.")
+    raise FileExistsError(
+        f"Cannot create symlink: '{target}' exists and is not a symlink."
+    )
 
 
 # Package templates always available
