@@ -3,13 +3,13 @@ from fastapi import (
     Depends,
     HTTPException,
     Request,
-    Response,
 )
 from fastapi.responses import (
     HTMLResponse,
     RedirectResponse,
 )
 
+from vibetuner.config import settings
 from vibetuner.context import ctx
 from vibetuner.models import UserModel
 from vibetuner.models.registry import get_all_models
@@ -18,32 +18,41 @@ from ..deps import MAGIC_COOKIE_NAME
 from ..templates import render_template
 
 
-def check_debug_access(request: Request, prod: str | None = None):
+def check_debug_access(request: Request):
     """Check if debug routes should be accessible."""
     # Always allow in development mode
     if ctx.DEBUG:
         return True
 
-    # In production, require prod=1 parameter
-    if prod == "1":
-        return True
+    # In production, require magic cookie
+    if MAGIC_COOKIE_NAME not in request.cookies:
+        raise HTTPException(status_code=404, detail="Not found")
+    if request.cookies[MAGIC_COOKIE_NAME] != "granted":
+        raise HTTPException(status_code=404, detail="Not found")
 
-    # Deny access
-    raise HTTPException(status_code=404, detail="Not found")
-
-
-router = APIRouter(prefix="/debug", dependencies=[Depends(check_debug_access)])
+    return True
 
 
-@router.get("/", response_class=HTMLResponse)
-def debug_index(request: Request):
-    return render_template("debug/index.html.jinja", request)
+# Unprotected router for token-based debug access
+auth_router = APIRouter()
 
 
-@router.get("/magic")
-def set_magic_cookie(response: Response):
-    """Set the magic access cookie."""
-    response = RedirectResponse(url="/", status_code=302)
+@auth_router.get("/_unlock-debug")
+def unlock_debug_access(token: str | None = None):
+    """Grant debug access by setting the magic cookie.
+
+    In DEBUG mode, no token is required.
+    In production, the token must match DEBUG_ACCESS_TOKEN.
+    If DEBUG_ACCESS_TOKEN is not configured, debug access is disabled in production.
+    """
+    if not ctx.DEBUG:
+        # In production, validate token
+        if settings.debug_access_token is None:
+            raise HTTPException(status_code=404, detail="Not found")
+        if token is None or token != settings.debug_access_token:
+            raise HTTPException(status_code=404, detail="Not found")
+
+    response = RedirectResponse(url="/debug", status_code=302)
     response.set_cookie(
         key=MAGIC_COOKIE_NAME,
         value="granted",
@@ -55,12 +64,21 @@ def set_magic_cookie(response: Response):
     return response
 
 
-@router.get("/no-magic")
-def remove_magic_cookie(response: Response):
-    """Remove the magic access cookie."""
+@auth_router.get("/_lock-debug")
+def lock_debug_access():
+    """Revoke debug access by removing the magic cookie."""
     response = RedirectResponse(url="/", status_code=302)
     response.delete_cookie(key=MAGIC_COOKIE_NAME)
     return response
+
+
+# Protected router for debug endpoints requiring cookie auth
+router = APIRouter(prefix="/debug", dependencies=[Depends(check_debug_access)])
+
+
+@router.get("/", response_class=HTMLResponse)
+def debug_index(request: Request):
+    return render_template("debug/index.html.jinja", request)
 
 
 @router.get("/version", response_class=HTMLResponse)
@@ -374,10 +392,13 @@ async def debug_users(request: Request):
     )
 
 
+# The following endpoints are restricted to DEBUG mode only (no production access).
+# These are dangerous operations that could compromise security if allowed in production.
+
+
 @router.post("/impersonate/{user_id}")
 async def debug_impersonate_user(request: Request, user_id: str):
     """Impersonate a user by setting their ID in the session."""
-    # Double check debug mode for security
     if not ctx.DEBUG:
         raise HTTPException(status_code=404, detail="Not found")
 
@@ -395,7 +416,6 @@ async def debug_impersonate_user(request: Request, user_id: str):
 @router.post("/stop-impersonation")
 async def debug_stop_impersonation(request: Request):
     """Stop impersonating and clear user session."""
-    # Double check debug mode for security
     if not ctx.DEBUG:
         raise HTTPException(status_code=404, detail="Not found")
 
@@ -406,7 +426,6 @@ async def debug_stop_impersonation(request: Request):
 @router.get("/clear-session")
 async def debug_clear_session(request: Request):
     """Clear all session data to fix corrupted sessions."""
-    # Double check debug mode for security
     if not ctx.DEBUG:
         raise HTTPException(status_code=404, detail="Not found")
 
