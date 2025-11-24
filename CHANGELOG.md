@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.28.3](https://github.com/alltuner/vibetuner/compare/v2.28.2...v2.28.3) (2025-11-24)
+
+
+### Bug Fixes
+
+* **deps:** update dependency copier to &gt;=9.11.0,&lt;9.11.1 ([#554](https://github.com/alltuner/vibetuner/issues/554)) ([efa7ba8](https://github.com/alltuner/vibetuner/commit/efa7ba80fa774cedb74a117bb114bfa00930bee2))
+* **email:** replace blocking boto3 with async aioboto3 in SESEmailService ([#552](https://github.com/alltuner/vibetuner/issues/552)) ([9f3243b](https://github.com/alltuner/vibetuner/commit/9f3243be6311317a3b558326eb60b9f8c08c75ef)), closes [#451](https://github.com/alltuner/vibetuner/issues/451)
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/checkout action to v6 ([#553](https://github.com/alltuner/vibetuner/issues/553)) ([0201254](https://github.com/alltuner/vibetuner/commit/02012545f6980795e4d66c53eb25a3a301ed5a0d))
+* remove unused ffmpeg dependency from Dockerfile ([#549](https://github.com/alltuner/vibetuner/issues/549)) ([d2cf0be](https://github.com/alltuner/vibetuner/commit/d2cf0be716496dc474e7037dd95f92fb28c0a657)), closes [#505](https://github.com/alltuner/vibetuner/issues/505)
+* update dependencies ([#555](https://github.com/alltuner/vibetuner/issues/555)) ([5a6d351](https://github.com/alltuner/vibetuner/commit/5a6d351e74b467cea8beb8d6b43b77a185310a3f))
+
 ## [2.28.2](https://github.com/alltuner/vibetuner/compare/v2.28.1...v2.28.2) (2025-11-19)
 
 
