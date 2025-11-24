@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.28.4](https://github.com/alltuner/vibetuner/compare/v2.28.3...v2.28.4) (2025-11-24)
+
+
+### Bug Fixes
+
+* implement check_bucket flag in BlobService.object_exists ([#560](https://github.com/alltuner/vibetuner/issues/560)) ([890bd1e](https://github.com/alltuner/vibetuner/commit/890bd1ef9351f13464a6a2c07a11cc97a22c3891))
+* remove project-specific models from link inference ([#559](https://github.com/alltuner/vibetuner/issues/559)) ([8128ab8](https://github.com/alltuner/vibetuner/commit/8128ab86cdc7f2bd31d0764b42d29a180d69b5d4))
+* secure debug routes in production with token-based auth ([#556](https://github.com/alltuner/vibetuner/issues/556)) ([0236f35](https://github.com/alltuner/vibetuner/commit/0236f351cf838700b818892e6d9bee0559cc29b0))
+
+
+### Miscellaneous Chores
+
+* update dependencies ([#561](https://github.com/alltuner/vibetuner/issues/561)) ([73354dc](https://github.com/alltuner/vibetuner/commit/73354dcd4a4594cbe9ee383e25732fc2ee849fdb))
+
 ## [2.28.3](https://github.com/alltuner/vibetuner/compare/v2.28.2...v2.28.3) (2025-11-24)
 
 
