@@ -153,4 +153,9 @@ class BlobService:
         if not blob:
             return False
 
+        if check_bucket:
+            return await self.storage.object_exists(
+                key=blob.full_path, bucket=blob.bucket
+            )
+
         return True
