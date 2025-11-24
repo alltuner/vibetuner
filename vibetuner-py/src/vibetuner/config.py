@@ -102,6 +102,7 @@ class CoreConfiguration(BaseSettings):
     debug: bool = False
     version: str = version
     session_key: SecretStr = SecretStr("ct-!secret-must-change-me")
+    debug_access_token: str | None = None
 
     # Database and Cache URLs
     mongodb_url: MongoDsn = MongoDsn("mongodb://localhost:27017")

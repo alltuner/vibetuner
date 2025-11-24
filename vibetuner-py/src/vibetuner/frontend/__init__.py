@@ -117,5 +117,6 @@ def default_index(request: Request) -> HTMLResponse:
     return render_template("index.html.jinja", request)
 
 
+app.include_router(debug.auth_router)
 app.include_router(debug.router)
 app.include_router(health.router)
