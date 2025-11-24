@@ -154,20 +154,11 @@ def _is_beanie_link_schema(option: dict) -> bool:
 
 def _infer_link_target_from_field_name(field_name: str) -> str:
     """Infer the target model type from field name patterns."""
-    # Common patterns for field names that reference other models
+    # Core vibetuner models
     patterns = {
         "oauth_accounts": "OAuthAccountModel",
-        "accounts": "AccountModel",
         "users": "UserModel",
         "user": "UserModel",
-        "stations": "StationModel",
-        "station": "StationModel",
-        "rundowns": "RundownModel",
-        "rundown": "RundownModel",
-        "fillers": "FillerModel",
-        "filler": "FillerModel",
-        "voices": "VoiceModel",
-        "voice": "VoiceModel",
         "blobs": "BlobModel",
         "blob": "BlobModel",
     }
