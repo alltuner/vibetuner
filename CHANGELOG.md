@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.28.5](https://github.com/alltuner/vibetuner/compare/v2.28.4...v2.28.5) (2025-11-24)
+
+
+### Bug Fixes
+
+* handle existing symlink in core-template-symlink command ([#562](https://github.com/alltuner/vibetuner/issues/562)) ([8e709ea](https://github.com/alltuner/vibetuner/commit/8e709ea6ae86a732105db49396dd40c77ead8188))
+
 ## [2.28.4](https://github.com/alltuner/vibetuner/compare/v2.28.3...v2.28.4) (2025-11-24)
 
 
