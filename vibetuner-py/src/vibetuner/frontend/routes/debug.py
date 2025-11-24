@@ -392,10 +392,13 @@ async def debug_users(request: Request):
     )
 
 
+# The following endpoints are restricted to DEBUG mode only (no production access).
+# These are dangerous operations that could compromise security if allowed in production.
+
+
 @router.post("/impersonate/{user_id}")
 async def debug_impersonate_user(request: Request, user_id: str):
     """Impersonate a user by setting their ID in the session."""
-    # Double check debug mode for security
     if not ctx.DEBUG:
         raise HTTPException(status_code=404, detail="Not found")
 
@@ -413,7 +416,6 @@ async def debug_impersonate_user(request: Request, user_id: str):
 @router.post("/stop-impersonation")
 async def debug_stop_impersonation(request: Request):
     """Stop impersonating and clear user session."""
-    # Double check debug mode for security
     if not ctx.DEBUG:
         raise HTTPException(status_code=404, detail="Not found")
 
@@ -424,7 +426,6 @@ async def debug_stop_impersonation(request: Request):
 @router.get("/clear-session")
 async def debug_clear_session(request: Request):
     """Clear all session data to fix corrupted sessions."""
-    # Double check debug mode for security
     if not ctx.DEBUG:
         raise HTTPException(status_code=404, detail="Not found")
 
