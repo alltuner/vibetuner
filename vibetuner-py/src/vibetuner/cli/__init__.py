@@ -4,8 +4,6 @@ import importlib.metadata
 import inspect
 from functools import partial, wraps
 from importlib import import_module
-from pathlib import Path
-from typing import Annotated
 
 import asyncer
 import typer
@@ -109,21 +107,6 @@ def version(
         # else: don't show app version if not in project and not requested
 
     console.print(table)
-
-
-@app.command()
-def core_template_symlink(
-    target: Annotated[
-        Path,
-        typer.Argument(
-            help="Path where the 'core' symlink should be created or updated",
-        ),
-    ],
-) -> None:
-    """Create or update a 'core' symlink to the package templates directory."""
-    from vibetuner.paths import create_core_templates_symlink
-
-    create_core_templates_symlink(target)
 
 
 app.add_typer(run_app, name="run")
