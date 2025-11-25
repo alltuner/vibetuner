@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.29.0](https://github.com/alltuner/vibetuner/compare/v2.28.6...v2.29.0) (2025-11-25)
+
+
+### Features
+
+* add Redis key namespacing by project and environment ([#567](https://github.com/alltuner/vibetuner/issues/567)) ([4ebacd9](https://github.com/alltuner/vibetuner/commit/4ebacd95e09225e124eee92f8ecce1ccaf58b167))
+
 ## [2.28.6](https://github.com/alltuner/vibetuner/compare/v2.28.5...v2.28.6) (2025-11-25)
 
 
