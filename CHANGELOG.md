@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.30.0](https://github.com/alltuner/vibetuner/compare/v2.29.0...v2.30.0) (2025-11-25)
+
+
+### Features
+
+* add sdiff and sdiffstore to NamespacedRedis ([#571](https://github.com/alltuner/vibetuner/issues/571)) ([1cfc143](https://github.com/alltuner/vibetuner/commit/1cfc14335b2958bdfd3b8036d5fc2be3a5de2380))
+
+
+### Bug Fixes
+
+* resolve set type hint shadowing in NamespacedRedis ([#573](https://github.com/alltuner/vibetuner/issues/573)) ([383513b](https://github.com/alltuner/vibetuner/commit/383513bbcd3519a348346db0827caf99954ab500))
+
 ## [2.29.0](https://github.com/alltuner/vibetuner/compare/v2.28.6...v2.29.0) (2025-11-25)
 
 
