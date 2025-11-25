@@ -134,6 +134,14 @@ class NamespacedRedis:
     async def scard(self, name: str) -> int:
         return await self._redis.scard(self._prefixed(name))
 
+    async def sdiff(self, *keys: str) -> set[Any]:
+        return await self._redis.sdiff(*self._prefixed_keys(list(keys)))
+
+    async def sdiffstore(self, dest: str, *keys: str) -> int:
+        return await self._redis.sdiffstore(
+            self._prefixed(dest), *self._prefixed_keys(list(keys))
+        )
+
     # Sorted set operations
 
     async def zadd(
