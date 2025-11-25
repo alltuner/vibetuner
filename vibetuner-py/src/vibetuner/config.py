@@ -2,7 +2,7 @@ import base64
 import hashlib
 from datetime import datetime
 from functools import cached_property
-from typing import Annotated
+from typing import Annotated, Literal
 
 import yaml
 from pydantic import (
@@ -100,6 +100,7 @@ class CoreConfiguration(BaseSettings):
     project: ProjectConfiguration = ProjectConfiguration.from_project_config()
 
     debug: bool = False
+    environment: Literal["dev", "prod"] = "dev"
     version: str = version
     session_key: SecretStr = SecretStr("ct-!secret-must-change-me")
     debug_access_token: str | None = None
@@ -132,6 +133,16 @@ class CoreConfiguration(BaseSettings):
     @cached_property
     def mongo_dbname(self) -> str:
         return self.project.project_slug
+
+    @cached_property
+    def redis_key_prefix(self) -> str:
+        """Returns the Redis key prefix for namespacing all Redis keys by project and environment.
+
+        Format: "{project_slug}:{env}:" for dev, "{project_slug}:" for prod.
+        """
+        if self.environment == "dev":
+            return f"{self.project.project_slug}:dev:"
+        return f"{self.project.project_slug}:"
 
     model_config = SettingsConfigDict(
         case_sensitive=False, extra="ignore", env_file=".env"
