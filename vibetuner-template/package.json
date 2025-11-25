@@ -4,8 +4,8 @@
   },
   "dependencies": {},
   "scripts": {
-    "ensure-core-template-symlink": "uv run vibetuner core-template-symlink templates/core",
-    "dev:css": "bun ensure-core-template-symlink && bun tailwindcss -w -i config.css -o assets/statics/css/bundle.css",
+    "link-templates": "uv run vibetuner scaffold link templates/core",
+    "dev:css": "bun link-templates && bun tailwindcss -w -i config.css -o assets/statics/css/bundle.css",
     "dev:js": "bun build config.js --watch --outdir=assets/statics/js --entry-naming=\"bundle.[ext]\" --sourcemap",
     "dev": "concurrently 'bun dev:css' 'bun dev:js'",
     "build-prod:css": "bun tailwindcss -i config.css --minify -o assets/statics/css/bundle.css",

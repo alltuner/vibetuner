@@ -185,3 +185,28 @@ def update(
     except Exception as e:
         console.print(f"[red]Error updating project: {e}[/red]")
         raise typer.Exit(code=1) from None
+
+
+@scaffold_app.command(name="link")
+def link(
+    target: Annotated[
+        Path,
+        typer.Argument(
+            help="Path where the 'core' symlink should be created or updated",
+        ),
+    ],
+) -> None:
+    """Create or update a 'core' symlink to the package templates directory.
+
+    This command creates a symlink from the specified target path to the core
+    templates directory in the vibetuner package. It is used during development
+    to enable Tailwind and other build tools to scan core templates.
+
+    Examples:
+
+        # Create symlink in templates/core
+        vibetuner scaffold link templates/core
+    """
+    from vibetuner.paths import create_core_templates_symlink
+
+    create_core_templates_symlink(target)
