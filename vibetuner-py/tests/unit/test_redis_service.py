@@ -135,6 +135,29 @@ class TestNamespacedRedisSetOperations:
         await namespaced_redis.smembers("myset")
         mock_redis.smembers.assert_called_once_with("testproject:dev:myset")
 
+    @pytest.mark.asyncio
+    async def test_sdiff_prefixes_all_keys(self, namespaced_redis, mock_redis):
+        """Test that sdiff() prefixes all set keys."""
+        mock_redis.sdiff.return_value = {"a", "b"}
+        result = await namespaced_redis.sdiff("set1", "set2", "set3")
+        mock_redis.sdiff.assert_called_once_with(
+            "testproject:dev:set1", "testproject:dev:set2", "testproject:dev:set3"
+        )
+        assert result == {"a", "b"}
+
+    @pytest.mark.asyncio
+    async def test_sdiffstore_prefixes_all_keys(self, namespaced_redis, mock_redis):
+        """Test that sdiffstore() prefixes destination and all source keys."""
+        mock_redis.sdiffstore.return_value = 2
+        result = await namespaced_redis.sdiffstore("dest", "set1", "set2", "set3")
+        mock_redis.sdiffstore.assert_called_once_with(
+            "testproject:dev:dest",
+            "testproject:dev:set1",
+            "testproject:dev:set2",
+            "testproject:dev:set3",
+        )
+        assert result == 2
+
 
 class TestNamespacedRedisSortedSetOperations:
     """Test sorted set operations with namespace prefixing."""
