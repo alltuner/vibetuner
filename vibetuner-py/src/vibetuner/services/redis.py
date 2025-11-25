@@ -1,6 +1,9 @@
 # ABOUTME: Redis client wrapper that applies project/environment namespace prefixing
 # ABOUTME: Ensures all Redis keys are isolated by project and environment
 
+from __future__ import annotations
+
+from builtins import set as _set
 from typing import Any
 
 from redis.asyncio import Redis
@@ -125,7 +128,7 @@ class NamespacedRedis:
     async def srem(self, name: str, *values: Any) -> int:
         return await self._redis.srem(self._prefixed(name), *values)
 
-    async def smembers(self, name: str) -> set[Any]:
+    async def smembers(self, name: str) -> _set[Any]:
         return await self._redis.smembers(self._prefixed(name))
 
     async def sismember(self, name: str, value: Any) -> bool:
@@ -134,7 +137,7 @@ class NamespacedRedis:
     async def scard(self, name: str) -> int:
         return await self._redis.scard(self._prefixed(name))
 
-    async def sdiff(self, *keys: str) -> set[Any]:
+    async def sdiff(self, *keys: str) -> _set[Any]:
         return await self._redis.sdiff(*self._prefixed_keys(list(keys)))
 
     async def sdiffstore(self, dest: str, *keys: str) -> int:
