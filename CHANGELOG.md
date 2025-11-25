@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.30.1](https://github.com/alltuner/vibetuner/compare/v2.30.0...v2.30.1) (2025-11-25)
+
+
+### Code Refactoring
+
+* remove custom NamespacedRedis wrapper ([#574](https://github.com/alltuner/vibetuner/issues/574)) ([8e50a96](https://github.com/alltuner/vibetuner/commit/8e50a961e6d95b092edc3fa37521a1c4d0abbfd0))
+
 ## [2.30.0](https://github.com/alltuner/vibetuner/compare/v2.29.0...v2.30.0) (2025-11-25)
 
 
