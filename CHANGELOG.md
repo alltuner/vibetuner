@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.28.6](https://github.com/alltuner/vibetuner/compare/v2.28.5...v2.28.6) (2025-11-25)
+
+
+### Code Refactoring
+
+* move core-template-symlink to scaffold link subcommand ([#565](https://github.com/alltuner/vibetuner/issues/565)) ([f7768d2](https://github.com/alltuner/vibetuner/commit/f7768d2eb511e514fdb41942f28ded8e69c05dfd))
+
 ## [2.28.5](https://github.com/alltuner/vibetuner/compare/v2.28.4...v2.28.5) (2025-11-24)
 
 
