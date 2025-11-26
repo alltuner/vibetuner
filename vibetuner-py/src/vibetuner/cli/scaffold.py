@@ -1,5 +1,6 @@
 # ABOUTME: Scaffolding commands for creating new projects from the vibetuner template
 # ABOUTME: Uses Copier to generate FastAPI+MongoDB+HTMX projects with interactive prompts
+import shutil
 from pathlib import Path
 from typing import Annotated
 
@@ -7,8 +8,27 @@ import copier
 import typer
 from rich.console import Console
 
+from vibetuner.paths import package_templates
+
 
 console = Console()
+
+
+def _copy_core_templates(destination: Path) -> None:
+    """Copy vibetuner core templates to the project's core-templates directory.
+
+    This enables Docker builds to run frontend builds in parallel with Python
+    dependency installation by having templates available in the build context.
+    """
+    source = package_templates / "frontend"
+    dest = destination / "core-templates"
+
+    if dest.exists():
+        shutil.rmtree(dest)
+
+    shutil.copytree(source, dest)
+    console.print("[dim]Copied core templates to core-templates/[/dim]")
+
 
 scaffold_app = typer.Typer(
     help="Create new projects from the vibetuner template", no_args_is_help=True
@@ -187,26 +207,33 @@ def update(
         raise typer.Exit(code=1) from None
 
 
-@scaffold_app.command(name="link")
-def link(
-    target: Annotated[
-        Path,
+@scaffold_app.command(name="copy-core-templates")
+def copy_core_templates(
+    destination: Annotated[
+        Path | None,
         typer.Argument(
-            help="Path where the 'core' symlink should be created or updated",
+            help="Path to the project directory (defaults to current directory)",
         ),
-    ],
+    ] = None,
 ) -> None:
-    """Create or update a 'core' symlink to the package templates directory.
+    """Copy vibetuner core templates to the project's core-templates directory.
 
-    This command creates a symlink from the specified target path to the core
-    templates directory in the vibetuner package. It is used during development
-    to enable Tailwind and other build tools to scan core templates.
+    This command copies templates from the installed vibetuner package to enable
+    Docker builds to run frontend builds in parallel with Python dependency
+    installation.
+
+    This is automatically run by copier during scaffold new/update, but can be
+    run manually if needed.
 
     Examples:
 
-        # Create symlink in templates/core
-        vibetuner scaffold link templates/core
-    """
-    from vibetuner.paths import create_core_templates_symlink
+        # Copy templates to current directory
+        vibetuner scaffold copy-core-templates
 
-    create_core_templates_symlink(target)
+        # Copy templates to specific project
+        vibetuner scaffold copy-core-templates /path/to/project
+    """
+    if destination is None:
+        destination = Path.cwd()
+
+    _copy_core_templates(destination)

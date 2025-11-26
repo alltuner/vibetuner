@@ -7,8 +7,10 @@ ARG PYTHON_VERSION=3.13
 # ────────────────────────────────────────────────────────────────────────────────
 FROM python:${PYTHON_VERSION}-slim AS python-base
 
-RUN apt-get update && apt-get install -y --no-install-recommends git \
-    && rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean && \
+    apt-get update && apt-get install -y --no-install-recommends git
 
 # Install UV package manager from official image
 COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /uvx /bin/
@@ -27,16 +29,6 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
     uv sync --locked --no-install-project --no-group dev
-
-# Copy frontend templates from the venv into /core-frontend-templates
-RUN set -e; \
-    FRONTEND_DIR="$(find .venv -type d -path '*site-packages/vibetuner/templates/frontend' -print -quit)"; \
-    if [ -z "$FRONTEND_DIR" ]; then \
-    echo "ERROR: vibetuner frontend templates directory not found" >&2; \
-    exit 1; \
-    fi; \
-    mkdir -p /core-frontend-templates; \
-    cp -a "$FRONTEND_DIR/." /core-frontend-templates/
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 2: Install Project with Version Information
@@ -94,8 +86,10 @@ RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
 # ────────────────────────────────────────────────────────────────────────────────
 FROM frontend-deps AS frontend-build
 
-COPY /templates/frontend/ templates/frontend/
-COPY --from=python-base /core-frontend-templates/ core-frontend-templates/
+# Copy templates for Tailwind CSS class scanning
+# core-templates/ contains vibetuner framework templates, copied at scaffold time
+COPY templates/frontend/ templates/frontend/
+COPY core-templates/ core-templates/
 
 # Build production assets with Bun
 RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
@@ -115,35 +109,34 @@ ARG ENVIRONMENT=dev
 WORKDIR /app
 
 # Copy Python virtual environment with all dependencies and project
-COPY --from=python-versioning --chown=app:app /app/.venv/ .venv/
+COPY --link --from=python-versioning /app/.venv/ .venv/
 
 # Copy static assets and markdown content (not full frontend source)
-COPY --chown=app:app assets/statics/ assets/statics/
-COPY --chown=app:app templates/markdown/ templates/markdown/
+COPY assets/statics/ assets/statics/
+COPY templates/markdown/ templates/markdown/
 
 # Copy compiled localization files (smaller than source .po files)
-COPY --from=locales --chown=app:app --parents /app/locales/*/LC_MESSAGES/messages.mo /
+COPY --link --from=locales --parents /app/locales/*/LC_MESSAGES/messages.mo /
 
 # Copy template files
-COPY --chown=app:app templates/frontend templates/frontend/
-COPY --chown=app:app templates/email templates/email/
+COPY templates/frontend templates/frontend/
+COPY templates/email templates/email/
 
 # Copy built frontend assets (CSS and JS bundles)
-COPY --from=frontend-build --chown=app:app /app/assets/statics/css/bundle.css assets/statics/css/bundle.css
-COPY --from=frontend-build --chown=app:app /app/assets/statics/js/bundle.js assets/statics/js/bundle.js
+COPY --link --from=frontend-build /app/assets/statics/css/bundle.css assets/statics/css/bundle.css
+COPY --link --from=frontend-build /app/assets/statics/js/bundle.js assets/statics/js/bundle.js
 
 # Copy application source code
-COPY --chown=app:app src/ src/
+COPY src/ src/
 
 # Copy version files from the versioning stage
-COPY --from=python-versioning --chown=app:app --parents /app/src/app/_version.py /
+COPY --link --from=python-versioning --parents /app/src/app/_version.py /
 
 # Copy configuration file
-COPY --chown=app:app .copier-answers.yml ./
+COPY .copier-answers.yml ./
 
-# Copy and make startup script executable
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+# Copy startup script with executable permissions (--chmod eliminates separate RUN layer)
+COPY --chmod=755 start.sh /start.sh
 
 # Configure environment for Python application
 ENV PATH="/app/.venv/bin:$PATH" \
