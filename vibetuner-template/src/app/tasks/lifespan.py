@@ -1,10 +1,11 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from vibetuner.config import settings
 from vibetuner.context import Context as BaseContext
 from vibetuner.logging import logger
 from vibetuner.tasks.lifespan import base_lifespan
+
+from ..config import settings
 
 
 class Context(BaseContext):
