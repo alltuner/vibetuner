@@ -59,3 +59,25 @@ class TestRedisKeyPrefix:
             assert config.redis_key_prefix == expected, (
                 f"Failed for slug={slug}, env={env}"
             )
+
+
+class TestWorkerConcurrency:
+    """Test worker_concurrency configuration."""
+
+    def test_worker_concurrency_default_is_16(self):
+        """Test that worker_concurrency defaults to 16."""
+        config = CoreConfiguration(project=ProjectConfiguration())
+        assert config.worker_concurrency == 16
+
+    def test_worker_concurrency_from_env_var(self):
+        """Test that worker_concurrency can be set via WORKER_CONCURRENCY env var."""
+        with patch.dict("os.environ", {"WORKER_CONCURRENCY": "64"}, clear=False):
+            config = CoreConfiguration(project=ProjectConfiguration())
+            assert config.worker_concurrency == 64
+
+    def test_worker_concurrency_constructor_override(self):
+        """Test that worker_concurrency can be set via constructor."""
+        config = CoreConfiguration(
+            project=ProjectConfiguration(), worker_concurrency=128
+        )
+        assert config.worker_concurrency == 128
