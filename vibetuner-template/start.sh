@@ -15,7 +15,7 @@ fi
 if [ -n "$1" ]; then
     # Explicit command provided (e.g., dev, worker, prod)
     exec vibetuner run "$@"
-elif [ "$ENVIRONMENT" = "production" ]; then
+elif [ "$ENVIRONMENT" = "prod" ]; then
     # Production mode when ENVIRONMENT variable is set
     exec vibetuner run prod
 else

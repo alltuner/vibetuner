@@ -9,7 +9,7 @@ ENABLE_WATCHTOWER := `uv run python -c "import yaml, os, sys; p='.copier-answers
 # Builds the dev image with COMPOSE_BAKE set
 [group('CI/CD')]
 build-dev: install-deps
-    ENVIRONMENT=development \
+    ENVIRONMENT=dev \
     COMPOSE_BAKE=true \
     PYTHON_VERSION={{ PYTHON_VERSION }} \
     COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
@@ -18,7 +18,7 @@ build-dev: install-deps
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
 test-build-prod: install-deps
-    ENVIRONMENT=production \
+    ENVIRONMENT=prod \
     PYTHON_VERSION={{ PYTHON_VERSION }} \
     COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
     FQDN={{ FQDN }} \
@@ -28,7 +28,7 @@ test-build-prod: install-deps
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
 build-prod: _check-clean _check-last-commit-tagged install-deps
-    ENVIRONMENT=production \
+    ENVIRONMENT=prod \
     VERSION={{ VERSION }} \
     PYTHON_VERSION={{ PYTHON_VERSION }} \
     COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
@@ -39,7 +39,7 @@ build-prod: _check-clean _check-last-commit-tagged install-deps
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
 release: _check-clean _check-last-commit-tagged install-deps
-    ENVIRONMENT=production \
+    ENVIRONMENT=prod \
     VERSION={{ VERSION }} \
     PYTHON_VERSION={{ PYTHON_VERSION }} \
     COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
