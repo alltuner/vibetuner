@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.32.0](https://github.com/alltuner/vibetuner/compare/v2.31.1...v2.32.0) (2025-11-26)
+
+
+### Features
+
+* add configurable Streaq worker concurrency ([#593](https://github.com/alltuner/vibetuner/issues/593)) ([aa2d94e](https://github.com/alltuner/vibetuner/commit/aa2d94e7e7aa3cba1023c9cdd1a7aac5993e2624))
+
+
+### Bug Fixes
+
+* **template:** use app config in lifespan modules ([#591](https://github.com/alltuner/vibetuner/issues/591)) ([9382f7d](https://github.com/alltuner/vibetuner/commit/9382f7d48be2eb269b95e591413adadd130a9c19))
+
 ## [2.31.1](https://github.com/alltuner/vibetuner/compare/v2.31.0...v2.31.1) (2025-11-26)
 
 
