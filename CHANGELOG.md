@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.31.0](https://github.com/alltuner/vibetuner/compare/v2.30.3...v2.31.0) (2025-11-26)
+
+
+### Features
+
+* optimize Docker build caching and parallelization ([#585](https://github.com/alltuner/vibetuner/issues/585)) ([4d4e5d2](https://github.com/alltuner/vibetuner/commit/4d4e5d2f6e5223264374fc6f581d29f696cb44a7))
+
 ## [2.30.3](https://github.com/alltuner/vibetuner/compare/v2.30.2...v2.30.3) (2025-11-26)
 
 
