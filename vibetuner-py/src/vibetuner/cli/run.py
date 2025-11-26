@@ -109,7 +109,7 @@ def prod(
     ),
 ) -> None:
     """Run in production mode (frontend or worker)."""
-    os.environ["ENVIRONMENT"] = "production"
+    os.environ["ENVIRONMENT"] = "prod"
 
     if service == "worker":
         # Worker mode

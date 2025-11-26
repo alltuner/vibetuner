@@ -21,7 +21,7 @@ services:
       args:
         VERSION: ${VERSION:-0.0.0}
         PYTHON_VERSION: ${PYTHON_VERSION}
-        ENVIRONMENT: ${ENVIRONMENT:-development}
+        ENVIRONMENT: ${ENVIRONMENT:-prod}
       x-bake:
         platforms:
           - linux/amd64

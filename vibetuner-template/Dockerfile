@@ -110,7 +110,7 @@ RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
 # ────────────────────────────────────────────────────────────────────────────────
 FROM python:${PYTHON_VERSION}-slim AS runtime
 
-ARG ENVIRONMENT=development
+ARG ENVIRONMENT=dev
 
 WORKDIR /app
 
