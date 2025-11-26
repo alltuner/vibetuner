@@ -84,3 +84,5 @@ _tasks:
     when: "{{ _copier_operation == 'copy' }}"
   - command: [uv, run, prek, install]
     when: "{{ _copier_operation == 'copy' }}"
+  # Copy core templates for Docker build parallelization (runs on both copy and update)
+  - command: [uv, run, vibetuner, scaffold, copy-core-templates]
