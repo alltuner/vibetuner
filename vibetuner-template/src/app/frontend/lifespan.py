@@ -2,9 +2,10 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
-from vibetuner.config import settings
 from vibetuner.frontend.lifespan import base_lifespan
 from vibetuner.logging import logger
+
+from ..config import settings
 
 
 @asynccontextmanager
