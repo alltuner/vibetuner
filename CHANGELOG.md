@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.30.3](https://github.com/alltuner/vibetuner/compare/v2.30.2...v2.30.3) (2025-11-26)
+
+
+### Bug Fixes
+
+* use consistent ENVIRONMENT values (prod/dev) ([#579](https://github.com/alltuner/vibetuner/issues/579)) ([04bbbe0](https://github.com/alltuner/vibetuner/commit/04bbbe0fc653c4023ed1ce2b844afb2121df6991))
+
 ## [2.30.2](https://github.com/alltuner/vibetuner/compare/v2.30.1...v2.30.2) (2025-11-26)
 
 
