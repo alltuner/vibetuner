@@ -118,6 +118,8 @@ class CoreConfiguration(BaseSettings):
     r2_secret_key: SecretStr | None = None
     r2_default_region: str = "auto"
 
+    worker_concurrency: int = 16
+
     @computed_field
     @cached_property
     def v_hash(self) -> str:
