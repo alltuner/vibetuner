@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.33.0](https://github.com/alltuner/vibetuner/compare/v2.32.0...v2.33.0) (2025-11-27)
+
+
+### Features
+
+* make production worker verbose logging configurable via settings.debug ([#596](https://github.com/alltuner/vibetuner/issues/596)) ([a2171b1](https://github.com/alltuner/vibetuner/commit/a2171b14321ed628aac8a52710f41e4fd56b6b7a))
+
 ## [2.32.0](https://github.com/alltuner/vibetuner/compare/v2.31.1...v2.32.0) (2025-11-26)
 
 
