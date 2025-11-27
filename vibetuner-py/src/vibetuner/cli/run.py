@@ -109,6 +109,8 @@ def prod(
     ),
 ) -> None:
     """Run in production mode (frontend or worker)."""
+    from vibetuner.config import settings
+
     os.environ["ENVIRONMENT"] = "prod"
 
     if service == "worker":
@@ -126,7 +128,7 @@ def prod(
             worker_path="vibetuner.tasks.worker.worker",
             workers=workers_count,
             reload=False,
-            verbose=False,
+            verbose=settings.debug,
             web=True,
             host="0.0.0.0",  # noqa: S104
             port=worker_port,
