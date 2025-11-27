@@ -114,25 +114,25 @@ WORKDIR /app
 COPY --link --from=python-app /app/.venv/ .venv/
 
 # Copy static assets and markdown content (not full frontend source)
-COPY assets/statics/ assets/statics/
-COPY templates/markdown/ templates/markdown/
+COPY --link assets/statics/ assets/statics/
+COPY --link templates/markdown/ templates/markdown/
 
 # Copy compiled localization files (smaller than source .po files)
 COPY --link --from=locales --parents /app/locales/*/LC_MESSAGES/messages.mo /
 
 # Copy template files
-COPY templates/frontend templates/frontend/
-COPY templates/email templates/email/
+COPY --link templates/frontend templates/frontend/
+COPY --link templates/email templates/email/
 
 # Copy built frontend assets (CSS and JS bundles)
 COPY --link --from=frontend-build /app/assets/statics/css/bundle.css assets/statics/css/bundle.css
 COPY --link --from=frontend-build /app/assets/statics/js/bundle.js assets/statics/js/bundle.js
 
 # Copy configuration file (used as project root marker)
-COPY .copier-answers.yml ./
+COPY --link .copier-answers.yml ./
 
 # Copy startup script with executable permissions (--chmod eliminates separate RUN layer)
-COPY --chmod=755 start.sh /start.sh
+COPY --link --chmod=755 start.sh /start.sh
 
 # Configure environment for Python application
 # No PYTHONPATH needed - app is installed in site-packages via non-editable install
