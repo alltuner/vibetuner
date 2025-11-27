@@ -220,19 +220,36 @@ kubectl logs -f deployment/myapp
 
 ### Health Checks
 
-Vibetuner includes a health endpoint:
+Vibetuner includes health endpoints:
 
 ```bash
-curl http://localhost:8000/health
+# Simple ping check
+curl http://localhost:8000/health/ping
+```
+
+Returns:
+
+```json
+{"ping": "ok"}
+```
+
+For detailed instance information:
+
+```bash
+curl http://localhost:8000/health/id
 ```
 
 Returns:
 
 ```json
 {
+"app": "myapp",
+"port": 8000,
+"debug": false,
 "status": "healthy",
-"database": "connected",
-"redis": "connected"
+"root_path": "/app",
+"process_id": 1,
+"startup_time": "2024-01-01T00:00:00"
 }
 ```
 

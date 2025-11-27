@@ -329,25 +329,39 @@ settings = Settings()
 ### Docker Multi-Stage Build
 
 ```dockerfile
-# Stage 1: Python dependencies
-FROM python:3.11-slim as deps
-COPY pyproject.toml .
-RUN uv sync
-# Stage 2: Application code
-FROM deps as app
-COPY src/ ./src/
-COPY templates/ ./templates/
-# Stage 3: Frontend assets
-FROM node:20-slim as frontend
-COPY package.json .
-RUN bun install
-COPY assets/ ./assets/
-RUN bun build-prod
-# Stage 4: Runtime
-FROM app as runtime
-COPY --from=frontend /app/assets/statics/ /app/assets/statics/
-CMD ["granian", "--host", "0.0.0.0", "--port", "8000", "app.frontend:app"]
+# Stage 1: Base with uv
+FROM python:3.13-slim as python-base
+RUN apt-get update && apt-get install -y git
+COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /bin/
+
+# Stage 2: Dependencies only (cached layer)
+FROM python-base as python-deps
+RUN uv sync --locked --no-install-project --no-group dev
+
+# Stage 3: Install project (non-editable)
+FROM python-deps as python-app
+COPY src/ src/
+RUN uv sync --locked --no-editable --no-group dev
+
+# Stage 4-6: Locales and frontend (parallel)
+FROM oven/bun:1-alpine as frontend-build
+RUN bun install --frozen-lockfile && bun run build-prod
+
+# Stage 7: Runtime (fresh base, no build tools)
+FROM python:3.13-slim as runtime
+COPY --from=python-app /app/.venv/ .venv/
+COPY --from=frontend-build /app/assets/statics/ assets/statics/
+COPY templates/ templates/
+ENV PATH="/app/.venv/bin:$PATH"
+CMD ["granian", "--host", "0.0.0.0", "--port", "8000", "vibetuner.frontend:app"]
 ```
+
+Key optimizations:
+
+- **Non-editable install**: App lives in `.venv/lib/python3.x/site-packages/app/`, no `src/` in runtime
+- **Separate dependency layer**: Cached when only app code changes
+- **Fresh runtime base**: No git/uv in production image
+- **Parallel builds**: Locales and frontend build concurrently
 
 ### Production Stack
 
