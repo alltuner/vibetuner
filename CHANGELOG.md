@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.34.1](https://github.com/alltuner/vibetuner/compare/v2.34.0...v2.34.1) (2025-11-27)
+
+
+### Miscellaneous Chores
+
+* extend allowed WebFetch hosts for dependency documentation ([#604](https://github.com/alltuner/vibetuner/issues/604)) ([2bd66c1](https://github.com/alltuner/vibetuner/commit/2bd66c163c75a0045686e3bd7d92c244c71df675))
+
 ## [2.34.0](https://github.com/alltuner/vibetuner/compare/v2.33.0...v2.34.0) (2025-11-27)
 
 
