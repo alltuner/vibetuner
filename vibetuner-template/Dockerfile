@@ -47,13 +47,12 @@ COPY src/ src/
 ARG VERSION=0.0.0
 ENV UV_DYNAMIC_VERSIONING_BYPASS=$VERSION
 
-# Install the project non-editable with all extras, excluding dev dependencies
 # Clean up test directories and documentation to reduce image size
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
-    uv sync --all-extras --locked --no-editable --no-group dev && \
+    uv sync --locked --no-editable --no-group dev && \
     find .venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null || true && \
     find .venv -type f \( -name '*.md' -o -name '*.rst' -o -name '*.txt' \) ! -path '*/METADATA' -delete 2>/dev/null || true
 
