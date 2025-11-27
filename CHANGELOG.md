@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.34.3](https://github.com/alltuner/vibetuner/compare/v2.34.2...v2.34.3) (2025-11-27)
+
+
+### Bug Fixes
+
+* **docker:** add --link to all COPY instructions in runtime stage ([#609](https://github.com/alltuner/vibetuner/issues/609)) ([61a15cc](https://github.com/alltuner/vibetuner/commit/61a15cc02fa9e8d2b13c997e989ae3e1725bd411))
+
 ## [2.34.2](https://github.com/alltuner/vibetuner/compare/v2.34.1...v2.34.2) (2025-11-27)
 
 
