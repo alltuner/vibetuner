@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.34.2](https://github.com/alltuner/vibetuner/compare/v2.34.1...v2.34.2) (2025-11-27)
+
+
+### Bug Fixes
+
+* do not include all extras ([#606](https://github.com/alltuner/vibetuner/issues/606)) ([c50f0ba](https://github.com/alltuner/vibetuner/commit/c50f0ba4b7c5f09d3454d5fc3dd93e4ccbe92d59))
+
 ## [2.34.1](https://github.com/alltuner/vibetuner/compare/v2.34.0...v2.34.1) (2025-11-27)
 
 
