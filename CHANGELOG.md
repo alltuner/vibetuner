@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.34.4](https://github.com/alltuner/vibetuner/compare/v2.34.3...v2.34.4) (2025-11-27)
+
+
+### Bug Fixes
+
+* **docker:** use python directly in healthcheck ([#614](https://github.com/alltuner/vibetuner/issues/614)) ([09fa99e](https://github.com/alltuner/vibetuner/commit/09fa99e38cec047a83b8837c59649b08c21fc2c2))
+
 ## [2.34.3](https://github.com/alltuner/vibetuner/compare/v2.34.2...v2.34.3) (2025-11-27)
 
 
