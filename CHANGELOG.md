@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.34.0](https://github.com/alltuner/vibetuner/compare/v2.33.0...v2.34.0) (2025-11-27)
+
+
+### Features
+
+* **docker:** optimize Dockerfile with non-editable install and multi-stage build ([#601](https://github.com/alltuner/vibetuner/issues/601)) ([cac6f51](https://github.com/alltuner/vibetuner/commit/cac6f51e9beb46cd636a27957d2ad828f3074aaa))
+
 ## [2.33.0](https://github.com/alltuner/vibetuner/compare/v2.32.0...v2.33.0) (2025-11-27)
 
 
