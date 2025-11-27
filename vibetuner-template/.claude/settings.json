@@ -3,6 +3,9 @@
     "allow": [
       "Bash(cat:*)",
       "Bash(curl:*)",
+      "Bash(docker images:*)",
+      "Bash(docker history:*)",
+      "Bash(docker build:*)",
       "Bash(echo:*)",
       "Bash(find:*)",
       "Bash(gh issue create:*)",
@@ -49,6 +52,7 @@
       "Bash(time:*)",
       "Bash(tree:*)",
       "Bash(ty:*)",
+      "Bash(unzip:*)",
       "Bash(uv:*)",
       "Bash(uvx uv-bump:*)",
       "mcp__ide__getDiagnostics",
