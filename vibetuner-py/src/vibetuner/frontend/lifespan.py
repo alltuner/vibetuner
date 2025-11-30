@@ -5,7 +5,7 @@ from fastapi import FastAPI
 
 from vibetuner.context import ctx
 from vibetuner.logging import logger
-from vibetuner.mongo import init_models
+from vibetuner.mongo import init_mongodb
 
 from .hotreload import hotreload
 
@@ -16,7 +16,7 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     if ctx.DEBUG:
         await hotreload.startup()
 
-    await init_models()
+    await init_mongodb()
 
     yield
 
