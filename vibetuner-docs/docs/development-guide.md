@@ -34,7 +34,7 @@ bun dev
 just local-dev
 ```
 
-Requires MongoDB and Redis running locally.
+MongoDB is required if using database features. Redis is only required if background jobs are enabled.
 
 ## Justfile Commands Reference
 

@@ -108,7 +108,7 @@ just worker-dev              # Background worker (if background jobs enabled)
 ```
 
 **Docker dev** runs everything in containers with automatic reload.
-**Local dev** requires MongoDB/Redis running locally, but can be faster.
+**Local dev** requires MongoDB if using database features, and Redis if background jobs are enabled.
 
 #### Dependencies
 

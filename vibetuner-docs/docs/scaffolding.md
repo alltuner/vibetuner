@@ -33,10 +33,8 @@ and `uv` settings.
 example `["es", "fr"]`), adds translation skeletons.
 - `enable_job_queue` – default `false`. When enabled, includes Redis/Streaq
 worker setup and related Docker services.
-- `redis_url` – default `redis://localhost:6379/`. Used when background jobs are
-enabled.
-- `mongodb_url` – default `mongodb://user:password@localhost:27017/`. Seed
-connection string written to `.env.local`.
+- `redis_url` – default empty. Used when background jobs are enabled.
+- `mongodb_url` – default empty. Seed connection string written to `.env.local`.
 - `enable_watchtower` – default `false`. Only prompted when `fqdn` is set; adds
 
 Watchtower service to production Docker Compose.
