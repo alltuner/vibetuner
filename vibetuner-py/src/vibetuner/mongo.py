@@ -1,6 +1,7 @@
 from importlib import import_module
 
 from beanie import init_beanie
+from deprecated import deprecated
 from pymongo import AsyncMongoClient
 
 from vibetuner.config import settings
@@ -39,4 +40,6 @@ async def init_mongodb() -> None:
     )
 
 
-init_models = init_mongodb
+@deprecated(reason="Use init_mongodb() instead")
+async def init_models() -> None:
+    await init_mongodb()
