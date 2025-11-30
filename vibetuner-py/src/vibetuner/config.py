@@ -106,7 +106,7 @@ class CoreConfiguration(BaseSettings):
     debug_access_token: str | None = None
 
     # Database and Cache URLs
-    mongodb_url: MongoDsn = MongoDsn("mongodb://localhost:27017")
+    mongodb_url: MongoDsn | None = None
     redis_url: RedisDsn = RedisDsn("redis://localhost:6379")
 
     aws_access_key_id: SecretStr | None = None
