@@ -1,6 +1,7 @@
 from importlib import import_module
 
 from beanie import init_beanie
+from deprecated import deprecated
 from pymongo import AsyncMongoClient
 
 from vibetuner.config import settings
@@ -8,8 +9,14 @@ from vibetuner.logging import logger
 from vibetuner.models.registry import get_all_models
 
 
-async def init_models() -> None:
+async def init_mongodb() -> None:
     """Initialize MongoDB connection and register all Beanie models."""
+
+    if settings.mongodb_url is None:
+        logger.warning(
+            "MongoDB URL is not configured. Cannot initialize MongoDB models."
+        )
+        return
 
     # Try to import user models to trigger their registration
     try:
@@ -31,3 +38,8 @@ async def init_models() -> None:
     await init_beanie(
         database=client[settings.mongo_dbname], document_models=get_all_models()
     )
+
+
+@deprecated(reason="Use init_mongodb() instead")
+async def init_models() -> None:
+    await init_mongodb()

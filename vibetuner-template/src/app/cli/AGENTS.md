@@ -19,7 +19,7 @@ Create your application-specific CLI commands in this directory:
 # commands.py
 import typer
 from vibetuner.models import UserModel
-from vibetuner.mongo import init_db
+from vibetuner.mongo import init_mongodb
 
 app = typer.Typer(help="Application management commands")
 
@@ -33,7 +33,7 @@ def create_user(
     import asyncio
 
     async def _create():
-        await init_db()
+        await init_mongodb()
 
         # Check if exists
         existing = await UserModel.find_one(UserModel.email == email)
@@ -63,7 +63,7 @@ def list_users(
     import asyncio
 
     async def _list():
-        await init_db()
+        await init_mongodb()
 
         users = await UserModel.find_all().limit(limit).to_list()
 
@@ -117,10 +117,10 @@ If the package is installed, commands may be available directly (configured in p
 ### Database
 
 ```python
-from vibetuner.mongo import init_db
+from vibetuner.mongo import init_mongodb
 
 async def command():
-    await init_db()  # Initialize DB connection
+    await init_mongodb()  # Initialize DB connection
     # Now you can use models
 ```
 
@@ -158,7 +158,7 @@ def seed_data():
     import asyncio
 
     async def _seed():
-        await init_db()
+        await init_mongodb()
 
         # Create test users
         for i in range(10):
@@ -183,7 +183,7 @@ def clear_data(
     import asyncio
 
     async def _clear():
-        await init_db()
+        await init_mongodb()
 
         # Delete all
         await UserModel.delete_all()
@@ -207,7 +207,7 @@ def export_users(
     import asyncio
 
     async def _export():
-        await init_db()
+        await init_mongodb()
 
         users = await UserModel.find_all().to_list()
 
@@ -233,7 +233,7 @@ def import_users(
     import asyncio
 
     async def _import():
-        await init_db()
+        await init_mongodb()
 
         data = json.loads(input.read_text())
 
@@ -270,7 +270,7 @@ def cleanup_old_sessions():
     import asyncio
 
     async def _cleanup():
-        await init_db()
+        await init_mongodb()
 
         cutoff = datetime.now() - timedelta(days=30)
 
@@ -289,7 +289,7 @@ def rebuild_indexes():
     import asyncio
 
     async def _rebuild():
-        await init_db()
+        await init_mongodb()
 
         # Get database
         from motor.motor_asyncio import AsyncIOMotorClient
@@ -326,7 +326,7 @@ def interactive_user_create():
         raise typer.Exit()
 
     async def _create():
-        await init_db()
+        await init_mongodb()
 
         user = UserModel(
             email=email,
@@ -351,7 +351,7 @@ def process_all_users():
     import asyncio
 
     async def _process():
-        await init_db()
+        await init_mongodb()
 
         users = await UserModel.find_all().to_list()
 
@@ -378,7 +378,7 @@ def show_stats():
     import asyncio
 
     async def _stats():
-        await init_db()
+        await init_mongodb()
 
         user_count = await UserModel.count()
         post_count = await Post.count()
@@ -479,7 +479,7 @@ def test_list_users():
 ## Best Practices
 
 1. **Always use async/await** - Match the rest of the codebase
-2. **Initialize DB** - Call `init_db()` at start of async commands
+2. **Initialize DB** - Call `init_mongodb()` at start of async commands
 3. **Handle errors gracefully** - Catch exceptions and exit with proper codes
 4. **Provide helpful messages** - Use emoji and colors for clarity
 5. **Add --help text** - Document all parameters

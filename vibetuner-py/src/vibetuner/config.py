@@ -106,8 +106,8 @@ class CoreConfiguration(BaseSettings):
     debug_access_token: str | None = None
 
     # Database and Cache URLs
-    mongodb_url: MongoDsn = MongoDsn("mongodb://localhost:27017")
-    redis_url: RedisDsn = RedisDsn("redis://localhost:6379")
+    mongodb_url: MongoDsn | None = None
+    redis_url: RedisDsn | None = None
 
     aws_access_key_id: SecretStr | None = None
     aws_secret_access_key: SecretStr | None = None
@@ -131,6 +131,10 @@ class CoreConfiguration(BaseSettings):
         url_safe_hash = b64_hash.rstrip("=")[:8]
 
         return url_safe_hash
+
+    @property
+    def workers_available(self) -> bool:
+        return self.redis_url is not None
 
     @cached_property
     def mongo_dbname(self) -> str:

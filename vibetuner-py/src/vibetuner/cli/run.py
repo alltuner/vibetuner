@@ -6,6 +6,9 @@ from typing import Annotated
 import typer
 from rich.console import Console
 
+from vibetuner.config import settings
+from vibetuner.logging import logger
+
 
 console = Console()
 
@@ -31,6 +34,13 @@ def dev(
     os.environ["DEBUG"] = "1"
 
     if service == "worker":
+        if not settings.workers_available:
+            logger.warning("Redis URL not configured. Workers will not be started.")
+            console.print(
+                "[red]Error: Redis URL not configured. Workers will not be started.[/red]"
+            )
+            raise typer.Exit(code=0)
+
         # Worker mode
         from streaq.cli import main as streaq_main
 
@@ -109,11 +119,17 @@ def prod(
     ),
 ) -> None:
     """Run in production mode (frontend or worker)."""
-    from vibetuner.config import settings
 
     os.environ["ENVIRONMENT"] = "prod"
 
     if service == "worker":
+        if not settings.workers_available:
+            logger.warning("Redis URL not configured. Workers will not be started.")
+            console.print(
+                "[red]Error: Redis URL not configured. Workers will not be started.[/red]"
+            )
+            raise typer.Exit(code=0)
+
         # Worker mode
         from streaq.cli import main as streaq_main
 

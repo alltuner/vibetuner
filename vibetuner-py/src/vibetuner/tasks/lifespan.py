@@ -3,14 +3,14 @@ from typing import AsyncGenerator
 
 from vibetuner.context import Context, ctx
 from vibetuner.logging import logger
-from vibetuner.mongo import init_models
+from vibetuner.mongo import init_mongodb
 
 
 @asynccontextmanager
 async def base_lifespan() -> AsyncGenerator[Context, None]:
     logger.info("Vibetuner task worker starting")
 
-    await init_models()
+    await init_mongodb()
 
     yield ctx
 
