@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.35.0](https://github.com/alltuner/vibetuner/compare/v2.34.4...v2.35.0) (2025-11-30)
+
+
+### Features
+
+* make MongoDB and Redis configuration optional ([#618](https://github.com/alltuner/vibetuner/issues/618)) ([570a84e](https://github.com/alltuner/vibetuner/commit/570a84ef67c65631adac84fd5d3fa6a3553eab63))
+
+
+### Miscellaneous Chores
+
+* update dependencies and pre-commit hooks ([#616](https://github.com/alltuner/vibetuner/issues/616)) ([df09832](https://github.com/alltuner/vibetuner/commit/df09832e86b8eee58f09cd27c98a5bbc47bc96c1))
+
 ## [2.34.4](https://github.com/alltuner/vibetuner/compare/v2.34.3...v2.34.4) (2025-11-27)
 
 
