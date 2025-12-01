@@ -65,6 +65,22 @@ vibetuner/frontend/
 - `base/footer.html.jinja` - Custom footer
 - `index.html.jinja` - Custom homepage
 
+## Linting Requirements
+
+Templates are linted with `djlint`. Key rules to follow:
+
+- **T003**: `endblock` tags must include the block name
+
+  ```jinja
+  {# Correct #}
+  {% block title %}Page Title{% endblock title %}
+
+  {# Incorrect - will fail linting #}
+  {% block title %}Page Title{% endblock %}
+  ```
+
+Run `just lint-jinja` to check templates before committing.
+
 ## Best Practices
 
 1. Override only what you need
@@ -72,3 +88,4 @@ vibetuner/frontend/
 3. Test after `just update-scaffolding`
 4. Use template inheritance and blocks
 5. Keep overrides minimal to ease updates
+6. Include block names in endblock tags
