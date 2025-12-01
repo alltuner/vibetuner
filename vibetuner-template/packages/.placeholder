@@ -1,0 +1,8 @@
+This directory is for local package development.
+
+To develop against a local copy of vibetuner-py:
+1. Clone or symlink vibetuner-py into this directory
+2. Add to pyproject.toml:
+   [tool.uv.sources]
+   vibetuner = { path = "packages/vibetuner-py", editable = true }
+3. Run: uv sync
