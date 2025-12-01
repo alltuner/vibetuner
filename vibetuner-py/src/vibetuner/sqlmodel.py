@@ -47,7 +47,10 @@ def _ensure_engine() -> None:
 async def init_sqlmodel() -> None:
     """
     Called from lifespan/startup.
-    Creates tables if DB is configured, otherwise just logs a warning.
+    Initializes the database engine if DB is configured.
+
+    Note: This does NOT create tables. Use `vibetuner db create-schema` CLI command
+    for schema creation, or call `create_schema()` directly.
     """
     _ensure_engine()
 
@@ -55,9 +58,24 @@ async def init_sqlmodel() -> None:
         # Nothing to do, DB not configured
         return
 
+    logger.info("SQLModel engine initialized successfully.")
+
+
+async def create_schema() -> None:
+    """
+    Create all tables defined in SQLModel metadata.
+
+    Call this from the CLI command `vibetuner db create-schema` or manually
+    during initial setup. This is idempotent - existing tables are not modified.
+    """
+    _ensure_engine()
+
+    if engine is None:
+        raise RuntimeError("database_url is not configured. Cannot create schema.")
+
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
-        logger.info("SQLModel metadata created successfully.")
+        logger.info("SQLModel schema created successfully.")
 
 
 async def teardown_sqlmodel() -> None:

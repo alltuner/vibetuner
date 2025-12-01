@@ -10,6 +10,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
+from vibetuner.cli.db import db_app
 from vibetuner.cli.run import run_app
 from vibetuner.cli.scaffold import scaffold_app
 from vibetuner.logging import LogLevel, logger, setup_logging
@@ -109,6 +110,7 @@ def version(
     console.print(table)
 
 
+app.add_typer(db_app, name="db")
 app.add_typer(run_app, name="run")
 app.add_typer(scaffold_app, name="scaffold")
 
