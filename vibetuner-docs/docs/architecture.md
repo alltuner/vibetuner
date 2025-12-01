@@ -16,7 +16,7 @@ B["Vibetuner Framework
 (src/vibetuner/ — authentication, database, core services)"]
 C["Platform Stack
 <br />
-FastAPI · MongoDB · HTMX · Redis"]
+FastAPI · MongoDB/PostgreSQL · HTMX · Redis"]
 A --> B --> C
 ```
 
@@ -121,7 +121,11 @@ return templates.TemplateResponse("blog/post.html.jinja", {
 ### 3. Database Query
 
 ```text
+# MongoDB
 Route → Beanie ODM → Motor (async) → MongoDB
+
+# SQL
+Route → SQLModel → SQLAlchemy (async) → PostgreSQL/MySQL/SQLite
 ```
 
 ### 4. Template Rendering
@@ -155,19 +159,33 @@ app.include_router(api.router)
 
 ### Database Layer
 
-**Location**: `src/vibetuner/mongo.py`
-MongoDB connection and model registration:
+Vibetuner supports multiple database backends:
+
+**MongoDB**: `src/vibetuner/mongo.py`
 
 ```python
 from vibetuner.mongo import init_mongodb
 
-# Call during application startup
+# Called during application startup if MONGODB_URL is configured
 await init_mongodb()
-
-# Models are automatically discovered and registered from:
-# - vibetuner.models (core models: User, OAuth, etc.)
-# - app.models (your application models)
 ```
+
+**SQL (PostgreSQL, MySQL, SQLite)**: `src/vibetuner/sqlmodel.py`
+
+```python
+from vibetuner.sqlmodel import init_sqlmodel, create_schema
+
+# Called during application startup if DATABASE_URL is configured
+await init_sqlmodel()
+
+# Create tables (run via CLI: vibetuner db create-schema)
+await create_schema()
+```
+
+Models are automatically discovered and registered from:
+
+- `vibetuner.models` (core models: User, OAuth, etc.)
+- `app.models` (your application models)
 
 ### Authentication System
 
@@ -374,9 +392,9 @@ end
 LB --> A1
 LB --> A2
 LB --> A3
-A1 --> Mongo[(MongoDB Replica Set)]
-A2 --> Mongo
-A3 --> Mongo
+A1 --> DB[(Database: MongoDB/PostgreSQL)]
+A2 --> DB
+A3 --> DB
 A1 --> Redis[(Redis / Streaq)]
 A2 --> Redis
 A3 --> Redis
@@ -393,10 +411,22 @@ A3 --> Redis
 
 ### Database Scaling
 
-- MongoDB replica sets for high availability
+**MongoDB:**
+
+- Replica sets for high availability
 - Read replicas for read-heavy workloads
 - Sharding for very large datasets
+
+**PostgreSQL:**
+
+- Streaming replication for high availability
+- Read replicas for read-heavy workloads
+- Connection pooling (PgBouncer)
+
+**Both:**
+
 - Indexes on frequently queried fields
+- Connection pooling for efficiency
 
 ### Caching Strategy
 
@@ -432,7 +462,7 @@ A3 --> Redis
 
 - Environment-based secrets
 - Input validation with Pydantic
-- SQL injection protection (ODM)
+- SQL injection protection (ODM/ORM)
 - XSS protection (Jinja2 auto-escaping)
 - HTTPS enforcement in production
 
