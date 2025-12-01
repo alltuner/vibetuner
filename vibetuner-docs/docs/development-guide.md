@@ -16,7 +16,7 @@ just dev
 
 This starts:
 
-- MongoDB database
+- Database (MongoDB or SQL, if configured)
 - Redis (if background jobs enabled)
 - FastAPI application with auto-reload
 - Frontend asset compilation with watch mode
@@ -34,7 +34,8 @@ bun dev
 just local-dev
 ```
 
-MongoDB is required if using database features. Redis is only required if background jobs are enabled.
+A database (MongoDB or SQL) is required if using database features. Redis is only required if
+background jobs are enabled.
 
 ## Justfile Commands Reference
 
@@ -134,28 +135,45 @@ app.include_router(blog.router)
 
 ### Adding Database Models
 
-Create models in `src/app/models/`:
+Create models in `src/app/models/`. The approach depends on your database choice:
+
+#### MongoDB (Beanie ODM)
 
 ```python
 # src/app/models/post.py
 from beanie import Document
 from pydantic import Field
+
 class Post(Document):
-title: str
-content: str
-published: bool = Field(default=False)
-class Settings:
-name = "posts"
+    title: str
+    content: str
+    published: bool = Field(default=False)
+
+    class Settings:
+        name = "posts"
 ```
 
-Register in `src/app/models/__init__.py`:
+#### SQL (SQLModel)
+
+```python
+# src/app/models/post.py
+from sqlmodel import SQLModel, Field
+
+class Post(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    title: str
+    content: str
+    published: bool = Field(default=False)
+```
+
+For SQL databases, create tables with: `vibetuner db create-schema`
+
+Register models in `src/app/models/__init__.py`:
 
 ```python
 from app.models.post import Post
 __all__ = ["Post"]
 ```
-
-The model will be automatically registered with MongoDB on startup.
 
 ### Creating Templates
 
@@ -361,8 +379,11 @@ docker compose logs -f web
 ### Access Database
 
 ```bash
-# Connect to MongoDB
+# MongoDB
 docker compose exec mongodb mongosh
+
+# PostgreSQL
+docker compose exec postgres psql -U postgres
 ```
 
 ### Interactive Shell
@@ -388,17 +409,18 @@ pytest --cov=src/app
 
 ### Integration Tests
 
-Integration tests should use real MongoDB (not mocks):
+Integration tests should use a real database (not mocks):
 
 ```python
 import pytest
 from app.models import Post
+
 @pytest.mark.asyncio
 async def test_create_post():
-post = Post(title="Test", content="Content")
-await post.insert()
-found = await Post.get(post.id)
-assert found.title == "Test"
+    post = Post(title="Test", content="Content")
+    await post.insert()  # MongoDB with Beanie
+    found = await Post.get(post.id)
+    assert found.title == "Test"
 ```
 
 ## Code Quality
@@ -439,7 +461,12 @@ Edit as needed:
 
 ```bash
 # .env
-DATABASE_URL=mongodb://localhost:27017/myapp
+# MongoDB
+MONGODB_URL=mongodb://localhost:27017/myapp
+# Or SQL database (PostgreSQL, MySQL, MariaDB, SQLite)
+DATABASE_URL=postgresql+asyncpg://user:pass@localhost/myapp
+# DATABASE_URL=sqlite+aiosqlite:///./data.db
+
 SECRET_KEY=your-secret-key-here
 DEBUG=true
 # OAuth (optional)
@@ -452,7 +479,11 @@ GOOGLE_CLIENT_SECRET=...
 Use environment variables or `.env` file in production:
 
 ```bash
-DATABASE_URL=mongodb://prod-server:27017/myapp
+# MongoDB
+MONGODB_URL=mongodb://prod-server:27017/myapp
+# Or SQL database
+DATABASE_URL=postgresql+asyncpg://user:pass@prod-server/myapp
+
 SECRET_KEY=very-secret-key
 DEBUG=false
 ```
