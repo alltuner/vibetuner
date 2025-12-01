@@ -24,7 +24,7 @@ update-scaffolding:
             echo "Please resolve conflicts manually and run: uv sync --all-extras"; \
         else \
             echo "✅ No conflicts in pyproject.toml - running uv sync"; \
-            uv sync --all-extras; \
+            uv sync --all-extras --no-sources; \
         fi \
     fi
     
