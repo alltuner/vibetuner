@@ -44,14 +44,14 @@ frontend/
 {# templates/frontend/dashboard/home.html.jinja #}
 {% extends "base/skeleton.html.jinja" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard{% endblock title %}
 
 {% block content %}
 <div class="container mx-auto p-4">
   <h1 class="text-2xl font-bold">Welcome, {{ user.name }}</h1>
   {# Your content here #}
 </div>
-{% endblock %}
+{% endblock content %}
 ```
 
 ### Overriding Core Templates
@@ -79,6 +79,22 @@ async def dashboard(request: Request):
     })
 ```
 
+## Linting Requirements
+
+Templates are linted with `djlint`. Key rules to follow:
+
+- **T003**: `endblock` tags must include the block name
+
+  ```jinja
+  {# Correct #}
+  {% block title %}Page Title{% endblock title %}
+
+  {# Incorrect - will fail linting #}
+  {% block title %}Page Title{% endblock %}
+  ```
+
+Run `just lint-jinja` to check templates before committing.
+
 ## Best Practices
 
 1. **Extend, don't duplicate**: Use `{% extends %}` and `{% block %}` to
@@ -87,6 +103,7 @@ async def dashboard(request: Request):
 3. **Document overrides**: Add comments explaining why you're overriding
 4. **Test fallbacks**: Ensure your overrides work after scaffolding updates
 5. **Minimal overrides**: Only override what you need to change
+6. **Include block names in endblock**: Always use `{% endblock blockname %}`
 
 ## Available Template Variables
 
@@ -115,9 +132,9 @@ Extend them in your templates:
 
 {% block extra_head %}
   {# Add page-specific CSS/JS #}
-{% endblock %}
+{% endblock extra_head %}
 
 {% block content %}
   {# Your page content #}
-{% endblock %}
+{% endblock content %}
 ```
