@@ -7,6 +7,7 @@ from typing import Annotated, Literal
 import yaml
 from pydantic import (
     UUID4,
+    AnyUrl,
     Field,
     HttpUrl,
     MariaDBDsn,
@@ -15,6 +16,7 @@ from pydantic import (
     PostgresDsn,
     RedisDsn,
     SecretStr,
+    UrlConstraints,
     computed_field,
 )
 from pydantic_extra_types.language_code import LanguageAlpha2
@@ -24,6 +26,24 @@ from vibetuner.logging import logger
 
 from .paths import config_vars as config_vars_path
 from .versioning import version
+
+
+class SQLiteDsn(AnyUrl):
+    """A type that will accept any SQLite DSN.
+
+    * User info not required
+    * TLD not required
+    * Host not required (file-based database)
+    """
+
+    _constraints = UrlConstraints(
+        allowed_schemes=[
+            "sqlite",
+            "sqlite+aiosqlite",
+            "sqlite+pysqlite",
+        ],
+        host_required=False,
+    )
 
 
 current_year: int = datetime.now().year
@@ -111,7 +131,7 @@ class CoreConfiguration(BaseSettings):
     # Database and Cache URLs
     mongodb_url: MongoDsn | None = None
     redis_url: RedisDsn | None = None
-    database_url: PostgresDsn | MariaDBDsn | MySQLDsn | None = None
+    database_url: PostgresDsn | MariaDBDsn | MySQLDsn | SQLiteDsn | None = None
 
     aws_access_key_id: SecretStr | None = None
     aws_secret_access_key: SecretStr | None = None
