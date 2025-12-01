@@ -54,3 +54,12 @@ version = "{version}"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/app"]
+
+# To develop against a local copy of vibetuner-py, add:
+#
+# [tool.uv.sources]
+# vibetuner = { path = "packages/vibetuner-py", editable = true }
+#
+# Then run: uv sync
+# Local Python changes will be picked up immediately.
+# Note: uv lock and Docker builds use --no-sources to ignore this for production.
