@@ -79,7 +79,7 @@ Visit `http://localhost:8000` - your app is running!
 ### Database (choose your stack)
 
 - **[MongoDB](https://www.mongodb.com/)** + **[Beanie ODM](https://beanie-odm.dev/)** - Document database (optional)
-- **[SQLModel](https://sqlmodel.tiangolo.com/)** / **[SQLAlchemy](https://www.sqlalchemy.org/)** - SQL databases: PostgreSQL, MySQL, SQLite (optional)
+- **[SQLModel](https://sqlmodel.tiangolo.com/)** / **[SQLAlchemy](https://www.sqlalchemy.org/)** - SQL databases: PostgreSQL, MySQL, MariaDB, SQLite (optional)
 - **[Redis](https://redis.io/)** + **[Streaq](https://github.com/tastyware/streaq)** - Caching and background jobs (optional)
 
 ### Frontend
