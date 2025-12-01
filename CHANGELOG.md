@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.36.0](https://github.com/alltuner/vibetuner/compare/v2.35.1...v2.36.0) (2025-12-01)
+
+
+### Features
+
+* add optional SQLModel/SQLAlchemy support ([#623](https://github.com/alltuner/vibetuner/issues/623)) ([4fa2249](https://github.com/alltuner/vibetuner/commit/4fa2249959ab5230f31c4b2ea4e2b210ae932a78))
+
+
+### Code Refactoring
+
+* move SQLModel schema creation to CLI and improve local dev workflow ([#627](https://github.com/alltuner/vibetuner/issues/627)) ([7d89e1d](https://github.com/alltuner/vibetuner/commit/7d89e1d6498233ea54298f811a3a9e558f085765))
+
 ## [2.35.1](https://github.com/alltuner/vibetuner/compare/v2.35.0...v2.35.1) (2025-12-01)
 
 
