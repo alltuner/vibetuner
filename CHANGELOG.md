@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.36.1](https://github.com/alltuner/vibetuner/compare/v2.36.0...v2.36.1) (2025-12-01)
+
+
+### Documentation Updates
+
+* update documentation for SQLModel support and flexible databases ([#628](https://github.com/alltuner/vibetuner/issues/628)) ([9cd7db5](https://github.com/alltuner/vibetuner/commit/9cd7db53564758d2ec26bce4c9527af0ea3b58d7))
+
 ## [2.36.0](https://github.com/alltuner/vibetuner/compare/v2.35.1...v2.36.0) (2025-12-01)
 
 
