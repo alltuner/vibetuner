@@ -1,4 +1,5 @@
 from importlib import import_module
+from typing import Optional
 
 from beanie import init_beanie
 from deprecated import deprecated
@@ -9,35 +10,62 @@ from vibetuner.logging import logger
 from vibetuner.models.registry import get_all_models
 
 
-async def init_mongodb() -> None:
-    """Initialize MongoDB connection and register all Beanie models."""
+# Global singleton, created lazily
+mongo_client: Optional[AsyncMongoClient] = None
+
+
+def _ensure_client() -> None:
+    """
+    Lazily create the global MongoDB client if mongodb_url is configured.
+    Safe to call many times.
+    """
+    global mongo_client
 
     if settings.mongodb_url is None:
-        logger.warning(
-            "MongoDB URL is not configured. Cannot initialize MongoDB models."
-        )
+        logger.warning("MongoDB URL is not configured. Mongo engine disabled.")
         return
 
-    # Try to import user models to trigger their registration
+    if mongo_client is None:
+        mongo_client = AsyncMongoClient(
+            host=str(settings.mongodb_url),
+            compressors=["zstd"],
+        )
+        logger.debug("MongoDB client created.")
+
+
+async def init_mongodb() -> None:
+    """Initialize MongoDB and register Beanie models."""
+    _ensure_client()
+
+    if mongo_client is None:
+        # Nothing to do; URL missing
+        return
+
+    # Import user models so they register themselves
     try:
         import_module("app.models")
     except ModuleNotFoundError:
-        # Silent pass for missing app.models module (expected in some projects)
-        pass
+        logger.debug("app.models not found; skipping user model import.")
     except ImportError as e:
-        # Log warning for any import error (including syntax errors, missing dependencies, etc.)
-        logger.warning(
-            f"Failed to import app.models: {e}. User models will not be registered."
-        )
-
-    client: AsyncMongoClient = AsyncMongoClient(
-        host=str(settings.mongodb_url),
-        compressors=["zstd"],
-    )
+        logger.warning(f"Failed to import app.models: {e}. User models may be missing.")
 
     await init_beanie(
-        database=client[settings.mongo_dbname], document_models=get_all_models()
+        database=mongo_client[settings.mongo_dbname],
+        document_models=get_all_models(),
     )
+    logger.info("MongoDB + Beanie initialized successfully.")
+
+
+async def teardown_mongodb() -> None:
+    """Dispose the MongoDB client."""
+    global mongo_client
+
+    if mongo_client is not None:
+        mongo_client.close()
+        mongo_client = None
+        logger.info("MongoDB client closed.")
+    else:
+        logger.debug("MongoDB client was never initialized; nothing to tear down.")
 
 
 @deprecated(reason="Use init_mongodb() instead")
