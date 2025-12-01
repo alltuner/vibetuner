@@ -46,12 +46,12 @@ frontend/
 
 {% block title %}Dashboard{% endblock title %}
 
-{% block content %}
+{% block body %}
 <div class="container mx-auto p-4">
   <h1 class="text-2xl font-bold">Welcome, {{ user.name }}</h1>
   {# Your content here #}
 </div>
-{% endblock content %}
+{% endblock body %}
 ```
 
 ### Overriding Core Templates
@@ -134,7 +134,7 @@ Extend them in your templates:
   {# Add page-specific CSS/JS #}
 {% endblock extra_head %}
 
-{% block content %}
+{% block body %}
   {# Your page content #}
-{% endblock content %}
+{% endblock body %}
 ```
