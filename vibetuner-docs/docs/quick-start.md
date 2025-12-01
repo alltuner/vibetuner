@@ -52,7 +52,7 @@ just dev
 
 This starts:
 
-- MongoDB database
+- Database (MongoDB or SQL, if configured)
 - Redis (if background jobs enabled)
 - FastAPI application with hot reload
 - Frontend asset compilation
@@ -79,7 +79,7 @@ my-app/
 ## Next Steps
 
 - **Add routes**: Create files in `src/app/frontend/routes/`
-- **Define models**: Create Beanie models in `src/app/models/`
+- **Define models**: Create models in `src/app/models/` (Beanie for MongoDB, SQLModel for SQL)
 - **Customize templates**: Edit files in `templates/`
 - **Configure environment**: Copy `.env.local` to `.env` and customize
 

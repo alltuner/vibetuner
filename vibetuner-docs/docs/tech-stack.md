@@ -22,31 +22,39 @@ optimized for rapid development and deployment.
 - [fastapi.tiangolo.com](https://fastapi.tiangolo.com/)
 - [GitHub](https://github.com/tiangolo/fastapi)
 
-### MongoDB
+## Database Options
 
-**Why:** Flexible document database that scales with your data.
+Vibetuner supports multiple database backends. All are optional - choose what fits your project.
+
+### MongoDB + Beanie ODM
+
+**Why:** Flexible document database for rapid prototyping.
 
 - Schema flexibility during rapid development
-- Powerful query language
-- Horizontal scaling with sharding
-- Change streams for real-time features
-- ACID transactions support
-**Links:**
-- [mongodb.com](https://www.mongodb.com/)
-- [Documentation](https://docs.mongodb.com/)
-
-### Beanie ODM
-
-**Why:** Async MongoDB ODM built on Pydantic.
-
 - Pydantic models are database models
-- Type-safe database operations
+- Type-safe async operations
 - Automatic validation
-- Migration support
-- Query builder with type hints
+- Horizontal scaling with sharding
+
 **Links:**
+
+- [mongodb.com](https://www.mongodb.com/)
 - [beanie-odm.dev](https://beanie-odm.dev/)
-- [GitHub](https://github.com/roman-right/beanie)
+
+### SQLModel + SQLAlchemy
+
+**Why:** SQL databases when you need relational data.
+
+- PostgreSQL, MySQL, MariaDB, SQLite support
+- Pydantic + SQLAlchemy combined
+- Type-safe async operations
+- Full SQL power when needed
+- CLI command: `vibetuner db create-schema`
+
+**Links:**
+
+- [sqlmodel.tiangolo.com](https://sqlmodel.tiangolo.com/)
+- [sqlalchemy.org](https://www.sqlalchemy.org/)
 
 ### Granian
 
@@ -259,9 +267,9 @@ Every tool is chosen for rapid iteration:
 Less complexity means faster development:
 
 - **HTMX over React**: No state management, no build complexity
-- **MongoDB**: Flexible schema, no migrations during prototyping
+- **Flexible databases**: MongoDB for documents, SQL for relations - your choice
 - **DaisyUI**: Pre-built components without JavaScript
-- **Beanie**: Database models are Pydantic models
+- **Pydantic everywhere**: Models, validation, settings - one pattern
 
 ### Modern & Maintained
 
@@ -276,7 +284,7 @@ All tools are actively maintained with modern approaches:
 
 Not just for prototypes:
 
-- **MongoDB**: Powers large-scale applications
+- **MongoDB/PostgreSQL**: Powers large-scale applications
 - **FastAPI**: Used by Microsoft, Uber, Netflix
 - **Docker**: Industry standard deployment
 - **Redis**: Battle-tested caching and queues

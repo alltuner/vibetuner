@@ -1,6 +1,6 @@
 # Vibetuner
 
-## Production-ready FastAPI + MongoDB + HTMX Project Scaffolding in Seconds
+## Production-ready FastAPI Web Application Scaffolding in Seconds
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -19,12 +19,12 @@ cd my-project && just dev
 ### In 30 Seconds You Have
 
 - ✅ FastAPI backend with async support
-- ✅ MongoDB with Beanie ODM
+- ✅ **Flexible database**: MongoDB (Beanie) or SQL (SQLModel/SQLAlchemy)
 - ✅ OAuth + magic link authentication
 - ✅ HTMX reactive frontend
 - ✅ Tailwind CSS + DaisyUI styling
 - ✅ Docker dev/prod environments
-- ✅ Background jobs (optional)
+- ✅ Background jobs with Redis (optional)
 - ✅ i18n support
 - ✅ Hot reload for everything
 
@@ -52,10 +52,13 @@ projects:
 ### Backend
 
 - **[FastAPI](https://fastapi.tiangolo.com/)** - Modern async web framework
-- **[MongoDB](https://www.mongodb.com/)** - Document database with [Beanie ODM](https://beanie-odm.dev/)
 - **[Granian](https://github.com/emmett-framework/granian)** - High-performance ASGI server
-- **[Redis](https://redis.io/)** - Caching and task queue (optional)
-- **[Streaq](https://github.com/tastyware/streaq)** - Background job processing (optional)
+
+### Database (choose your stack)
+
+- **[MongoDB](https://www.mongodb.com/)** + **[Beanie ODM](https://beanie-odm.dev/)** - Document database (optional)
+- **[SQLModel](https://sqlmodel.tiangolo.com/)** / **[SQLAlchemy](https://www.sqlalchemy.org/)** - SQL databases: PostgreSQL, MySQL, MariaDB, SQLite (optional)
+- **[Redis](https://redis.io/)** + **[Streaq](https://github.com/tastyware/streaq)** - Caching and background jobs (optional)
 
 ### Frontend
 

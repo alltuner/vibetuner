@@ -104,6 +104,8 @@
       "WebFetch(domain:redis.io)",
       "WebFetch(domain:redis-py.readthedocs.io)",
       "WebFetch(domain:rich.readthedocs.io)",
+      "WebFetch(domain:sqlalchemy.org)",
+      "WebFetch(domain:sqlmodel.tiangolo.com)",
       "WebFetch(domain:starlette.io)",
       "WebFetch(domain:tailwindcss.com)",
       "WebFetch(domain:taplo.tamasfe.dev)",
