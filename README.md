@@ -1,6 +1,6 @@
 # Vibetuner
 
-## Production-ready FastAPI + MongoDB + HTMX project scaffolding in seconds
+## Production-ready FastAPI web application scaffolding in seconds
 
 Vibetuner generates full-stack web applications with authentication, database,
 frontend, Docker deployment, and CLI tools pre-configured.
@@ -18,12 +18,12 @@ cd my-project && just dev
 **In 30 seconds you have:**
 
 - ✅ FastAPI backend with async support
-- ✅ MongoDB with Beanie ODM
+- ✅ **Flexible database**: MongoDB (Beanie) or SQL (SQLModel/SQLAlchemy)
 - ✅ OAuth + magic link authentication
 - ✅ HTMX reactive frontend
 - ✅ Tailwind CSS + DaisyUI styling
 - ✅ Docker dev/prod environments
-- ✅ Background jobs (optional)
+- ✅ Background jobs with Redis (optional)
 - ✅ i18n support
 - ✅ Hot reload for everything
 
@@ -74,10 +74,13 @@ Visit `http://localhost:8000` - your app is running!
 ### Backend
 
 - **[FastAPI](https://fastapi.tiangolo.com/)** - Modern async web framework
-- **[MongoDB](https://www.mongodb.com/)** - Document database with [Beanie ODM](https://beanie-odm.dev/)
 - **[Granian](https://github.com/emmett-framework/granian)** - High-performance ASGI server
-- **[Redis](https://redis.io/)** - Caching and task queue (optional)
-- **[Streaq](https://github.com/tastyware/streaq)** - Background job processing (optional)
+
+### Database (choose your stack)
+
+- **[MongoDB](https://www.mongodb.com/)** + **[Beanie ODM](https://beanie-odm.dev/)** - Document database (optional)
+- **[SQLModel](https://sqlmodel.tiangolo.com/)** / **[SQLAlchemy](https://www.sqlalchemy.org/)** - SQL databases: PostgreSQL, MySQL, SQLite (optional)
+- **[Redis](https://redis.io/)** + **[Streaq](https://github.com/tastyware/streaq)** - Caching and background jobs (optional)
 
 ### Frontend
 
@@ -95,8 +98,10 @@ Visit `http://localhost:8000` - your app is running!
 
 ### Why These Choices?
 
-**FastAPI + MongoDB**: Async-first, flexible schema, fast iteration, great for
-rapid prototyping that scales to production.
+**FastAPI**: Async-first, automatic API docs, Pydantic validation, type hints everywhere.
+
+**Flexible databases**: Start with MongoDB for rapid prototyping, or use PostgreSQL/MySQL/SQLite
+with SQLModel for relational data. Both are optional - use what fits your project.
 
 **HTMX over React/Vue**: Simplicity wins. Server-rendered HTML with sprinkles
 of interactivity. Less complexity, faster development, easier to reason about.
@@ -109,8 +114,6 @@ machine" problems.
 
 **uv + bun**: Speed matters. Both are order-of-magnitude faster than pip/npm.
 Fast lockfiles, fast installs, fast everything.
-
-**Beanie ODM**: Pydantic models are your database models. Type-safe, validated, async. No impedance mismatch.
 
 ## 💻 Development
 
@@ -199,7 +202,16 @@ just release            # Build and push
 Environment variables via `.env`:
 
 ```bash
-DATABASE_URL=mongodb://localhost:27017/mydb
+# MongoDB (optional)
+MONGODB_URL=mongodb://localhost:27017/mydb
+
+# SQL database (optional) - PostgreSQL, MySQL, or SQLite
+DATABASE_URL=postgresql+asyncpg://user:pass@localhost/mydb
+# DATABASE_URL=sqlite+aiosqlite:///./data.db
+
+# Redis for background jobs (optional)
+REDIS_URL=redis://localhost:6379
+
 SECRET_KEY=your-secret-key
 ```
 

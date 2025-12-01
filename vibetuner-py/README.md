@@ -8,13 +8,13 @@ authentication, background jobs, and CLI tools.
 
 ## What is Vibetuner?
 
-Vibetuner is a production-ready scaffolding tool for FastAPI + MongoDB + HTMX web applications.
+Vibetuner is a production-ready scaffolding tool for FastAPI web applications.
 This package (`vibetuner`) is the Python component that provides:
 
 - Complete web application framework built on FastAPI
-- MongoDB integration with Beanie ODM
+- **Flexible database support**: MongoDB (Beanie ODM) or SQL (SQLModel/SQLAlchemy)
 - OAuth and magic link authentication out of the box
-- Background job processing with Redis + Streaq
+- Background job processing with Redis + Streaq (optional)
 - CLI framework with Typer
 - Email services, blob storage, and more
 
@@ -62,18 +62,20 @@ This will generate a complete project with:
 - **`models/`**: User, OAuth, email verification, blob storage models
 - **`services/`**: Email (SES), blob storage (S3)
 - **`tasks/`**: Background job infrastructure
-- **`cli/`**: CLI framework with scaffold, run commands
+- **`cli/`**: CLI framework with scaffold, run, db commands
 - **`config.py`**: Pydantic settings management
-- **`mongo.py`**: MongoDB/Beanie setup
+- **`mongo.py`**: MongoDB/Beanie setup (optional)
+- **`sqlmodel.py`**: SQLModel/SQLAlchemy setup (optional)
 - **`logging.py`**: Structured logging configuration
 
 ### Blessed Dependencies
 
 - **FastAPI** (0.121+): Modern, fast web framework
-- **Beanie**: Async MongoDB ODM with Pydantic
+- **Beanie**: Async MongoDB ODM with Pydantic (optional)
+- **SQLModel** + **SQLAlchemy**: SQL databases - PostgreSQL, MySQL, SQLite (optional)
 - **Authlib**: OAuth 1.0/2.0 client
 - **Granian**: High-performance ASGI server
-- **Redis** + **Streaq**: Background task processing
+- **Redis** + **Streaq**: Background task processing (optional)
 - **Typer**: CLI framework
 - **Rich**: Beautiful terminal output
 - **Loguru**: Structured logging
@@ -92,6 +94,9 @@ vibetuner scaffold new my-project --defaults
 
 # Update existing project
 vibetuner scaffold update
+
+# Database management (SQLModel)
+vibetuner db create-schema    # Create SQL database tables
 
 # Run development server (in generated projects)
 vibetuner run dev frontend
