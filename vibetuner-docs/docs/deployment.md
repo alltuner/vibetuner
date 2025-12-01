@@ -34,8 +34,10 @@ APP_NAME=My Application
 SECRET_KEY=your-production-secret-key
 DEBUG=false
 ENVIRONMENT=production
-# Database
-DATABASE_URL=mongodb://user:password@mongodb-host:27017/myapp?authSource=admin
+# Database (MongoDB)
+MONGODB_URL=mongodb://user:password@mongodb-host:27017/myapp?authSource=admin
+# Or SQL database (PostgreSQL, MySQL, MariaDB, SQLite)
+DATABASE_URL=postgresql+asyncpg://user:password@postgres-host:5432/myapp
 # Redis (if background jobs enabled)
 REDIS_URL=redis://redis-host:6379/0
 # Email
@@ -107,7 +109,9 @@ Note: These platforms may have limitations compared to full Docker Compose contr
 
 ## Database Setup
 
-### MongoDB Atlas (Recommended)
+Choose the database that fits your project needs.
+
+### MongoDB Atlas
 
 1. Create account at [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
 2. Create cluster
@@ -119,23 +123,52 @@ Note: These platforms may have limitations compared to full Docker Compose contr
 mongodb+srv://user:password@cluster.mongodb.net/myapp?retryWrites=true&w=majority
 ```
 
+### PostgreSQL (Managed)
+
+Popular managed PostgreSQL providers:
+
+- **Neon**: [neon.tech](https://neon.tech/) - Serverless PostgreSQL
+- **Supabase**: [supabase.com](https://supabase.com/) - PostgreSQL with extras
+- **AWS RDS**: [aws.amazon.com/rds/postgresql](https://aws.amazon.com/rds/postgresql/)
+
 ### Self-Hosted MongoDB
 
 ```yaml
 # docker-compose.yml
 services:
-mongodb:
-image: mongo:7
+  mongodb:
+    image: mongo:7
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secure-password
+    ports:
+      - "27017:27017"
 volumes:
-- mongodb_data:/data/db
-environment:
-MONGO_INITDB_ROOT_USERNAME: admin
-MONGO_INITDB_ROOT_PASSWORD: secure-password
-ports:
-- "27017:27017"
-volumes:
-mongodb_data:
+  mongodb_data:
 ```
+
+### Self-Hosted PostgreSQL
+
+```yaml
+# docker-compose.yml
+services:
+  postgres:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: myapp
+      POSTGRES_PASSWORD: secure-password
+      POSTGRES_DB: myapp
+    ports:
+      - "5432:5432"
+volumes:
+  postgres_data:
+```
+
+For SQL databases, run `vibetuner db create-schema` after deployment to create tables.
 
 ## Redis Setup (Optional)
 
