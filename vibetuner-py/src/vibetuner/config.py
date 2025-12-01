@@ -9,7 +9,10 @@ from pydantic import (
     UUID4,
     Field,
     HttpUrl,
+    MariaDBDsn,
     MongoDsn,
+    MySQLDsn,
+    PostgresDsn,
     RedisDsn,
     SecretStr,
     computed_field,
@@ -108,6 +111,7 @@ class CoreConfiguration(BaseSettings):
     # Database and Cache URLs
     mongodb_url: MongoDsn | None = None
     redis_url: RedisDsn | None = None
+    database_url: PostgresDsn | MariaDBDsn | MySQLDsn | None = None
 
     aws_access_key_id: SecretStr | None = None
     aws_secret_access_key: SecretStr | None = None

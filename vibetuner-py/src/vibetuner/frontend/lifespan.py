@@ -5,7 +5,8 @@ from fastapi import FastAPI
 
 from vibetuner.context import ctx
 from vibetuner.logging import logger
-from vibetuner.mongo import init_mongodb
+from vibetuner.mongo import init_mongodb, teardown_mongodb
+from vibetuner.sqlmodel import init_sqlmodel, teardown_sqlmodel
 
 from .hotreload import hotreload
 
@@ -17,6 +18,7 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         await hotreload.startup()
 
     await init_mongodb()
+    await init_sqlmodel()
 
     yield
 
@@ -24,6 +26,9 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     if ctx.DEBUG:
         await hotreload.shutdown()
     logger.info("Vibetuner frontend stopped")
+
+    await teardown_sqlmodel()
+    await teardown_mongodb()
 
 
 try:
