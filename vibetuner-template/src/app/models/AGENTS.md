@@ -273,13 +273,13 @@ class Post(Document):
 ```python
 import pytest
 from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import AsyncMongoClient
 
 @pytest.fixture
 async def db():
-    client = AsyncIOMotorClient("mongodb://localhost:27017")
+    client: AsyncMongoClient = AsyncMongoClient("mongodb://localhost:27017")
     await init_beanie(
-        database=client.test_db,
+        database=client["test_db"],
         document_models=[Post]
     )
     yield

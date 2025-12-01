@@ -344,14 +344,14 @@ wheels = [
 
 [[package]]
 name = "botocore-stubs"
-version = "1.41.5"
+version = "1.41.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "types-awscrt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/85/b6/c93322e1a22120b2db5106b3517d73457378e6776e09d6dee68efe19437b/botocore_stubs-1.41.5.tar.gz", hash = "sha256:6d4c30c59e0cd39031c323d78667d8cdf35463a9ac11757f00b0d224b57b7e44", size = 42405, upload-time = "2025-11-26T21:22:58.088Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/34/7b/e8ec783105bba9800624dbfb91661a01f45baec570c5f4adac0dac64abe5/botocore_stubs-1.41.6.tar.gz", hash = "sha256:2b53574c4ea4f8d5887e516ef2208b996fd988fc2a613f676ea9144597f20cd2", size = 42421, upload-time = "2025-12-01T04:14:14.192Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/da/a688b78d6d5db9ba7d5243b27d73c45e5325054c536d7cf90b7ceab366c5/botocore_stubs-1.41.5-py3-none-any.whl", hash = "sha256:73661df27cc73242f1478af5eeed07c2e1e688479963402cd62c61a46d93216a", size = 66749, upload-time = "2025-11-26T21:22:57.036Z" },
+    { url = "https://files.pythonhosted.org/packages/68/b6/f624f5143bc5f7a66b79fc40e67b30b9584471a6143062af420bc83ae887/botocore_stubs-1.41.6-py3-none-any.whl", hash = "sha256:859e4147b5b14dc5eb64fc84fa02424839354368a0fea41da52c7a1d06427e37", size = 66748, upload-time = "2025-12-01T04:14:12.833Z" },
 ]
 
 [[package]]
@@ -2733,7 +2733,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "2.34.4"
+version = "2.35.0"
 source = { editable = "." }
 dependencies = [
     { name = "aioboto3" },

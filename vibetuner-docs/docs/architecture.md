@@ -159,16 +159,14 @@ app.include_router(api.router)
 MongoDB connection and model registration:
 
 ```python
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
-from vibetuner.models import User
-from app.models import Post, Comment
-async def init_db():
-client = AsyncIOMotorClient(settings.DATABASE_URL)
-await init_beanie(
-database=client.get_default_database(),
-document_models=[User, Post, Comment]
-)
+from vibetuner.mongo import init_mongodb
+
+# Call during application startup
+await init_mongodb()
+
+# Models are automatically discovered and registered from:
+# - vibetuner.models (core models: User, OAuth, etc.)
+# - app.models (your application models)
 ```
 
 ### Authentication System

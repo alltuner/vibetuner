@@ -291,12 +291,10 @@ def rebuild_indexes():
     async def _rebuild():
         await init_mongodb()
 
-        # Get database
-        from motor.motor_asyncio import AsyncIOMotorClient
-        from vibetuner.config import settings
+        # Get database via Beanie's internal connection
+        from beanie import Document
 
-        client = AsyncIOMotorClient(str(settings.project.mongodb_url))
-        db = client[settings.project.project_slug]
+        db = Document.get_motor_collection().database
 
         # Rebuild indexes for each collection
         collections = await db.list_collection_names()
