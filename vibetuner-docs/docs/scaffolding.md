@@ -34,10 +34,11 @@ example `["es", "fr"]`), adds translation skeletons.
 - `enable_job_queue` – default `false`. When enabled, includes Redis/Streaq
 worker setup and related Docker services.
 - `redis_url` – default empty. Used when background jobs are enabled.
-- `mongodb_url` – default empty. Seed connection string written to `.env.local`.
+- `mongodb_url` – default empty. MongoDB connection string written to `.env.local`.
+- `database_url` – default empty. SQL database connection string (PostgreSQL, MySQL,
+  MariaDB, SQLite) written to `.env.local`.
 - `enable_watchtower` – default `false`. Only prompted when `fqdn` is set; adds
-
-Watchtower service to production Docker Compose.
+  Watchtower service to production Docker Compose.
 
 ### Supplying Values Non-Interactively
 
