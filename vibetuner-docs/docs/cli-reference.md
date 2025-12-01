@@ -76,6 +76,40 @@ vibetuner run prod [frontend|worker] [--port PORT] [--host HOST] [--workers COUN
 - Disables hot reload and honors `--workers` for both frontend and worker services.
 - Useful for containerless deployments or reproducing production settings locally.
 
+## `vibetuner db`
+
+Database management commands for SQL databases (SQLModel/SQLAlchemy).
+
+### `create-schema`
+
+```bash
+vibetuner db create-schema
+```
+
+Creates all database tables defined in SQLModel metadata. This command:
+
+1. Imports models from `app.models` to ensure they're registered
+2. Creates tables in the database specified by `DATABASE_URL`
+3. Skips if tables already exist (safe to run multiple times)
+
+**Prerequisites:**
+
+- `DATABASE_URL` environment variable must be set
+- Models must be defined using SQLModel with `table=True`
+
+**Example:**
+
+```bash
+# Set database URL
+export DATABASE_URL=postgresql+asyncpg://user:pass@localhost/mydb
+
+# Create tables
+vibetuner db create-schema
+```
+
+**Note:** This command is only for SQL databases. MongoDB collections are created
+automatically when documents are inserted.
+
 ## Related Commands
 
 Generated projects expose additional helpers in the scaffolded `justfile`,
