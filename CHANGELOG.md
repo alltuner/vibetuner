@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.35.1](https://github.com/alltuner/vibetuner/compare/v2.35.0...v2.35.1) (2025-12-01)
+
+
+### Documentation Updates
+
+* fix outdated MongoDB and template documentation ([#621](https://github.com/alltuner/vibetuner/issues/621)) ([2b3d2bf](https://github.com/alltuner/vibetuner/commit/2b3d2bf033fc6fc88d1308735105b4d72b5f9928))
+
 ## [2.35.0](https://github.com/alltuner/vibetuner/compare/v2.34.4...v2.35.0) (2025-11-30)
 
 
