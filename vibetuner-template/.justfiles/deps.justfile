@@ -2,7 +2,7 @@
 [group('Dependencies')]
 update-repo-deps:
     @uvx uv-bump
-    @uv lock --upgrade --no-sources
+    @uv lock --upgrade
     @uv sync --all-extras
     @bun update
 
