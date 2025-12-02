@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.36.6](https://github.com/alltuner/vibetuner/compare/v2.36.5...v2.36.6) (2025-12-02)
+
+
+### Miscellaneous Chores
+
+* remove direct sniffio dependency ([#641](https://github.com/alltuner/vibetuner/issues/641)) ([b8a402c](https://github.com/alltuner/vibetuner/commit/b8a402c9953cc9225ff3caac3fc3500093716796))
+
 ## [2.36.5](https://github.com/alltuner/vibetuner/compare/v2.36.4...v2.36.5) (2025-12-02)
 
 
