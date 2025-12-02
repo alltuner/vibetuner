@@ -61,7 +61,7 @@ async def teardown_mongodb() -> None:
     global mongo_client
 
     if mongo_client is not None:
-        mongo_client.close()
+        await mongo_client.close()
         mongo_client = None
         logger.info("MongoDB client closed.")
     else:
