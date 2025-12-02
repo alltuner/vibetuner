@@ -64,11 +64,6 @@ supported_languages:
   multiline: true
   default: []
 
-enable_job_queue:
-  type: bool
-  help: Do you want to enable job queuing?
-  default: false
-
 enable_watchtower:
   type: bool
   help: Do you want to enable watchtower (containers self-reload on update)?

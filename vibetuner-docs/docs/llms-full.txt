@@ -1,6 +1,6 @@
 # Vibetuner
 
-> Vibetuner is a production-ready FastAPI + MongoDB + HTMX project scaffolding tool that generates full-stack web applications with authentication, database, frontend, Docker deployment, and CLI tools pre-configured in seconds. Built by All Tuner Labs for rapid iteration and modern development.
+> Vibetuner is a production-ready FastAPI project scaffolding tool that generates full-stack web applications with authentication, flexible database support (MongoDB or SQL), frontend, Docker deployment, and CLI tools pre-configured in seconds. Built by All Tuner Labs for rapid iteration and modern development.
 
 Important notes:
 
@@ -62,7 +62,7 @@ just dev
 
 This starts:
 
-- MongoDB database
+- Database (MongoDB or SQL, if configured)
 - Redis (if background jobs enabled)
 - FastAPI application with hot reload
 - Frontend asset compilation
@@ -117,15 +117,17 @@ just format-toml             # Format TOML files with taplo
 just format-yaml             # Format YAML files with dprint
 ```
 
-**IMPORTANT**: Always run `ruff format .` after Python changes.
+**IMPORTANT**: Always run `ruff format .` or `just format-py` after Python changes.
 
 **Code Linting:**
 
 ```bash
 just lint                    # Lint ALL code
 just lint-py                 # Lint Python with ruff
-just lint-jinja              # Lint Jinja templates
+just lint-jinja              # Lint Jinja templates with djlint
 just lint-md                 # Lint markdown files
+just lint-toml               # Lint TOML files with taplo
+just lint-yaml               # Lint YAML files with dprint
 just type-check              # Type check Python with ty
 ```
 
@@ -134,8 +136,9 @@ just type-check              # Type check Python with ty
 ```bash
 just i18n                    # Full workflow: extract, update, compile
 just extract-translations    # Extract translatable strings
+just update-locale-files     # Update existing .po files
 just compile-locales         # Compile .po to .mo files
-just new-locale LANG         # Create new language
+just new-locale LANG         # Create new language (e.g., just new-locale es)
 ```
 
 **CI/CD & Deployment:**
@@ -145,6 +148,7 @@ just build-dev               # Build development Docker image
 just test-build-prod         # Test production build locally
 just build-prod              # Build production image
 just release                 # Build and release production image
+just deploy-latest HOST      # Deploy to remote host
 ```
 
 **Scaffolding:**
@@ -171,7 +175,7 @@ just dev
 
 This starts:
 
-- MongoDB database
+- Database (MongoDB or SQL, if configured)
 - Redis (if background jobs enabled)
 - FastAPI application with auto-reload
 - Frontend asset compilation with watch mode
@@ -189,7 +193,7 @@ bun dev
 just local-dev
 ```
 
-Requires MongoDB and Redis running locally.
+A database (MongoDB or SQL) is required if using database features. Redis is only required if background jobs are enabled.
 
 #### Adding New Routes
 
@@ -201,7 +205,7 @@ from fastapi import APIRouter
 router = APIRouter(prefix="/blog", tags=["blog"])
 @router.get("/")
 async def list_posts():
-return {"posts": []}
+    return {"posts": []}
 ```
 
 Register in `src/app/frontend/__init__.py`:
@@ -213,28 +217,47 @@ app.include_router(blog.router)
 
 #### Adding Database Models
 
-Create models in `src/app/models/`:
+Create models in `src/app/models/`. The approach depends on your database choice:
+
+**MongoDB (Beanie ODM)**
 
 ```python
 # src/app/models/post.py
 from beanie import Document
 from pydantic import Field
+
 class Post(Document):
-title: str
-content: str
-published: bool = Field(default=False)
-class Settings:
-name = "posts"
+    title: str
+    content: str
+    published: bool = Field(default=False)
+
+    class Settings:
+        name = "posts"
 ```
 
-Register in `src/app/models/__init__.py`:
+**SQL (SQLModel)**
+
+```python
+# src/app/models/post.py
+from sqlmodel import SQLModel, Field
+
+class Post(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    title: str
+    content: str
+    published: bool = Field(default=False)
+```
+
+For SQL databases, create tables with: `vibetuner db create-schema`
+
+Register models in `src/app/models/__init__.py`:
 
 ```python
 from app.models.post import Post
 __all__ = ["Post"]
 ```
 
-The model will be automatically registered with MongoDB on startup.
+The model will be automatically registered with the database on startup.
 
 #### Creating Templates
 
@@ -244,43 +267,95 @@ Add templates in `templates/`:
 <!-- templates/blog/list.html.jinja -->
 {% extends "base/skeleton.html.jinja" %}
 {% block content %}
-<div class="container mx-auto">
-<h1 class="text-3xl font-bold">Blog Posts</h1>
-<div class="grid gap-4">
-{% for post in posts %}
-<article class="card">
-<h2>{{ post.title }}</h2>
-<div>{{ post.content }}</div>
-</article>
-{% endfor %}
-</div>
-</div>
+    <div class="container mx-auto">
+        <h1 class="text-3xl font-bold">Blog Posts</h1>
+        <div class="grid gap-4">
+            {% for post in posts %}
+                <article class="card">
+                    <h2>{{ post.title }}</h2>
+                    <div>{{ post.content }}</div>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
 ```
+
+#### Adding Custom Template Filters
+
+Create custom Jinja2 filters in `src/app/frontend/templates.py`:
+
+```python
+# src/app/frontend/templates.py
+from vibetuner.frontend.templates import register_filter
+
+@register_filter()
+def uppercase(value):
+    """Convert value to uppercase"""
+    return str(value).upper()
+
+@register_filter("money")
+def format_money(value):
+    """Format value as USD currency"""
+    try:
+        return f"${float(value):,.2f}"
+    except (ValueError, TypeError):
+        return str(value)
+```
+
+Use in templates:
+
+```html
+<h1>{{ user.name | uppercase }}</h1>
+<p>Price: {{ product.price | money }}</p>
+```
+
+The `@register_filter()` decorator automatically registers filters with the Jinja environment. If no name is provided, the function name becomes the filter name.
 
 #### Adding Background Jobs
 
 If you enabled background jobs, create tasks in `src/app/tasks/`:
 
 ```python
-# src/app/tasks/email.py
+# src/app/tasks/emails.py
+from vibetuner.tasks.worker import worker
+from vibetuner.models import UserModel
 from vibetuner.services.email import send_email
+
+@worker.task()
 async def send_welcome_email(user_id: str):
-# Fetch user from database
-# Send welcome email
-pass
+    user = await UserModel.get(user_id)
+    if user:
+        await send_email(
+            to_email=user.email,
+            subject="Welcome!",
+            html_content="<h1>Welcome!</h1>"
+        )
+    return {"status": "sent"}
+```
+
+Register tasks in `src/app/tasks/__init__.py`:
+
+```python
+# src/app/tasks/__init__.py
+__all__ = ["emails"]
+from . import emails  # noqa: F401
 ```
 
 Queue jobs from your routes:
 
 ```python
-from streaq import queue
-from app.tasks.email import send_welcome_email
+from app.tasks.emails import send_welcome_email
+
 @router.post("/signup")
 async def signup(email: str):
-# Create user
-await queue(send_welcome_email, user.id)
-return {"message": "Welcome email queued"}
+    # Create user
+    user = await create_user(email)
+
+    # Queue background task
+    task = await send_welcome_email.enqueue(str(user.id))
+
+    return {"message": "Welcome email queued", "task_id": task.id}
 ```
 
 #### Working with HTMX
@@ -290,11 +365,11 @@ Vibetuner uses HTMX for interactive features without JavaScript:
 ```html
 <!-- Load more posts -->
 <button hx-get="/blog?page=2"
-hx-target="#posts"
-hx-swap="beforeend"
-class="btn btn-primary">Load More</button>
+        hx-target="#posts"
+        hx-swap="beforeend"
+        class="btn btn-primary">Load More</button>
 <div id="posts">
-<!-- Posts will be appended here -->
+    <!-- Posts will be appended here -->
 </div>
 ```
 
@@ -303,10 +378,10 @@ Server endpoint:
 ```python
 @router.get("/blog")
 async def list_posts(page: int = 1):
-posts = await Post.find().skip((page - 1) * 10).limit(10).to_list()
-return templates.TemplateResponse("blog/posts.html.jinja", {
-"posts": posts
-})
+    posts = await Post.find().skip((page - 1) * 10).limit(10).to_list()
+    return templates.TemplateResponse("blog/posts.html.jinja", {
+        "posts": posts
+    })
 ```
 
 ### Architecture
@@ -335,7 +410,7 @@ Published to PyPI, provides:
 
 - Core framework code
 - Authentication system
-- Database integration
+- Database integration (MongoDB and SQL)
 - Email and storage services
 - CLI commands
 - Blessed dependency stack
@@ -365,16 +440,20 @@ Client → Nginx/Caddy → FastAPI (Granian) → Route Handler
 # src/app/frontend/routes/blog.py
 @router.get("/blog/{post_id}")
 async def view_post(post_id: str):
-post = await Post.get(post_id)
-return templates.TemplateResponse("blog/post.html.jinja", {
-"post": post
-})
+    post = await Post.get(post_id)
+    return templates.TemplateResponse("blog/post.html.jinja", {
+        "post": post
+    })
 ```
 
 **3. Database Query**
 
 ```text
+# MongoDB
 Route → Beanie ODM → Motor (async) → MongoDB
+
+# SQL
+Route → SQLModel → SQLAlchemy (async) → PostgreSQL/MySQL/SQLite
 ```
 
 **4. Template Rendering**
@@ -403,25 +482,29 @@ User Action → HTMX Request → FastAPI → Partial HTML → Update DOM
 - Type hints and IDE support
 - High performance (comparable to Node.js/Go)
 
-**MongoDB**
+#### Database Options
 
-**Why:** Flexible document database that scales with your data.
+Vibetuner supports multiple database backends. All are optional - choose what fits your project.
+
+**MongoDB + Beanie ODM**
+
+**Why:** Flexible document database for rapid prototyping.
 
 - Schema flexibility during rapid development
-- Powerful query language
-- Horizontal scaling with sharding
-- Change streams for real-time features
-- ACID transactions support
-
-**Beanie ODM**
-
-**Why:** Async MongoDB ODM built on Pydantic.
-
 - Pydantic models are database models
-- Type-safe database operations
+- Type-safe async operations
 - Automatic validation
-- Migration support
-- Query builder with type hints
+- Horizontal scaling with sharding
+
+**SQLModel + SQLAlchemy**
+
+**Why:** SQL databases when you need relational data.
+
+- PostgreSQL, MySQL, MariaDB, SQLite support
+- Pydantic + SQLAlchemy combined
+- Type-safe async operations
+- Full SQL power when needed
+- CLI command: `vibetuner db create-schema`
 
 **Granian**
 
@@ -580,10 +663,10 @@ from vibetuner.frontend.auth import require_auth
 @router.get("/dashboard")
 @require_auth
 async def dashboard(request: Request):
-user = request.state.user
-return templates.TemplateResponse("dashboard.html.jinja", {
-"user": user
-})
+    user = request.state.user
+    return templates.TemplateResponse("dashboard.html.jinja", {
+        "user": user
+    })
 ```
 
 **Optional Authentication**
@@ -593,10 +676,10 @@ Access user if authenticated, but don't require it:
 ```python
 @router.get("/")
 async def home(request: Request):
-user = getattr(request.state, "user", None)
-return templates.TemplateResponse("home.html.jinja", {
-"user": user
-})
+    user = getattr(request.state, "user", None)
+    return templates.TemplateResponse("home.html.jinja", {
+        "user": user
+    })
 ```
 
 ## Reference
@@ -629,9 +712,9 @@ vibetuner scaffold new my-project
 vibetuner scaffold new my-project --defaults
 # Override selected values in non-interactive mode
 vibetuner scaffold new my-project \
---defaults \
---data project_name="My Project" \
---data python_version="3.12"
+    --defaults \
+    --data project_name="My Project" \
+    --data python_version="3.12"
 ```
 
 **`update`**
@@ -671,6 +754,29 @@ vibetuner run prod [frontend|worker] [--port PORT] [--host HOST] [--workers COUN
 - Disables hot reload and honors `--workers` for both frontend and worker services.
 - Useful for containerless deployments or reproducing production settings locally.
 
+#### `vibetuner db`
+
+Database management commands for SQL databases (SQLModel/SQLAlchemy).
+
+**`create-schema`**
+
+```bash
+vibetuner db create-schema
+```
+
+Creates all database tables defined in SQLModel metadata. This command:
+
+1. Imports models from `app.models` to ensure they're registered
+2. Creates tables in the database specified by `DATABASE_URL`
+3. Skips if tables already exist (safe to run multiple times)
+
+**Prerequisites:**
+
+- `DATABASE_URL` environment variable must be set
+- Models must be defined using SQLModel with `table=True`
+
+**Note:** This command is only for SQL databases. MongoDB collections are created automatically when documents are inserted.
+
 ### Scaffolding Reference
 
 #### Template Prompts
@@ -684,9 +790,9 @@ vibetuner run prod [frontend|worker] [--port PORT] [--host HOST] [--workers COUN
 - `fqdn` – default empty. When set, enables production deployment extras (Caddy, Watchtower, etc.).
 - `python_version` – default `3.13`. Controls `.python-version`, Docker images, and `uv` settings.
 - `supported_languages` – default `[]`. JSON/YAML list of language codes (for example `["es", "fr"]`), adds translation skeletons.
-- `enable_job_queue` – default `false`. When enabled, includes Redis/Streaq worker setup and related Docker services.
-- `redis_url` – default `redis://localhost:6379/`. Used when background jobs are enabled.
-- `mongodb_url` – default `mongodb://user:password@localhost:27017/`. Seed connection string written to `.env.local`.
+- `redis_url` – default empty. Used when background jobs are enabled.
+- `mongodb_url` – default empty. MongoDB connection string written to `.env.local`.
+- `database_url` – default empty. SQL database connection string (PostgreSQL, MySQL, MariaDB, SQLite) written to `.env.local`.
 - `enable_watchtower` – default `false`. Only prompted when `fqdn` is set; adds Watchtower service to production Docker Compose.
 
 #### Updating Existing Projects
@@ -738,8 +844,10 @@ APP_NAME=My Application
 SECRET_KEY=your-production-secret-key
 DEBUG=false
 ENVIRONMENT=production
-# Database
-DATABASE_URL=mongodb://user:password@mongodb-host:27017/myapp?authSource=admin
+# Database (MongoDB)
+MONGODB_URL=mongodb://user:password@mongodb-host:27017/myapp?authSource=admin
+# Or SQL database (PostgreSQL, MySQL, MariaDB, SQLite)
+DATABASE_URL=postgresql+asyncpg://user:password@postgres-host:5432/myapp
 # Redis (if background jobs enabled)
 REDIS_URL=redis://redis-host:6379/0
 # Email
@@ -776,33 +884,16 @@ docker compose -f compose.prod.yml up -d
 
 This starts:
 
-- MongoDB with persistence
+- Database with persistence (MongoDB or PostgreSQL)
 - Redis (if enabled)
 - Your application
-- Nginx reverse proxy (optional)
 
 **Cloud Platforms**
-
-*Fly.io*
-
-```bash
-# Install flyctl
-brew install flyctl
-# Login
-flyctl auth login
-# Launch app
-flyctl launch
-# Set secrets
-flyctl secrets set SECRET_KEY=your-secret-key
-flyctl secrets set DATABASE_URL=mongodb://...
-# Deploy
-flyctl deploy
-```
 
 *Railway*
 
 1. Connect GitHub repository
-2. Add MongoDB plugin
+2. Add database plugin (MongoDB or PostgreSQL)
 3. Configure environment variables
 4. Deploy automatically on push
 
@@ -871,7 +962,7 @@ Add `!` to indicate breaking changes (triggers **MAJOR** version):
 
 **Examples**
 
-*✅ Good PR Titles*
+*Good PR Titles*
 
 ```text
 feat: add OAuth authentication support
@@ -882,7 +973,7 @@ feat(auth): add Google OAuth provider
 feat!: remove deprecated authentication system
 ```
 
-*❌ Bad PR Titles (Release Please can't categorize)*
+*Bad PR Titles (Release Please can't categorize)*
 
 ```text
 Add OAuth
@@ -891,64 +982,6 @@ Update docs
 Authentication changes
 OAuth implementation
 ```
-
-### Assistant Guidance
-
-#### PR Title Conventions for AI Assistants
-
-This project uses **Release Please** for automated changelog generation.
-When creating PRs, use **conventional commit format** for PR titles:
-
-**Required Format**
-
-```text
-<type>[optional scope]: <description>
-```
-
-**Supported Types**
-
-- `feat:` New features (triggers MINOR version)
-- `fix:` Bug fixes (triggers PATCH version)
-- `docs:` Documentation changes (triggers PATCH version)
-- `chore:` Maintenance, dependencies (triggers PATCH version)
-- `refactor:` Code refactoring (triggers PATCH version)
-- `style:` Formatting, linting (triggers PATCH version)
-- `test:` Test changes (triggers PATCH version)
-- `perf:` Performance improvements (triggers MINOR version)
-- `ci:` CI/CD changes (triggers PATCH version)
-- `build:` Build system changes (triggers PATCH version)
-
-**Breaking Changes**
-
-Add `!` to indicate breaking changes (triggers MAJOR version):
-
-- `feat!: remove deprecated API`
-- `fix!: change database schema`
-
-**Examples**
-
-```text
-feat: add OAuth authentication support
-fix: resolve Docker build failure
-docs: update installation guide
-chore: bump FastAPI dependency
-feat!: remove deprecated authentication system
-```
-
-**Why This Matters**
-
-- PR titles become commit messages after squash
-- Every merged PR creates/updates a Release Please PR
-- Release happens when the Release Please PR is merged
-- Automatic changelog generation from PR titles
-- Professional release notes for users
-
-**Release Workflow**
-
-1. Merge any PR → Release Please creates/updates a release PR
-2. Review the release PR (version bump + changelog)
-3. Merge the release PR when ready to release
-4. Release Please publishes the release and triggers package publishing
 
 ## Packages
 
@@ -959,7 +992,7 @@ Published to PyPI, provides:
 
 - Core framework code
 - Authentication system
-- Database integration
+- Database integration (MongoDB and SQL)
 - Email and storage services
 - CLI commands
 - Blessed dependency stack
@@ -969,6 +1002,7 @@ Published to PyPI, provides:
 **Dependencies**:
 - FastAPI with async support
 - MongoDB with Beanie ODM
+- SQLModel with SQLAlchemy
 - Granian ASGI server
 - Authlib for OAuth
 - HTMX integration
@@ -1001,7 +1035,7 @@ Contains:
 - Scaffolding template (`vibetuner-template/`)
 - Python package source (`vibetuner-py/`)
 - JavaScript package source (`vibetuner-js/`)
-- Documentation (`docs/`)
+- Documentation (`vibetuner-docs/`)
 - CI/CD workflows (`.github/workflows/`)
 
 **Issue Tracking**: Use GitHub Issues for bug reports and feature requests.
@@ -1055,7 +1089,7 @@ just dev  # Should start without errors
 
 ### Internal Documentation
 
-The `docs/` directory contains the source files for all documentation. These are built using MkDocs and deployed to GitHub Pages.
+The `vibetuner-docs/docs/` directory contains the source files for all documentation. These are built using MkDocs and deployed to GitHub Pages.
 
 **Documentation Structure**:
 - `index.md` - Main landing page
@@ -1074,8 +1108,8 @@ The `docs/` directory contains the source files for all documentation. These are
 **Building Documentation**:
 
 ```bash
-uv run --only-group docs mkdocs serve  # Local development
-uv run --only-group docs mkdocs build  # Production build
+just docs-serve  # Local development with live reload
+just docs-build  # Production build
 ```
 
 The documentation is automatically built and deployed to `https://vibetuner.alltuner.com/` on releases.
