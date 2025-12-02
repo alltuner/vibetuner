@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.36.2](https://github.com/alltuner/vibetuner/compare/v2.36.1...v2.36.2) (2025-12-02)
+
+
+### Bug Fixes
+
+* allow CLI to run outside project directory ([#632](https://github.com/alltuner/vibetuner/issues/632)) ([863cf45](https://github.com/alltuner/vibetuner/commit/863cf45c024c8edcdffac063c28d1de8a715926d))
+
 ## [2.36.1](https://github.com/alltuner/vibetuner/compare/v2.36.0...v2.36.1) (2025-12-01)
 
 
