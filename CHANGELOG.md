@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.36.5](https://github.com/alltuner/vibetuner/compare/v2.36.4...v2.36.5) (2025-12-02)
+
+
+### Bug Fixes
+
+* include core-templates in initial scaffold commit ([#639](https://github.com/alltuner/vibetuner/issues/639)) ([6480fac](https://github.com/alltuner/vibetuner/commit/6480facc2eefd6dfe300b6fc55a87af3906e4ee3))
+
 ## [2.36.4](https://github.com/alltuner/vibetuner/compare/v2.36.3...v2.36.4) (2025-12-02)
 
 
