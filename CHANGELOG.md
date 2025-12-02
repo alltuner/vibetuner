@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.36.4](https://github.com/alltuner/vibetuner/compare/v2.36.3...v2.36.4) (2025-12-02)
+
+
+### Miscellaneous Chores
+
+* comment out optional MONGODB_URL and REDIS_URL in template ([#637](https://github.com/alltuner/vibetuner/issues/637)) ([8341398](https://github.com/alltuner/vibetuner/commit/8341398037df8e2df0ed8a8c4f7b9055e25f80c9))
+
 ## [2.36.3](https://github.com/alltuner/vibetuner/compare/v2.36.2...v2.36.3) (2025-12-02)
 
 
