@@ -13,7 +13,62 @@ Create your application-specific CLI commands in this directory:
 - Maintenance scripts
 - Any command-line tools for your application
 
-## Command Pattern
+## How CLI Integration Works
+
+The vibetuner CLI automatically imports `app.cli` at startup (see `vibetuner/cli/__init__.py` lines
+117-126). This means any commands you register in `src/app/cli/__init__.py` become available
+immediately via the `vibetuner` CLI.
+
+**Important**: Use `AsyncTyper` from `vibetuner.cli` instead of `typer.Typer` for native async
+command support without manual `asyncio.run()` wrappers.
+
+## Complete Wiring Pattern
+
+### Step 1: Create your command module
+
+```python
+# src/app/cli/mycommands.py
+from vibetuner.cli import AsyncTyper
+from vibetuner.models import UserModel
+from vibetuner.mongo import init_mongodb
+
+mycommands_app = AsyncTyper(help="My application commands")
+
+@mycommands_app.command()
+async def hello(name: str = "World"):
+    """Say hello."""
+    print(f"Hello, {name}!")
+
+@mycommands_app.command()
+async def count_users():
+    """Count users in database."""
+    await init_mongodb()
+    count = await UserModel.count()
+    print(f"Total users: {count}")
+```
+
+### Step 2: Register in **init**.py
+
+```python
+# src/app/cli/__init__.py
+from vibetuner.cli import app as app, console as console
+
+from .mycommands import mycommands_app
+
+app.add_typer(mycommands_app, name="mycommands", help="My application commands")
+```
+
+### Step 3: Use your commands
+
+```bash
+# Commands are now available via vibetuner CLI
+vibetuner mycommands hello --name="David"
+vibetuner mycommands count-users
+```
+
+## Legacy Pattern (without AsyncTyper)
+
+If you need synchronous commands or prefer explicit async handling:
 
 ```python
 # commands.py

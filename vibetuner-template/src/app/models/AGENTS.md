@@ -19,7 +19,10 @@ from beanie import Document, Link
 from pydantic import Field
 from vibetuner.models import UserModel
 from vibetuner.models.mixins import TimeStampMixin
+from vibetuner.models.registry import register_model
 
+
+@register_model  # Required for Beanie operators to work correctly
 class Post(Document, TimeStampMixin):
     """Blog post model."""
 
@@ -38,6 +41,10 @@ class Post(Document, TimeStampMixin):
             [("author", 1), ("published", -1)],  # Compound index
         ]
 ```
+
+**Important**: The `@register_model` decorator is required for Beanie operators (like `Eq`, `In`,
+`Gt`, `NE`) to resolve field descriptors. Without it, accessing class attributes like `Post.title`
+in operators raises `AttributeError`.
 
 ## Available from Core
 
@@ -170,6 +177,10 @@ await post.save()
 # Delete
 await post.delete()
 ```
+
+**Note**: Beanie operators (`Eq`, `In`, `Gt`, `Lt`, `NE`, etc.) require the model to be decorated
+with `@register_model`. Without registration, you'll get `AttributeError` when accessing field
+descriptors like `Post.title` or `CollectionWasNotInitialized` errors.
 
 ### Advanced Queries
 
