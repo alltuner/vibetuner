@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.36.3](https://github.com/alltuner/vibetuner/compare/v2.36.2...v2.36.3) (2025-12-02)
+
+
+### Code Refactoring
+
+* symlink pre-commit config and remove --no-sources from dev commands ([#636](https://github.com/alltuner/vibetuner/issues/636)) ([e809191](https://github.com/alltuner/vibetuner/commit/e8091919b1e8d6b88787312b73de8479991c8426))
+
+
+### Miscellaneous Chores
+
+* remove unused enable_job_queue and update LLM docs ([#634](https://github.com/alltuner/vibetuner/issues/634)) ([ac2682b](https://github.com/alltuner/vibetuner/commit/ac2682bb395bb15760043cef2f0307a21174e218))
+
 ## [2.36.2](https://github.com/alltuner/vibetuner/compare/v2.36.1...v2.36.2) (2025-12-02)
 
 
