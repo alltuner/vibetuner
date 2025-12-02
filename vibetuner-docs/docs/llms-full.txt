@@ -684,7 +684,6 @@ vibetuner run prod [frontend|worker] [--port PORT] [--host HOST] [--workers COUN
 - `fqdn` – default empty. When set, enables production deployment extras (Caddy, Watchtower, etc.).
 - `python_version` – default `3.13`. Controls `.python-version`, Docker images, and `uv` settings.
 - `supported_languages` – default `[]`. JSON/YAML list of language codes (for example `["es", "fr"]`), adds translation skeletons.
-- `enable_job_queue` – default `false`. When enabled, includes Redis/Streaq worker setup and related Docker services.
 - `redis_url` – default `redis://localhost:6379/`. Used when background jobs are enabled.
 - `mongodb_url` – default `mongodb://user:password@localhost:27017/`. Seed connection string written to `.env.local`.
 - `enable_watchtower` – default `false`. Only prompted when `fqdn` is set; adds Watchtower service to production Docker Compose.
