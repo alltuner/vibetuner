@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.36.7](https://github.com/alltuner/vibetuner/compare/v2.36.6...v2.36.7) (2025-12-02)
+
+
+### Bug Fixes
+
+* await mongo_client.close() in teardown_mongodb ([#648](https://github.com/alltuner/vibetuner/issues/648)) ([6b69692](https://github.com/alltuner/vibetuner/commit/6b696927c943380af9d454e7f71472f14c9bf596))
+
+
+### Miscellaneous Chores
+
+* **template:** add frontend-design skill to permissions whitelist ([#643](https://github.com/alltuner/vibetuner/issues/643)) ([41334fb](https://github.com/alltuner/vibetuner/commit/41334fbdcce7fc293c1579543ed84e61826577d9))
+
+
+### Documentation Updates
+
+* improve CLI and model documentation ([#651](https://github.com/alltuner/vibetuner/issues/651)) ([2f608a7](https://github.com/alltuner/vibetuner/commit/2f608a73d08842eea910222c479360cabc9961ff))
+
 ## [2.36.6](https://github.com/alltuner/vibetuner/compare/v2.36.5...v2.36.6) (2025-12-02)
 
 
