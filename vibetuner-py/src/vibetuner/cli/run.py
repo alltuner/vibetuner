@@ -1,6 +1,5 @@
 # ABOUTME: Run commands for starting the application in different modes
 # ABOUTME: Supports dev/prod modes for frontend and worker services
-import os
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -131,7 +130,6 @@ def dev(
     ),
 ) -> None:
     """Run in development mode with hot reload (frontend or worker)."""
-    os.environ["DEBUG"] = "1"
     _run_service("dev", service, host, port, workers_count)
 
 
@@ -149,5 +147,4 @@ def prod(
     ),
 ) -> None:
     """Run in production mode (frontend or worker)."""
-    os.environ["ENVIRONMENT"] = "prod"
     _run_service("prod", service, host, port, workers_count)
