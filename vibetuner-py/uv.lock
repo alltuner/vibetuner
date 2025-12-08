@@ -2763,11 +2763,11 @@ wheels = [
 
 [[package]]
 name = "uv-bump"
-version = "0.3.1"
+version = "0.3.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/76/4b/e06a8613f78eb1f27c2a035d6aa856e4244b152a483025bd63f5f47fb391/uv_bump-0.3.1.tar.gz", hash = "sha256:a4fb9f366169b657973a57cde10f75890c7776edf6e4451349f0dfaea89ceb17", size = 4807, upload-time = "2025-09-28T15:57:03.577Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6d/00/73f1f9b976e5d57e690455d4244470e5ac9ec9afab76cea92df2576aa72e/uv_bump-0.3.2.tar.gz", hash = "sha256:edc194ef162b734b248295e42c94899c8f3f755a393d55fe968c229d5e666577", size = 4944, upload-time = "2025-12-07T08:26:09.719Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cf/2b/c341295394b63a6fe5407fd9ed3a148b255d9f5d3dc5b3db9a55a2c99082/uv_bump-0.3.1-py3-none-any.whl", hash = "sha256:4e3b2c7f95e444b44784a715975266ab30ae79776c2d5d71eab38d22c8767a1e", size = 6128, upload-time = "2025-09-28T15:57:02.205Z" },
+    { url = "https://files.pythonhosted.org/packages/90/b0/43037c56ecf86bcb8c7f5c1a94f4158eaab90db0d3e35e20f43aa4ef258c/uv_bump-0.3.2-py3-none-any.whl", hash = "sha256:434ea755b3dc3a035c35693eaa1686ce2ced5d571e1a0f2056d6bfc418068e3b", size = 6269, upload-time = "2025-12-07T08:26:08.452Z" },
 ]
 
 [[package]]
@@ -2834,7 +2834,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "2.36.6"
+version = "2.36.7"
 source = { editable = "." }
 dependencies = [
     { name = "aioboto3" },
