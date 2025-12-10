@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.36.8](https://github.com/alltuner/vibetuner/compare/v2.36.7...v2.36.8) (2025-12-10)
+
+
+### Bug Fixes
+
+* make deployments reliable cacheable and robust ([#662](https://github.com/alltuner/vibetuner/issues/662)) ([bbf23a6](https://github.com/alltuner/vibetuner/commit/bbf23a6ecb98206076984e29da71f7309578a411))
+
+
+### Miscellaneous Chores
+
+* bump pytest from 9.0.1 to 9.0.2 in /vibetuner-py ([#661](https://github.com/alltuner/vibetuner/issues/661)) ([31ff5e0](https://github.com/alltuner/vibetuner/commit/31ff5e059d9ac089cf6652fbc43d6cad212c24fc))
+* bump ruff from 0.14.7 to 0.14.8 in /vibetuner-py ([#659](https://github.com/alltuner/vibetuner/issues/659)) ([53f098b](https://github.com/alltuner/vibetuner/commit/53f098b7758b411a2a85ee09d7ec29929fa7c2bf))
+
 ## [2.36.7](https://github.com/alltuner/vibetuner/compare/v2.36.6...v2.36.7) (2025-12-02)
 
 
