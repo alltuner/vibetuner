@@ -4,7 +4,7 @@ networks:
     name: alltuner-network
 services:
   worker:
-    image: alltuner-docker-registry.long-python.ts.net/${COMPOSE_PROJECT_NAME}:latest
+    image: alltuner-docker-registry.long-python.ts.net/${COMPOSE_PROJECT_NAME}:${VERSION:-latest}
     restart: unless-stopped
     env_file:
       - .env
@@ -30,7 +30,7 @@ services:
         tags:
           - alltuner-docker-registry.long-python.ts.net/${COMPOSE_PROJECT_NAME}:${VERSION:-0.0.0}
           - alltuner-docker-registry.long-python.ts.net/${COMPOSE_PROJECT_NAME}:latest
-    image: alltuner-docker-registry.long-python.ts.net/${COMPOSE_PROJECT_NAME}:latest
+    image: alltuner-docker-registry.long-python.ts.net/${COMPOSE_PROJECT_NAME}:${VERSION:-latest}
     depends_on:
       - worker
     healthcheck:
