@@ -52,6 +52,7 @@ release: _check-clean _check-last-commit-tagged install-deps
 deploy-latest HOST: release
     DOCKER_HOST="ssh://{{ HOST }}" \
     PYTHON_VERSION={{ PYTHON_VERSION }} \
+    VERSION={{ VERSION }} \
     COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
     FQDN={{ FQDN }} \
     ENABLE_WATCHTOWER={{ ENABLE_WATCHTOWER }} \

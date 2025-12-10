@@ -36,7 +36,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-sources --no-install-project --no-group dev
 
 # ────────────────────────────────────────────────────────────────────────────────
-# Stage 3: Install Project (non-editable for production)
+# Stage 3: Install Project (editable mode for source access)
 # ────────────────────────────────────────────────────────────────────────────────
 FROM python-deps AS python-app
 
@@ -47,12 +47,12 @@ COPY src/ src/
 ARG VERSION=0.0.0
 ENV UV_DYNAMIC_VERSIONING_BYPASS=$VERSION
 
-# Clean up test directories and documentation to reduce image size
+# Install project in editable mode and clean up test/doc files
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
-    uv sync --locked --no-sources --no-editable --no-group dev && \
+    uv sync --locked --no-group dev && \
     find .venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null || true && \
     find .venv -type f \( -name '*.md' -o -name '*.rst' -o -name '*.txt' \) ! -path '*/METADATA' -delete 2>/dev/null || true
 
@@ -113,6 +113,9 @@ WORKDIR /app
 # Copy Python virtual environment with all dependencies and project installed
 COPY --link --from=python-app /app/.venv/ .venv/
 
+# Copy application source code (required for editable install)
+COPY --link --from=python-app /app/src/ src/
+
 # Copy static assets and markdown content (not full frontend source)
 COPY --link assets/statics/ assets/statics/
 COPY --link templates/markdown/ templates/markdown/
@@ -135,7 +138,6 @@ COPY --link .copier-answers.yml ./
 COPY --link --chmod=755 start.sh /start.sh
 
 # Configure environment for Python application
-# No PYTHONPATH needed - app is installed in site-packages via non-editable install
 ENV PATH="/app/.venv/bin:$PATH" \
     ENVIRONMENT=${ENVIRONMENT} \
     PYTHONDONTWRITEBYTECODE=1
