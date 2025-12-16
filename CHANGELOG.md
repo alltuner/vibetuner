@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.37.0](https://github.com/alltuner/vibetuner/compare/v2.36.8...v2.37.0) (2025-12-16)
+
+
+### Features
+
+* add support for X-Forwarded-For headers via Granian proxy wrapper ([#679](https://github.com/alltuner/vibetuner/issues/679)) ([2619336](https://github.com/alltuner/vibetuner/commit/26193369603db818deed9370e1d206c242809e7a))
+
+
+### Miscellaneous Chores
+
+* bump @tailwindcss/cli from 4.1.17 to 4.1.18 in /vibetuner-js ([#668](https://github.com/alltuner/vibetuner/issues/668)) ([878b15a](https://github.com/alltuner/vibetuner/commit/878b15a4de342e61e890557dc47b3ffd40769172))
+* bump actions/download-artifact from 6 to 7 ([#665](https://github.com/alltuner/vibetuner/issues/665)) ([e4327a0](https://github.com/alltuner/vibetuner/commit/e4327a0ca1f0ba6e4a889bd12942a8a4aaa9cef6))
+* bump actions/upload-artifact from 5 to 6 ([#666](https://github.com/alltuner/vibetuner/issues/666)) ([d6622d1](https://github.com/alltuner/vibetuner/commit/d6622d1519463156017408614f8815f823f37bfc))
+* bump daisyui from 5.5.11 to 5.5.14 in /vibetuner-js ([#669](https://github.com/alltuner/vibetuner/issues/669)) ([28a5f96](https://github.com/alltuner/vibetuner/commit/28a5f960570f3e1078fea203a222a592129b711c))
+* bump prek from 0.2.21 to 0.2.22 in /vibetuner-py ([#674](https://github.com/alltuner/vibetuner/issues/674)) ([0cf42c6](https://github.com/alltuner/vibetuner/commit/0cf42c6d0db3c42233433a3f372d2e01bdda143d))
+* bump ruff from 0.14.8 to 0.14.9 in /vibetuner-py ([#670](https://github.com/alltuner/vibetuner/issues/670)) ([d8d2e15](https://github.com/alltuner/vibetuner/commit/d8d2e157f5b146136c0b1b88758175047d9417d9))
+* bump tailwindcss from 4.1.17 to 4.1.18 in /vibetuner-js ([#671](https://github.com/alltuner/vibetuner/issues/671)) ([f5618bb](https://github.com/alltuner/vibetuner/commit/f5618bbb88ac1a2f81b791582836a74602409758))
+* bump ty from 0.0.1a33 to 0.0.1a34 in /vibetuner-py ([#672](https://github.com/alltuner/vibetuner/issues/672)) ([4d0b258](https://github.com/alltuner/vibetuner/commit/4d0b2583615d232c9572b1718c18bea2a72d70f4))
+* bump types-authlib from 1.6.5.20251005 to 1.6.6.20251214 in /vibetuner-py ([#667](https://github.com/alltuner/vibetuner/issues/667)) ([8c08bd5](https://github.com/alltuner/vibetuner/commit/8c08bd561911ad6df87f5a8ee3cc87fbd6a0d855))
+* bump uv-bump from 0.3.2 to 0.4.0 in /vibetuner-py ([#673](https://github.com/alltuner/vibetuner/issues/673)) ([2b5f838](https://github.com/alltuner/vibetuner/commit/2b5f838e42be4206116e53537a1310de3439ebca))
+* **deps:** update github artifact actions (major) ([#664](https://github.com/alltuner/vibetuner/issues/664)) ([1aa893f](https://github.com/alltuner/vibetuner/commit/1aa893fb92adbb84badc0eb8ea7077b1838b1b55))
+* update pre-commit and deps ([#677](https://github.com/alltuner/vibetuner/issues/677)) ([da63233](https://github.com/alltuner/vibetuner/commit/da6323327e0074937e7d6133c6d19fc7a5b99475))
+
+
+### Documentation Updates
+
+* **template:** prevent circular imports in task registration ([#678](https://github.com/alltuner/vibetuner/issues/678)) ([f602b0e](https://github.com/alltuner/vibetuner/commit/f602b0e1f68c6fa3c0822831b9b812099781f530))
+
 ## [2.36.8](https://github.com/alltuner/vibetuner/compare/v2.36.7...v2.36.8) (2025-12-10)
 
 
