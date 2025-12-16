@@ -6,7 +6,6 @@ from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.types import ASGIApp, Receive, Scope, Send
 from starlette_babel import (
     LocaleFromCookie,
     LocaleFromQuery,
@@ -84,29 +83,6 @@ class AdjustLangCookieMiddleware(BaseHTTPMiddleware):
         return response
 
 
-class ForwardedProtocolMiddleware:
-    def __init__(self, app: ASGIApp):
-        self.app = app
-
-    # Based on https://github.com/encode/uvicorn/blob/master/uvicorn/middleware/proxy_headers.py
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] == "lifespan":
-            return await self.app(scope, receive, send)
-
-        headers = dict(scope["headers"])
-
-        if b"x-forwarded-proto" in headers:
-            x_forwarded_proto = headers[b"x-forwarded-proto"].decode("latin1").strip()
-
-            if x_forwarded_proto in {"http", "https", "ws", "wss"}:
-                if scope["type"] == "websocket":
-                    scope["scheme"] = x_forwarded_proto.replace("http", "ws")
-                else:
-                    scope["scheme"] = x_forwarded_proto
-
-        return await self.app(scope, receive, send)
-
-
 class AuthBackend(AuthenticationBackend):
     async def authenticate(
         self,
@@ -128,7 +104,6 @@ class AuthBackend(AuthenticationBackend):
 
 middlewares: list[Middleware] = [
     Middleware(TrustedHostMiddleware),
-    Middleware(ForwardedProtocolMiddleware),
     Middleware(HtmxMiddleware),
     Middleware(SessionMiddleware, secret_key=settings.session_key.get_secret_value()),
     Middleware(
