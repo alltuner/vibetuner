@@ -277,19 +277,96 @@ async def signup(email: str):
 
 ### Styling with Tailwind
 
-Vibetuner uses Tailwind CSS + DaisyUI. Edit `assets/config.css` for custom styles:
+Vibetuner uses Tailwind CSS 4 + DaisyUI. This section covers best practices for styling
+in your templates.
+
+#### Utility Classes First
+
+Use Tailwind's utility classes directly in your HTML for standard properties:
+
+```html
+<!-- Good: Standard Tailwind utilities -->
+<div class="flex items-center gap-4 p-6 rounded-lg bg-base-200">
+  <h1 class="text-2xl font-bold text-primary">Welcome</h1>
+</div>
+```
+
+#### Arbitrary Values for One-Off Styling
+
+For custom one-off values that don't exist in Tailwind's default scale, use bracket notation
+instead of creating custom CSS classes:
+
+```html
+<!-- Good: Arbitrary values for one-offs -->
+<div class="grid grid-cols-[200px_1fr_100px] gap-[17px]">
+  <span class="text-[13px] leading-[1.6]">Custom sizing</span>
+</div>
+
+<!-- Good: Custom colors and animations -->
+<div class="bg-[#1a1a2e] text-[hsl(220,80%,60%)]">
+  <span class="[animation-delay:100ms]">Delayed</span>
+  <span class="[animation-delay:200ms]">Animations</span>
+</div>
+
+<!-- Avoid: Extracting one-off values to custom CSS -->
+<!-- Don't create .animation-delay-100 just for a single use -->
+```
+
+#### Design Tokens with @theme
+
+For values used repeatedly across your project, define design tokens in `config.css`
+under the `@theme` directive:
 
 ```css
-/* assets/config.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-.btn-custom {
-@apply btn btn-primary rounded-full;
+/* config.css */
+@import "tailwindcss";
+@source "core-templates";
+@plugin "daisyui" {
+  exclude: properties;
+}
+
+@theme {
+  --color-brand: #4f46e5;
+  --color-brand-dark: #3730a3;
+  --spacing-card: 1.5rem;
+  --font-heading: "Inter", sans-serif;
 }
 ```
 
-The build process automatically compiles to `assets/statics/css/bundle.css`.
+Then use these tokens with Tailwind utilities:
+
+```html
+<div class="bg-brand p-card font-heading">
+  Consistent branding with design tokens
+</div>
+```
+
+#### No Inline Styles
+
+Vibetuner templates are linted with djLint, which enforces the H021 rule prohibiting
+inline `style=""` attributes. Always use Tailwind utilities or arbitrary values instead:
+
+```html
+<!-- Bad: Inline styles (fails H021 linting) -->
+<div style="margin-top: 20px; color: blue;">Content</div>
+
+<!-- Good: Tailwind utilities -->
+<div class="mt-5 text-blue-500">Content</div>
+
+<!-- Good: Arbitrary values for custom values -->
+<div class="mt-[20px] text-[blue]">Content</div>
+```
+
+#### Quick Reference
+
+| Scenario | Approach | Example |
+|----------|----------|---------|
+| Standard property | Utility class | `class="p-4 text-lg"` |
+| One-off custom value | Arbitrary value | `class="p-[17px] text-[13px]"` |
+| Repeated custom value | `@theme` token | Define in config.css, use `class="p-card"` |
+| Inline styles | Never | Use utilities or arbitrary values |
+
+The build process automatically compiles `config.css` to `assets/statics/css/bundle.css`.
 
 ## Working with HTMX
 
