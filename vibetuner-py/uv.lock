@@ -2769,11 +2769,11 @@ wheels = [
 
 [[package]]
 name = "uv-bump"
-version = "0.3.2"
+version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/6d/00/73f1f9b976e5d57e690455d4244470e5ac9ec9afab76cea92df2576aa72e/uv_bump-0.3.2.tar.gz", hash = "sha256:edc194ef162b734b248295e42c94899c8f3f755a393d55fe968c229d5e666577", size = 4944, upload-time = "2025-12-07T08:26:09.719Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/af/16/0b9f89d10df58d6376130ee98fd0ee679726b9ce2f5de6585cb3fd48c19d/uv_bump-0.4.0.tar.gz", hash = "sha256:ee230c26287d4ef93e72f8068e52bf00a23d95bcdc59cd93cd3098fad4baaca9", size = 5257, upload-time = "2025-12-13T09:08:21.859Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/90/b0/43037c56ecf86bcb8c7f5c1a94f4158eaab90db0d3e35e20f43aa4ef258c/uv_bump-0.3.2-py3-none-any.whl", hash = "sha256:434ea755b3dc3a035c35693eaa1686ce2ced5d571e1a0f2056d6bfc418068e3b", size = 6269, upload-time = "2025-12-07T08:26:08.452Z" },
+    { url = "https://files.pythonhosted.org/packages/1c/a1/865ba99e107a79e58ab4b802845ffe2dda6b8f121aae4ad7223856c94603/uv_bump-0.4.0-py3-none-any.whl", hash = "sha256:312de0d83007bf359c8efe420f2d2f58595fb1dba8934cfd1747cb649e5305c6", size = 6579, upload-time = "2025-12-13T09:08:20.856Z" },
 ]
 
 [[package]]
