@@ -21,6 +21,13 @@ async def lifespan() -> AsyncGenerator[Context, None]:
         base_lifespan() as worker_ctx,
     ):
         # Tasks here are run after DB is available
+
+        # IMPORTANT: Import task modules HERE to register them with the worker.
+        # Do NOT import them in __init__.py to avoid circular imports.
+        # Uncomment the lines below and add your task modules:
+        # from . import emails
+        # from . import reports
+
         ctx = Context(**worker_ctx.model_dump())
 
         yield ctx
