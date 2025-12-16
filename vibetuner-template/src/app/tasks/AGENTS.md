@@ -84,6 +84,12 @@ async def lifespan():
     # Tasks here run before anything is available (even before DB access)
     async with base_lifespan() as worker_context:
         # Tasks here run after DB is available
+
+        # Import task modules HERE to register them with the worker
+        from . import emails  # noqa: F401
+        from . import reports  # noqa: F401
+        from . import cleanup  # noqa: F401
+
         yield CustomContext(**worker_context.model_dump())
         # Tasks here run on shutdown before vibetuner teardown
         logger.info(f"Stopping {settings.project.project_name} task worker...")
@@ -94,20 +100,35 @@ async def lifespan():
 
 ## Task Registration
 
-**Critical**: Import task modules in `__init__.py` so decorators can register them:
+### Avoiding Circular Imports
+
+Task modules MUST be imported inside `lifespan.py` within the lifespan context.
+Do NOT import them in `__init__.py`.
+
+The worker needs to import `lifespan.py` before it's fully initialized.
+If `__init__.py` imports task modules that depend on the worker, you'll get:
+
+```text
+cannot import name 'worker' from partially initialized module 'vibetuner.tasks.worker'
+```
+
+**Correct pattern** (shown in the lifespan example above):
 
 ```python
-# __init__.py
-__all__ = [
-    "emails",
-    "reports",
-    "cleanup",
-]
+# lifespan.py
+async with base_lifespan() as worker_context:
+    # Import task modules HERE after the worker is initialized
+    from . import emails  # noqa: F401
+    from . import reports  # noqa: F401
+    yield Context(**worker_context.model_dump())
+```
 
-# This ensures tasks are registered when the package is imported
-from . import emails  # noqa: F401
-from . import reports  # noqa: F401
-from . import cleanup  # noqa: F401
+**Incorrect pattern** (causes circular import):
+
+```python
+# __init__.py - DO NOT DO THIS
+from . import emails  # Will fail with circular import error
+from . import reports
 ```
 
 ## Queueing Tasks
