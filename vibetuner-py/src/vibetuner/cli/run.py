@@ -84,7 +84,7 @@ def _run_frontend(
     )
 
     server = Granian(
-        target="vibetuner.frontend:app",
+        target="vibetuner.frontend.proxy:app",
         address=host,
         port=port,
         interface=Interfaces.ASGI,

@@ -144,6 +144,16 @@ class CoreConfiguration(BaseSettings):
 
     worker_concurrency: int = 16
 
+    # Proxy configuration for X-Forwarded-For/Proto headers
+    # Comma-separated list of trusted proxy IPs/CIDRs (e.g., "127.0.0.1,192.168.1.0/24")
+    # SECURITY: Only IPs in this list can set forwarded headers. Use "*" to trust all (NOT recommended for production)
+    trusted_proxy_hosts: str = "127.0.0.1"
+
+    @cached_property
+    def trusted_proxy_hosts_list(self) -> list[str]:
+        """Parse trusted proxy hosts into a list for Granian's proxy header wrapper."""
+        return [h.strip() for h in self.trusted_proxy_hosts.split(",") if h.strip()]
+
     @computed_field
     @cached_property
     def v_hash(self) -> str:
