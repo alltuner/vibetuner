@@ -309,13 +309,26 @@ async def send_digest_email(user_id: str):
 # task = await send_digest_email.enqueue(user.id)
 ```
 
-**Important**: Register tasks by importing them in `src/app/tasks/__init__.py`:
+**Important**: Register tasks by importing them in `src/app/tasks/lifespan.py` within the lifespan context:
 
 ```python
-# src/app/tasks/__init__.py
-__all__ = ["emails"]
-from . import emails  # noqa: F401
+# src/app/tasks/lifespan.py
+from contextlib import asynccontextmanager
+from vibetuner.tasks.lifespan import base_lifespan
+from vibetuner.context import Context
+
+@asynccontextmanager
+async def lifespan():
+    async with base_lifespan() as worker_context:
+        # Import task modules HERE after the worker is initialized
+        from . import emails  # noqa: F401
+
+        yield Context(**worker_context.model_dump())
 ```
+
+**Why not `__init__.py`?** Importing task modules in `__init__.py` causes circular imports because the worker
+needs to import `lifespan.py` before it's fully initialized. See `src/app/tasks/AGENTS.md` for detailed
+explanation.
 
 ### Template Override
 
