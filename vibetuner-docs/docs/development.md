@@ -149,7 +149,7 @@ just start-branch feature-name
 - Template files: `vibetuner-template/`
 - Template configuration: `copier.yml`
 - Documentation: `docs/`
-2. **Test your changes**:
+1. **Test your changes**:
 
 ```bash
 just format           # Format and check code

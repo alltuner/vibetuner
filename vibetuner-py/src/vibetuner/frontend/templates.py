@@ -17,6 +17,8 @@ from .hotreload import hotreload
 
 __all__ = [
     "render_static_template",
+    "render_template",
+    "render_template_string",
     "register_filter",
 ]
 
@@ -185,6 +187,38 @@ def render_template(
     merged_ctx = {**data_ctx.model_dump(), "request": request, **ctx}
 
     return templates.TemplateResponse(template, merged_ctx, **kwargs)
+
+
+def render_template_string(
+    template: str,
+    request: Request,
+    ctx: dict[str, Any] | None = None,
+) -> str:
+    """Render a template to a string instead of HTMLResponse.
+
+    Useful for Server-Sent Events (SSE), AJAX responses, or any case where you need
+    the rendered HTML as a string rather than a full HTTP response.
+
+    Args:
+        template: Path to template file (e.g., "admin/partials/episode.html.jinja")
+        request: FastAPI Request object
+        ctx: Optional context dictionary to pass to template
+
+    Returns:
+        str: Rendered template as a string
+
+    Example:
+        html = render_template_string(
+            "admin/partials/episode_article.html.jinja",
+            request,
+            {"episode": episode}
+        )
+    """
+    ctx = ctx or {}
+    merged_ctx = {**data_ctx.model_dump(), "request": request, **ctx}
+
+    template_obj = templates.get_template(template)
+    return template_obj.render(merged_ctx)
 
 
 # Global Vars
