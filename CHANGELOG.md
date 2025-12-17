@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.39.0](https://github.com/alltuner/vibetuner/compare/v2.38.0...v2.39.0) (2025-12-17)
+
+
+### Features
+
+* add default dependabot.yml to template with bun ecosystem ([#685](https://github.com/alltuner/vibetuner/issues/685)) ([dc6d64a](https://github.com/alltuner/vibetuner/commit/dc6d64af47889367e871eb9d3d06ed7e70314ba8))
+* enhance renovate config and add documentation domains to template ([#687](https://github.com/alltuner/vibetuner/issues/687)) ([13b8f02](https://github.com/alltuner/vibetuner/commit/13b8f02e15a2601c99f618cd5e300da788abd432))
+
 ## [2.38.0](https://github.com/alltuner/vibetuner/compare/v2.37.0...v2.38.0) (2025-12-17)
 
 
