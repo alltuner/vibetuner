@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.38.0](https://github.com/alltuner/vibetuner/compare/v2.37.0...v2.38.0) (2025-12-17)
+
+
+### Features
+
+* **templates:** add render_template_string helper for SSE responses ([#683](https://github.com/alltuner/vibetuner/issues/683)) ([064609e](https://github.com/alltuner/vibetuner/commit/064609e95d4519e1d9116ca8e77b1cb3e3c77527))
+
+
+### Documentation Updates
+
+* **template:** add Tailwind CSS best practices to scaffold guide ([#680](https://github.com/alltuner/vibetuner/issues/680)) ([90906c4](https://github.com/alltuner/vibetuner/commit/90906c4c7fb01d004b65439c9225d3ee00495d04)), closes [#645](https://github.com/alltuner/vibetuner/issues/645)
+* **template:** fix task registration instructions to prevent circular imports ([#682](https://github.com/alltuner/vibetuner/issues/682)) ([c87eab8](https://github.com/alltuner/vibetuner/commit/c87eab82e4bbd0718c38b4e89392b2b7cbf1121d)), closes [#611](https://github.com/alltuner/vibetuner/issues/611)
+
 ## [2.37.0](https://github.com/alltuner/vibetuner/compare/v2.36.8...v2.37.0) (2025-12-16)
 
 
