@@ -12,10 +12,10 @@
   },
   "packageRules": [
     {
-      "description": "Group all non-major dependencies together",
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "all non-major dependencies",
-      "groupSlug": "all-minor-patch"
+      "description": "Group all patch dependencies together",
+      "matchUpdateTypes": ["patch"],
+      "groupName": "all patch dependencies",
+      "groupSlug": "all-patch"
     }
   ]
 }
