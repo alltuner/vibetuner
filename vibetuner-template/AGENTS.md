@@ -450,6 +450,59 @@ def get_usr(e):
 - **DaisyUI components** when available
 - Extend `base/skeleton.html.jinja` for layout
 
+#### Tailwind CSS Best Practices
+
+This project uses Tailwind CSS 4. Follow these patterns for maintainable styles:
+
+**Use Tailwind utility classes directly in templates:**
+
+```jinja
+{# ✅ GOOD: Standard utilities #}
+<div class="p-4 text-lg font-bold bg-blue-500">
+
+{# ✅ GOOD: Arbitrary values for one-off custom values #}
+<div class="text-[13px] bg-[#1DB954]">
+
+{# ✅ GOOD: Arbitrary properties for animations #}
+<div class="animate-fade-in [animation-delay:100ms]">
+
+{# ✅ GOOD: Arbitrary values for complex gradients #}
+<div class="bg-[radial-gradient(ellipse_at_top,rgba(242,100,48,0.08)_0%,transparent_50%)]">
+
+{# ❌ BAD: Inline styles (djLint H021 will flag these) #}
+<div style="animation-delay: 100ms">
+<div style="background: radial-gradient(...)">
+```
+
+**Define reusable design tokens in `assets/statics/css/config.css`:**
+
+```css
+@theme {
+  /* Custom colors */
+  --color-brand-primary: #009ddc;
+  --color-brand-secondary: #f26430;
+
+  /* Custom shadows */
+  --shadow-glow-primary: 0 0 80px rgba(0, 157, 220, 0.2);
+
+  /* Custom animations */
+  --animate-fade-in: fade-in 0.5s ease-out forwards;
+}
+```
+
+Then use them in templates:
+
+```jinja
+<div class="text-brand-primary shadow-glow-primary animate-fade-in">
+```
+
+**Important:**
+
+- Never use inline `style=""` attributes - djLint will flag these
+- Use arbitrary values for one-off custom styles
+- Extract to `@theme` only when values are reused across multiple templates
+- Prefer Tailwind's arbitrary syntax over creating custom CSS classes
+
 ## MCP Servers Available
 
 - **Playwright MCP**: Browser automation and testing (Chromium)
