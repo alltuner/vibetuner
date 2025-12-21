@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.39.1](https://github.com/alltuner/vibetuner/compare/v2.39.0...v2.39.1) (2025-12-21)
+
+
+### Miscellaneous Chores
+
+* update deps and pre-commit ([#689](https://github.com/alltuner/vibetuner/issues/689)) ([b8ab284](https://github.com/alltuner/vibetuner/commit/b8ab284ee26a5357a65e8e2b614aa37926c5bd46))
+
 ## [2.39.0](https://github.com/alltuner/vibetuner/compare/v2.38.0...v2.39.0) (2025-12-17)
 
 
