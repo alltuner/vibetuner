@@ -873,13 +873,13 @@ wheels = [
 
 [[package]]
 name = "gh-bin"
-version = "2.83.1"
+version = "2.83.2"
 source = { registry = "https://pypi.org/simple" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/56/922dd7c06a02ea47c3b801add15b9cc8f64ec855da7dfbc93dc3184ec8cf/gh_bin-2.83.1-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:da4766b6043ac448f1a3b7ce0f7481646cfb88dcef21ccc2aa70719a9f389e62", size = 18522066, upload-time = "2025-11-24T06:32:37.878Z" },
-    { url = "https://files.pythonhosted.org/packages/ab/3e/96fdbec1c90c4e3bfb7b5c084c267d2c3518c5a9d8a32c585ebb04ffa98f/gh_bin-2.83.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:c8c3fddd807d2d492d20c1709ef9d311ea4986b30f4cdb131bd8f655be6d0392", size = 16795162, upload-time = "2025-11-24T06:32:40.068Z" },
-    { url = "https://files.pythonhosted.org/packages/fb/82/a6455206862e98c284675e69d44d504a2d99b5afb8eae78cc07a262e9ab1/gh_bin-2.83.1-py3-none-manylinux2014_aarch64.musllinux_1_1_aarch64.whl", hash = "sha256:4a66123784eb1ea33068bad61d3e6d3eab21d2ecd4cae07ac8a176c9580ad0fa", size = 16104743, upload-time = "2025-11-24T06:32:42.195Z" },
-    { url = "https://files.pythonhosted.org/packages/65/d3/13a5532318703fdd267c488d957d51218ba02f6e767381075f37aefa458e/gh_bin-2.83.1-py3-none-manylinux2014_x86_64.musllinux_1_1_x86_64.whl", hash = "sha256:e1084d7883c4b29c867371da6328237528a8d015ff07950991e133676a1798f6", size = 17820211, upload-time = "2025-11-24T06:32:45.047Z" },
+    { url = "https://files.pythonhosted.org/packages/63/2f/539fc95768777edd99125f3dbbb327077fb34a8755068d1333f8aeacd9bd/gh_bin-2.83.2-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:393e9bf539dcd70af0c2cd0e446d197b306b224d8fa1b711c10c734e850e1670", size = 18506173, upload-time = "2025-12-21T15:12:08.558Z" },
+    { url = "https://files.pythonhosted.org/packages/58/c3/a88ec39386ece7beccdeca6ea598174622c40764c6d7515b0a338df0dd87/gh_bin-2.83.2-py3-none-macosx_11_0_arm64.whl", hash = "sha256:c66eae2470dcd408e8d69ac74020425b9ee9ae636b76ad964f760969798d2ece", size = 16778191, upload-time = "2025-12-21T15:12:10.531Z" },
+    { url = "https://files.pythonhosted.org/packages/0f/e8/caf3f73c27c1f1476808b73319676938f1d47170ca048ab9730d16988dbb/gh_bin-2.83.2-py3-none-manylinux2014_aarch64.musllinux_1_1_aarch64.whl", hash = "sha256:82702dbd2afe0668ff314ef59d15d088b3e653cbe88cbbaba7a5c1fdc495c246", size = 16090617, upload-time = "2025-12-21T15:12:12.738Z" },
+    { url = "https://files.pythonhosted.org/packages/0a/af/c055bedeb7f14b8eb1c2e2fb04e74a385ee2f81ecf16f963e62998bbd1ac/gh_bin-2.83.2-py3-none-manylinux2014_x86_64.musllinux_1_1_x86_64.whl", hash = "sha256:e6f42f5f823623ee626f16db57a46730e6a1c2e1ccbe95671b4ee21f4ab8d9de", size = 17798631, upload-time = "2025-12-21T15:12:14.518Z" },
 ]
 
 [[package]]
@@ -2844,7 +2844,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "2.39.0"
+version = "2.39.1"
 source = { editable = "." }
 dependencies = [
     { name = "aioboto3" },
