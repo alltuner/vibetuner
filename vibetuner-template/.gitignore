@@ -77,4 +77,5 @@ src/app/_version.py
 ############################################################
 # Git Worktrees
 ############################################################
-worktrees/
+worktrees/*
+!worktrees/.placeholder
