@@ -12,7 +12,7 @@ This module contains the scaffolding's core task components:
 
 ## Important Rules
 
-⚠️  **DO NOT MODIFY** these core task components directly.
+⚠️ **DO NOT MODIFY** these core task components directly.
 
 **For changes to core tasks:**
 
