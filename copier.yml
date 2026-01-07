@@ -71,11 +71,7 @@ enable_watchtower:
   when: "{{ fqdn }}"
 
 _tasks:
-  # uv sync must run first so vibetuner is available for copy-core-templates
   - command: [uv, sync]
-    when: "{{ _copier_operation == 'copy' }}"
-  # Copy core templates BEFORE git-init so they're included in initial commit
-  - command: [uv, run, vibetuner, scaffold, copy-core-templates]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [just, git-init, "{{ project_slug }}"]
     when: "{{ _copier_operation == 'copy' }}"
@@ -83,6 +79,3 @@ _tasks:
     when: "{{ _copier_operation == 'copy' }}"
   - command: [uv, run, prek, install]
     when: "{{ _copier_operation == 'copy' }}"
-  # Also run on update to keep core-templates in sync
-  - command: [uv, run, vibetuner, scaffold, copy-core-templates]
-    when: "{{ _copier_operation == 'update' }}"
