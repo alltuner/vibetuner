@@ -20,6 +20,9 @@ feature NAME:
         ln -sf "$(pwd)/.env" "$WORKTREE_DIR/.env"
     fi
 
+    # Trust mise configuration in the worktree
+    (cd "$WORKTREE_DIR" && mise trust)
+
     echo ""
     echo "Worktree created at: $WORKTREE_DIR"
     echo "Branch: $BRANCH_NAME"
