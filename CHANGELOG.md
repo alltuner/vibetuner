@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.44.2](https://github.com/alltuner/vibetuner/compare/v2.44.1...v2.44.2) (2026-01-07)
+
+
+### Bug Fixes
+
+* move to the latest prek version ([#722](https://github.com/alltuner/vibetuner/issues/722)) ([fc9f6a1](https://github.com/alltuner/vibetuner/commit/fc9f6a1b9d1de8e107f358f34fe2637c5412a6b2))
+
 ## [2.44.1](https://github.com/alltuner/vibetuner/compare/v2.44.0...v2.44.1) (2026-01-07)
 
 
