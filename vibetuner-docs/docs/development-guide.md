@@ -28,10 +28,8 @@ Changes to Python code, templates, and assets automatically reload.
 Run services locally without Docker:
 
 ```bash
-# Terminal 1: Frontend assets
-bun dev
-# Terminal 2: Backend server
-just local-dev
+just local-all               # Runs server + assets with auto-port (recommended)
+just local-all-with-worker   # Includes background worker (requires Redis)
 ```
 
 A database (MongoDB or SQL) is required if using database features. Redis is only required if
@@ -45,9 +43,11 @@ available commands.
 ### Development
 
 ```bash
-just dev                     # Docker development with hot reload (recommended)
-just local-dev PORT=8000     # Local development without Docker
-just worker-dev              # Background worker (if background jobs enabled)
+just local-all               # Local dev: server + assets with auto-port (recommended)
+just local-all-with-worker   # Local dev with background worker (requires Redis)
+just dev                     # Docker development with hot reload
+just local-dev PORT=8000     # Local server only (run bun dev separately)
+just worker-dev              # Background worker only
 ```
 
 ### Dependencies

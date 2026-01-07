@@ -23,3 +23,22 @@ local-dev-auto: install-deps
 [group('Local Development')]
 worker-dev: install-deps
     @vibetuner run dev worker
+
+# Runs local dev server and assets in parallel (auto-port)
+[group('Local Development')]
+local-all: install-deps
+    bunx concurrently --kill-others \
+        --names "web,assets" \
+        --prefix-colors "blue,green" \
+        "just local-dev-auto" \
+        "bun dev"
+
+# Runs local dev server, assets, and worker in parallel (requires Redis)
+[group('Local Development')]
+local-all-with-worker: install-deps
+    bunx concurrently --kill-others \
+        --names "web,assets,worker" \
+        --prefix-colors "blue,green,yellow" \
+        "just local-dev-auto" \
+        "bun dev" \
+        "just worker-dev"

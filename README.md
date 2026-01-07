@@ -120,11 +120,7 @@ Fast lockfiles, fast installs, fast everything.
 ### Local Development
 
 ```bash
-# Terminal 1: Frontend assets (auto-rebuild on changes)
-bun dev
-
-# Terminal 2: Backend server (auto-reload on changes)
-just local-dev
+just local-all        # Runs server + assets with auto-port (recommended)
 ```
 
 ### Docker Development

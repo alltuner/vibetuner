@@ -86,8 +86,9 @@ my-app/
 ## Common Commands
 
 ```bash
+just local-all        # Local dev: server + assets (recommended)
 just dev              # Docker development with hot reload
-just local-dev        # Local development (no Docker)
+just local-dev        # Local server only (run bun dev separately)
 just sync             # Sync dependencies
 just format           # Format code
 just build-prod       # Test production build
@@ -106,13 +107,11 @@ Everything runs in containers with hot reload. Changes to code, templates, and a
 ### Local Development
 
 ```bash
-# Terminal 1: Frontend assets
-bun dev
-# Terminal 2: Backend server
-just local-dev
+just local-all
 ```
 
-Useful when you want more control or Docker is slow on your system.
+Runs the backend server and frontend asset builder in parallel with auto-assigned ports. Useful when you
+want more control or Docker is slow on your system.
 
 ## What's Next?
 
