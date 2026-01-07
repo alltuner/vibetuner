@@ -70,7 +70,7 @@ dev = [
   "gh-bin>=2.83.2",
   "granian[pname,reload]>=2.6.1",
   "just-bin>=1.46.0",
-  "prek==0.2.25",  # 0.2.26 missing macosx_arm64 wheel
+  "prek>=0.2.27",
   "pysemver>=0.5.0",
   "ruff>=0.14.10",
   "rumdl>=0.0.211",
