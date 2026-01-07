@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.40.0](https://github.com/alltuner/vibetuner/compare/v2.39.2...v2.40.0) (2026-01-07)
+
+
+### Features
+
+* dynamic vibetuner templates for Tailwind CSS scanning ([#700](https://github.com/alltuner/vibetuner/issues/700)) ([e902e4a](https://github.com/alltuner/vibetuner/commit/e902e4a25709a9d2e966b41af60b8669e8b10cc4))
+
+
+### Bug Fixes
+
+* remove daisyui properties workaround ([#702](https://github.com/alltuner/vibetuner/issues/702)) ([678e8d0](https://github.com/alltuner/vibetuner/commit/678e8d02b91d87046cc65fef8a6e04057e1741c3))
+
 ## [2.39.2](https://github.com/alltuner/vibetuner/compare/v2.39.1...v2.39.2) (2026-01-04)
 
 
