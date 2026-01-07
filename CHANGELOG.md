@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.43.0](https://github.com/alltuner/vibetuner/compare/v2.42.1...v2.43.0) (2026-01-07)
+
+
+### Features
+
+* improve worktree management with hash-based directories ([#712](https://github.com/alltuner/vibetuner/issues/712)) ([11c7522](https://github.com/alltuner/vibetuner/commit/11c752202f67aab8ab350d4dab84b7dc5252c6af))
+
 ## [2.42.1](https://github.com/alltuner/vibetuner/compare/v2.42.0...v2.42.1) (2026-01-07)
 
 
