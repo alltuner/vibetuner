@@ -186,3 +186,9 @@ def update(
     except Exception as e:
         console.print(f"[red]Error updating project: {e}[/red]")
         raise typer.Exit(code=1) from None
+
+
+@scaffold_app.command(name="copy-core-templates", hidden=True)
+def copy_core_templates() -> None:
+    """Deprecated: This command is a no-op kept for backwards compatibility."""
+    console.print("[dim]This command is deprecated and does nothing.[/dim]")
