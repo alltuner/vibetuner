@@ -5,7 +5,6 @@ _default:
 
 import '.justfiles/deps.justfile'
 import '.justfiles/docs.justfile'
-import '.justfiles/gitflow.justfile'
 import '.justfiles/linting.justfile'
 import '.justfiles/testing.justfile'
 import 'vibetuner-template/.justfiles/linting.justfile'
