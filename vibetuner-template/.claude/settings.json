@@ -79,6 +79,7 @@
       "mcp__playwright__browser_take_screenshot",
       "mcp__playwright__browser_type",
       "mcp__playwright__browser_wait_for",
+      "mcp__playwriter__execute",
       "Read(~/Desktop/*.png)",
       "WebFetch(domain:beanie-odm.dev)",
       "WebFetch(domain:bun.com)",
