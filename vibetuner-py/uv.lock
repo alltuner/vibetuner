@@ -2839,7 +2839,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "2.41.0"
+version = "2.43.0"
 source = { editable = "." }
 dependencies = [
     { name = "aioboto3" },
@@ -2919,7 +2919,7 @@ requires-dist = [
     { name = "itsdangerous", specifier = ">=2.2.0" },
     { name = "just-bin", marker = "extra == 'dev'", specifier = ">=1.46.0" },
     { name = "loguru", specifier = ">=0.7.3" },
-    { name = "prek", marker = "extra == 'dev'", specifier = ">=0.2.25" },
+    { name = "prek", marker = "extra == 'dev'", specifier = "==0.2.25" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.12.5" },
     { name = "pydantic-extra-types", extras = ["pycountry"], specifier = ">=2.11.0" },
     { name = "pydantic-settings", specifier = ">=2.12.0" },
