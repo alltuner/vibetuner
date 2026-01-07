@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.42.1](https://github.com/alltuner/vibetuner/compare/v2.42.0...v2.42.1) (2026-01-07)
+
+
+### Bug Fixes
+
+* run mise trust in new worktrees ([#710](https://github.com/alltuner/vibetuner/issues/710)) ([6ff0b1e](https://github.com/alltuner/vibetuner/commit/6ff0b1ebfa289f0d241d910337f498517d3a3555))
+
 ## [2.42.0](https://github.com/alltuner/vibetuner/compare/v2.41.0...v2.42.0) (2026-01-07)
 
 
