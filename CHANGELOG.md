@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.44.1](https://github.com/alltuner/vibetuner/compare/v2.44.0...v2.44.1) (2026-01-07)
+
+
+### Bug Fixes
+
+* add copy-core-templates stub for backwards compatibility ([#719](https://github.com/alltuner/vibetuner/issues/719)) ([70cc5e0](https://github.com/alltuner/vibetuner/commit/70cc5e029abc7d2f3d3f5ff04f64af8d863fba1b))
+
+
+### Miscellaneous Chores
+
+* update dependencies ([#721](https://github.com/alltuner/vibetuner/issues/721)) ([0fe2db4](https://github.com/alltuner/vibetuner/commit/0fe2db4ebe3f18ea0c3637b2767617327f59fd1f))
+
 ## [2.44.0](https://github.com/alltuner/vibetuner/compare/v2.43.0...v2.44.0) (2026-01-07)
 
 
