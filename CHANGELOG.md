@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.41.0](https://github.com/alltuner/vibetuner/compare/v2.40.0...v2.41.0) (2026-01-07)
+
+
+### Features
+
+* include playwriter mcp ([#703](https://github.com/alltuner/vibetuner/issues/703)) ([0fe01f8](https://github.com/alltuner/vibetuner/commit/0fe01f8d361b0eca31286e5d57312418d1aafbe3))
+
 ## [2.40.0](https://github.com/alltuner/vibetuner/compare/v2.39.2...v2.40.0) (2026-01-07)
 
 
