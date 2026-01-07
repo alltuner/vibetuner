@@ -1,8 +1,9 @@
 /* Start of File: do not remove this comment and don't add anything above */
 /* Do not change anything between this comment and the next comment */
-@import "tailwindcss";
-/* Include the vibetuner core templates when building bundles */
-@source "core-templates";
+@import "tailwindcss" source(none);
+@source "templates";
+@source "assets/statics/js";
+@source ".core-templates";
 @plugin "daisyui" {
   // Remove this once this is fixed
   // https://github.com/saadeghi/daisyui/issues/3882

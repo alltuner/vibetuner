@@ -32,9 +32,9 @@ node_modules/
 
 
 ############################################################
-# Core templates
+# Vibetuner templates (dynamically linked/copied)
 ############################################################
-/templates/core
+.core-templates
 
 
 ############################################################

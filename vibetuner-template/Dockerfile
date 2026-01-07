@@ -47,12 +47,13 @@ COPY src/ src/
 ARG VERSION=0.0.0
 ENV UV_DYNAMIC_VERSIONING_BYPASS=$VERSION
 
-# Install project in editable mode and clean up test/doc files
+# Install project in editable mode, copy vibetuner templates, and clean up test/doc files
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
     uv sync --locked --no-group dev && \
+    cp -r $(.venv/bin/python -c "import vibetuner; print(vibetuner.__path__[0])")/templates/frontend .core-templates && \
     find .venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null || true && \
     find .venv -type f \( -name '*.md' -o -name '*.rst' -o -name '*.txt' \) ! -path '*/METADATA' -delete 2>/dev/null || true
 
@@ -89,9 +90,8 @@ RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
 FROM frontend-deps AS frontend-build
 
 # Copy templates for Tailwind CSS class scanning
-# core-templates/ contains vibetuner framework templates, copied at scaffold time
 COPY templates/frontend/ templates/frontend/
-COPY core-templates/ core-templates/
+COPY --from=python-app /app/.core-templates/ .core-templates/
 
 # Build production assets with Bun
 RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
