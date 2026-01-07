@@ -78,14 +78,9 @@ This project uses **git tags** for versioning:
 
 ### Development (Local)
 
-**CRITICAL**: Run both processes simultaneously:
-
 ```bash
-# Terminal 1: Frontend asset building
-bun dev
-
-# Terminal 2: Backend server
-just local-dev
+just local-all               # Runs server + assets with auto-port (recommended)
+just local-all-with-worker   # Includes background worker (requires Redis)
 ```
 
 ### Development (Docker)
@@ -102,13 +97,15 @@ All project management tasks use `just` (command runner). Run `just` to see all 
 #### Development
 
 ```bash
-just dev                     # Docker development with hot reload (recommended)
-just local-dev PORT=8000     # Local development without Docker
-just worker-dev              # Background worker (if background jobs enabled)
+just local-all               # Local dev: server + assets with auto-port (recommended)
+just local-all-with-worker   # Local dev with background worker (requires Redis)
+just dev                     # Docker development with hot reload
+just local-dev PORT=8000     # Local server only (run bun dev separately)
+just worker-dev              # Background worker only
 ```
 
-**Docker dev** runs everything in containers with automatic reload.
 **Local dev** requires MongoDB if using database features, and Redis if background jobs are enabled.
+**Docker dev** runs everything in containers with automatic reload.
 
 #### Dependencies
 
@@ -384,14 +381,10 @@ settings.aws_access_key_id # SecretStr | None
 
 ### Prerequisites
 
-Both processes must be running:
+The development server must be running:
 
 ```bash
-# Terminal 1
-bun dev
-
-# Terminal 2
-just local-dev
+just local-all
 ```
 
 ### Playwright MCP Integration
@@ -529,7 +522,7 @@ Then use them in templates:
 2. **File issues** at `https://github.com/alltuner/vibetuner` for core changes
 3. **All your code** goes in `src/app/` - This is your space
 4. **Always run** `ruff format .` after Python changes
-5. **Both processes required** for development: `bun dev` + `just local-dev`
+5. **Start development** with `just local-all` (runs server + assets)
 6. **Use uv exclusively** for Python packages (never pip/poetry/conda)
 7. **Override, don't modify** core templates - create in `templates/` instead
 

@@ -112,7 +112,12 @@ automatically when documents are inserted.
 
 ## Related Commands
 
-Generated projects expose additional helpers in the scaffolded `justfile`,
-including `just local-dev`, `just worker-dev`, and `just update-scaffolding`,
-which wrap the commands above. Use `just --list` inside a generated project to
-see everything available.
+Generated projects expose additional helpers in the scaffolded `justfile`:
+
+- `just local-all` – Runs server + assets in parallel with auto-port (recommended for local dev)
+- `just local-all-with-worker` – Same as above but includes background worker (requires Redis)
+- `just local-dev` – Runs server only (use with `bun dev` in separate terminal)
+- `just worker-dev` – Runs background worker only
+- `just update-scaffolding` – Updates project to latest template
+
+Use `just --list` inside a generated project to see all available commands.
