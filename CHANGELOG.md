@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.42.0](https://github.com/alltuner/vibetuner/compare/v2.41.0...v2.42.0) (2026-01-07)
+
+
+### Features
+
+* add auto-port selection for local development ([#705](https://github.com/alltuner/vibetuner/issues/705)) ([3aeea30](https://github.com/alltuner/vibetuner/commit/3aeea3080349aba4930336bdef3d8dac8d52b0b5))
+* add git worktree support for feature development ([#707](https://github.com/alltuner/vibetuner/issues/707)) ([c68f77f](https://github.com/alltuner/vibetuner/commit/c68f77fd3b12bad93ae3b63cd8b402a588091248))
+* add local-all command for simplified local development ([#709](https://github.com/alltuner/vibetuner/issues/709)) ([cc763d6](https://github.com/alltuner/vibetuner/commit/cc763d6b5b45e02d5e0d5c4c167361607c1f18a1))
+
 ## [2.41.0](https://github.com/alltuner/vibetuner/compare/v2.40.0...v2.41.0) (2026-01-07)
 
 
