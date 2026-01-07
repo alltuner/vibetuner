@@ -1,5 +1,7 @@
 # ABOUTME: Run commands for starting the application in different modes
 # ABOUTME: Supports dev/prod modes for frontend and worker services
+import hashlib
+import os
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -17,6 +19,14 @@ run_app = typer.Typer(
 
 DEFAULT_FRONTEND_PORT = 8000
 DEFAULT_WORKER_PORT = 11111
+
+
+def _compute_auto_port() -> int:
+    """Compute deterministic port from current directory path."""
+    cwd = os.getcwd()
+    hash_bytes = hashlib.sha256(cwd.encode()).digest()
+    hash_int = int.from_bytes(hash_bytes[:4], "big")
+    return 8001 + (hash_int % 999)
 
 
 def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
@@ -67,6 +77,10 @@ def _run_frontend(
     is_dev = mode == "dev"
 
     console.print(f"[green]Starting frontend in {mode} mode on {host}:{port}[/green]")
+    console.print(f"[cyan]website reachable at http://localhost:{port}[/cyan]")
+    console.print(
+        f"[cyan]website reachable at https://{port}.localdev.alltuner.com:12000/[/cyan]"
+    )
     if is_dev:
         console.print("[dim]Watching for changes in src/ and templates/[/dim]")
     else:
@@ -121,8 +135,13 @@ def dev(
     service: Annotated[
         str, typer.Argument(help="Service to run: 'frontend' or 'worker'")
     ] = "frontend",
-    port: int = typer.Option(
+    port: int | None = typer.Option(
         None, help="Port to run on (8000 for frontend, 11111 for worker)"
+    ),
+    auto_port: bool = typer.Option(
+        False,
+        "--auto-port",
+        help="Use deterministic port based on project path (8001-8999)",
     ),
     host: str = typer.Option("0.0.0.0", help="Host to bind to (frontend only)"),  # noqa: S104
     workers_count: int = typer.Option(
@@ -130,6 +149,13 @@ def dev(
     ),
 ) -> None:
     """Run in development mode with hot reload (frontend or worker)."""
+    if port is not None and auto_port:
+        console.print("[red]Error: --port and --auto-port are mutually exclusive[/red]")
+        raise typer.Exit(code=1)
+
+    if auto_port:
+        port = _compute_auto_port()
+
     _run_service("dev", service, host, port, workers_count)
 
 
