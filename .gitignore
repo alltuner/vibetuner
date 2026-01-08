@@ -72,4 +72,8 @@ vibetuner-template/uv.lock
 _site/
 
 
-
+############################################################
+# Git Worktrees
+############################################################
+worktrees/*
+!worktrees/.placeholder
