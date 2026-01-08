@@ -28,35 +28,103 @@ feature-new NAME:
 
 # Remove a feature worktree and delete branch (fails if unmerged)
 [group('Features')]
-feature-done NAME:
+feature-done NAME="":
     #!/usr/bin/env bash
     set -euo pipefail
-    BRANCH_NAME="{{NAME}}"
-    HASH=$(echo -n "$BRANCH_NAME" | sha256sum | cut -c1-8)
-    WORKTREE_DIR="worktrees/$HASH"
+
+    INPUT="{{NAME}}"
+    BRANCH_NAME=""
+    WORKTREE_DIR=""
+    RAN_FROM_WORKTREE=false
+
+    if [[ -z "$INPUT" ]]; then
+        # No argument: detect current worktree
+        CURRENT_DIR=$(pwd)
+        if [[ "$CURRENT_DIR" != *"/worktrees/"* ]]; then
+            echo "Error: Not in a worktree directory. Provide a branch name or path."
+            exit 1
+        fi
+        BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+        WORKTREE_DIR=$(git rev-parse --show-toplevel)
+        RAN_FROM_WORKTREE=true
+    elif [[ -d "$INPUT" ]]; then
+        # Input is a directory path
+        WORKTREE_DIR=$(cd "$INPUT" && git rev-parse --show-toplevel)
+        BRANCH_NAME=$(cd "$INPUT" && git rev-parse --abbrev-ref HEAD)
+    else
+        # Input is a branch name (existing behavior)
+        BRANCH_NAME="$INPUT"
+        HASH=$(echo -n "$BRANCH_NAME" | sha256sum | cut -c1-8)
+        WORKTREE_DIR="worktrees/$HASH"
+    fi
+
     if [[ ! -d "$WORKTREE_DIR" ]]; then
         echo "Error: Worktree not found at $WORKTREE_DIR"
         exit 1
     fi
+
+    # Get main worktree path before removing
+    MAIN_WORKTREE=$(git worktree list --porcelain | grep -m1 '^worktree ' | cut -d' ' -f2-)
+
     git worktree remove "$WORKTREE_DIR"
     git branch -d "$BRANCH_NAME"
     echo "Removed worktree and branch: $BRANCH_NAME"
 
+    if [[ "$RAN_FROM_WORKTREE" == true ]]; then
+        echo ""
+        echo "To continue working:"
+        echo "  cd $MAIN_WORKTREE"
+    fi
+
 # Force remove a feature worktree and delete branch (even if unmerged)
 [group('Features')]
-feature-drop NAME:
+feature-drop NAME="":
     #!/usr/bin/env bash
     set -euo pipefail
-    BRANCH_NAME="{{NAME}}"
-    HASH=$(echo -n "$BRANCH_NAME" | sha256sum | cut -c1-8)
-    WORKTREE_DIR="worktrees/$HASH"
+
+    INPUT="{{NAME}}"
+    BRANCH_NAME=""
+    WORKTREE_DIR=""
+    RAN_FROM_WORKTREE=false
+
+    if [[ -z "$INPUT" ]]; then
+        # No argument: detect current worktree
+        CURRENT_DIR=$(pwd)
+        if [[ "$CURRENT_DIR" != *"/worktrees/"* ]]; then
+            echo "Error: Not in a worktree directory. Provide a branch name or path."
+            exit 1
+        fi
+        BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+        WORKTREE_DIR=$(git rev-parse --show-toplevel)
+        RAN_FROM_WORKTREE=true
+    elif [[ -d "$INPUT" ]]; then
+        # Input is a directory path
+        WORKTREE_DIR=$(cd "$INPUT" && git rev-parse --show-toplevel)
+        BRANCH_NAME=$(cd "$INPUT" && git rev-parse --abbrev-ref HEAD)
+    else
+        # Input is a branch name (existing behavior)
+        BRANCH_NAME="$INPUT"
+        HASH=$(echo -n "$BRANCH_NAME" | sha256sum | cut -c1-8)
+        WORKTREE_DIR="worktrees/$HASH"
+    fi
+
     if [[ ! -d "$WORKTREE_DIR" ]]; then
         echo "Error: Worktree not found at $WORKTREE_DIR"
         exit 1
     fi
+
+    # Get main worktree path before removing
+    MAIN_WORKTREE=$(git worktree list --porcelain | grep -m1 '^worktree ' | cut -d' ' -f2-)
+
     git worktree remove --force "$WORKTREE_DIR"
     git branch -D "$BRANCH_NAME"
     echo "Force removed worktree and branch: $BRANCH_NAME"
+
+    if [[ "$RAN_FROM_WORKTREE" == true ]]; then
+        echo ""
+        echo "To continue working:"
+        echo "  cd $MAIN_WORKTREE"
+    fi
 
 # List all feature worktrees
 [group('Features')]
