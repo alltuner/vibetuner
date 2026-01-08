@@ -78,3 +78,9 @@ feature-list:
             fi
         fi
     done
+
+# Rebase current worktree branch on origin/main
+[group('Features')]
+feature-rebase:
+    git fetch origin main
+    git rebase origin/main
