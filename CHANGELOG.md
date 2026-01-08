@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.46.1](https://github.com/alltuner/vibetuner/compare/v2.46.0...v2.46.1) (2026-01-08)
+
+
+### Documentation Updates
+
+* add worktree management documentation ([#734](https://github.com/alltuner/vibetuner/issues/734)) ([0a0dfa2](https://github.com/alltuner/vibetuner/commit/0a0dfa218b0789c0acb11b3fdb2a785dc0362102))
+
 ## [2.46.0](https://github.com/alltuner/vibetuner/compare/v2.45.0...v2.46.0) (2026-01-08)
 
 
