@@ -67,12 +67,13 @@ feature-done NAME="":
     MAIN_WORKTREE=$(git worktree list --porcelain | grep -m1 '^worktree ' | cut -d' ' -f2-)
 
     git worktree remove "$WORKTREE_DIR"
+    cd "$MAIN_WORKTREE"
     git branch -d "$BRANCH_NAME"
     echo "Removed worktree and branch: $BRANCH_NAME"
 
     if [[ "$RAN_FROM_WORKTREE" == true ]]; then
         echo ""
-        echo "To continue working:"
+        echo "You are now in a deleted directory. Run:"
         echo "  cd $MAIN_WORKTREE"
     fi
 
@@ -117,12 +118,13 @@ feature-drop NAME="":
     MAIN_WORKTREE=$(git worktree list --porcelain | grep -m1 '^worktree ' | cut -d' ' -f2-)
 
     git worktree remove --force "$WORKTREE_DIR"
+    cd "$MAIN_WORKTREE"
     git branch -D "$BRANCH_NAME"
     echo "Force removed worktree and branch: $BRANCH_NAME"
 
     if [[ "$RAN_FROM_WORKTREE" == true ]]; then
         echo ""
-        echo "To continue working:"
+        echo "You are now in a deleted directory. Run:"
         echo "  cd $MAIN_WORKTREE"
     fi
 
