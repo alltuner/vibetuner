@@ -114,10 +114,25 @@ automatically when documents are inserted.
 
 Generated projects expose additional helpers in the scaffolded `justfile`:
 
+### Development
+
 - `just local-all` – Runs server + assets in parallel with auto-port (recommended for local dev)
 - `just local-all-with-worker` – Same as above but includes background worker (requires Redis)
 - `just local-dev` – Runs server only (use with `bun dev` in separate terminal)
 - `just worker-dev` – Runs background worker only
 - `just update-scaffolding` – Updates project to latest template
+
+### Parallel Development
+
+Work on multiple features simultaneously using isolated worktrees:
+
+- `just feature-new NAME` – Create isolated worktree with new branch from main
+- `just feature-list` – List all active feature worktrees
+- `just feature-done [NAME]` – Remove worktree and delete merged branch
+- `just feature-drop [NAME]` – Force remove worktree and delete branch (even if unmerged)
+- `just feature-rebase` – Rebase current branch on origin/main
+
+The `NAME` parameter for `feature-done` and `feature-drop` is optional. If omitted, the command
+auto-detects the current worktree. You can also pass a directory path instead of a branch name.
 
 Use `just --list` inside a generated project to see all available commands.

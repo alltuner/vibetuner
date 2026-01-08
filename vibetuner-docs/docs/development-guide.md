@@ -111,6 +111,83 @@ just deploy-latest HOST      # Deploy to remote host
 just update-scaffolding      # Update project to latest vibetuner template
 ```
 
+### Parallel Development
+
+```bash
+just feature-new NAME        # Create new feature worktree
+just feature-list            # List all feature worktrees
+just feature-done [NAME]     # Remove worktree + delete merged branch
+just feature-drop [NAME]     # Force remove worktree + delete branch
+just feature-rebase          # Sync current branch with origin/main
+```
+
+## Parallel Development with Worktrees
+
+Work on multiple features simultaneously using git worktrees. Each worktree is an isolated
+copy of the repository with its own branch, allowing true parallel development.
+
+### When to Use Worktrees
+
+| Approach | Use When |
+|----------|----------|
+| Worktrees (`feature-new`) | Working on multiple features, need clean isolation, instant context switching |
+| Simple branch (`git checkout`) | Single feature at a time, quick fixes, prefer simpler workflow |
+
+### Creating a Feature Worktree
+
+```bash
+just feature-new feat/user-dashboard
+# Creates worktrees/a1b2c3d4/ with branch feat/user-dashboard
+# Symlinks .env for shared configuration
+# Runs mise trust if available
+
+cd worktrees/a1b2c3d4
+# Work on your feature...
+```
+
+### Listing Feature Worktrees
+
+```bash
+just feature-list
+# Shows all active feature worktrees with their branches and paths
+```
+
+### Completing a Feature
+
+After your PR is merged, clean up the worktree and branch:
+
+```bash
+# Auto-detect from current directory (run from within the worktree)
+just feature-done
+
+# By branch name
+just feature-done feat/user-dashboard
+
+# By directory path
+just feature-done ./worktrees/a1b2c3d4
+```
+
+If you're inside the worktree when running `feature-done`, you'll be reminded to `cd` back to
+the main repository since the directory will be deleted.
+
+### Abandoning Unmerged Work
+
+Use `feature-drop` to force-remove a worktree even if the branch has unmerged changes:
+
+```bash
+just feature-drop feat/abandoned-idea
+```
+
+### Keeping Features Up to Date
+
+Rebase your feature branch on latest main:
+
+```bash
+cd worktrees/a1b2c3d4
+just feature-rebase
+# Fetches origin/main and rebases your branch on top
+```
+
 ## Common Tasks
 
 ### Adding New Routes
