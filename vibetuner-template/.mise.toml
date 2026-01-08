@@ -4,7 +4,10 @@
 uv_venv_auto = true
 
 [tools]
-uv = "latest"
 bun = "latest"
-just = "latest"
 gh = "latest"
+just = "latest"
+prek = "latest"
+ruff = "latest"
+ty = "latest"
+uv = "latest"

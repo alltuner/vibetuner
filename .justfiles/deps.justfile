@@ -58,7 +58,7 @@ deps-pr:
     just update-and-commit
 
     # Update pre-commit hooks
-    uv run prek auto-update
+    prek auto-update
     git add vibetuner-template/.pre-commit-config.yaml
     git commit -m "chore: update pre-commit hooks" \
         vibetuner-template/.pre-commit-config.yaml \
