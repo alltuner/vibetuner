@@ -1,0 +1,2 @@
+# ABOUTME: Placeholder to ensure the worktrees directory exists in git
+# ABOUTME: Git worktrees are created here by `just feature-new`
