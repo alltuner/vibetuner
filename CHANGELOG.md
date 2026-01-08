@@ -6,6 +6,7 @@
 ### Features
 
 * add worktrees directory placeholder to template ([#724](https://github.com/alltuner/vibetuner/issues/724)) ([495562b](https://github.com/alltuner/vibetuner/commit/495562b6b4540690279d05dcf1171c65bed11d57))
+* allow parallel development using worktrees ([#727](https://github.com/alltuner/vibetuner/issues/727)) ([df32b1a](https://github.com/alltuner/vibetuner/commit/df32b1afbe6961450764e0d480dba2dfcd57a939))
 
 ## [2.44.2](https://github.com/alltuner/vibetuner/compare/v2.44.1...v2.44.2) (2026-01-07)
 
