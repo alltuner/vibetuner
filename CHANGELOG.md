@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.46.0](https://github.com/alltuner/vibetuner/compare/v2.45.0...v2.46.0) (2026-01-08)
+
+
+### Features
+
+* add feature-rebase command to sync worktree with main ([#731](https://github.com/alltuner/vibetuner/issues/731)) ([75833ca](https://github.com/alltuner/vibetuner/commit/75833ca8dcf03a34055c09d170aba4c6a4c758ac))
+* creates new action to update dependencies and scaffolding for scaffolded projects ([#729](https://github.com/alltuner/vibetuner/issues/729)) ([423c037](https://github.com/alltuner/vibetuner/commit/423c0375925f9685c067c8df708ca23b7b956ddf))
+* improve feature-done and feature-drop with flexible input ([#732](https://github.com/alltuner/vibetuner/issues/732)) ([5a48354](https://github.com/alltuner/vibetuner/commit/5a48354d1ec3326183af5f8e2c71b12fb4aebe36))
+
+
+### Bug Fixes
+
+* cd to main worktree before deleting branch in feature-done/drop ([#733](https://github.com/alltuner/vibetuner/issues/733)) ([c2b98bf](https://github.com/alltuner/vibetuner/commit/c2b98bf21da8fcfac4b2ed367172c885882103f1))
+
+
+### Miscellaneous Chores
+
+* **main:** release 2.45.0 ([#728](https://github.com/alltuner/vibetuner/issues/728)) ([b95acf0](https://github.com/alltuner/vibetuner/commit/b95acf0202378c23a6e896f33a346b580db8bda5))
+
 ## [2.45.0](https://github.com/alltuner/vibetuner/compare/v2.44.2...v2.45.0) (2026-01-08)
 
 
