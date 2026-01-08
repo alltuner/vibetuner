@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.46.2](https://github.com/alltuner/vibetuner/compare/v2.46.1...v2.46.2) (2026-01-08)
+
+
+### Miscellaneous Chores
+
+* update tool ecosystem to favor mise ([#736](https://github.com/alltuner/vibetuner/issues/736)) ([ae3a069](https://github.com/alltuner/vibetuner/commit/ae3a0692c9b516dfe53899d78782e09c2ff5514e))
+
 ## [2.46.1](https://github.com/alltuner/vibetuner/compare/v2.46.0...v2.46.1) (2026-01-08)
 
 
