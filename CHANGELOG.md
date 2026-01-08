@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.45.0](https://github.com/alltuner/vibetuner/compare/v2.44.2...v2.45.0) (2026-01-08)
+
+
+### Features
+
+* add worktrees directory placeholder to template ([#724](https://github.com/alltuner/vibetuner/issues/724)) ([495562b](https://github.com/alltuner/vibetuner/commit/495562b6b4540690279d05dcf1171c65bed11d57))
+
 ## [2.44.2](https://github.com/alltuner/vibetuner/compare/v2.44.1...v2.44.2) (2026-01-07)
 
 
