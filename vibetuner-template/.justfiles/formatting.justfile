@@ -1,7 +1,7 @@
 # Format Python files with ruff
 [group('Code quality: formatting')]
 format-py:
-    @uv run ruff format .
+    @ruff format .
 
 # Format TOML files with taplo
 [group('Code quality: formatting')]
