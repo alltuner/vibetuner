@@ -137,19 +137,28 @@ Visit [localhost:8000](http://localhost:8000) to view the documentation site.
 
 ### Adding New Features
 
-1. **Create a feature branch**:
+1. **Create a feature branch** using one of two approaches:
 
 ```bash
+# Option A: Simple branch (single feature at a time)
 just start-branch feature-name
+
+# Option B: Worktree (parallel development, isolated environment)
+just feature-new feature-name
+cd worktrees/$(echo -n "feature-name" | sha256sum | cut -c1-8)
 ```
 
-1. **Make your changes** in the appropriate location:
+Use worktrees when working on multiple features simultaneously or when you need complete
+isolation. Use simple branches for quick fixes or when working on one thing at a time.
+
+2. **Make your changes** in the appropriate location:
 - Python framework code: `vibetuner-py/src/vibetuner/`
 - JavaScript dependencies: `vibetuner-js/package.json`
 - Template files: `vibetuner-template/`
 - Template configuration: `copier.yml`
 - Documentation: `docs/`
-1. **Test your changes**:
+
+3. **Test your changes**:
 
 ```bash
 just format           # Format and check code
@@ -157,14 +166,14 @@ just test-scaffold    # Test scaffolding
 just docs-build       # Test docs build
 ```
 
-1. **Commit your changes**:
+4. **Commit your changes**:
 
 ```bash
 git add .
 git commit -m "Add feature X"
 ```
 
-1. **Push and create PR**:
+5. **Push and create PR**:
 
 ```bash
 git push origin feature-name
@@ -372,6 +381,12 @@ just push-tags           # Push tags to trigger publish
 # Git workflow
 just start-branch NAME   # Create feature branch
 just pr                  # Create GitHub PR
+# Parallel development (worktrees)
+just feature-new NAME    # Create isolated feature worktree
+just feature-list        # List all feature worktrees
+just feature-done [NAME] # Remove worktree + delete merged branch
+just feature-drop [NAME] # Force remove worktree + delete branch
+just feature-rebase      # Sync current branch with origin/main
 # Testing generated projects
 cd /tmp/vibetuner-test
 just dev                 # Docker development
