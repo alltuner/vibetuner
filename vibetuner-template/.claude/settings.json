@@ -113,6 +113,7 @@
       "WebFetch(domain:sqlalchemy.org)",
       "WebFetch(domain:sqlmodel.tiangolo.com)",
       "WebFetch(domain:starlette.io)",
+      "WebFetch(domain:streaq.readthedocs.io)",
       "WebFetch(domain:support.google.com)",
       "WebFetch(domain:tailwindcss.com)",
       "WebFetch(domain:taplo.tamasfe.dev)",
