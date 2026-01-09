@@ -87,6 +87,7 @@
       "WebFetch(domain:click.palletsprojects.com)",
       "WebFetch(domain:copier.readthedocs.io)",
       "WebFetch(domain:daisyui.com)",
+      "WebFetch(domain:developers.google.com)",
       "WebFetch(domain:djlint.com)",
       "WebFetch(domain:docs.github.com)",
       "WebFetch(domain:docs.anthropic.com)",
