@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.46.4](https://github.com/alltuner/vibetuner/compare/v2.46.3...v2.46.4) (2026-01-09)
+
+
+### Miscellaneous Chores
+
+* improve claude settings ([#740](https://github.com/alltuner/vibetuner/issues/740)) ([24bfa74](https://github.com/alltuner/vibetuner/commit/24bfa7496a185d81aa50278823ad456269edb57c))
+
 ## [2.46.3](https://github.com/alltuner/vibetuner/compare/v2.46.2...v2.46.3) (2026-01-09)
 
 
