@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.46.5](https://github.com/alltuner/vibetuner/compare/v2.46.4...v2.46.5) (2026-01-09)
+
+
+### Miscellaneous Chores
+
+* allow code to close issues and show commits ([#744](https://github.com/alltuner/vibetuner/issues/744)) ([4800743](https://github.com/alltuner/vibetuner/commit/4800743db79c2face3a01f8a01e4a97dd8b1767f))
+
 ## [2.46.4](https://github.com/alltuner/vibetuner/compare/v2.46.3...v2.46.4) (2026-01-09)
 
 
