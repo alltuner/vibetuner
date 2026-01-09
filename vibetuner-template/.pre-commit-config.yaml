@@ -8,7 +8,7 @@ repos:
         stages: [pre-commit, post-checkout, post-merge, post-rewrite]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.14.10
+    rev: v0.14.11
     hooks:
       # Run the linter (check only, no auto-fix).
       - id: ruff-check
