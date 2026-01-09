@@ -102,6 +102,7 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:granian.dev)",
       "WebFetch(domain:htmx.org)",
+      "WebFetch(domain:issuetracker.google.com)",
       "WebFetch(domain:itsdangerous.palletsprojects.com)",
       "WebFetch(domain:just.systems)",
       "WebFetch(domain:llm.datasette.io)",
