@@ -121,6 +121,9 @@
     "deny": [],
     "defaultMode": "acceptEdits"
   },
+  "enabledMcpjsonServers": [
+    "playwriter"
+  ],
   "enableAllProjectMcpServers": true,
   "hooks": {
     "PostToolUse": [
