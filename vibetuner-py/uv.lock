@@ -2894,7 +2894,7 @@ requires-dist = [
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "redis", extras = ["hiredis"], specifier = ">=7.1.0" },
     { name = "rich", specifier = ">=14.2.0" },
-    { name = "rumdl", marker = "extra == 'dev'", specifier = ">=0.0.212" },
+    { name = "rumdl", marker = "extra == 'dev'", specifier = ">=0.0.215" },
     { name = "semver", marker = "extra == 'dev'", specifier = ">=3.0.4" },
     { name = "sqlmodel", specifier = ">=0.0.31" },
     { name = "sse-starlette", specifier = ">=3.1.2" },
