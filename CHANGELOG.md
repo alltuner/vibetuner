@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.47.0](https://github.com/alltuner/vibetuner/compare/v2.46.5...v2.47.0) (2026-01-13)
+
+
+### Features
+
+* add plugins to claude repo context ([#750](https://github.com/alltuner/vibetuner/issues/750)) ([f275b93](https://github.com/alltuner/vibetuner/commit/f275b93da73a4a4258aba67e4d69b745d620d9e0))
+
+
+### Miscellaneous Chores
+
+* bump copier from 9.11.0 to 9.11.1 in /vibetuner-py ([#747](https://github.com/alltuner/vibetuner/issues/747)) ([4475dbd](https://github.com/alltuner/vibetuner/commit/4475dbd13ad62634bf9ddd8a5c3beba9adb09dba))
+* update dependencies ([#754](https://github.com/alltuner/vibetuner/issues/754)) ([a2df1c4](https://github.com/alltuner/vibetuner/commit/a2df1c41809faa3d1b93eed4f69ed979d4896226))
+
 ## [2.46.5](https://github.com/alltuner/vibetuner/compare/v2.46.4...v2.46.5) (2026-01-09)
 
 
