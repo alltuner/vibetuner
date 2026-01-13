@@ -75,7 +75,6 @@ dev = [
   "types-aioboto3[s3,ses]>=15.5.0",
   "types-authlib>=1.6.6.20251220",
   "types-pyyaml>=6.0.12.20250915",
-  "uv-bump>=0.4.0",
 ]
 test = [
   # Testing dependencies
