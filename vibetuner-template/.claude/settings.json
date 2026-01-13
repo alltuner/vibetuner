@@ -127,10 +127,10 @@
     "deny": [],
     "defaultMode": "acceptEdits"
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "playwriter"
   ],
-  "enableAllProjectMcpServers": true,
   "hooks": {
     "PostToolUse": [
       {
@@ -143,5 +143,12 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "astral@astral-sh": true,
+    "frontend-design@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true
   }
 }
