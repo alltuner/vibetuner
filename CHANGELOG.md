@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.47.1](https://github.com/alltuner/vibetuner/compare/v2.47.0...v2.47.1) (2026-01-14)
+
+
+### Bug Fixes
+
+* use builtin prek hooks instead of pre-commit hooks ([#755](https://github.com/alltuner/vibetuner/issues/755)) ([7c5aad2](https://github.com/alltuner/vibetuner/commit/7c5aad2ef1c6eb049dfb52932c08a50013b24cd4))
+
+
+### Miscellaneous Chores
+
+* update dependencies ([#758](https://github.com/alltuner/vibetuner/issues/758)) ([e5920d7](https://github.com/alltuner/vibetuner/commit/e5920d76884ebc99728222a21da84d0bb4be5e9a))
+* update pre-commit hooks ([#757](https://github.com/alltuner/vibetuner/issues/757)) ([16b804f](https://github.com/alltuner/vibetuner/commit/16b804fc97bcab8ac96bfe24c0415007041d6263))
+
 ## [2.47.0](https://github.com/alltuner/vibetuner/compare/v2.46.5...v2.47.0) (2026-01-13)
 
 
