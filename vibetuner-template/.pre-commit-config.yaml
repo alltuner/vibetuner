@@ -1,4 +1,10 @@
 repos:
+  - repo: builtin
+    hooks:
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+      - id: end-of-file-fixer
+      - id: no-commit-to-branch
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
     rev: 0.9.24
@@ -12,12 +18,8 @@ repos:
     hooks:
       # Run the linter (check only, no auto-fix).
       - id: ruff-check
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
-    hooks:
-      - id: no-commit-to-branch
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.0.215 # Use the latest release tag
+    rev: v0.0.215
     hooks:
       - id: rumdl
         name: rumdl check
