@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.47.2](https://github.com/alltuner/vibetuner/compare/v2.47.1...v2.47.2) (2026-01-16)
+
+
+### Miscellaneous Chores
+
+* update claude review templates to latest version ([#759](https://github.com/alltuner/vibetuner/issues/759)) ([e2d4d26](https://github.com/alltuner/vibetuner/commit/e2d4d26941d5bd0d0a52236e081a934541e1c68c))
+
 ## [2.47.1](https://github.com/alltuner/vibetuner/compare/v2.47.0...v2.47.1) (2026-01-14)
 
 
