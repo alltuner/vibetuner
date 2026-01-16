@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.47.3](https://github.com/alltuner/vibetuner/compare/v2.47.2...v2.47.3) (2026-01-16)
+
+
+### Bug Fixes
+
+* dependabot is really in a bad shape, replacing completely with r… ([#762](https://github.com/alltuner/vibetuner/issues/762)) ([c16ff61](https://github.com/alltuner/vibetuner/commit/c16ff616717d17111220611b206642823220db75))
+
 ## [2.47.2](https://github.com/alltuner/vibetuner/compare/v2.47.1...v2.47.2) (2026-01-16)
 
 
