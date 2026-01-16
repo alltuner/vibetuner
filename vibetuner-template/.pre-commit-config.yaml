@@ -7,19 +7,19 @@ repos:
       - id: no-commit-to-branch
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
-    rev: 0.9.25
+    rev: 0.9.26
     hooks:
       # Update the uv lockfile
       - id: uv-lock
         stages: [pre-commit, post-checkout, post-merge, post-rewrite]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.14.11
+    rev: v0.14.13
     hooks:
       # Run the linter (check only, no auto-fix).
       - id: ruff-check
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.0.217
+    rev: v0.0.218
     hooks:
       - id: rumdl
         name: rumdl check
