@@ -61,10 +61,13 @@ After `vibetuner scaffold new`, Copier executes the commands listed in `copier.y
 There are two supported update flows:
 
 1. **`vibetuner scaffold update`** (works everywhere)
+
 - Reads `.copier-answers.yml` and reapplies the latest template files.
 - Respects previous answers by default; pass `--no-skip-answered` to revisit prompts.
 - Runs the same post-generation tasks after updating files.
+
 1. **`just update-scaffolding`** (inside generated projects)
+
 - Shells out to `copier update -A --trust`, then re-syncs dependencies (`bun install`, `uv sync --all-extras`).
 
 - Useful when you already have the project checked out with the scaffolded `justfile`.

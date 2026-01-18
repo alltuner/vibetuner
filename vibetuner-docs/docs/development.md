@@ -152,6 +152,7 @@ Use worktrees when working on multiple features simultaneously or when you need 
 isolation. Use simple branches for quick fixes or when working on one thing at a time.
 
 2. **Make your changes** in the appropriate location:
+
 - Python framework code: `vibetuner-py/src/vibetuner/`
 - JavaScript dependencies: `vibetuner-js/package.json`
 - Template files: `vibetuner-template/`
