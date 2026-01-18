@@ -9,6 +9,7 @@
       "Bash(docker build:*)",
       "Bash(echo:*)",
       "Bash(find:*)",
+      "Bash(gh api:*)",
       "Bash(gh issue close:*)",
       "Bash(gh issue create:*)",
       "Bash(gh issue edit:*)",
