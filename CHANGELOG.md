@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.47.4](https://github.com/alltuner/vibetuner/compare/v2.47.3...v2.47.4) (2026-01-18)
+
+
+### Bug Fixes
+
+* resolve Dependabot alert and add configuration ([#765](https://github.com/alltuner/vibetuner/issues/765)) ([9506210](https://github.com/alltuner/vibetuner/commit/9506210918019f4d05b96356a0d85bd7aedec4fe))
+
+
+### Miscellaneous Chores
+
+* linting and claude config ([#767](https://github.com/alltuner/vibetuner/issues/767)) ([49c87ec](https://github.com/alltuner/vibetuner/commit/49c87ec3d90b87a8a4121bb19f9f7bea8ddc2347))
+
 ## [2.47.3](https://github.com/alltuner/vibetuner/compare/v2.47.2...v2.47.3) (2026-01-16)
 
 
