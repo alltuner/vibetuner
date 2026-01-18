@@ -1,0 +1,52 @@
+# ABOUTME: Dependabot configuration for automated dependency updates.
+# ABOUTME: Monitors Python (uv), JavaScript (npm), and GitHub Actions dependencies.
+
+version: 2
+updates:
+  # Root Python dependencies (scaffolding dev tools)
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore(deps)"
+
+  # vibetuner-py Python package
+  - package-ecosystem: "uv"
+    directory: "/vibetuner-py"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore(deps)"
+
+  # vibetuner-template Python dependencies
+  - package-ecosystem: "uv"
+    directory: "/vibetuner-template"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore(deps)"
+
+  # vibetuner-js JavaScript package
+  - package-ecosystem: "npm"
+    directory: "/vibetuner-js"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore(deps)"
+
+  # vibetuner-template JavaScript dependencies
+  - package-ecosystem: "npm"
+    directory: "/vibetuner-template"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore(deps)"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore(deps)"
