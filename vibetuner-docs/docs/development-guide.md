@@ -442,6 +442,108 @@ from starlette_babel import gettext as _
 message = _("Welcome to {app}", app=app_name)
 ```
 
+### SEO-Friendly Language URLs
+
+Vibetuner supports path-prefix language routing for SEO-friendly URLs (e.g., `/ca/privacy`,
+`/es/about`).
+
+#### How It Works
+
+The `LangPrefixMiddleware` handles path-prefix language routing:
+
+| URL | Behavior |
+|-----|----------|
+| `/ca/dashboard` | Strips prefix → `/dashboard`, sets lang=ca |
+| `/dashboard` (anonymous) | Redirects to `/{default_lang}/dashboard` (if route uses `LangPrefixDep`) |
+| `/dashboard` (logged-in) | Serves directly, uses profile language |
+| `/xx/dashboard` (invalid) | Returns 404 Not Found |
+| `/ca` | Redirects to `/ca/` |
+| `/static/...` | Bypassed, serves static file directly |
+
+#### Requiring Language Prefix for SEO Routes
+
+Use `LangPrefixDep` to mark routes that should redirect anonymous users to prefixed URLs:
+
+```python
+from fastapi import Request
+from vibetuner.frontend import LangPrefixDep
+from vibetuner.frontend.templates import render_template
+
+@router.get("/privacy")
+async def privacy(request: Request, _: LangPrefixDep):
+    return render_template("privacy.html.jinja", request)
+```
+
+With this dependency:
+
+- Anonymous users visiting `/privacy` are redirected to `/en/privacy` (or their detected language)
+- Authenticated users can access either `/privacy` or `/en/privacy`
+- Search engines see clean, language-specific URLs
+
+#### Generating Language-Prefixed URLs in Templates
+
+Use `lang_url_for` to generate URLs with the current language prefix:
+
+```html
+<a href="{{ lang_url_for(request, 'privacy') }}">Privacy Policy</a>
+<!-- Output: /ca/privacy (if current language is Catalan) -->
+```
+
+#### Adding hreflang Tags for SEO
+
+Use `hreflang_tags` to generate proper hreflang link tags in your page head:
+
+```html
+<!-- In your base template <head> -->
+{{ hreflang_tags(request, supported_languages, default_language)|safe }}
+```
+
+This outputs:
+
+```html
+<link rel="alternate" hreflang="ca" href="https://example.com/ca/privacy" />
+<link rel="alternate" hreflang="en" href="https://example.com/en/privacy" />
+<link rel="alternate" hreflang="es" href="https://example.com/es/privacy" />
+<link rel="alternate" hreflang="x-default" href="https://example.com/en/privacy" />
+```
+
+#### Complete Example
+
+Route definition:
+
+```python
+# src/app/frontend/routes/legal.py
+from fastapi import APIRouter, Request
+from vibetuner.frontend import LangPrefixDep
+from vibetuner.frontend.templates import render_template
+
+router = APIRouter(tags=["legal"])
+
+@router.get("/privacy")
+async def privacy(request: Request, _: LangPrefixDep):
+    return render_template("legal/privacy.html.jinja", request)
+
+@router.get("/terms")
+async def terms(request: Request, _: LangPrefixDep):
+    return render_template("legal/terms.html.jinja", request)
+```
+
+Template with hreflang:
+
+```html
+<!-- templates/legal/privacy.html.jinja -->
+{% extends "base/skeleton.html.jinja" %}
+
+{% block head_extra %}
+{{ hreflang_tags(request, supported_languages, default_language)|safe }}
+{% endblock %}
+
+{% block content %}
+<h1>{% trans %}Privacy Policy{% endtrans %}</h1>
+<!-- Content -->
+{% endblock %}
+```
+
 ## Debugging
 
 ### View Logs

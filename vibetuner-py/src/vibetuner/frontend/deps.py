@@ -26,6 +26,31 @@ async def enforce_lang(request: Request, lang: Optional[str] = None):
 LangDep = Annotated[str, Depends(enforce_lang)]
 
 
+async def require_lang_prefix(request: Request) -> None:
+    """Dependency for SEO routes that require language prefix for anonymous users.
+
+    - Authenticated users: allowed without prefix (uses profile language)
+    - Anonymous users: redirected to /{lang}/{path}
+    """
+    # If accessed with prefix, we're good
+    if hasattr(request.state, "lang_prefix"):
+        return
+
+    # Authenticated users don't need prefix
+    if request.user.is_authenticated:
+        return
+
+    # Anonymous user without prefix: redirect to prefixed URL
+    lang = request.state.language
+    current_path = request.url.path
+    prefixed_url = f"/{lang}{current_path}"
+
+    raise HTTPException(status_code=307, headers={"Location": prefixed_url})
+
+
+LangPrefixDep = Annotated[None, Depends(require_lang_prefix)]
+
+
 MAGIC_COOKIE_NAME = "magic_access"
 
 
