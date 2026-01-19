@@ -6,6 +6,8 @@ from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.responses import Response as StarletteResponse
+from starlette.types import ASGIApp, Receive, Scope, Send
 from starlette_babel import (
     LocaleFromCookie,
     LocaleFromQuery,
@@ -83,6 +85,81 @@ class AdjustLangCookieMiddleware(BaseHTTPMiddleware):
         return response
 
 
+class LangPrefixMiddleware:
+    """Strips valid language prefixes from URL paths before routing.
+
+    Supports SEO-friendly path-prefix language routing (e.g., /ca/dashboard -> /dashboard
+    with lang=ca). Invalid language prefixes return 404; bypass paths like /static/,
+    /health/, /debug/ pass through unchanged.
+    """
+
+    BYPASS_PREFIXES = ("/static/", "/health/", "/debug/", "/hot-reload")
+
+    def __init__(self, app: ASGIApp, supported_languages: set[str]):
+        self.app = app
+        self.supported_languages = supported_languages
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        path = scope.get("path", "")
+
+        # Skip bypass paths
+        if any(path.startswith(p) for p in self.BYPASS_PREFIXES):
+            await self.app(scope, receive, send)
+            return
+
+        # Check for language prefix pattern: /{xx}/... or /{xx}
+        parts = path.strip("/").split("/", 1)
+        if parts and len(parts[0]) == 2 and parts[0].isalpha() and parts[0].islower():
+            lang_code = parts[0]
+
+            if lang_code in self.supported_languages:
+                # Handle bare /xx without trailing slash -> redirect to /xx/
+                if len(parts) == 1 or parts[1] == "":
+                    if not path.endswith("/"):
+                        await self._redirect(scope, receive, send, f"/{lang_code}/")
+                        return
+
+                # Valid language: strip prefix, store original path
+                new_path = "/" + parts[1] if len(parts) > 1 else "/"
+
+                # Initialize state dict if needed
+                if "state" not in scope:
+                    scope = {**scope, "state": {}}
+                else:
+                    scope = {**scope, "state": {**scope["state"]}}
+
+                scope["path"] = new_path
+                scope["state"]["lang_prefix"] = lang_code
+                scope["state"]["original_path"] = path
+            else:
+                # Invalid language prefix: return 404
+                await self._not_found(scope, receive, send)
+                return
+
+        await self.app(scope, receive, send)
+
+    async def _redirect(
+        self,
+        scope: Scope,
+        receive: Receive,
+        send: Send,
+        location: str,
+        status: int = 302,
+    ) -> None:
+        """Send a redirect response."""
+        response = StarletteResponse(status_code=status, headers={"Location": location})
+        await response(scope, receive, send)
+
+    async def _not_found(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """Send a 404 response for invalid language prefix."""
+        response = StarletteResponse(status_code=404, content="Not Found")
+        await response(scope, receive, send)
+
+
 class AuthBackend(AuthenticationBackend):
     async def authenticate(
         self,
@@ -117,6 +194,7 @@ middlewares: list[Middleware] = [
             LocaleFromCookie(),
         ],
     ),
+    Middleware(LangPrefixMiddleware, supported_languages=ctx.supported_languages),
     Middleware(AdjustLangCookieMiddleware),
     Middleware(AuthenticationMiddleware, backend=AuthBackend()),
 ]

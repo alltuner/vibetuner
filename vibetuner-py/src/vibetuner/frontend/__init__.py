@@ -8,11 +8,19 @@ import vibetuner.frontend.lifespan as lifespan_module
 from vibetuner import paths
 from vibetuner.logging import logger
 
-from .deps import LangDep as LangDep, MagicCookieDep as MagicCookieDep
+from .deps import (
+    LangDep as LangDep,
+    LangPrefixDep as LangPrefixDep,
+    MagicCookieDep as MagicCookieDep,
+)
 from .lifespan import ctx
 from .middleware import middlewares
 from .routes import auth, debug, health, language, meta, user
-from .templates import render_template
+from .templates import (
+    hreflang_tags as hreflang_tags,
+    lang_url_for as lang_url_for,
+    render_template,
+)
 
 
 _registered_routers: list[APIRouter] = []
