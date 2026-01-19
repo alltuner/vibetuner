@@ -2,13 +2,13 @@ from pydantic import EmailStr
 from starlette_babel import gettext_lazy as _
 
 from vibetuner.config import settings
-from vibetuner.services.email import SESEmailService
+from vibetuner.services.email import EmailService
 
 from .templates import render_static_template
 
 
 async def send_magic_link_email(
-    ses_service: SESEmailService,
+    email_service: EmailService,
     lang: str,
     to_address: EmailStr,
     login_url: str,
@@ -35,7 +35,7 @@ async def send_magic_link_email(
         },
     )
 
-    await ses_service.send_email(
+    await email_service.send_email(
         subject=_("Sign in to {project_name}").format(
             project_name=settings.project.project_name
         ),

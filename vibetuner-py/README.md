@@ -60,7 +60,7 @@ This will generate a complete project with:
 
 - **`frontend/`**: FastAPI app, routes, middleware, auth
 - **`models/`**: User, OAuth, email verification, blob storage models
-- **`services/`**: Email (SES), blob storage (S3)
+- **`services/`**: Email (Mailjet), blob storage (S3)
 - **`tasks/`**: Background job infrastructure
 - **`cli/`**: CLI framework with scaffold, run, db commands
 - **`config.py`**: Pydantic settings management

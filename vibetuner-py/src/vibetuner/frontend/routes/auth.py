@@ -13,7 +13,7 @@ from pydantic import EmailStr
 from starlette.responses import HTMLResponse
 
 from vibetuner.models import EmailVerificationTokenModel, UserModel
-from vibetuner.services.email import SESEmailService
+from vibetuner.services.email import EmailService
 
 from ..email import send_magic_link_email
 from ..oauth import (
@@ -25,8 +25,8 @@ from ..templates import render_template
 from . import get_homepage_url
 
 
-def get_ses_service() -> SESEmailService:
-    return SESEmailService()
+def get_email_service() -> EmailService:
+    return EmailService()
 
 
 def logout_user(request: Request):
@@ -72,7 +72,7 @@ async def auth_login(
 @router.post("/magic-link-login", response_model=None)
 async def send_magic_link(
     request: Request,
-    ses_service: Annotated[SESEmailService, Depends(get_ses_service)],
+    email_service: Annotated[EmailService, Depends(get_email_service)],
     background_tasks: BackgroundTasks,
     email: Annotated[EmailStr, Form()],
     next: Annotated[str | None, Form()] = None,
@@ -89,7 +89,7 @@ async def send_magic_link(
 
     background_tasks.add_task(
         send_magic_link_email,
-        ses_service=ses_service,
+        email_service=email_service,
         lang=request.state.language,
         to_address=email,
         login_url=str(login_url),
