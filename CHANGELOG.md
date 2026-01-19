@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.49.0](https://github.com/alltuner/vibetuner/compare/v2.48.0...v2.49.0) (2026-01-19)
+
+
+### Features
+
+* add lint-po linter for Gettext translation files ([#776](https://github.com/alltuner/vibetuner/issues/776)) ([df6df39](https://github.com/alltuner/vibetuner/commit/df6df39c3f895ad626819292872d416b0dc1a48a))
+* expose locale_names to template context ([#774](https://github.com/alltuner/vibetuner/issues/774)) ([9a42c3b](https://github.com/alltuner/vibetuner/commit/9a42c3ba664901c45de6d1f6f720f9c1a0f8e2d4))
+
+
+### Miscellaneous Chores
+
+* update dependencies ([#777](https://github.com/alltuner/vibetuner/issues/777)) ([91af7a3](https://github.com/alltuner/vibetuner/commit/91af7a3a96ce84558ce8e1994b33e5621dee10dd))
+
 ## [2.48.0](https://github.com/alltuner/vibetuner/compare/v2.47.4...v2.48.0) (2026-01-19)
 
 
