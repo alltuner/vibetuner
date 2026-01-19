@@ -133,8 +133,8 @@ class CoreConfiguration(BaseSettings):
     redis_url: RedisDsn | None = None
     database_url: PostgresDsn | MariaDBDsn | MySQLDsn | SQLiteDsn | None = None
 
-    aws_access_key_id: SecretStr | None = None
-    aws_secret_access_key: SecretStr | None = None
+    mailjet_api_key: SecretStr | None = None
+    mailjet_api_secret: SecretStr | None = None
 
     r2_default_bucket_name: str | None = None
     r2_bucket_endpoint_url: HttpUrl | None = None

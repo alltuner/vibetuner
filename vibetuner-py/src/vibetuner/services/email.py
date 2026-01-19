@@ -1,49 +1,47 @@
-"""Email service for sending transactional emails via AWS SES.
+# ABOUTME: Email service for sending transactional emails via Mailjet.
+# ABOUTME: Provides MailjetEmailService class with async send_email method.
 
-WARNING: This is a scaffolding-managed file. DO NOT MODIFY directly.
-To extend email functionality, create wrapper services in the parent services directory.
-"""
+from typing import Any
 
-from typing import Literal
-
-import aioboto3
+from asyncer import asyncify
+from mailjet_rest import Client
 
 from vibetuner.config import settings
 
 
-SES_SERVICE_NAME: Literal["ses"] = "ses"
+class EmailServiceNotConfiguredError(Exception):
+    """Raised when email service credentials are not configured."""
 
 
-class SESEmailService:
-    def __init__(
-        self,
-        from_email: str | None = None,
-    ) -> None:
-        self.session = aioboto3.Session(
-            region_name=settings.project.aws_default_region,
-            aws_access_key_id=settings.aws_access_key_id.get_secret_value()
-            if settings.aws_access_key_id
-            else None,
-            aws_secret_access_key=settings.aws_secret_access_key.get_secret_value()
-            if settings.aws_secret_access_key
-            else None,
+class EmailService:
+    def __init__(self, from_email: str | None = None) -> None:
+        if not settings.mailjet_api_key or not settings.mailjet_api_secret:
+            raise EmailServiceNotConfiguredError(
+                "Mailjet credentials not configured. "
+                "Set MAILJET_API_KEY and MAILJET_API_SECRET environment variables."
+            )
+        self.client = Client(
+            auth=(
+                settings.mailjet_api_key.get_secret_value(),
+                settings.mailjet_api_secret.get_secret_value(),
+            ),
+            version="v3.1",
         )
         self.from_email = from_email or settings.project.from_email
 
     async def send_email(
         self, to_address: str, subject: str, html_body: str, text_body: str
-    ):
-        """Send email using Amazon SES"""
-        async with self.session.client(SES_SERVICE_NAME) as ses_client:
-            response = await ses_client.send_email(
-                Source=self.from_email,
-                Destination={"ToAddresses": [to_address]},
-                Message={
-                    "Subject": {"Data": subject, "Charset": "UTF-8"},
-                    "Body": {
-                        "Html": {"Data": html_body, "Charset": "UTF-8"},
-                        "Text": {"Data": text_body, "Charset": "UTF-8"},
-                    },
-                },
-            )
-            return response
+    ) -> dict[str, Any]:
+        data = {
+            "Messages": [
+                {
+                    "From": {"Email": self.from_email},
+                    "To": [{"Email": to_address}],
+                    "Subject": subject,
+                    "HTMLPart": html_body,
+                    "TextPart": text_body,
+                }
+            ]
+        }
+        result = await asyncify(self.client.send.create)(data=data)
+        return result.json()

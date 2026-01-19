@@ -7,7 +7,7 @@ not end users.
 
 ```text
 services/
-├── email.py    # Email sending via AWS SES
+├── email.py    # Email sending via Mailjet
 └── blob.py     # File storage and blob management
 ```
 
@@ -15,25 +15,26 @@ services/
 
 ### Email Service (email.py)
 
-Handles email sending via AWS SES:
+Handles email sending via Mailjet:
 
 ```python
-async def send_email(
-    to_email: str,
-    subject: str,
-    html_content: str,
-    text_content: str | None = None,
-    from_email: str | None = None,
-) -> None:
-    # Implementation using aioboto3 SES
+class EmailService:
+    async def send_email(
+        self,
+        to_address: str,
+        subject: str,
+        html_body: str,
+        text_body: str,
+    ) -> dict:
+        # Implementation using mailjet-rest
 ```
 
 **Key features:**
 
-- Async email sending via AWS SES
+- Async email sending via Mailjet
 - HTML and plain text support
 - Configurable sender address
-- Error handling and logging
+- Error handling with EmailServiceNotConfiguredError
 
 **Used by:**
 
@@ -106,8 +107,8 @@ Test scenarios:
 
 ### Email Service
 
-- **AWS credentials**: Ensure proper IAM permissions
-- **Rate limiting**: SES has sending limits
+- **Mailjet credentials**: Set MAILJET_API_KEY and MAILJET_API_SECRET environment variables
+- **Rate limiting**: Mailjet has sending limits per plan
 - **Bounces**: Handle bounce notifications properly
 - **HTML sanitization**: Don't trust user HTML
 
