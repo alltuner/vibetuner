@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.48.0](https://github.com/alltuner/vibetuner/compare/v2.47.4...v2.48.0) (2026-01-19)
+
+
+### Features
+
+* add path-prefix language routing for SEO-friendly URLs ([#770](https://github.com/alltuner/vibetuner/issues/770)) ([30544a4](https://github.com/alltuner/vibetuner/commit/30544a4ec7c412ce1d648b44111e73dfc7ccfe8f))
+
 ## [2.47.4](https://github.com/alltuner/vibetuner/compare/v2.47.3...v2.47.4) (2026-01-18)
 
 
