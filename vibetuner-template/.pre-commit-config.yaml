@@ -55,3 +55,10 @@ repos:
             --optional-scopes,
             --strict,
           ]
+  - repo: local
+    hooks:
+      - id: lint-po
+        name: lint-po
+        entry: uvx lint-po
+        language: system
+        files: \.po$
