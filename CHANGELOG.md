@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.50.1](https://github.com/alltuner/vibetuner/compare/v2.50.0...v2.50.1) (2026-01-19)
+
+
+### Miscellaneous Chores
+
+* update dependencies ([#780](https://github.com/alltuner/vibetuner/issues/780)) ([f470958](https://github.com/alltuner/vibetuner/commit/f4709580f673d3ce25eea3f0dc9583b07af55d5b))
+
 ## [2.50.0](https://github.com/alltuner/vibetuner/compare/v2.49.0...v2.50.0) (2026-01-19)
 
 
