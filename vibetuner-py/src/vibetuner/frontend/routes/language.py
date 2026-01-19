@@ -1,4 +1,3 @@
-from babel import Locale
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
@@ -8,16 +7,6 @@ from ..templates import render_template
 
 
 router = APIRouter()
-
-LOCALE_NAMES: dict[str, str] = dict(
-    sorted(
-        {
-            locale: (Locale.parse(locale).display_name or locale).capitalize()
-            for locale in ctx.supported_languages
-        }.items(),
-        key=lambda x: x[1],
-    ),
-)
 
 
 @router.get("/set-language/{lang}")
@@ -37,7 +26,7 @@ async def get_languages(request: Request) -> HTMLResponse:
         "lang/select.html.jinja",
         request=request,
         ctx={
-            "locale_names": LOCALE_NAMES,
+            "locale_names": ctx.locale_names,
             "current_language": request.state.language,
         },
     )

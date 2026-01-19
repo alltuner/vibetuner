@@ -39,25 +39,12 @@ async def user_edit_form(request: Request) -> HTMLResponse:
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Get available languages for the dropdown
-    from babel import Locale
-
-    locale_names = dict(
-        sorted(
-            {
-                locale: (Locale.parse(locale).display_name or locale).capitalize()
-                for locale in ctx.supported_languages
-            }.items(),
-            key=lambda x: x[1],
-        ),
-    )
-
     return render_template(
         "user/edit.html.jinja",
         request,
         {
             "user": user,
-            "locale_names": locale_names,
+            "locale_names": ctx.locale_names,
             "current_language": user.user_settings.language,
         },
     )

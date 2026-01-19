@@ -442,6 +442,33 @@ from starlette_babel import gettext as _
 message = _("Welcome to {app}", app=app_name)
 ```
 
+### Template Context Variables for i18n
+
+The following language-related variables are available in templates:
+
+| Variable | Type | Description |
+|----------|------|-------------|
+| `default_language` | `str` | Default language code (e.g., "en") |
+| `supported_languages` | `set[str]` | Set of supported language codes |
+| `locale_names` | `dict[str, str]` | Language codes to native display names |
+
+#### Using `locale_names` for Language Selectors
+
+The `locale_names` dict maps language codes to their native display names, sorted alphabetically:
+
+```html
+<select name="language">
+    {% for code, name in locale_names.items() %}
+        <option value="{{ code }}"
+                {% if code == current_language %}selected{% endif %}>
+            {{ name }}
+        </option>
+    {% endfor %}
+</select>
+```
+
+Example output: `{"ca": "Català", "en": "English", "es": "Español"}`
+
 ### SEO-Friendly Language URLs
 
 Vibetuner supports path-prefix language routing for SEO-friendly URLs (e.g., `/ca/privacy`,
