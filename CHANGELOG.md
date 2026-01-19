@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.50.0](https://github.com/alltuner/vibetuner/compare/v2.49.0...v2.50.0) (2026-01-19)
+
+
+### Features
+
+* replace SES email service with Mailjet ([#778](https://github.com/alltuner/vibetuner/issues/778)) ([af00e58](https://github.com/alltuner/vibetuner/commit/af00e58b0135a4cb39536160e52b193d17f9de57))
+
 ## [2.49.0](https://github.com/alltuner/vibetuner/compare/v2.48.0...v2.49.0) (2026-01-19)
 
 
