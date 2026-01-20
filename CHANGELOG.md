@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.53.2](https://github.com/alltuner/vibetuner/compare/v2.53.1...v2.53.2) (2026-01-20)
+
+
+### Bug Fixes
+
+* use correct SessionMiddleware parameter for secure cookies ([#798](https://github.com/alltuner/vibetuner/issues/798)) ([70bcb78](https://github.com/alltuner/vibetuner/commit/70bcb78e37faea4359a55f9e1c4f52ee87ccce67))
+
+
+### Miscellaneous Chores
+
+* update dependencies ([#800](https://github.com/alltuner/vibetuner/issues/800)) ([311945c](https://github.com/alltuner/vibetuner/commit/311945cd6706b8cf515b173d47298cef2e57c74d))
+
 ## [2.53.1](https://github.com/alltuner/vibetuner/compare/v2.53.0...v2.53.1) (2026-01-20)
 
 
