@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.53.1](https://github.com/alltuner/vibetuner/compare/v2.53.0...v2.53.1) (2026-01-20)
+
+
+### Bug Fixes
+
+* mark session cookie as Secure in production ([#795](https://github.com/alltuner/vibetuner/issues/795)) ([78e63ab](https://github.com/alltuner/vibetuner/commit/78e63ab2d6215a77fc4090341a68bdc588edc0da))
+
 ## [2.53.0](https://github.com/alltuner/vibetuner/compare/v2.52.1...v2.53.0) (2026-01-20)
 
 
