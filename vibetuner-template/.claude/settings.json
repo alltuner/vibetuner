@@ -91,6 +91,7 @@
       "WebFetch(domain:copier.readthedocs.io)",
       "WebFetch(domain:daisyui.com)",
       "WebFetch(domain:developers.google.com)",
+      "WebFetch(domain:dev.mailjet.com)",
       "WebFetch(domain:djlint.com)",
       "WebFetch(domain:docs.github.com)",
       "WebFetch(domain:docs.anthropic.com)",
@@ -121,6 +122,7 @@
       "WebFetch(domain:tailwindcss.com)",
       "WebFetch(domain:taplo.tamasfe.dev)",
       "WebFetch(domain:typer.tiangolo.com)",
+      "WebFetch(domain:umami.is)",
       "WebFetch(domain:vibetuner.alltuner.com)",
       "WebFetch(domain:localhost)",
       "WebSearch"
