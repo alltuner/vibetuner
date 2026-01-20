@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.51.0](https://github.com/alltuner/vibetuner/compare/v2.50.1...v2.51.0) (2026-01-20)
+
+
+### Features
+
+* add traceability params to EmailService for Mailjet ([#782](https://github.com/alltuner/vibetuner/issues/782)) ([09ffd84](https://github.com/alltuner/vibetuner/commit/09ffd84c5a4ca1a234028655017ab2f58d9a8c7c))
+
+
+### Miscellaneous Chores
+
+* update dependencies ([#784](https://github.com/alltuner/vibetuner/issues/784)) ([802eef4](https://github.com/alltuner/vibetuner/commit/802eef43a7868b7b02f2c46a79b0f09077982496))
+
 ## [2.50.1](https://github.com/alltuner/vibetuner/compare/v2.50.0...v2.50.1) (2026-01-19)
 
 
