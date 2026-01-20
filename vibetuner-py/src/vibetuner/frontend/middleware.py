@@ -182,7 +182,11 @@ class AuthBackend(AuthenticationBackend):
 middlewares: list[Middleware] = [
     Middleware(TrustedHostMiddleware),
     Middleware(HtmxMiddleware),
-    Middleware(SessionMiddleware, secret_key=settings.session_key.get_secret_value()),
+    Middleware(
+        SessionMiddleware,
+        secret_key=settings.session_key.get_secret_value(),
+        secure=not ctx.DEBUG,
+    ),
     Middleware(
         LocaleMiddleware,
         locales=list(ctx.supported_languages),
