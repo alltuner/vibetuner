@@ -185,7 +185,7 @@ middlewares: list[Middleware] = [
     Middleware(
         SessionMiddleware,
         secret_key=settings.session_key.get_secret_value(),
-        secure=not ctx.DEBUG,
+        https_only=not ctx.DEBUG,
     ),
     Middleware(
         LocaleMiddleware,
