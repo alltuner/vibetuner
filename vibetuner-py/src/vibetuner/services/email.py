@@ -9,12 +9,24 @@ from mailjet_rest import Client
 from vibetuner.config import settings
 
 
+# Named email: ("Display Name", "email@example.com") or just "email@example.com"
+EmailAddress = str | tuple[str, str]
+
+
+def _format_email_address(addr: EmailAddress) -> dict[str, str]:
+    """Convert email address to Mailjet format."""
+    if isinstance(addr, str):
+        return {"Email": addr}
+    name, email = addr
+    return {"Email": email, "Name": name}
+
+
 class EmailServiceNotConfiguredError(Exception):
     """Raised when email service credentials are not configured."""
 
 
 class EmailService:
-    def __init__(self, from_email: str | None = None) -> None:
+    def __init__(self, from_email: EmailAddress | None = None) -> None:
         if not settings.mailjet_api_key or not settings.mailjet_api_secret:
             raise EmailServiceNotConfiguredError(
                 "Mailjet credentials not configured. "
@@ -31,7 +43,7 @@ class EmailService:
 
     async def send_email(
         self,
-        to_address: str,
+        to_address: EmailAddress,
         subject: str,
         html_body: str,
         text_body: str,
@@ -39,8 +51,8 @@ class EmailService:
         event_payload: str | None = None,
     ) -> dict[str, Any]:
         message: dict[str, Any] = {
-            "From": {"Email": self.from_email},
-            "To": [{"Email": to_address}],
+            "From": _format_email_address(self.from_email),
+            "To": [_format_email_address(to_address)],
             "Subject": subject,
             "HTMLPart": html_body,
             "TextPart": text_body,
