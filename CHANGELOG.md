@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.53.0](https://github.com/alltuner/vibetuner/compare/v2.52.1...v2.53.0) (2026-01-20)
+
+
+### Features
+
+* add language to automatic template context ([#793](https://github.com/alltuner/vibetuner/issues/793)) ([2696751](https://github.com/alltuner/vibetuner/commit/2696751d21c6cd80f193fcc5e2eb501fad86e901))
+
 ## [2.52.1](https://github.com/alltuner/vibetuner/compare/v2.52.0...v2.52.1) (2026-01-20)
 
 
