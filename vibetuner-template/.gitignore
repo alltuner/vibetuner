@@ -85,3 +85,4 @@ worktrees/*
 # Claude code local settings
 ############################################################
 .claude/settings.local.json
+.playwright-mcp/
