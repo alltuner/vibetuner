@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.52.0](https://github.com/alltuner/vibetuner/compare/v2.51.0...v2.52.0) (2026-01-20)
+
+
+### Features
+
+* add named email address support to EmailService ([#788](https://github.com/alltuner/vibetuner/issues/788)) ([b7eb84b](https://github.com/alltuner/vibetuner/commit/b7eb84bdd5c86b3245b9daf338e1d780e464fb2d))
+
+
+### Bug Fixes
+
+* make claude plugins behave a bit more nicely ([#786](https://github.com/alltuner/vibetuner/issues/786)) ([93bce3a](https://github.com/alltuner/vibetuner/commit/93bce3a7e6137a7b84fce158c04645bbaa20c812))
+
+
+### Miscellaneous Chores
+
+* update dependencies ([#789](https://github.com/alltuner/vibetuner/issues/789)) ([396ce71](https://github.com/alltuner/vibetuner/commit/396ce711876be6681e15bd6db8b9e5040981ec2b))
+
 ## [2.51.0](https://github.com/alltuner/vibetuner/compare/v2.50.1...v2.51.0) (2026-01-20)
 
 
