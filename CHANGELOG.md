@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.52.1](https://github.com/alltuner/vibetuner/compare/v2.52.0...v2.52.1) (2026-01-20)
+
+
+### Bug Fixes
+
+* allow claude to use playwright more easily ([#790](https://github.com/alltuner/vibetuner/issues/790)) ([72b3c66](https://github.com/alltuner/vibetuner/commit/72b3c66199ecebd2f1fcc83e9cd6fdd75c79b11f))
+
 ## [2.52.0](https://github.com/alltuner/vibetuner/compare/v2.51.0...v2.52.0) (2026-01-20)
 
 
