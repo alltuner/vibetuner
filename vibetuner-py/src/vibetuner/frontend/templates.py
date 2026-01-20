@@ -251,7 +251,13 @@ def render_template(
     **kwargs: Any,
 ) -> HTMLResponse:
     ctx = ctx or {}
-    merged_ctx = {**data_ctx.model_dump(), "request": request, **ctx}
+    language = getattr(request.state, "language", data_ctx.default_language)
+    merged_ctx = {
+        **data_ctx.model_dump(),
+        "request": request,
+        "language": language,
+        **ctx,
+    }
 
     return templates.TemplateResponse(template, merged_ctx, **kwargs)
 
@@ -282,7 +288,13 @@ def render_template_string(
         )
     """
     ctx = ctx or {}
-    merged_ctx = {**data_ctx.model_dump(), "request": request, **ctx}
+    language = getattr(request.state, "language", data_ctx.default_language)
+    merged_ctx = {
+        **data_ctx.model_dump(),
+        "request": request,
+        "language": language,
+        **ctx,
+    }
 
     template_obj = templates.get_template(template)
     return template_obj.render(merged_ctx)
