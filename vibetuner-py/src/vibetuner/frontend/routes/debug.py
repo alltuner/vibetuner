@@ -88,15 +88,8 @@ def debug_version(request: Request):
 
 @router.get("/info", response_class=HTMLResponse)
 def debug_info(request: Request):
-    # Get cookies from request
     cookies = dict(request.cookies)
-
-    # Get language from request state
-    language = getattr(request.state, "language", "Not set")
-
-    return render_template(
-        "debug/info.html.jinja", request, {"cookies": cookies, "language": language}
-    )
+    return render_template("debug/info.html.jinja", request, {"cookies": cookies})
 
 
 def _extract_ref_name(ref: str) -> str:

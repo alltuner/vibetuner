@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from ..deps import require_htmx
-from ..lifespan import ctx
 from ..templates import render_template
 
 
@@ -21,12 +20,8 @@ async def set_language(request: Request, lang: str, current: str) -> RedirectRes
 @router.get("/get-languages", dependencies=[Depends(require_htmx)])
 async def get_languages(request: Request) -> HTMLResponse:
     """Return a list of supported languages."""
-
     return render_template(
         "lang/select.html.jinja",
         request=request,
-        ctx={
-            "locale_names": ctx.locale_names,
-            "current_language": request.state.language,
-        },
+        ctx={"current_language": request.state.language},
     )

@@ -12,7 +12,7 @@ update-py:
 # Update dependencies in vibetuner-template
 [group('Dependencies')]
 update-template:
-    @cd vibetuner-template && uvx uv-bump && uv lock --upgrade && uv sync --all-extras && bun update
+    @cd vibetuner-template && uv lock --upgrade && uv sync --all-extras && bun update
 
 # Update root scaffolding deps
 [group('Dependencies')]
