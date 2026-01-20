@@ -30,18 +30,25 @@ class EmailService:
         self.from_email = from_email or settings.project.from_email
 
     async def send_email(
-        self, to_address: str, subject: str, html_body: str, text_body: str
+        self,
+        to_address: str,
+        subject: str,
+        html_body: str,
+        text_body: str,
+        custom_id: str | None = None,
+        event_payload: str | None = None,
     ) -> dict[str, Any]:
-        data = {
-            "Messages": [
-                {
-                    "From": {"Email": self.from_email},
-                    "To": [{"Email": to_address}],
-                    "Subject": subject,
-                    "HTMLPart": html_body,
-                    "TextPart": text_body,
-                }
-            ]
+        message: dict[str, Any] = {
+            "From": {"Email": self.from_email},
+            "To": [{"Email": to_address}],
+            "Subject": subject,
+            "HTMLPart": html_body,
+            "TextPart": text_body,
         }
+        if custom_id is not None:
+            message["CustomID"] = custom_id
+        if event_payload is not None:
+            message["EventPayload"] = event_payload
+        data = {"Messages": [message]}
         result = await asyncify(self.client.send.create)(data=data)
         return result.json()
