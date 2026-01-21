@@ -20,6 +20,14 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await init_mongodb()
     await init_sqlmodel()
 
+    # Initialize runtime config cache after MongoDB is ready
+    from vibetuner.config import settings
+    from vibetuner.runtime_config import RuntimeConfig
+
+    if settings.mongodb_url:
+        await RuntimeConfig.refresh_cache()
+        logger.debug("Runtime config cache initialized")
+
     yield
 
     logger.info("Vibetuner frontend stopping")

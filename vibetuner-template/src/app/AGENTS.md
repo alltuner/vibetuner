@@ -53,6 +53,25 @@ class Configuration(CoreConfiguration):
 settings = Configuration(project=_load_project_config())
 ```
 
+**Runtime Configuration** - For settings that can change at runtime without redeploying:
+
+```python
+# Also in src/app/config.py - Register runtime config values
+from vibetuner.runtime_config import register_config_value
+
+register_config_value(
+    key="features.dark_mode",
+    default=False,
+    value_type="bool",
+    category="features",
+    description="Enable dark mode for users",
+)
+
+# Access anywhere with: await get_config("features.dark_mode")
+```
+
+See main `AGENTS.md` for full runtime config documentation.
+
 **`src/vibetuner/config.py`** - Core configuration that includes:
 
 - Project settings (project name, slug, MongoDB URL, Redis URL, etc.)

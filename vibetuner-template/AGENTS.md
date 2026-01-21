@@ -303,6 +303,64 @@ async def send_notification(user_email: str, message: str):
     )
 ```
 
+### Runtime Configuration
+
+For settings that can be changed at runtime without redeploying, use the runtime configuration system:
+
+```python
+# src/app/config.py - Register config values at module load time
+from vibetuner.runtime_config import register_config_value
+
+register_config_value(
+    key="features.dark_mode",
+    default=False,
+    value_type="bool",
+    category="features",
+    description="Enable dark mode for users",
+)
+
+register_config_value(
+    key="limits.max_uploads",
+    default=10,
+    value_type="int",
+    category="limits",
+    description="Maximum uploads per user per day",
+)
+
+# Mark sensitive values as secrets (masked in debug UI, not editable)
+register_config_value(
+    key="api.secret_key",
+    default="default-key",
+    value_type="str",
+    category="api",
+    description="API secret key",
+    is_secret=True,
+)
+```
+
+```python
+# Access config values anywhere in your app
+from vibetuner.runtime_config import get_config
+
+async def some_handler():
+    dark_mode = await get_config("features.dark_mode")
+    max_uploads = await get_config("limits.max_uploads", default=5)
+
+    if dark_mode:
+        return render_dark_theme()
+```
+
+**Value types**: `bool`, `int`, `float`, `str`, `json`
+
+**Resolution priority** (highest to lowest):
+
+1. Runtime overrides (in-memory, for debugging)
+2. MongoDB values (persistent)
+3. Registered defaults (code)
+
+**Debug UI**: Navigate to `/debug/config` to view and edit config values. Requires DEBUG mode or
+magic cookie authentication in production.
+
 ### Adding Background Tasks
 
 If background jobs are enabled, tasks use the `vibetuner.tasks.worker`:
