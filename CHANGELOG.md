@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.1.0](https://github.com/alltuner/vibetuner/compare/v3.0.2...v3.1.0) (2026-01-21)
+
+
+### Features
+
+* add default_language question to copier scaffold ([#812](https://github.com/alltuner/vibetuner/issues/812)) ([ec8ca99](https://github.com/alltuner/vibetuner/commit/ec8ca995d373e3fcd6f06a439b107bfea396de04))
+
+
+### Miscellaneous Chores
+
+* update dependencies ([#814](https://github.com/alltuner/vibetuner/issues/814)) ([1ae65b2](https://github.com/alltuner/vibetuner/commit/1ae65b219f8186f800954d7bfdfee8e7489962b3))
+
 ## [3.0.2](https://github.com/alltuner/vibetuner/compare/v3.0.1...v3.0.2) (2026-01-21)
 
 
