@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2](https://github.com/alltuner/vibetuner/compare/v3.0.1...v3.0.2) (2026-01-21)
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency @alltuner/vibetuner to v3 ([#810](https://github.com/alltuner/vibetuner/issues/810)) ([b26065a](https://github.com/alltuner/vibetuner/commit/b26065a636aefeaf7967934af3014218d53f70a4))
+
 ## [3.0.1](https://github.com/alltuner/vibetuner/compare/v3.0.0...v3.0.1) (2026-01-21)
 
 
