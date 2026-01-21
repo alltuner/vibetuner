@@ -271,7 +271,7 @@ Add templates in `templates/`:
             {% endfor %}
         </div>
     </div>
-{% endblock %}
+{% endblock content %}
 ```
 
 ### Adding Custom Template Filters
@@ -481,39 +481,94 @@ The `LangPrefixMiddleware` handles path-prefix language routing:
 | URL | Behavior |
 |-----|----------|
 | `/ca/dashboard` | Strips prefix → `/dashboard`, sets lang=ca |
-| `/dashboard` (anonymous) | Redirects to `/{default_lang}/dashboard` (if route uses `LangPrefixDep`) |
-| `/dashboard` (logged-in) | Serves directly, uses profile language |
+| `/dashboard` (anonymous) | Serves directly using detected/default language |
+| `/dashboard` (authenticated) | 301 redirects to `/{user_lang}/dashboard` |
 | `/xx/dashboard` (invalid) | Returns 404 Not Found |
 | `/ca` | Redirects to `/ca/` |
 | `/static/...` | Bypassed, serves static file directly |
 
-#### Requiring Language Prefix for SEO Routes
+#### Language Detection Priority
 
-Use `LangPrefixDep` to mark routes that should redirect anonymous users to prefixed URLs:
+Languages are detected in this order (first match wins):
+
+1. Query parameter (`?l=es`)
+2. URL path prefix (`/ca/...`)
+3. User preference (from session, for authenticated users)
+4. Cookie (`language` cookie)
+5. Accept-Language header (browser preference)
+6. Default language
+
+#### Redirect Behavior
+
+Localized routes follow these rules:
+
+- **Anonymous users**: Served at unprefixed URL using detected/default language
+- **Authenticated users**: 301 permanent redirect to `/{lang}/path`
+
+This approach optimizes for SEO: search engines crawl the unprefixed URL (which serves the
+default language) and discover language variants via `hreflang` tags, while authenticated
+users get a personalized, bookmarkable URL.
+
+#### Using LocalizedRouter (Recommended)
+
+Use `LocalizedRouter` to control localization at the router level. All routes automatically
+handle language prefix redirects:
 
 ```python
 from fastapi import Request
-from vibetuner.frontend import LangPrefixDep
+from vibetuner.frontend import LocalizedRouter
 from vibetuner.frontend.templates import render_template
 
+# All routes in this router are localized
+legal_router = LocalizedRouter(prefix="/legal", localized=True)
+
+@legal_router.get("/privacy")
+async def privacy(request: Request):
+    return render_template("legal/privacy.html.jinja", request)
+    # Anonymous: served at /legal/privacy
+    # Authenticated: redirected to /{lang}/legal/privacy
+
+# All routes in this router are non-localized (API endpoints)
+api_router = LocalizedRouter(prefix="/api", localized=False)
+
+@api_router.get("/users")
+async def users():
+    return {"users": []}  # Always at /api/users, no redirects
+```
+
+#### Using @localized Decorator
+
+For individual routes on a regular `APIRouter`, use the `@localized` decorator:
+
+```python
+from fastapi import APIRouter, Request
+from vibetuner.frontend import localized
+from vibetuner.frontend.templates import render_template
+
+router = APIRouter()
+
 @router.get("/privacy")
-async def privacy(request: Request, _: LangPrefixDep):
+@localized
+async def privacy(request: Request):
     return render_template("privacy.html.jinja", request)
 ```
 
-With this dependency:
+#### Generating Language URLs in Templates
 
-- Anonymous users visiting `/privacy` are redirected to `/en/privacy` (or their detected language)
-- Authenticated users can access either `/privacy` or `/en/privacy`
-- Search engines see clean, language-specific URLs
+Two helpers are available for generating language-prefixed URLs:
 
-#### Generating Language-Prefixed URLs in Templates
-
-Use `lang_url_for` to generate URLs with the current language prefix:
+**`lang_url_for`**: Uses the current request's language:
 
 ```html
 <a href="{{ lang_url_for(request, 'privacy') }}">Privacy Policy</a>
 <!-- Output: /ca/privacy (if current language is Catalan) -->
+```
+
+**`url_for_language`**: Specify a target language explicitly (for language switchers):
+
+```html
+<a href="{{ url_for_language(request, 'es', 'privacy') }}">Español</a>
+<!-- Output: /es/privacy -->
 ```
 
 #### Adding hreflang Tags for SEO
@@ -531,8 +586,10 @@ This outputs:
 <link rel="alternate" hreflang="ca" href="https://example.com/ca/privacy" />
 <link rel="alternate" hreflang="en" href="https://example.com/en/privacy" />
 <link rel="alternate" hreflang="es" href="https://example.com/es/privacy" />
-<link rel="alternate" hreflang="x-default" href="https://example.com/en/privacy" />
+<link rel="alternate" hreflang="x-default" href="https://example.com/privacy" />
 ```
+
+Note: `x-default` points to the unprefixed URL, which serves the default/detected language.
 
 #### Complete Example
 
@@ -540,18 +597,18 @@ Route definition:
 
 ```python
 # src/app/frontend/routes/legal.py
-from fastapi import APIRouter, Request
-from vibetuner.frontend import LangPrefixDep
+from fastapi import Request
+from vibetuner.frontend import LocalizedRouter
 from vibetuner.frontend.templates import render_template
 
-router = APIRouter(tags=["legal"])
+router = LocalizedRouter(tags=["legal"], localized=True)
 
 @router.get("/privacy")
-async def privacy(request: Request, _: LangPrefixDep):
+async def privacy(request: Request):
     return render_template("legal/privacy.html.jinja", request)
 
 @router.get("/terms")
-async def terms(request: Request, _: LangPrefixDep):
+async def terms(request: Request):
     return render_template("legal/terms.html.jinja", request)
 ```
 
@@ -561,14 +618,28 @@ Template with hreflang:
 <!-- templates/legal/privacy.html.jinja -->
 {% extends "base/skeleton.html.jinja" %}
 
-{% block head_extra %}
+{% block head %}
 {{ hreflang_tags(request, supported_languages, default_language)|safe }}
-{% endblock %}
+{% endblock head %}
 
 {% block content %}
 <h1>{% trans %}Privacy Policy{% endtrans %}</h1>
 <!-- Content -->
-{% endblock %}
+{% endblock content %}
+```
+
+Language switcher using `url_for_language`:
+
+```html
+<!-- templates/partials/language_switcher.html.jinja -->
+<div class="dropdown">
+    {% for code, name in locale_names.items() %}
+        <a href="{{ url_for_language(request, code, request.scope.endpoint.__name__) }}"
+           {% if code == language %}class="active"{% endif %}>
+            {{ name }}
+        </a>
+    {% endfor %}
+</div>
 ```
 
 ## Debugging

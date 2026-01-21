@@ -21,6 +21,7 @@ __all__ = [
     "render_template_string",
     "register_filter",
     "lang_url_for",
+    "url_for_language",
     "hreflang_tags",
 ]
 
@@ -197,6 +198,29 @@ def lang_url_for(request: Request, name: str, **path_params) -> str:
     return f"/{lang}{base_url}"
 
 
+def url_for_language(request: Request, lang: str, name: str, **path_params) -> str:
+    """Generate URL for a specific language.
+
+    Unlike lang_url_for which uses the current request's language, this function
+    allows specifying the target language explicitly. Useful for language switchers.
+
+    Args:
+        request: FastAPI Request object
+        lang: Target language code (e.g., "en", "ca", "es")
+        name: Route name to generate URL for
+        **path_params: Path parameters for the route
+
+    Returns:
+        str: Language-prefixed URL path (e.g., "/es/dashboard")
+
+    Example:
+        {{ url_for_language(request, "es", "privacy") }}  -> "/es/privacy"
+        {{ url_for_language(request, "ca", "user", user_id=123) }}  -> "/ca/users/123"
+    """
+    base_url = request.url_for(name, **path_params).path
+    return f"/{lang}{base_url}"
+
+
 def hreflang_tags(
     request: Request, supported_languages: set[str], default_lang: str
 ) -> str:
@@ -233,8 +257,8 @@ def hreflang_tags(
         url = f"{base_url}/{lang}{path}"
         tags.append(f'<link rel="alternate" hreflang="{lang}" href="{url}" />')
 
-    # Add x-default pointing to default language
-    default_url = f"{base_url}/{default_lang}{path}"
+    # x-default points to UNPREFIXED URL (serves default/detected language)
+    default_url = f"{base_url}{path}"
     tags.append(f'<link rel="alternate" hreflang="x-default" href="{default_url}" />')
 
     return "\n".join(tags)
@@ -306,6 +330,7 @@ jinja_env.globals.update({"hotreload": hotreload})
 
 # Language URL helpers for SEO
 jinja_env.globals.update({"lang_url_for": lang_url_for})
+jinja_env.globals.update({"url_for_language": url_for_language})
 jinja_env.globals.update({"hreflang_tags": hreflang_tags})
 
 # Date Filters

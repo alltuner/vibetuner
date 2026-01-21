@@ -37,11 +37,69 @@ def hreflang_tags(request, supported_languages: set[str], default_lang: str) -> 
         url = f"{base_url}/{lang}{path}"
         tags.append(f'<link rel="alternate" hreflang="{lang}" href="{url}" />')
 
-    # Add x-default pointing to default language
-    default_url = f"{base_url}/{default_lang}{path}"
+    # x-default points to UNPREFIXED URL (not default language prefixed)
+    default_url = f"{base_url}{path}"
     tags.append(f'<link rel="alternate" hreflang="x-default" href="{default_url}" />')
 
     return "\n".join(tags)
+
+
+def url_for_language(request, lang: str, name: str, **path_params) -> str:
+    """Test copy of helper to avoid importing full vibetuner.frontend package.
+
+    Mirrors the implementation in vibetuner.frontend.templates.url_for_language.
+    """
+    base_url = request.url_for(name, **path_params).path
+    return f"/{lang}{base_url}"
+
+
+class TestUrlForLanguage:
+    """Test url_for_language template helper."""
+
+    def _mock_request(self, url_for_result: str = "/dashboard"):
+        """Create a mock request with the specified attributes."""
+        request = MagicMock()
+
+        # Set up url_for
+        url_mock = MagicMock()
+        url_mock.path = url_for_result
+        request.url_for = MagicMock(return_value=url_mock)
+
+        return request
+
+    def test_generates_url_for_specific_language(self):
+        """Generates URL prefixed with specified language."""
+        request = self._mock_request(url_for_result="/dashboard")
+
+        result = url_for_language(request, "ca", "dashboard")
+
+        assert result == "/ca/dashboard"
+        request.url_for.assert_called_once_with("dashboard")
+
+    def test_different_language_codes(self):
+        """Works with different language codes."""
+        request = self._mock_request(url_for_result="/privacy")
+
+        assert url_for_language(request, "en", "privacy") == "/en/privacy"
+        assert url_for_language(request, "es", "privacy") == "/es/privacy"
+        assert url_for_language(request, "ca", "privacy") == "/ca/privacy"
+
+    def test_with_path_params(self):
+        """Passes path parameters to url_for."""
+        request = self._mock_request(url_for_result="/users/123")
+
+        result = url_for_language(request, "en", "user_detail", user_id=123)
+
+        assert result == "/en/users/123"
+        request.url_for.assert_called_once_with("user_detail", user_id=123)
+
+    def test_root_path(self):
+        """Handles root path correctly."""
+        request = self._mock_request(url_for_result="/")
+
+        result = url_for_language(request, "ca", "homepage")
+
+        assert result == "/ca/"
 
 
 class TestLangUrlFor:
@@ -154,27 +212,28 @@ class TestHreflangTags:
             in result
         )
 
-    def test_includes_x_default(self):
-        """Includes x-default tag pointing to default language."""
+    def test_includes_x_default_unprefixed(self):
+        """Includes x-default tag pointing to unprefixed URL."""
         request = self._mock_request(path="/privacy")
         supported = {"en", "ca"}
 
         result = hreflang_tags(request, supported, "en")
 
         assert (
-            '<link rel="alternate" hreflang="x-default" href="https://example.com/en/privacy" />'
+            '<link rel="alternate" hreflang="x-default" href="https://example.com/privacy" />'
             in result
         )
 
-    def test_uses_different_default_language(self):
-        """x-default uses the specified default language."""
+    def test_x_default_is_unprefixed_regardless_of_default_lang(self):
+        """x-default always points to unprefixed URL, not default language."""
         request = self._mock_request(path="/terms")
         supported = {"en", "ca"}
 
         result = hreflang_tags(request, supported, "ca")
 
+        # x-default should be unprefixed, not /ca/terms
         assert (
-            '<link rel="alternate" hreflang="x-default" href="https://example.com/ca/terms" />'
+            '<link rel="alternate" hreflang="x-default" href="https://example.com/terms" />'
             in result
         )
 

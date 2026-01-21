@@ -10,6 +10,7 @@ from starlette.responses import Response as StarletteResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 from starlette_babel import (
     LocaleFromCookie,
+    LocaleFromHeader,
     LocaleFromQuery,
     LocaleMiddleware,
     get_translator,
@@ -21,6 +22,10 @@ from vibetuner.context import ctx
 from vibetuner.paths import locales as locales_path
 
 from .oauth import WebUser
+
+
+# Cookie expiry: 1 year in seconds
+LANGUAGE_COOKIE_MAX_AGE = 365 * 24 * 60 * 60  # 31536000
 
 
 def locale_selector(conn: HTTPConnection) -> str | None:
@@ -79,7 +84,9 @@ class AdjustLangCookieMiddleware(BaseHTTPMiddleware):
         lang_cookie = request.cookies.get("language")
         if not lang_cookie or lang_cookie != request.state.language:
             response.set_cookie(
-                key="language", value=request.state.language, max_age=3600
+                key="language",
+                value=request.state.language,
+                max_age=LANGUAGE_COOKIE_MAX_AGE,
             )
 
         return response
@@ -196,6 +203,7 @@ middlewares: list[Middleware] = [
             locale_selector,
             user_preference_selector,
             LocaleFromCookie(),
+            LocaleFromHeader(),
         ],
     ),
     Middleware(LangPrefixMiddleware, supported_languages=ctx.supported_languages),
