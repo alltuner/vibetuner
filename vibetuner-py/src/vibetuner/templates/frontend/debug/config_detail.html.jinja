@@ -1,0 +1,162 @@
+{% extends "base/skeleton.html.jinja" %}
+
+{% block title %}
+    Debug - Edit {{ entry.key }}
+{% endblock title %}
+{% block body %}
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex items-center gap-2 mb-2">
+                <a href="{{ url_for('debug_config') }}" class="btn btn-ghost btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-4 w-4"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back
+                </a>
+            </div>
+            <h1 class="text-3xl font-bold text-base-content mb-2">Edit Configuration</h1>
+            <code class="text-lg bg-base-200 px-3 py-1 rounded">{{ entry.key }}</code>
+        </header>
+        <!-- Entry Info -->
+        <div class="card bg-base-100 shadow-xl mb-6">
+            <div class="card-body">
+                <h2 class="card-title text-lg">Configuration Details</h2>
+                {% if entry.description %}<p class="text-base-content/70">{{ entry.description }}</p>{% endif %}
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <span class="text-sm text-base-content/60">Type:</span>
+                        <span class="badge badge-outline ml-2">{{ entry.value_type }}</span>
+                    </div>
+                    <div>
+                        <span class="text-sm text-base-content/60">Category:</span>
+                        <span class="ml-2 capitalize">{{ entry.category }}</span>
+                    </div>
+                    <div>
+                        <span class="text-sm text-base-content/60">Source:</span>
+                        {% if entry.source == 'runtime' %}
+                            <span class="badge badge-warning ml-2">runtime override</span>
+                        {% elif entry.source == 'mongodb' %}
+                            <span class="badge badge-info ml-2">mongodb</span>
+                        {% else %}
+                            <span class="badge badge-ghost ml-2">default</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <span class="text-sm text-base-content/60">Secret:</span>
+                        {% if entry.is_secret %}
+                            <span class="badge badge-error ml-2">Yes</span>
+                        {% else %}
+                            <span class="badge badge-ghost ml-2">No</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if entry.is_secret %}
+            <!-- Secret protection notice -->
+            <div class="alert alert-warning mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="stroke-current shrink-0 h-6 w-6"
+                     fill="none"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <span>This configuration is marked as secret and cannot be edited via the debug UI.</span>
+            </div>
+        {% elif not DEBUG %}
+            <!-- Production mode notice -->
+            <div class="alert alert-info mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="stroke-current shrink-0 h-6 w-6"
+                     fill="none"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Configuration editing is disabled in production mode.</span>
+            </div>
+        {% else %}
+            <!-- Edit Form -->
+            <div class="card bg-base-100 shadow-xl mb-6">
+                <div class="card-body">
+                    <h2 class="card-title text-lg">Edit Value</h2>
+                    <form method="post"
+                          action="{{ url_for('debug_config_update', key=entry.key) }}">
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text">Current Value</span>
+                            </label>
+                            {% if entry.value_type == 'bool' %}
+                                <select name="value" class="select select-bordered w-full">
+                                    <option value="true" {% if entry.value %}selected{% endif %}>true</option>
+                                    <option value="false" {% if not entry.value %}selected{% endif %}>false</option>
+                                </select>
+                            {% elif entry.value_type == 'json' %}
+                                <textarea name="value"
+                                          class="textarea textarea-bordered h-32 font-mono"
+                                          placeholder="Enter JSON value">{{ entry.value | tojson(indent=2) }}</textarea>
+                            {% elif entry.value_type == 'int' %}
+                                <input type="number"
+                                       name="value"
+                                       value="{{ entry.value }}"
+                                       class="input input-bordered w-full"
+                                       step="1" />
+                            {% elif entry.value_type == 'float' %}
+                                <input type="number"
+                                       name="value"
+                                       value="{{ entry.value }}"
+                                       class="input input-bordered w-full"
+                                       step="any" />
+                            {% else %}
+                                <input type="text"
+                                       name="value"
+                                       value="{{ entry.value }}"
+                                       class="input input-bordered w-full" />
+                            {% endif %}
+                        </div>
+                        <div class="form-control mt-4">
+                            <label class="label cursor-pointer justify-start gap-4">
+                                <input type="checkbox"
+                                       name="persist"
+                                       class="checkbox"
+                                       {% if mongodb_available %}checked{% else %}disabled{% endif %} />
+                                <span class="label-text">
+                                    Persist to MongoDB
+                                    {% if not mongodb_available %}<span class="text-warning">(MongoDB not available)</span>{% endif %}
+                                </span>
+                            </label>
+                        </div>
+                        <div class="card-actions justify-end mt-6">
+                            <a href="{{ url_for('debug_config') }}" class="btn btn-ghost">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Runtime Override Actions -->
+            {% if entry.source == 'runtime' %}
+                <div class="card bg-base-100 shadow-xl">
+                    <div class="card-body">
+                        <h2 class="card-title text-lg text-warning">Runtime Override Active</h2>
+                        <p class="text-base-content/70">
+                            This value has a runtime override. Remove it to fall back to the MongoDB or default value.
+                        </p>
+                        <div class="card-actions justify-end mt-4">
+                            <form method="post"
+                                  action="{{ url_for('debug_config_clear_override', key=entry.key) }}">
+                                <button type="submit" class="btn btn-warning btn-outline">Remove Runtime Override</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        <!-- Debug Navigation Footer -->
+        {% include "debug/components/debug_nav.html.jinja" %}
+
+    </div>
+{% endblock body %}

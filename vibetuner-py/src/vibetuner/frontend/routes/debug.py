@@ -415,3 +415,109 @@ async def debug_clear_session(request: Request):
 
     request.session.clear()
     return RedirectResponse(url="/debug/users?cleared=1", status_code=302)
+
+
+# Runtime Configuration Routes
+
+
+@router.get("/config", response_class=HTMLResponse)
+async def debug_config(request: Request):
+    """Debug endpoint to view runtime configuration."""
+    from vibetuner.runtime_config import RuntimeConfig
+
+    entries = await RuntimeConfig.get_all_config()
+    return render_template(
+        "debug/config.html.jinja",
+        request,
+        {
+            "entries": entries,
+            "mongodb_available": settings.mongodb_url is not None,
+            "cache_stale": RuntimeConfig.is_cache_stale(),
+        },
+    )
+
+
+@router.get("/config/{key:path}", response_class=HTMLResponse)
+async def debug_config_detail(request: Request, key: str):
+    """Debug endpoint to view/edit a single config entry."""
+    from vibetuner.runtime_config import RuntimeConfig
+
+    # Find the entry
+    entries = await RuntimeConfig.get_all_config()
+    entry = next((e for e in entries if e["key"] == key), None)
+
+    if not entry:
+        raise HTTPException(status_code=404, detail="Config entry not found")
+
+    return render_template(
+        "debug/config_detail.html.jinja",
+        request,
+        {
+            "entry": entry,
+            "mongodb_available": settings.mongodb_url is not None,
+        },
+    )
+
+
+@router.post("/config/refresh")
+async def debug_config_refresh(request: Request):
+    """Force refresh of config cache from MongoDB."""
+    from vibetuner.runtime_config import RuntimeConfig
+
+    await RuntimeConfig.refresh_cache()
+    return RedirectResponse(url="/debug/config", status_code=302)
+
+
+@router.post("/config/{key:path}")
+async def debug_config_update(request: Request, key: str):
+    """Update a config value (DEBUG mode only, non-secrets)."""
+    if not ctx.DEBUG:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from vibetuner.runtime_config import RuntimeConfig
+
+    # Find the entry to get its type and check if secret
+    entries = await RuntimeConfig.get_all_config()
+    entry = next((e for e in entries if e["key"] == key), None)
+
+    if not entry:
+        raise HTTPException(status_code=404, detail="Config entry not found")
+
+    if entry["is_secret"]:
+        raise HTTPException(status_code=403, detail="Cannot edit secret config")
+
+    # Parse form data
+    form = await request.form()
+    raw_value = form.get("value", "")
+    persist = form.get("persist") == "on"
+
+    # Validate and convert value
+    validated_value = RuntimeConfig._validate_value(raw_value, entry["value_type"])
+
+    if persist and settings.mongodb_url is not None:
+        # Persist to MongoDB
+        await RuntimeConfig.set_value(
+            key=key,
+            value=validated_value,
+            value_type=entry["value_type"],
+            description=entry["description"],
+            category=entry["category"],
+            is_secret=entry["is_secret"],
+        )
+    else:
+        # Set as runtime override only
+        await RuntimeConfig.set_runtime_override(key, validated_value)
+
+    return RedirectResponse(url="/debug/config", status_code=302)
+
+
+@router.post("/config/{key:path}/clear-override")
+async def debug_config_clear_override(request: Request, key: str):
+    """Remove runtime override for a config entry (DEBUG mode only)."""
+    if not ctx.DEBUG:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from vibetuner.runtime_config import RuntimeConfig
+
+    await RuntimeConfig.clear_runtime_override(key)
+    return RedirectResponse(url=f"/debug/config/{key}", status_code=302)

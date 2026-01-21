@@ -1,0 +1,141 @@
+{% extends "base/skeleton.html.jinja" %}
+
+{% block title %}
+    Debug - Runtime Configuration
+{% endblock title %}
+{% block body %}
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-base-content mb-2">Runtime Configuration</h1>
+            <p class="text-base-content/70">View and manage runtime configuration values</p>
+            {% if not mongodb_available %}
+                <div class="alert alert-warning mt-4">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="stroke-current shrink-0 h-6 w-6"
+                         fill="none"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    <span>MongoDB is not configured. Config changes will only persist in memory for this session.</span>
+                </div>
+            {% endif %}
+        </header>
+        <!-- Actions Bar -->
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex gap-2">
+                <form method="post" action="{{ url_for('debug_config_refresh') }}">
+                    <button type="submit" class="btn btn-outline btn-sm gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="h-4 w-4"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Refresh Cache
+                    </button>
+                </form>
+            </div>
+            <div class="text-sm text-base-content/60">
+                {% if cache_stale %}
+                    <span class="badge badge-warning badge-sm">Cache Stale</span>
+                {% else %}
+                    <span class="badge badge-success badge-sm">Cache Fresh</span>
+                {% endif %}
+                <span class="ml-2">{{ entries | length }} entries</span>
+            </div>
+        </div>
+        <!-- Config Entries by Category -->
+        {% set categories = entries | map(attribute='category') | unique | sort %}
+        {% for category in categories %}
+            <div class="card bg-base-100 shadow-xl mb-6">
+                <div class="card-body">
+                    <h2 class="card-title text-xl mb-4 capitalize">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="h-5 w-5"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        {{ category }}
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra w-full">
+                            <thead>
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Value</th>
+                                    <th>Type</th>
+                                    <th>Source</th>
+                                    {% if DEBUG %}<th class="text-center">Actions</th>{% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in entries if entry.category == category %}
+                                    <tr>
+                                        <td>
+                                            <code class="text-sm bg-base-200 px-2 py-1 rounded">{{ entry.key }}</code>
+                                            {% if entry.description %}<div class="text-xs text-base-content/60 mt-1">{{ entry.description }}</div>{% endif %}
+                                        </td>
+                                        <td>
+                                            {% if entry.is_secret %}
+                                                <span class="badge badge-neutral">*****</span>
+                                            {% elif entry.value_type == 'bool' %}
+                                                {% if entry.value %}
+                                                    <span class="badge badge-success">true</span>
+                                                {% else %}
+                                                    <span class="badge badge-error">false</span>
+                                                {% endif %}
+                                            {% elif entry.value_type == 'json' %}
+                                                <code class="text-xs bg-base-200 px-2 py-1 rounded truncate max-w-xs block">{{ entry.value | tojson }}</code>
+                                            {% else %}
+                                                <span class="font-mono text-sm">{{ entry.value }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-outline badge-sm">{{ entry.value_type }}</span>
+                                        </td>
+                                        <td>
+                                            {% if entry.source == 'runtime' %}
+                                                <span class="badge badge-warning badge-sm">runtime</span>
+                                            {% elif entry.source == 'mongodb' %}
+                                                <span class="badge badge-info badge-sm">mongodb</span>
+                                            {% else %}
+                                                <span class="badge badge-ghost badge-sm">default</span>
+                                            {% endif %}
+                                        </td>
+                                        {% if DEBUG %}
+                                            <td class="text-center">
+                                                {% if not entry.is_secret %}
+                                                    <a href="{{ url_for('debug_config_detail', key=entry.key) }}"
+                                                       class="btn btn-outline btn-xs">Edit</a>
+                                                {% else %}
+                                                    <span class="text-base-content/40 text-xs">Protected</span>
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="stroke-current shrink-0 h-6 w-6"
+                     fill="none"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>No configuration entries registered. Use <code>register_config_value()</code> in your app to add runtime config.</span>
+            </div>
+        {% endfor %}
+        <!-- Debug Navigation Footer -->
+        {% include "debug/components/debug_nav.html.jinja" %}
+
+    </div>
+{% endblock body %}
