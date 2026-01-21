@@ -1,3 +1,4 @@
+import warnings
 from typing import Annotated, Optional
 
 from fastapi import Depends, HTTPException, Request
@@ -29,9 +30,19 @@ LangDep = Annotated[str, Depends(enforce_lang)]
 async def require_lang_prefix(request: Request) -> None:
     """Dependency for localized routes.
 
+    .. deprecated::
+        Use `LocalizedRouter(localized=True)` or the `@localized` decorator instead.
+        This dependency will be removed in a future version.
+
     - Anonymous: serve at unprefixed URL (default/detected language)
     - Authenticated: 301 redirect to /{lang}/{path}
     """
+    warnings.warn(
+        "LangPrefixDep is deprecated. Use LocalizedRouter(localized=True) "
+        "or the @localized decorator instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     # If accessed with prefix, we're good
     if hasattr(request.state, "lang_prefix"):
         return

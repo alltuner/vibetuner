@@ -16,7 +16,7 @@ from .deps import (
 from .lifespan import ctx
 from .middleware import middlewares
 from .routes import auth, debug, health, language, meta, user
-from .routing import LocalizedRouter as LocalizedRouter
+from .routing import LocalizedRouter as LocalizedRouter, localized as localized
 from .templates import (
     hreflang_tags as hreflang_tags,
     lang_url_for as lang_url_for,

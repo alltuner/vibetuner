@@ -500,7 +500,7 @@ Languages are detected in this order (first match wins):
 
 #### Redirect Behavior
 
-Routes using `LangPrefixDep` follow these rules:
+Localized routes follow these rules:
 
 - **Anonymous users**: Served at unprefixed URL using detected/default language
 - **Authenticated users**: 301 permanent redirect to `/{lang}/path`
@@ -509,12 +509,15 @@ This approach optimizes for SEO: search engines crawl the unprefixed URL (which 
 default language) and discover language variants via `hreflang` tags, while authenticated
 users get a personalized, bookmarkable URL.
 
-#### Using LocalizedRouter
+#### Using LocalizedRouter (Recommended)
 
-Use `LocalizedRouter` to control localization at the router level:
+Use `LocalizedRouter` to control localization at the router level. All routes automatically
+handle language prefix redirects:
 
 ```python
+from fastapi import Request
 from vibetuner.frontend import LocalizedRouter
+from vibetuner.frontend.templates import render_template
 
 # All routes in this router are localized
 legal_router = LocalizedRouter(prefix="/legal", localized=True)
@@ -522,26 +525,31 @@ legal_router = LocalizedRouter(prefix="/legal", localized=True)
 @legal_router.get("/privacy")
 async def privacy(request: Request):
     return render_template("legal/privacy.html.jinja", request)
+    # Anonymous: served at /legal/privacy
+    # Authenticated: redirected to /{lang}/legal/privacy
 
 # All routes in this router are non-localized (API endpoints)
 api_router = LocalizedRouter(prefix="/api", localized=False)
 
 @api_router.get("/users")
 async def users():
-    return {"users": []}
+    return {"users": []}  # Always at /api/users, no redirects
 ```
 
-#### Using LangPrefixDep
+#### Using @localized Decorator
 
-For individual routes, use `LangPrefixDep`:
+For individual routes on a regular `APIRouter`, use the `@localized` decorator:
 
 ```python
-from fastapi import Request
-from vibetuner.frontend import LangPrefixDep
+from fastapi import APIRouter, Request
+from vibetuner.frontend import localized
 from vibetuner.frontend.templates import render_template
 
+router = APIRouter()
+
 @router.get("/privacy")
-async def privacy(request: Request, _: LangPrefixDep):
+@localized
+async def privacy(request: Request):
     return render_template("privacy.html.jinja", request)
 ```
 
@@ -589,18 +597,18 @@ Route definition:
 
 ```python
 # src/app/frontend/routes/legal.py
-from fastapi import APIRouter, Request
-from vibetuner.frontend import LangPrefixDep
+from fastapi import Request
+from vibetuner.frontend import LocalizedRouter
 from vibetuner.frontend.templates import render_template
 
-router = APIRouter(tags=["legal"])
+router = LocalizedRouter(tags=["legal"], localized=True)
 
 @router.get("/privacy")
-async def privacy(request: Request, _: LangPrefixDep):
+async def privacy(request: Request):
     return render_template("legal/privacy.html.jinja", request)
 
 @router.get("/terms")
-async def terms(request: Request, _: LangPrefixDep):
+async def terms(request: Request):
     return render_template("legal/terms.html.jinja", request)
 ```
 
