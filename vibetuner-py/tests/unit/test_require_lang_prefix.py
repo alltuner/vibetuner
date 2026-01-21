@@ -1,5 +1,5 @@
-# ABOUTME: Unit tests for require_lang_prefix route dependency
-# ABOUTME: Verifies SEO routes redirect anonymous users to prefixed URLs
+# ABOUTME: Unit tests for deprecated LangPrefixDep route dependency
+# ABOUTME: Primary redirect logic is now tested in test_localized_router.py
 # ruff: noqa: S101
 
 from unittest.mock import MagicMock

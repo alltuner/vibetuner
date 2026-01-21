@@ -24,6 +24,10 @@ from vibetuner.paths import locales as locales_path
 from .oauth import WebUser
 
 
+# Cookie expiry: 1 year in seconds
+LANGUAGE_COOKIE_MAX_AGE = 365 * 24 * 60 * 60  # 31536000
+
+
 def locale_selector(conn: HTTPConnection) -> str | None:
     """
     Selects the locale based on the first part of the path if it matches a 2-letter language code.
@@ -80,7 +84,9 @@ class AdjustLangCookieMiddleware(BaseHTTPMiddleware):
         lang_cookie = request.cookies.get("language")
         if not lang_cookie or lang_cookie != request.state.language:
             response.set_cookie(
-                key="language", value=request.state.language, max_age=31536000
+                key="language",
+                value=request.state.language,
+                max_age=LANGUAGE_COOKIE_MAX_AGE,
             )
 
         return response
