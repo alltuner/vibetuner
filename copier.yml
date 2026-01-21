@@ -58,9 +58,14 @@ python_version:
     - "3.13"
     - "3.14"
 
+default_language:
+  type: str
+  help: Default language for your project (2-letter ISO 639-1 code)
+  default: "en"
+
 supported_languages:
   type: yaml
-  help: List of 2 letter lang codes in JSON format of supported languages (in addition to English)
+  help: List of 2-letter lang codes of additional supported languages
   multiline: true
   default: []
 
