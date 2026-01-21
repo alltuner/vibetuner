@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.0.0](https://github.com/alltuner/vibetuner/compare/v2.53.3...v3.0.0) (2026-01-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* improve multi-language support with clearer SEO semantics ([#804](https://github.com/alltuner/vibetuner/issues/804))
+
+### Features
+
+* improve multi-language support with clearer SEO semantics ([#804](https://github.com/alltuner/vibetuner/issues/804)) ([4402f3c](https://github.com/alltuner/vibetuner/commit/4402f3cb5231e1fe86a59874b7aff6351a4a520b))
+
+
+### Miscellaneous Chores
+
+* update dependencies ([#806](https://github.com/alltuner/vibetuner/issues/806)) ([8f542ca](https://github.com/alltuner/vibetuner/commit/8f542cab6afb54976139db6cf6f25a1aa424224a))
+
 ## [2.53.3](https://github.com/alltuner/vibetuner/compare/v2.53.2...v2.53.3) (2026-01-21)
 
 
