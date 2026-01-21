@@ -203,7 +203,7 @@ middlewares: list[Middleware] = [
             locale_selector,
             user_preference_selector,
             LocaleFromCookie(),
-            LocaleFromHeader(),
+            LocaleFromHeader(supported_locales=ctx.supported_languages),
         ],
     ),
     Middleware(LangPrefixMiddleware, supported_languages=ctx.supported_languages),
