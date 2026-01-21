@@ -27,25 +27,31 @@ LangDep = Annotated[str, Depends(enforce_lang)]
 
 
 async def require_lang_prefix(request: Request) -> None:
-    """Dependency for SEO routes that require language prefix for anonymous users.
+    """Dependency for localized routes.
 
-    - Authenticated users: allowed without prefix (uses profile language)
-    - Anonymous users: redirected to /{lang}/{path}
+    - Anonymous: serve at unprefixed URL (default/detected language)
+    - Authenticated: 301 redirect to /{lang}/{path}
     """
     # If accessed with prefix, we're good
     if hasattr(request.state, "lang_prefix"):
         return
 
-    # Authenticated users don't need prefix
-    if request.user.is_authenticated:
+    # Check if endpoint is marked as localized
+    endpoint = request.scope.get("endpoint")
+    if endpoint and not getattr(endpoint, "_localized", True):
+        return  # Non-localized route
+
+    # Anonymous users: no redirect (serve default/detected language)
+    if not request.user.is_authenticated:
         return
 
-    # Anonymous user without prefix: redirect to prefixed URL
+    # Authenticated user without prefix: 301 redirect to prefixed URL
     lang = request.state.language
-    current_path = request.url.path
-    prefixed_url = f"/{lang}{current_path}"
+    prefixed_url = f"/{lang}{request.url.path}"
+    if request.url.query:
+        prefixed_url += f"?{request.url.query}"
 
-    raise HTTPException(status_code=307, headers={"Location": prefixed_url})
+    raise HTTPException(status_code=301, headers={"Location": prefixed_url})
 
 
 LangPrefixDep = Annotated[None, Depends(require_lang_prefix)]

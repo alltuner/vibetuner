@@ -271,7 +271,7 @@ Add templates in `templates/`:
             {% endfor %}
         </div>
     </div>
-{% endblock %}
+{% endblock content %}
 ```
 
 ### Adding Custom Template Filters
@@ -481,15 +481,59 @@ The `LangPrefixMiddleware` handles path-prefix language routing:
 | URL | Behavior |
 |-----|----------|
 | `/ca/dashboard` | Strips prefix → `/dashboard`, sets lang=ca |
-| `/dashboard` (anonymous) | Redirects to `/{default_lang}/dashboard` (if route uses `LangPrefixDep`) |
-| `/dashboard` (logged-in) | Serves directly, uses profile language |
+| `/dashboard` (anonymous) | Serves directly using detected/default language |
+| `/dashboard` (authenticated) | 301 redirects to `/{user_lang}/dashboard` |
 | `/xx/dashboard` (invalid) | Returns 404 Not Found |
 | `/ca` | Redirects to `/ca/` |
 | `/static/...` | Bypassed, serves static file directly |
 
-#### Requiring Language Prefix for SEO Routes
+#### Language Detection Priority
 
-Use `LangPrefixDep` to mark routes that should redirect anonymous users to prefixed URLs:
+Languages are detected in this order (first match wins):
+
+1. Query parameter (`?l=es`)
+2. URL path prefix (`/ca/...`)
+3. User preference (from session, for authenticated users)
+4. Cookie (`language` cookie)
+5. Accept-Language header (browser preference)
+6. Default language
+
+#### Redirect Behavior
+
+Routes using `LangPrefixDep` follow these rules:
+
+- **Anonymous users**: Served at unprefixed URL using detected/default language
+- **Authenticated users**: 301 permanent redirect to `/{lang}/path`
+
+This approach optimizes for SEO: search engines crawl the unprefixed URL (which serves the
+default language) and discover language variants via `hreflang` tags, while authenticated
+users get a personalized, bookmarkable URL.
+
+#### Using LocalizedRouter
+
+Use `LocalizedRouter` to control localization at the router level:
+
+```python
+from vibetuner.frontend import LocalizedRouter
+
+# All routes in this router are localized
+legal_router = LocalizedRouter(prefix="/legal", localized=True)
+
+@legal_router.get("/privacy")
+async def privacy(request: Request):
+    return render_template("legal/privacy.html.jinja", request)
+
+# All routes in this router are non-localized (API endpoints)
+api_router = LocalizedRouter(prefix="/api", localized=False)
+
+@api_router.get("/users")
+async def users():
+    return {"users": []}
+```
+
+#### Using LangPrefixDep
+
+For individual routes, use `LangPrefixDep`:
 
 ```python
 from fastapi import Request
@@ -501,19 +545,22 @@ async def privacy(request: Request, _: LangPrefixDep):
     return render_template("privacy.html.jinja", request)
 ```
 
-With this dependency:
+#### Generating Language URLs in Templates
 
-- Anonymous users visiting `/privacy` are redirected to `/en/privacy` (or their detected language)
-- Authenticated users can access either `/privacy` or `/en/privacy`
-- Search engines see clean, language-specific URLs
+Two helpers are available for generating language-prefixed URLs:
 
-#### Generating Language-Prefixed URLs in Templates
-
-Use `lang_url_for` to generate URLs with the current language prefix:
+**`lang_url_for`**: Uses the current request's language:
 
 ```html
 <a href="{{ lang_url_for(request, 'privacy') }}">Privacy Policy</a>
 <!-- Output: /ca/privacy (if current language is Catalan) -->
+```
+
+**`url_for_language`**: Specify a target language explicitly (for language switchers):
+
+```html
+<a href="{{ url_for_language(request, 'es', 'privacy') }}">Español</a>
+<!-- Output: /es/privacy -->
 ```
 
 #### Adding hreflang Tags for SEO
@@ -531,8 +578,10 @@ This outputs:
 <link rel="alternate" hreflang="ca" href="https://example.com/ca/privacy" />
 <link rel="alternate" hreflang="en" href="https://example.com/en/privacy" />
 <link rel="alternate" hreflang="es" href="https://example.com/es/privacy" />
-<link rel="alternate" hreflang="x-default" href="https://example.com/en/privacy" />
+<link rel="alternate" hreflang="x-default" href="https://example.com/privacy" />
 ```
+
+Note: `x-default` points to the unprefixed URL, which serves the default/detected language.
 
 #### Complete Example
 
@@ -561,14 +610,28 @@ Template with hreflang:
 <!-- templates/legal/privacy.html.jinja -->
 {% extends "base/skeleton.html.jinja" %}
 
-{% block head_extra %}
+{% block head %}
 {{ hreflang_tags(request, supported_languages, default_language)|safe }}
-{% endblock %}
+{% endblock head %}
 
 {% block content %}
 <h1>{% trans %}Privacy Policy{% endtrans %}</h1>
 <!-- Content -->
-{% endblock %}
+{% endblock content %}
+```
+
+Language switcher using `url_for_language`:
+
+```html
+<!-- templates/partials/language_switcher.html.jinja -->
+<div class="dropdown">
+    {% for code, name in locale_names.items() %}
+        <a href="{{ url_for_language(request, code, request.scope.endpoint.__name__) }}"
+           {% if code == language %}class="active"{% endif %}>
+            {{ name }}
+        </a>
+    {% endfor %}
+</div>
 ```
 
 ## Debugging

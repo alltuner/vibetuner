@@ -12,7 +12,7 @@ router = APIRouter()
 async def set_language(request: Request, lang: str, current: str) -> RedirectResponse:
     new_url = f"/{lang}{current[3:]}" if current else request.url_for("homepage").path
     response = RedirectResponse(url=new_url)
-    response.set_cookie(key="language", value=lang, max_age=3600)
+    response.set_cookie(key="language", value=lang, max_age=31536000)
 
     return response
 

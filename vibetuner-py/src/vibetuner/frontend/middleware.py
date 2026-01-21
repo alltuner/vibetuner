@@ -10,6 +10,7 @@ from starlette.responses import Response as StarletteResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 from starlette_babel import (
     LocaleFromCookie,
+    LocaleFromHeader,
     LocaleFromQuery,
     LocaleMiddleware,
     get_translator,
@@ -79,7 +80,7 @@ class AdjustLangCookieMiddleware(BaseHTTPMiddleware):
         lang_cookie = request.cookies.get("language")
         if not lang_cookie or lang_cookie != request.state.language:
             response.set_cookie(
-                key="language", value=request.state.language, max_age=3600
+                key="language", value=request.state.language, max_age=31536000
             )
 
         return response
@@ -196,6 +197,7 @@ middlewares: list[Middleware] = [
             locale_selector,
             user_preference_selector,
             LocaleFromCookie(),
+            LocaleFromHeader(),
         ],
     ),
     Middleware(LangPrefixMiddleware, supported_languages=ctx.supported_languages),
