@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.53.3](https://github.com/alltuner/vibetuner/compare/v2.53.2...v2.53.3) (2026-01-21)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump vibetuner from 2.53.1 to 2.53.2 ([#801](https://github.com/alltuner/vibetuner/issues/801)) ([b700a5b](https://github.com/alltuner/vibetuner/commit/b700a5bf0eaddd2eabf6302afb1a0f5da76f0be3))
+
 ## [2.53.2](https://github.com/alltuner/vibetuner/compare/v2.53.1...v2.53.2) (2026-01-20)
 
 
