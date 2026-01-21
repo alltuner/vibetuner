@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/alltuner/vibetuner/compare/v3.0.0...v3.0.1) (2026-01-21)
+
+
+### Bug Fixes
+
+* missing parameter in the locale middleware ([#808](https://github.com/alltuner/vibetuner/issues/808)) ([ffd5911](https://github.com/alltuner/vibetuner/commit/ffd5911b432c730565d509aa29dc92e53f7a614b))
+
 ## [3.0.0](https://github.com/alltuner/vibetuner/compare/v2.53.3...v3.0.0) (2026-01-21)
 
 
