@@ -63,10 +63,6 @@ Visit `http://localhost:8000` - your app is running!
 
 ```text
 my-app/
-├── src/vibetuner/          # Core framework (don't edit)
-│   ├── frontend/           # FastAPI app, auth, middleware
-│   ├── models/             # User, OAuth models
-│   └── services/           # Email, storage services
 ├── src/app/                # Your code (edit freely)
 │   ├── frontend/routes/    # Your HTTP routes
 │   ├── models/             # Your database models
@@ -75,6 +71,8 @@ my-app/
 ├── assets/                 # Static files
 └── Dockerfile              # Production deployment
 ```
+
+The `vibetuner` framework (auth, database, core services) is installed as a package dependency.
 
 ## Next Steps
 

@@ -80,10 +80,6 @@ Generated projects separate framework code from your code:
 
 ```text
 my-app/
-├── src/vibetuner/          # Core framework (immutable)
-│   ├── frontend/           # FastAPI app, auth, middleware
-│   ├── models/             # User, OAuth models
-│   └── services/           # Email, storage services
 ├── src/app/                # Your code (edit freely)
 │   ├── frontend/routes/    # Your HTTP routes
 │   ├── models/             # Your database models
@@ -91,6 +87,8 @@ my-app/
 ├── templates/              # Jinja2 templates
 └── Dockerfile              # Production deployment
 ```
+
+The `vibetuner` framework (auth, database, core services) is installed as a package dependency.
 
 ## Community
 

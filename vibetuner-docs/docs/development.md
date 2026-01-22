@@ -20,8 +20,7 @@ vibetuner/
 │   └── pyproject.toml     # Package metadata and dependencies
 ├── vibetuner-js/          # JavaScript package (published to npm)
 │   └── package.json       # Package metadata and dependencies
-├── vibetuner-template/       # Copier template (the actual scaffolding)
-│   ├── src/vibetuner/     # → Symlink to vibetuner-py/src/vibetuner
+├── vibetuner-template/    # Copier template (the actual scaffolding)
 │   ├── src/app/           # User application space
 │   └── *.j2 files         # Jinja2 templates processed by Copier
 ├── copier.yml             # Template configuration
@@ -234,11 +233,7 @@ just dev      # Start development environment
 If you modify `vibetuner-py/src/vibetuner/`, you need to test in a generated project:
 
 ```bash
-# Option 1: Use test-scaffold with local changes
-# (The template symlinks to vibetuner-py/src/vibetuner)
-just test-scaffold
-cd /tmp/vibetuner-test
-# Option 2: Create a project and use path dependency
+# Create a project and use path dependency
 copier copy . /tmp/my-test
 cd /tmp/my-test
 # Edit pyproject.toml to use: vibetuner = { path = "../vibetuner-py" }
