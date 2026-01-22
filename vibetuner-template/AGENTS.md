@@ -598,6 +598,9 @@ Then use them in templates:
 5. **Start development** with `just local-all` (runs server + assets)
 6. **Use uv exclusively** for Python packages (never pip/poetry/conda)
 7. **Override, don't modify** core templates - create in `templates/` instead
+8. **Never inspect** `assets/statics/css/bundle.css` or `assets/statics/js/bundle.js` - These are
+   auto-generated bundles containing minified CSS/JS from the build process. Reading them wastes
+   context and provides no useful information. Edit `config.css` and `config.js` instead.
 
 ## Custom Project Instructions
 
