@@ -13,7 +13,7 @@ A["Your Application
 (src/app/ — routes, models, services)"]
 B["Vibetuner Framework
 <br />
-(src/vibetuner/ — authentication, database, core services)"]
+(vibetuner package — authentication, database, core services)"]
 C["Platform Stack
 <br />
 FastAPI · MongoDB/PostgreSQL · HTMX · Redis"]
@@ -66,7 +66,6 @@ classDef large font-size:16px,fill:#f8fafc,stroke:#94a3b8,stroke-width:2px;
 classDef medium font-size:14px,fill:#ffffff,stroke:#cbd5f5,stroke-width:1.5px;
 root["my-app/"]:::large
 src["src/"]:::large
-vib["src/vibetuner/\n(immutable framework)"]:::medium
 app["src/app/\n(your code)"]:::medium
 templates["templates/"]:::large
 templates_nodes["base/\nfrontend/\nemails/"]:::medium
@@ -75,8 +74,7 @@ assets_nodes["config.css\nconfig.js\nstatics/"]:::medium
 translations["translations/\n{locale}/LC_MESSAGES/"]:::large
 ops["Operational files"]:::large
 ops_nodes["Dockerfile\ncompose.dev.yml\ncompose.prod.yml\npyproject.toml\npackage.json\njustfile\n.env"]:::medium
-root --> src --> vib
-src --> app
+root --> src --> app
 root --> templates --> templates_nodes
 root --> assets --> assets_nodes
 root --> translations
@@ -85,8 +83,8 @@ root --> ops --> ops_nodes
 
 Key directories:
 
-- `src/vibetuner/`: framework code you should not edit (auth, database, CLI,
-shared services).
+- `vibetuner` package: framework code installed as a dependency (auth, database,
+CLI, shared services). Do not edit.
 - `src/app/`: your application space—add routes, models, services, and optional
 background jobs here.
 - `templates/`: Jinja2 templates divided into base layouts, frontend pages, and
@@ -161,7 +159,7 @@ app.include_router(api.router)
 
 Vibetuner supports multiple database backends:
 
-**MongoDB**: `src/vibetuner/mongo.py`
+**MongoDB**: `vibetuner.mongo`
 
 ```python
 from vibetuner.mongo import init_mongodb
@@ -170,7 +168,7 @@ from vibetuner.mongo import init_mongodb
 await init_mongodb()
 ```
 
-**SQL (PostgreSQL, MySQL, SQLite)**: `src/vibetuner/sqlmodel.py`
+**SQL (PostgreSQL, MySQL, SQLite)**: `vibetuner.sqlmodel`
 
 ```python
 from vibetuner.sqlmodel import init_sqlmodel, create_schema
@@ -189,7 +187,7 @@ Models are automatically discovered and registered from:
 
 ### Authentication System
 
-**Location**: `src/vibetuner/frontend/auth.py`
+**Location**: `vibetuner.frontend.auth`
 Dual authentication with OAuth and magic links:
 
 ```text
@@ -323,7 +321,7 @@ Minifies and optimizes for production.
 
 ## Configuration Management
 
-**Location**: `src/vibetuner/config.py`
+**Location**: `vibetuner.config`
 Pydantic Settings with environment variable support:
 
 ```python

@@ -5,7 +5,7 @@
 Important notes:
 
 - Vibetuner consists of three packages: a Python framework (`vibetuner`), a JavaScript package (`@alltuner/vibetuner`), and a Copier scaffolding template
-- The framework separates immutable framework code (`src/vibetuner/`) from your application code (`src/app/`) for clean updates
+- The framework separates immutable framework code (`vibetuner` package) from your application code (`src/app/`) for clean updates
 - HTMX is used instead of React/Vue for simplicity - server-rendered HTML with sprinkles of interactivity
 - All tools are chosen for speed: uv (Python), bun (JavaScript), Granian (ASGI server), Ruff (linting)
 - The project is designed to work excellently with AI coding assistants like Claude, Cursor, and ChatGPT
@@ -73,10 +73,6 @@ Visit `http://localhost:8000` - your app is running!
 
 ```text
 my-app/
-├── src/vibetuner/          # Core framework (don't edit)
-│   ├── frontend/           # FastAPI app, auth, middleware
-│   ├── models/             # User, OAuth models
-│   └── services/           # Email, storage services
 ├── src/app/                # Your code (edit freely)
 │   ├── frontend/routes/    # Your HTTP routes
 │   ├── models/             # Your database models
@@ -85,6 +81,8 @@ my-app/
 ├── assets/                 # Static files
 └── Dockerfile              # Production deployment
 ```
+
+The `vibetuner` framework (auth, database, core services) is installed as a package dependency.
 
 ### Justfile Commands
 

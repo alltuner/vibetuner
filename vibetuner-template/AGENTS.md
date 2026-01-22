@@ -2,6 +2,27 @@
 
 FastAPI + MongoDB + HTMX web application scaffolded from AllTuner's template.
 
+## Executive Summary
+
+**For frontend work**: Use the `/frontend-design` skill for building pages and components. It
+creates distinctive, production-grade interfaces that avoid generic AI aesthetics.
+
+**Key locations**:
+
+- Routes: `src/app/frontend/routes/`
+- Templates: `templates/frontend/`
+- Models: `src/app/models/`
+- CSS config: `config.css`
+
+**Stack**: HTMX for interactivity (not JavaScript frameworks), Tailwind classes in templates.
+
+**Never modify**:
+
+- `vibetuner` package code (installed dependency, not in your repo)
+- `assets/statics/css/bundle.css` or `js/bundle.js` (auto-generated)
+
+---
+
 ## PR Title Conventions for AI Assistants
 
 This project uses **Release Please** for automated changelog generation and versioning.
@@ -189,28 +210,6 @@ auto-detects the current worktree. You can also pass a directory path instead of
 
 ```text
 src/
-├── vibetuner/                 # ⚠️  IMMUTABLE SCAFFOLDING - DO NOT MODIFY
-│   ├── frontend/             # Core web infrastructure
-│   │   ├── routes/          # Default routes (auth, health, debug, etc.)
-│   │   ├── deps.py          # Core dependencies
-│   │   ├── templates.py     # Template rendering
-│   │   ├── middleware.py    # Request/response middleware
-│   │   └── oauth.py         # OAuth integration
-│   ├── models/              # Core data models
-│   │   ├── user.py         # User accounts
-│   │   ├── oauth.py        # OAuth accounts
-│   │   ├── email_verification.py
-│   │   ├── blob.py         # File storage
-│   │   └── mixins.py       # Reusable behaviors
-│   ├── services/            # Core services
-│   │   ├── email.py        # Email via SES
-│   │   └── blob.py         # Blob storage
-│   ├── tasks/               # Task infrastructure
-│   ├── config.py            # Project configuration
-│   ├── mongo.py             # Database setup
-│   ├── logging.py           # Logging config
-│   └── ... (other core utilities)
-│
 └── app/                       # ✅ YOUR APPLICATION CODE
     ├── config.py             # App-specific configuration
     ├── cli/                  # ✅ ADD YOUR CLI COMMANDS
@@ -233,7 +232,7 @@ assets/statics/
 
 ### Core vs App
 
-**`src/vibetuner/`** - Immutable scaffolding framework
+**`vibetuner` package** - Installed dependency (not in your repo)
 
 - User authentication, OAuth, magic links
 - Email service, blob storage
@@ -249,9 +248,6 @@ assets/statics/
 - Your background tasks
 - Your CLI commands
 - **Changes**: Edit freely, this is your code
-
-**Note**: `src/{{ project_slug }}/` exists for migration compatibility but is
-deprecated. All new code goes in `src/app/`.
 
 ## Development Patterns
 
@@ -591,7 +587,7 @@ Then use them in templates:
 
 ## Important Rules
 
-1. **Never modify** `src/vibetuner/` - It's immutable scaffolding code
+1. **Never modify** the `vibetuner` package - It's an installed dependency
 2. **File issues** at `https://github.com/alltuner/vibetuner` for core changes
 3. **All your code** goes in `src/app/` - This is your space
 4. **Always run** `ruff format .` after Python changes

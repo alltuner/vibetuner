@@ -44,20 +44,8 @@ GITHUB_CLIENT_SECRET=your-client-secret
 ### Adding More Providers
 
 Vibetuner uses [Authlib](https://authlib.org/) which supports many OAuth providers.
-Edit `src/vibetuner/frontend/auth.py` to add providers:
-
-```python
-# Example: Adding Discord
-oauth.register(
-name="discord",
-client_id=settings.DISCORD_CLIENT_ID,
-client_secret=settings.DISCORD_CLIENT_SECRET,
-authorize_url="https://discord.com/api/oauth2/authorize",
-access_token_url="https://discord.com/api/oauth2/token",
-userinfo_url="https://discord.com/api/users/@me",
-client_kwargs={"scope": "identify email"},
-)
-```
+To add additional providers, file an issue at [github.com/alltuner/vibetuner](https://github.com/alltuner/vibetuner/issues)
+or extend authentication in your `src/app/` code.
 
 ## Magic Link Authentication
 
@@ -105,14 +93,15 @@ Edit `templates/emails/magic_link.html.jinja`:
 The built-in User model supports both OAuth and magic link authentication:
 
 ```python
-# src/vibetuner/models/user.py
+# vibetuner.models.user
 class User(Document):
-email: str
-name: str | None
-avatar_url: str | None
-oauth_accounts: list[OAuthAccount] = []
-class Settings:
-name = "users"
+    email: str
+    name: str | None
+    avatar_url: str | None
+    oauth_accounts: list[OAuthAccount] = []
+
+    class Settings:
+        name = "users"
 ```
 
 ### Extending the User Model
@@ -143,13 +132,12 @@ SESSION_SECRET_KEY = settings.SECRET_KEY
 
 ### Custom Session Configuration
 
-Edit `src/vibetuner/config.py`:
+Configure via environment variables in `.env`:
 
-```python
-class Settings(BaseSettings):
-SESSION_MAX_AGE: int = 60 * 60 * 24 * 7  # 7 days
-SESSION_COOKIE_SECURE: bool = True  # HTTPS only
-SESSION_COOKIE_SAMESITE: str = "lax"
+```bash
+SESSION_MAX_AGE=604800  # 7 days in seconds
+SESSION_COOKIE_SECURE=true  # HTTPS only
+SESSION_COOKIE_SAMESITE=lax
 ```
 
 ## Protecting Routes
