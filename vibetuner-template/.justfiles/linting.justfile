@@ -26,7 +26,7 @@ lint-yaml:
 # Lint PO translation files with lint-po
 [group('Code quality: linting')]
 lint-po:
-    @uvx lint-po locales/*/LC_MESSAGES/*.po
+    @bash -c 'shopt -s nullglob; files=(locales/*/LC_MESSAGES/*.po); if (( ${#files[@]} )); then uvx lint-po "${files[@]}"; else echo "No .po files to lint"; fi'
 
 # Type check Python files with ty
 [group('Code quality: linting')]
