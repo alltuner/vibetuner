@@ -45,7 +45,8 @@ deps-pr:
     set -euo pipefail
 
     # Generate timestamped branch name
-    BRANCH="chore/update-deps-$(date +%Y-%m-%d-%H%M)"
+    DATE_STAMP=$(date +%Y-%m-%d)
+    BRANCH="chore/update-deps-${DATE_STAMP}-$(date +%H%M)"
 
     # Ensure we're on main and up to date
     git checkout main
@@ -76,8 +77,8 @@ deps-pr:
     git push -u origin "$BRANCH"
     gh pr create --fill --base main
 
-    # Merge the PR (squash)
-    gh pr merge --squash --delete-branch
+    # Merge the PR (squash) with conventional commit title
+    gh pr merge --squash --delete-branch --subject "chore: update deps ${DATE_STAMP}"
 
     # Return to main
     git checkout main
