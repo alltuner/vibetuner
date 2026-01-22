@@ -110,6 +110,7 @@
       "WebFetch(domain:copier.readthedocs.io)",
       "WebFetch(domain:daisyui.com)",
       "WebFetch(domain:developers.google.com)",
+      "WebFetch(domain:developers.cloudflare.com)",
       "WebFetch(domain:dev.mailjet.com)",
       "WebFetch(domain:djlint.com)",
       "WebFetch(domain:docs.github.com)",
