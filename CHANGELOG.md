@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.1.1](https://github.com/alltuner/vibetuner/compare/v3.1.0...v3.1.1) (2026-01-22)
+
+
+### Bug Fixes
+
+* use conventional commit title in deps-pr squash merge ([#819](https://github.com/alltuner/vibetuner/issues/819)) ([d92e723](https://github.com/alltuner/vibetuner/commit/d92e7230733df743e9495d42b3fb6f492273829c))
+
+
+### Documentation Updates
+
+* update docs to reflect vibetuner as installed package ([#816](https://github.com/alltuner/vibetuner/issues/816)) ([1aa22ec](https://github.com/alltuner/vibetuner/commit/1aa22ece31986d607520d2355d8e7e378da4ddec))
+
 ## [3.1.0](https://github.com/alltuner/vibetuner/compare/v3.0.2...v3.1.0) (2026-01-21)
 
 
