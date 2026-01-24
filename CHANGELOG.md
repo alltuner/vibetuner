@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/alltuner/vibetuner/compare/v3.1.1...v3.2.0) (2026-01-24)
+
+
+### Features
+
+* add /static/fonts route for custom font support ([#821](https://github.com/alltuner/vibetuner/issues/821)) ([75708b2](https://github.com/alltuner/vibetuner/commit/75708b26ae94ecfc703aa9b76f1b5bd12c182792))
+
 ## [3.1.1](https://github.com/alltuner/vibetuner/compare/v3.1.0...v3.1.1) (2026-01-22)
 
 
