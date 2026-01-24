@@ -155,6 +155,12 @@ class PathSettings(BaseSettings):
         """Project images directory."""
         return self.root / "assets" / "statics" / "img" if self.root else None
 
+    @computed_field
+    @property
+    def fonts(self) -> Path | None:
+        """Project fonts directory."""
+        return self.root / "assets" / "statics" / "fonts" if self.root else None
+
     # Template paths (always return a list, project + package)
     @computed_field
     @property
@@ -248,6 +254,7 @@ css = _settings.css
 js = _settings.js
 favicons = _settings.favicons
 img = _settings.img
+fonts = _settings.fonts
 frontend_templates = _settings.frontend_templates
 email_templates = _settings.email_templates
 markdown_templates = _settings.markdown_templates

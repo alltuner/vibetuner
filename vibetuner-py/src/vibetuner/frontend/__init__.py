@@ -84,6 +84,7 @@ app.mount(f"/static/v{ctx.v_hash}/img", StaticFiles(directory=paths.img), name="
 app.mount(f"/static/v{ctx.v_hash}/js", StaticFiles(directory=paths.js), name="js")
 
 app.mount("/static/favicons", StaticFiles(directory=paths.favicons), name="favicons")
+app.mount("/static/fonts", StaticFiles(directory=paths.fonts), name="fonts")
 
 
 @app.get("/static/v{v_hash}/css/{subpath:path}", response_class=RedirectResponse)
