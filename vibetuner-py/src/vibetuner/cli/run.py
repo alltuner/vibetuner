@@ -1,7 +1,5 @@
 # ABOUTME: Run commands for starting the application in different modes
 # ABOUTME: Supports dev/prod modes for frontend and worker services
-import hashlib
-import os
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -9,6 +7,7 @@ import typer
 from rich.console import Console
 
 from vibetuner.logging import logger
+from vibetuner.utils import compute_auto_port
 
 
 console = Console()
@@ -19,14 +18,6 @@ run_app = typer.Typer(
 
 DEFAULT_FRONTEND_PORT = 8000
 DEFAULT_WORKER_PORT = 11111
-
-
-def _compute_auto_port() -> int:
-    """Compute deterministic port from current directory path."""
-    cwd = os.getcwd()
-    hash_bytes = hashlib.sha256(cwd.encode()).digest()
-    hash_int = int.from_bytes(hash_bytes[:4], "big")
-    return 8001 + (hash_int % 999)
 
 
 def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
@@ -154,7 +145,7 @@ def dev(
         raise typer.Exit(code=1)
 
     if auto_port:
-        port = _compute_auto_port()
+        port = compute_auto_port()
 
     _run_service("dev", service, host, port, workers_count)
 
