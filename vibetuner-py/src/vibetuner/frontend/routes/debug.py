@@ -1,3 +1,8 @@
+import asyncio
+from collections import deque
+from datetime import UTC, datetime
+from typing import Any
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -8,6 +13,7 @@ from fastapi.responses import (
     HTMLResponse,
     RedirectResponse,
 )
+from sse_starlette.sse import EventSourceResponse
 
 from vibetuner.config import settings
 from vibetuner.context import ctx
@@ -16,6 +22,11 @@ from vibetuner.models.registry import get_all_models
 
 from ..deps import MAGIC_COOKIE_NAME
 from ..templates import render_template
+
+
+# Claude Code event broadcasting
+_claude_events: deque[dict[str, Any]] = deque(maxlen=100)
+_claude_subscribers: set[asyncio.Queue] = set()
 
 
 def check_debug_access(request: Request):
@@ -521,3 +532,77 @@ async def debug_config_clear_override(request: Request, key: str):
 
     await RuntimeConfig.clear_runtime_override(key)
     return RedirectResponse(url=f"/debug/config/{key}", status_code=302)
+
+
+# Claude Code Notification Routes
+
+
+async def _broadcast_claude_event(event: dict[str, Any]) -> None:
+    """Broadcast an event to all connected SSE subscribers."""
+    for queue in _claude_subscribers:
+        await queue.put(event)
+
+
+@router.post("/claude/webhook")
+async def debug_claude_webhook(request: Request):
+    """Receive Claude Code hook events and broadcast to SSE subscribers.
+
+    Called by `vibetuner notify` CLI command when Claude hooks fire.
+    """
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+
+    event = {
+        "type": payload.get("event", "unknown"),
+        "payload": payload,
+        "timestamp": datetime.now(UTC).isoformat(),
+    }
+
+    _claude_events.append(event)
+    await _broadcast_claude_event(event)
+
+    return {"status": "ok"}
+
+
+async def _event_generator(queue: asyncio.Queue):
+    """Generate SSE events from the queue."""
+    try:
+        while True:
+            event = await queue.get()
+            yield {
+                "event": event["type"],
+                "data": event,
+            }
+    except asyncio.CancelledError:
+        pass
+
+
+@router.get("/claude/events")
+async def debug_claude_events(request: Request):
+    """SSE endpoint for Claude Code events.
+
+    Browsers connect here to receive real-time notifications.
+    """
+    queue: asyncio.Queue = asyncio.Queue()
+    _claude_subscribers.add(queue)
+
+    async def event_stream():
+        try:
+            async for event in _event_generator(queue):
+                yield event
+        finally:
+            _claude_subscribers.discard(queue)
+
+    return EventSourceResponse(event_stream())
+
+
+@router.get("/claude", response_class=HTMLResponse)
+async def debug_claude(request: Request):
+    """Debug page showing Claude Code events with live updates."""
+    return render_template(
+        "debug/claude.html.jinja",
+        request,
+        {"events": list(_claude_events)},
+    )
