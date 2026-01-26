@@ -1,5 +1,23 @@
 # Changelog
 
+## [3.3.0](https://github.com/alltuner/vibetuner/compare/v3.2.1...v3.3.0) (2026-01-26)
+
+
+### Features
+
+* expose compute_auto_port function with optional path parameter ([#826](https://github.com/alltuner/vibetuner/issues/826)) ([789480a](https://github.com/alltuner/vibetuner/commit/789480a9ce10715be13af12406afe6054f737ed9))
+* skip Claude Code trust prompt in worktrees via sparse checkout ([#830](https://github.com/alltuner/vibetuner/issues/830)) ([810499e](https://github.com/alltuner/vibetuner/commit/810499ee1d041d81efea6bea2fc8d851f26e7b14))
+
+
+### Miscellaneous Chores
+
+* update deps 2026-01-26 ([5d184ab](https://github.com/alltuner/vibetuner/commit/5d184ab9a4b96e4e6574b66eed30ef286a598dbe))
+
+
+### Documentation Updates
+
+* fix README project structure and command names ([#828](https://github.com/alltuner/vibetuner/issues/828)) ([0892936](https://github.com/alltuner/vibetuner/commit/08929365853a900feaa787cafada2a44a98a94d6))
+
 ## [3.2.1](https://github.com/alltuner/vibetuner/compare/v3.2.0...v3.2.1) (2026-01-26)
 
 
