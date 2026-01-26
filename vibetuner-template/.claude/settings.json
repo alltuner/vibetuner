@@ -4,6 +4,7 @@
       "Skill(frontend-design:frontend-design)",
       "Bash(cat:*)",
       "Bash(curl:*)",
+      "Bash(djlint:*)",
       "Bash(docker images:*)",
       "Bash(docker history:*)",
       "Bash(docker build:*)",
