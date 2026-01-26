@@ -42,3 +42,8 @@ local-all-with-worker: install-deps
         "just local-dev-auto" \
         "bun dev" \
         "just worker-dev"
+
+# Notify vibetuner app of Claude Code events (called by Claude hooks)
+[group('Local Development')]
+claude-notify:
+    @uv run vibetuner notify 2>/dev/null || true

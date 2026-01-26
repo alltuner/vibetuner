@@ -1,5 +1,7 @@
 # ABOUTME: Run commands for starting the application in different modes
 # ABOUTME: Supports dev/prod modes for frontend and worker services
+import atexit
+import signal
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -11,6 +13,31 @@ from vibetuner.utils import compute_auto_port
 
 
 console = Console()
+
+PORT_FILE = Path(".vibetuner-port")
+
+
+def _write_port_file(port: int) -> None:
+    """Write the port number to .vibetuner-port file for dev mode."""
+    PORT_FILE.write_text(str(port))
+
+
+def _cleanup_port_file() -> None:
+    """Remove the .vibetuner-port file on shutdown."""
+    PORT_FILE.unlink(missing_ok=True)
+
+
+def _setup_port_file_cleanup() -> None:
+    """Register cleanup handlers for the port file."""
+    atexit.register(_cleanup_port_file)
+
+    def signal_handler(signum, frame):
+        _cleanup_port_file()
+        raise SystemExit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
 
 run_app = typer.Typer(
     help="Run the application in different modes", no_args_is_help=True
@@ -66,6 +93,10 @@ def _run_frontend(
     from granian.constants import Interfaces
 
     is_dev = mode == "dev"
+
+    if is_dev:
+        _write_port_file(port)
+        _setup_port_file_cleanup()
 
     console.print(f"[green]Starting frontend in {mode} mode on {host}:{port}[/green]")
     console.print(f"[cyan]website reachable at http://localhost:{port}[/cyan]")
