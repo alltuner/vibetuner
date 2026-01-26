@@ -14,12 +14,12 @@ repos:
         stages: [pre-commit, post-checkout, post-merge, post-rewrite]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.14.13
+    rev: v0.14.14
     hooks:
       # Run the linter (check only, no auto-fix).
       - id: ruff-check
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.0.223
+    rev: v0.1.0
     hooks:
       - id: rumdl
         name: rumdl check
