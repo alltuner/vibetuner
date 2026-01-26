@@ -77,3 +77,4 @@ _site/
 ############################################################
 worktrees/*
 !worktrees/.placeholder
+!worktrees/.claude
