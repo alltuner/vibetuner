@@ -19,22 +19,6 @@ feature-new NAME:
         ln -sf "$(pwd)/.env" "$WORKTREE_DIR/.env"
     fi
     command -v mise &> /dev/null && (cd "$WORKTREE_DIR" && mise trust) || true
-
-    # Ensure worktrees/.claude symlink exists for Claude Code trust inheritance
-    if [[ -d .claude ]] && [[ ! -e worktrees/.claude ]]; then
-        ln -s ../.claude worktrees/.claude
-    fi
-
-    # Configure sparse checkout to exclude .claude so worktree inherits from parent
-    if [[ -d .claude ]]; then
-        WORKTREE_NAME=$(basename "$WORKTREE_DIR")
-        GIT_DIR=".git/worktrees/$WORKTREE_NAME"
-        mkdir -p "$GIT_DIR/info"
-        printf '%s\n%s\n' '/*' '!.claude/' > "$GIT_DIR/info/sparse-checkout"
-        git -C "$WORKTREE_DIR" sparse-checkout init --no-cone
-        git -C "$WORKTREE_DIR" read-tree -mu HEAD
-    fi
-
     echo ""
     echo "Worktree created at: $WORKTREE_DIR"
     echo "Branch: $BRANCH_NAME"
