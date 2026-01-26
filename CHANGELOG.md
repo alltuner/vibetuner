@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.0](https://github.com/alltuner/vibetuner/compare/v3.3.0...v3.4.0) (2026-01-26)
+
+
+### Features
+
+* add Claude Code notification system ([#835](https://github.com/alltuner/vibetuner/issues/835)) ([828686f](https://github.com/alltuner/vibetuner/commit/828686f5aa48ef267e671eeaad34720e62131d70))
+
 ## [3.3.0](https://github.com/alltuner/vibetuner/compare/v3.2.1...v3.3.0) (2026-01-26)
 
 
