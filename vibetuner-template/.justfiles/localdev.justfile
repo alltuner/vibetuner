@@ -12,17 +12,17 @@ dev: install-deps
 # Runs the dev environment locally without Docker
 [group('Local Development')]
 local-dev PORT="8000": install-deps
-    @vibetuner run dev --port {{ PORT }}
+    @DEBUG=true vibetuner run dev --port {{ PORT }}
 
 # Runs local dev with auto-assigned port (deterministic per project path)
 [group('Local Development')]
 local-dev-auto: install-deps
-    @vibetuner run dev --auto-port
+    @DEBUG=true vibetuner run dev --auto-port
 
 # Runs the task worker locally without Docker
 [group('Local Development')]
 worker-dev: install-deps
-    @vibetuner run dev worker
+    @DEBUG=true vibetuner run dev worker
 
 # Runs local dev server and assets in parallel (auto-port)
 [group('Local Development')]
