@@ -133,34 +133,36 @@ just worker-dev       # Background worker (if enabled)
 ### Common Commands
 
 ```bash
-just sync             # Sync all dependencies
+just install-deps     # Install dependencies from lockfiles
 just format           # Format code
-just build-prod       # Test production build
+just test-build-prod  # Test production build locally
 ```
 
 ## 🏗️ Project Structure
 
-Generated projects separate framework code from your code:
+The `vibetuner` package is installed as a dependency. Your application code lives in `src/app/`:
 
 ```text
 my-app/
-├── src/vibetuner/          # Core framework (immutable)
-│   ├── frontend/           # FastAPI app, auth, middleware
-│   ├── models/             # User, OAuth models
-│   ├── services/           # Email, storage services
-│   └── cli/                # CLI framework
-├── src/app/                # Your code (edit freely)
-│   ├── frontend/routes/    # Your HTTP routes
+├── src/app/                # Your application code
+│   ├── config.py           # App configuration
+│   ├── cli/                # Your CLI commands
+│   ├── frontend/           # Your web routes
+│   │   └── routes/
 │   ├── models/             # Your database models
 │   ├── services/           # Your business logic
 │   └── tasks/              # Your background jobs
 ├── templates/              # Jinja2 templates
-├── assets/                 # Static files
+│   ├── frontend/           # Web templates
+│   ├── email/              # Email templates
+│   └── markdown/           # Markdown templates
+├── assets/statics/         # Static files (css, js, img, fonts)
+├── locales/                # i18n translation files
 └── Dockerfile              # Production deployment
 ```
 
-**Core framework** handles authentication, database, email, etc.
-**Your code** focuses on business logic.
+**vibetuner** (installed package) handles auth, database, email, etc.
+**src/app/** is your code; edit freely.
 
 ## 🔐 Authentication
 
@@ -249,7 +251,7 @@ Built for All Tuner Labs' internal needs, shared publicly because it might help 
 
 ## 📄 License
 
-MIT License - Copyright (c) 2025 All Tuner Labs, S.L.
+MIT License - Copyright (c) 2026 All Tuner Labs, S.L.
 
 See [LICENSE](./LICENSE) for details.
 
