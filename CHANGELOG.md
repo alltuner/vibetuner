@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.1](https://github.com/alltuner/vibetuner/compare/v3.2.0...v3.2.1) (2026-01-26)
+
+
+### Bug Fixes
+
+* remove DEBUG and ENVIRONMENT from template .env ([#823](https://github.com/alltuner/vibetuner/issues/823)) ([4c9341f](https://github.com/alltuner/vibetuner/commit/4c9341f49f8bee4427df2770a4b4a11e4c195c12))
+
 ## [3.2.0](https://github.com/alltuner/vibetuner/compare/v3.1.1...v3.2.0) (2026-01-24)
 
 
