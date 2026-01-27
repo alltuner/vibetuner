@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.1](https://github.com/alltuner/vibetuner/compare/v3.4.0...v3.4.1) (2026-01-27)
+
+
+### Miscellaneous Chores
+
+* update deps 2026-01-27 ([b74901d](https://github.com/alltuner/vibetuner/commit/b74901da84c02c46c389ef4dc8b406a6bbe52a0f))
+
 ## [3.4.0](https://github.com/alltuner/vibetuner/compare/v3.3.0...v3.4.0) (2026-01-26)
 
 

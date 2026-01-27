@@ -1,7 +1,7 @@
 [project]
 name = "vibetuner"
 description = "Core Python framework and blessed dependencies for production-ready FastAPI + MongoDB + HTMX projects"
-version = "3.4.0"
+version = "3.4.1"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
