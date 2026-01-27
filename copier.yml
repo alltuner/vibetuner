@@ -78,9 +78,9 @@ enable_watchtower:
 _tasks:
   - command: [uv, sync]
     when: "{{ _copier_operation == 'copy' }}"
-  - command: [just, git-init, "{{ project_slug }}"]
+  - command: [uvx, --from, just-bin, just, git-init, "{{ project_slug }}"]
     when: "{{ _copier_operation == 'copy' }}"
-  - command: [mise, trust]
+  - command: [sh, -c, "command -v mise > /dev/null && mise trust || true"]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [uv, run, prek, install]
     when: "{{ _copier_operation == 'copy' }}"
