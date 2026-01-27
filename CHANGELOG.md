@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.4.2](https://github.com/alltuner/vibetuner/compare/v3.4.1...v3.4.2) (2026-01-27)
+
+
+### Bug Fixes
+
+* bootstrap without requiring just or mise installed ([#840](https://github.com/alltuner/vibetuner/issues/840)) ([b9e0d94](https://github.com/alltuner/vibetuner/commit/b9e0d946b17e04eab97677e0b2792a99153fcf30))
+
+
+### Miscellaneous Chores
+
+* update deps 2026-01-27 ([b6d34c8](https://github.com/alltuner/vibetuner/commit/b6d34c81d1d5070d505e6fbb74b4a7d57dd81a4b))
+
 ## [3.4.1](https://github.com/alltuner/vibetuner/compare/v3.4.0...v3.4.1) (2026-01-27)
 
 
