@@ -27,7 +27,7 @@ Populates package metadata.
 
 Watchtower, etc.).
 
-- `python_version` – default `3.13`. Controls `.python-version`, Docker images,
+- `python_version` – default `3.14`. Controls `.python-version`, Docker images,
 and `uv` settings.
 - `supported_languages` – default `[]`. JSON/YAML list of language codes (for
 example `["es", "fr"]`), adds translation skeletons.

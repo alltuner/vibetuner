@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1-labs  # Required for advanced features like --parents flag
 # Test Dockerfile - generates a test project using copier and builds it
 
-ARG PYTHON_VERSION=3.13
+ARG PYTHON_VERSION=3.14
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 1: Frontend dependencies

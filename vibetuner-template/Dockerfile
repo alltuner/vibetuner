@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1-labs  # Required for advanced features like --parents flag
 
-ARG PYTHON_VERSION=3.13
+ARG PYTHON_VERSION=3.14
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 1: Base Python Environment with UV Package Manager
