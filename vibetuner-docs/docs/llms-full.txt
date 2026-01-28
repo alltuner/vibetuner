@@ -786,7 +786,7 @@ Creates all database tables defined in SQLModel metadata. This command:
 - `project_slug` – default `_folder_name`. Must match `^[a-z][a-z0-9\-]*[a-z0-9]$` (used for Python package name, Docker image, compose project name).
 - `project_description` – default `A project that does something useful.` Populates package metadata.
 - `fqdn` – default empty. When set, enables production deployment extras (Caddy, Watchtower, etc.).
-- `python_version` – default `3.13`. Controls `.python-version`, Docker images, and `uv` settings.
+- `python_version` – default `3.14`. Controls `.python-version`, Docker images, and `uv` settings.
 - `supported_languages` – default `[]`. JSON/YAML list of language codes (for example `["es", "fr"]`), adds translation skeletons.
 - `redis_url` – default empty. Used when background jobs are enabled.
 - `mongodb_url` – default empty. MongoDB connection string written to `.env.local`.

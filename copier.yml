@@ -51,7 +51,7 @@ fqdn:
 python_version:
   type: str
   help: Select your Python version
-  default: "3.13"
+  default: "3.14"
   choices:
     - "3.11"
     - "3.12"

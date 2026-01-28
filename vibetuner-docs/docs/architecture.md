@@ -344,7 +344,7 @@ settings = Settings()
 
 ```dockerfile
 # Stage 1: Base with uv
-FROM python:3.13-slim as python-base
+FROM python:3.14-slim as python-base
 RUN apt-get update && apt-get install -y git
 COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /bin/
 
@@ -362,7 +362,7 @@ FROM oven/bun:1-alpine as frontend-build
 RUN bun install --frozen-lockfile && bun run build-prod
 
 # Stage 7: Runtime (fresh base, no build tools)
-FROM python:3.13-slim as runtime
+FROM python:3.14-slim as runtime
 COPY --from=python-app /app/.venv/ .venv/
 COPY --from=frontend-build /app/assets/statics/ assets/statics/
 COPY templates/ templates/
