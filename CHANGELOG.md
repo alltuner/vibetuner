@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.4.3](https://github.com/alltuner/vibetuner/compare/v3.4.2...v3.4.3) (2026-01-28)
+
+
+### Bug Fixes
+
+* update default python to 3.14 ([#845](https://github.com/alltuner/vibetuner/issues/845)) ([e5209b8](https://github.com/alltuner/vibetuner/commit/e5209b80d6e6c2134c41fe0d17fc0a565b321266))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump rumdl from 0.1.1 to 0.1.2 in /vibetuner-py ([#843](https://github.com/alltuner/vibetuner/issues/843)) ([e93f47c](https://github.com/alltuner/vibetuner/commit/e93f47ccd9f9369cae2157cee8d9e61a1c46e157))
+* **deps:** bump vibetuner from 3.4.1 to 3.4.2 ([#844](https://github.com/alltuner/vibetuner/issues/844)) ([c651914](https://github.com/alltuner/vibetuner/commit/c651914b1fda1850a947a67b03a121faff6af4ce))
+
 ## [3.4.2](https://github.com/alltuner/vibetuner/compare/v3.4.1...v3.4.2) (2026-01-27)
 
 
