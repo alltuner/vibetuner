@@ -186,6 +186,34 @@ class AuthBackend(AuthenticationBackend):
         return None
 
 
+def _build_locale_selectors() -> list:
+    """Build locale selector list based on configuration.
+
+    Selectors are evaluated in order. The first one that returns
+    a valid locale wins. Order is fixed by design:
+    1. query_param - ?l=ca query parameter
+    2. url_prefix - /ca/... path prefix
+    3. user_session - authenticated user's stored preference
+    4. cookie - language cookie
+    5. accept_language - browser Accept-Language header
+    """
+    selectors: list = []
+    config = settings.locale_detection
+
+    if config.query_param:
+        selectors.append(LocaleFromQuery(query_param="l"))
+    if config.url_prefix:
+        selectors.append(locale_selector)
+    if config.user_session:
+        selectors.append(user_preference_selector)
+    if config.cookie:
+        selectors.append(LocaleFromCookie())
+    if config.accept_language:
+        selectors.append(LocaleFromHeader(supported_locales=ctx.supported_languages))
+
+    return selectors
+
+
 middlewares: list[Middleware] = [
     Middleware(TrustedHostMiddleware),
     Middleware(HtmxMiddleware),
@@ -198,13 +226,7 @@ middlewares: list[Middleware] = [
         LocaleMiddleware,
         locales=list(ctx.supported_languages),
         default_locale=ctx.default_language,
-        selectors=[
-            LocaleFromQuery(query_param="l"),
-            locale_selector,
-            user_preference_selector,
-            LocaleFromCookie(),
-            LocaleFromHeader(supported_locales=ctx.supported_languages),
-        ],
+        selectors=_build_locale_selectors(),
     ),
     Middleware(LangPrefixMiddleware, supported_languages=ctx.supported_languages),
     Middleware(AdjustLangCookieMiddleware),

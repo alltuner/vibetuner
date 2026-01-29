@@ -49,6 +49,30 @@ class SQLiteDsn(AnyUrl):
 current_year: int = datetime.now().year
 
 
+class LocaleDetectionSettings(BaseSettings):
+    """Settings for locale detection selectors.
+
+    All selectors are enabled by default. The order is fixed:
+    1. query_param - ?l=ca query parameter
+    2. url_prefix - /ca/... path prefix
+    3. user_session - authenticated user's stored preference
+    4. cookie - language cookie
+    5. accept_language - browser Accept-Language header
+    """
+
+    query_param: bool = True
+    url_prefix: bool = True
+    user_session: bool = True
+    cookie: bool = True
+    accept_language: bool = True
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        extra="ignore",
+        env_prefix="LOCALE_",
+    )
+
+
 def _load_project_config() -> "ProjectConfiguration":
     if config_vars_path is None:
         raise RuntimeError(
@@ -143,6 +167,11 @@ class CoreConfiguration(BaseSettings):
     r2_default_region: str = "auto"
 
     worker_concurrency: int = 16
+
+    # Locale detection settings
+    locale_detection: LocaleDetectionSettings = Field(
+        default_factory=LocaleDetectionSettings
+    )
 
     # Proxy configuration for X-Forwarded-For/Proto headers
     # Comma-separated list of trusted proxy IPs/CIDRs (e.g., "127.0.0.1,192.168.1.0/24")
