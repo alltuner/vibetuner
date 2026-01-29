@@ -70,6 +70,7 @@ class LocaleDetectionSettings(BaseSettings):
         case_sensitive=False,
         extra="ignore",
         env_prefix="LOCALE_",
+        env_file=".env",
     )
 
 
