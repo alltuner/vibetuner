@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.5.0](https://github.com/alltuner/vibetuner/compare/v3.4.3...v3.5.0) (2026-01-29)
+
+
+### Features
+
+* add locale detection configuration via environment variables ([#850](https://github.com/alltuner/vibetuner/issues/850)) ([f6b15dc](https://github.com/alltuner/vibetuner/commit/f6b15dcbae6422d87eb88d3e68c8d679783771ff))
+
+
+### Miscellaneous Chores
+
+* update deps 2026-01-28 ([557ccee](https://github.com/alltuner/vibetuner/commit/557cceeb0ed452d25110929a2cae955f78609b36))
+* update deps 2026-01-29 ([6616dd1](https://github.com/alltuner/vibetuner/commit/6616dd1835bf14d42d10ed876aebb50c1a4c9fe4))
+
 ## [3.4.3](https://github.com/alltuner/vibetuner/compare/v3.4.2...v3.4.3) (2026-01-28)
 
 
