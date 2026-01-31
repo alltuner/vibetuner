@@ -109,7 +109,9 @@ def _run_frontend(
     else:
         console.print(f"[dim]Workers: {workers}[/dim]")
 
-    print(paths.reload_paths)
+    console.print("Registered reload paths:")
+    for path in paths.reload_paths:
+        console.print(f"  - {path}")
 
     server = Granian(
         target="vibetuner.frontend.proxy:app",
