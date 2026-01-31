@@ -9,6 +9,7 @@ import typer
 from rich.console import Console
 
 from vibetuner.logging import logger
+from vibetuner.paths import paths
 from vibetuner.utils import compute_auto_port
 
 
@@ -108,16 +109,7 @@ def _run_frontend(
     else:
         console.print(f"[dim]Workers: {workers}[/dim]")
 
-    reload_paths = (
-        [
-            Path("src/app"),
-            Path("templates/frontend"),
-            Path("templates/email"),
-            Path("templates/markdown"),
-        ]
-        if is_dev
-        else None
-    )
+    print(paths.reload_paths)
 
     server = Granian(
         target="vibetuner.frontend.proxy:app",
@@ -126,7 +118,7 @@ def _run_frontend(
         interface=Interfaces.ASGI,
         workers=workers,
         reload=is_dev,
-        reload_paths=reload_paths,
+        reload_paths=paths.reload_paths if is_dev else [],
         log_level="info",
         log_access=True,
     )

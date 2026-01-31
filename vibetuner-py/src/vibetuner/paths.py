@@ -58,7 +58,6 @@ def create_core_templates_symlink(target: Path) -> None:
 
 # Package templates always available
 package_templates = _get_package_templates_path()
-core_templates = package_templates  # Alias for backwards compatibility
 
 
 class PathSettings(BaseSettings):
@@ -198,6 +197,25 @@ class PathSettings(BaseSettings):
         paths.append(package_templates / "markdown")
         return paths
 
+    @computed_field
+    @property
+    def app_code(self) -> list[Path]:
+        """Project application code directory."""
+        code_paths: list[Path] = []
+
+        if not self.root:
+            return code_paths
+
+        src_tree = self.root / "src"
+        if src_tree.is_dir():
+            code_paths.append(src_tree)
+
+        app_path = self.root / "app.py"
+        if app_path.is_file():
+            code_paths.append(app_path)
+
+        return code_paths
+
     def to_template_path_list(self, path: Path) -> list[Path]:
         """Convert path to list with fallback."""
         return [path, path / self.fallback_path]
@@ -222,39 +240,54 @@ class PathSettings(BaseSettings):
             f"Could not find {file_name} in any of the fallback paths: {paths_to_check}"
         )
 
+    @property
+    def reload_paths(self) -> list[Path]:
+        """Get list of paths to watch for reloads in dev mode."""
+
+        paths = [
+            p
+            for group in (
+                self.frontend_templates,
+                self.email_templates,
+                self.markdown_templates,
+            )
+            if group
+            for p in group
+            if p.is_dir()
+        ] + self.app_code
+
+        return paths
+
 
 # Global settings instance with lazy auto-detection
-_settings = PathSettings()
+paths = PathSettings()
 
 
 def to_template_path_list(path: Path) -> list[Path]:
     """Convert path to list with fallback."""
-    return _settings.to_template_path_list(path)
+    return paths.to_template_path_list(path)
 
 
 def fallback_static_default(static_type: str, file_name: str) -> Path:
     """Return a fallback path for a static file."""
-    return _settings.fallback_static_default(static_type, file_name)
+    return paths.fallback_static_default(static_type, file_name)
 
-
-# Expose settings instance for direct access
-paths = _settings
 
 # Module-level variables that delegate to settings (backwards compatibility)
 # Access like: from vibetuner.paths import frontend_templates
 # Or better: from vibetuner.paths import paths; paths.frontend_templates
-root = _settings.root
-templates = _settings.templates
-app_templates = _settings.app_templates
-locales = _settings.locales
-config_vars = _settings.config_vars
-assets = _settings.assets
-statics = _settings.statics
-css = _settings.css
-js = _settings.js
-favicons = _settings.favicons
-img = _settings.img
-fonts = _settings.fonts
-frontend_templates = _settings.frontend_templates
-email_templates = _settings.email_templates
-markdown_templates = _settings.markdown_templates
+root = paths.root
+templates = paths.templates
+app_templates = paths.app_templates
+locales = paths.locales
+config_vars = paths.config_vars
+assets = paths.assets
+statics = paths.statics
+css = paths.css
+js = paths.js
+favicons = paths.favicons
+img = paths.img
+fonts = paths.fonts
+frontend_templates = paths.frontend_templates
+email_templates = paths.email_templates
+markdown_templates = paths.markdown_templates
