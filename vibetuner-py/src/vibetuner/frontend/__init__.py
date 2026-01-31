@@ -5,8 +5,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 import vibetuner.frontend.lifespan as lifespan_module
-from vibetuner import paths
 from vibetuner.logging import logger
+from vibetuner.paths import paths
 
 from .deps import (
     LangDep as LangDep,
@@ -79,45 +79,12 @@ app = FastAPI(
 )
 
 # Static files
-if paths.css.is_dir():
-    app.mount(
-        f"/static/v{ctx.v_hash}/css", StaticFiles(directory=paths.css), name="css"
-    )
-else:
-    logger.warning(
-        f"CSS static directory ({paths.css}) not found; CSS files will not be served."
-    )
+app.mount(f"/static/v{ctx.v_hash}/css", StaticFiles(directory=paths.css), name="css")
+app.mount(f"/static/v{ctx.v_hash}/img", StaticFiles(directory=paths.img), name="img")
+app.mount(f"/static/v{ctx.v_hash}/js", StaticFiles(directory=paths.js), name="js")
 
-if paths.img.is_dir():
-    app.mount(
-        f"/static/v{ctx.v_hash}/img", StaticFiles(directory=paths.img), name="img"
-    )
-else:
-    logger.warning(
-        f"Image static directory ({paths.img}) not found; image files will not be served."
-    )
-if paths.js.is_dir():
-    app.mount(f"/static/v{ctx.v_hash}/js", StaticFiles(directory=paths.js), name="js")
-else:
-    logger.warning(
-        f"JavaScript static directory ({paths.js}) not found; JS files will not be served."
-    )
-
-if paths.favicons.is_dir():
-    app.mount(
-        "/static/favicons", StaticFiles(directory=paths.favicons), name="favicons"
-    )
-else:
-    logger.warning(
-        f"Favicons static directory ({paths.favicons}) not found; favicon files will not be served."
-    )
-
-if paths.fonts.is_dir():
-    app.mount("/static/fonts", StaticFiles(directory=paths.fonts), name="fonts")
-else:
-    logger.warning(
-        f"Fonts static directory ({paths.fonts}) not found; font files will not be served."
-    )
+app.mount("/static/favicons", StaticFiles(directory=paths.favicons), name="favicons")
+app.mount("/static/fonts", StaticFiles(directory=paths.fonts), name="fonts")
 
 
 @app.get("/static/v{v_hash}/css/{subpath:path}", response_class=RedirectResponse)
