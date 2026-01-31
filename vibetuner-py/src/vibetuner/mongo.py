@@ -1,4 +1,3 @@
-from importlib import import_module
 from typing import Optional
 
 from beanie import init_beanie
@@ -6,6 +5,7 @@ from deprecated import deprecated
 from pymongo import AsyncMongoClient
 
 from vibetuner.config import settings
+from vibetuner.importer import import_module_by_name
 from vibetuner.logging import logger
 from vibetuner.models.registry import get_all_models
 
@@ -38,21 +38,17 @@ async def init_mongodb() -> None:
     _ensure_client()
 
     if mongo_client is None:
-        # Nothing to do; URL missing
         return
 
-    # Import user models so they register themselves
-    try:
-        import_module("app.models")
-    except ModuleNotFoundError:
-        logger.debug("app.models not found; skipping user model import.")
-    except ImportError as e:
-        logger.warning(f"Failed to import app.models: {e}. User models may be missing.")
+    if not import_module_by_name("models"):
+        logger.warning("No models module found; skipping model registration.")
+        return
 
     await init_beanie(
         database=mongo_client[settings.mongo_dbname],
         document_models=get_all_models(),
     )
+
     logger.info("MongoDB + Beanie initialized successfully.")
 
 
