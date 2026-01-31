@@ -7,6 +7,8 @@ try:
     from app._version import version as __version__  # type: ignore
 except (ImportError, ModuleNotFoundError) as e:
     # Log warning for both ImportError and ModuleNotFoundError as requested
-    logger.warning(f"Failed to import app._version: {e}. Using default version.")
+    logger.warning(
+        f"Failed to import app._version: {e}. Using default version {__version__}."
+    )
 
 version = __version__
