@@ -1,5 +1,28 @@
 # Changelog
 
+## [5.0.0](https://github.com/alltuner/vibetuner/compare/v4.0.1...v5.0.0) (2026-02-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* simplify versioning - read from pyproject.toml instead of git tags ([#858](https://github.com/alltuner/vibetuner/issues/858))
+
+### Features
+
+* add vibetuner scaffold adopt command ([#862](https://github.com/alltuner/vibetuner/issues/862)) ([1ab4103](https://github.com/alltuner/vibetuner/commit/1ab4103cc95ea041d65a905dad2d1f22c175f9a4))
+* simplify versioning - read from pyproject.toml instead of git tags ([#858](https://github.com/alltuner/vibetuner/issues/858)) ([34e12b2](https://github.com/alltuner/vibetuner/commit/34e12b2ce3bcf96077936addc8af8d895965780c))
+
+
+### Bug Fixes
+
+* cache git branch lookup in versioning module ([#860](https://github.com/alltuner/vibetuner/issues/860)) ([9ac832b](https://github.com/alltuner/vibetuner/commit/9ac832bd06051826378dba63786b9addfab21b4b))
+* remove worktree placeholder ([#863](https://github.com/alltuner/vibetuner/issues/863)) ([cff196c](https://github.com/alltuner/vibetuner/commit/cff196c7653d2d1b82c5591930c08bbfb06880d3))
+
+
+### Code Refactoring
+
+* move worktrees to sibling directory with readable names ([#861](https://github.com/alltuner/vibetuner/issues/861)) ([79c28c9](https://github.com/alltuner/vibetuner/commit/79c28c940071de17c4766c013772c88da003b332))
+
 ## [4.0.1](https://github.com/alltuner/vibetuner/compare/v4.0.0...v4.0.1) (2026-02-01)
 
 
