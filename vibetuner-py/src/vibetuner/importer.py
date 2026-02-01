@@ -1,5 +1,6 @@
 import tomllib
 from importlib import import_module
+from types import ModuleType
 
 from vibetuner.logging import logger
 from vibetuner.paths import paths
@@ -23,7 +24,7 @@ def _package_name() -> str | None:
     return project_name if project_name else None
 
 
-def import_module_by_name(module_name: str) -> None:
+def import_module_by_name(module_name: str) -> ModuleType:
     """Dynamically import a module by name."""
     packages_to_try: list[str | None] = []
     # First, we check the legacy src/app structure
