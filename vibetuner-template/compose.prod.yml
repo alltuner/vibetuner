@@ -19,9 +19,9 @@ services:
     build:
       context: .
       args:
-        VERSION: ${VERSION:-0.0.0}
         PYTHON_VERSION: ${PYTHON_VERSION}
         ENVIRONMENT: ${ENVIRONMENT:-prod}
+        VERSION: ${VERSION:-0.0.0}
       x-bake:
         platforms:
           - linux/amd64
