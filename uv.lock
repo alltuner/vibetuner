@@ -278,11 +278,11 @@ wheels = [
 
 [[package]]
 name = "babel"
-version = "2.17.0"
+version = "2.18.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/7d/6b/d52e42361e1aa00709585ecc30b3f9684b3ab62530771402248b1b1d6240/babel-2.17.0.tar.gz", hash = "sha256:0c54cffb19f690cdcc52a3b50bcbf71e07a808d1c80d549f2459b9d2cf0afb9d", size = 9951852, upload-time = "2025-02-01T15:17:41.026Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7d/b2/51899539b6ceeeb420d40ed3cd4b7a40519404f9baf3d4ac99dc413a834b/babel-2.18.0.tar.gz", hash = "sha256:b80b99a14bd085fcacfa15c9165f651fbb3406e66cc603abf11c5750937c992d", size = 9959554, upload-time = "2026-02-01T12:30:56.078Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b7/b8/3fe70c75fe32afc4bb507f75563d39bc5642255d1d94f1f23604725780bf/babel-2.17.0-py3-none-any.whl", hash = "sha256:4d0b53093fdfb4b21c92b5213dba5a1b23885afa8383709427046b21c366e5f2", size = 10182537, upload-time = "2025-02-01T15:17:37.39Z" },
+    { url = "https://files.pythonhosted.org/packages/77/f5/21d2de20e8b8b0408f0681956ca2c69f1320a3848ac50e6e7f39c6159675/babel-2.18.0-py3-none-any.whl", hash = "sha256:e2b422b277c2b9a9630c1d7903c2a00d0830c409c59ac8cae9081c92f1aeba35", size = 10196845, upload-time = "2026-02-01T12:30:53.445Z" },
 ]
 
 [[package]]
@@ -2366,16 +2366,16 @@ wheels = [
 
 [[package]]
 name = "rich-toolkit"
-version = "0.18.0"
+version = "0.18.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "rich" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/22/ef/1943fe86c3dfe16ce6c0a6db6e9c8153a387a171fd65e26fe6c33b65be3a/rich_toolkit-0.18.0.tar.gz", hash = "sha256:b038021a86387809a4573ed8c7857dd5751402ae3d6c7570c79a403042fa6036", size = 191907, upload-time = "2026-02-01T00:54:22.939Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/da/f1/bcfbde3ca38db54b5dcf7ee3d0caf3ed9133a169aec5a58ad9ec50ba12e8/rich_toolkit-0.18.1.tar.gz", hash = "sha256:bf104f1945a7252debeda7d7138118eaf848fff5ea81d9eda556cbc5f911122c", size = 192514, upload-time = "2026-02-01T10:56:31.857Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/99/37/28e902b01c122fa1e8ff7e57dafe4d1f0faa67270fd24245b8013c91dfa1/rich_toolkit-0.18.0-py3-none-any.whl", hash = "sha256:150e5e8514f11f47cfb756677768da68b6b54343418009024308680598fcf0b7", size = 32138, upload-time = "2026-02-01T00:54:21.616Z" },
+    { url = "https://files.pythonhosted.org/packages/da/43/6f9860c4bfb1f181c347941542a8955ce24b228f84550253765aa1854d53/rich_toolkit-0.18.1-py3-none-any.whl", hash = "sha256:04011a9751f4c2becdf44bd1aaff8562d4b00caf04f14e483a9873c15fbe3154", size = 32255, upload-time = "2026-02-01T10:56:33.071Z" },
 ]
 
 [[package]]
@@ -2899,7 +2899,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "4.0.1"
+version = "5.0.1"
 source = { directory = "vibetuner-py" }
 dependencies = [
     { name = "aioboto3" },
@@ -2952,7 +2952,7 @@ requires-dist = [
     { name = "arel", specifier = ">=0.4.0" },
     { name = "asyncer", specifier = ">=0.0.12" },
     { name = "authlib", specifier = ">=1.6.6" },
-    { name = "babel", marker = "extra == 'dev'", specifier = ">=2.17.0" },
+    { name = "babel", marker = "extra == 'dev'", specifier = ">=2.18.0" },
     { name = "beanie", extras = ["zstd"], specifier = ">=2.0.1" },
     { name = "click", specifier = ">=8.3.1" },
     { name = "cloudflare", marker = "extra == 'dev'", specifier = ">=4.3.1" },
@@ -2961,7 +2961,7 @@ requires-dist = [
     { name = "djlint", marker = "extra == 'dev'", specifier = ">=1.36.4" },
     { name = "email-validator", specifier = ">=2.3.0" },
     { name = "fastapi", extras = ["standard-no-fastapi-cloud-cli"], specifier = ">=0.128.0" },
-    { name = "gitpython", specifier = ">=3.1.0" },
+    { name = "gitpython", specifier = ">=3.1.46" },
     { name = "granian", extras = ["pname"], specifier = ">=2.6.1" },
     { name = "granian", extras = ["pname", "reload"], marker = "extra == 'dev'", specifier = ">=2.6.1" },
     { name = "httpx", extras = ["http2"], specifier = ">=0.28.1" },
@@ -2993,7 +2993,7 @@ provides-extras = ["dev", "test"]
 
 [[package]]
 name = "vibetuner-scaffolding"
-version = "4.0.1"
+version = "5.0.1"
 source = { virtual = "." }
 
 [package.dev-dependencies]
