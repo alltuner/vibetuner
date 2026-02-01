@@ -1,4 +1,5 @@
 import tomllib
+from importlib import import_module
 
 from vibetuner.logging import logger
 from vibetuner.paths import paths
@@ -37,16 +38,25 @@ def import_module_by_name(module_name: str) -> None:
     module_loaded = False
     for package in packages_to_try:
         try:
-            print(
-                f">Trying to import module '{module_name}' from package '{package or 'top-level'}'"
-            )
             logger.debug(
+                f"Trying to import module '{module_name}' "
+                f"from package '{package or 'top-level'}'."
+            )
+
+            module_to_import = f"{package}.{module_name}" if package else module_name
+
+            import_module(module_to_import)
+            logger.info(
                 f"Successfully imported module '{module_name}' "
                 f"from package '{package or 'top-level'}'."
             )
             module_loaded = True
             return module_loaded
-        except (ModuleNotFoundError, ImportError):
+        except (ModuleNotFoundError, ImportError) as e:
+            logger.debug(
+                f"Failed to import module '{module_name}' "
+                f"from package '{package or 'top-level'}': {e}"
+            )
             continue
 
     return module_loaded
