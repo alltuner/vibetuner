@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.0.1](https://github.com/alltuner/vibetuner/compare/v5.0.0...v5.0.1) (2026-02-01)
+
+
+### Bug Fixes
+
+* use latest uv build backend ([#865](https://github.com/alltuner/vibetuner/issues/865)) ([4943de8](https://github.com/alltuner/vibetuner/commit/4943de8ee0a1a0e5bc36deed1f6a00739614d432))
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency @alltuner/vibetuner to v5 ([#864](https://github.com/alltuner/vibetuner/issues/864)) ([935e311](https://github.com/alltuner/vibetuner/commit/935e311d49f52a0eda1b0f8bc8843b96e3ac0e1e))
+
 ## [5.0.0](https://github.com/alltuner/vibetuner/compare/v4.0.1...v5.0.0) (2026-02-01)
 
 
