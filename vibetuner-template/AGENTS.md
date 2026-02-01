@@ -27,12 +27,22 @@ creates distinctive, production-grade interfaces that avoid generic AI aesthetic
 
 Vibetuner is designed to work out of the box. The framework auto-discovers your code:
 
-- **Routes**: Any `router` in `src/app/frontend/routes/*.py` is automatically registered
-- **Models**: Any Beanie `Document` in `src/app/models/*.py` is automatically initialized
-- **Tasks**: Task modules are auto-discovered from `src/app/tasks/`
-- **CLI commands**: Custom commands in `src/app/cli/` are auto-loaded
+- **Routes**: Any `router` in `frontend/routes/*.py` is automatically registered
+- **Models**: Any Beanie `Document` in `models/*.py` is automatically initialized
+- **Tasks**: Task modules are auto-discovered from `tasks/`
+- **CLI commands**: Custom commands in `cli/` are auto-loaded
 
 **No boilerplate `__init__.py` files needed.** Just create your files and they work.
+
+### Supported Project Structures
+
+The auto-discovery system tries these locations in order:
+
+1. `app.X` - Scaffolded projects use `src/app/` (this template)
+2. `{package_name}.X` - Uses the `name` from your `pyproject.toml`
+3. `X` - Flat structure (e.g., `models.py` at project root)
+
+**Scaffolded projects** use `src/app/` by convention. **Non-scaffolded projects** can use any structure.
 
 ---
 

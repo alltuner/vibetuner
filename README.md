@@ -178,8 +178,10 @@ my-app/
 ```
 
 **vibetuner** (installed package) handles auth, database, email, auto-discovery, and more.
-**src/app/** is your code. No boilerplate `__init__.py` files needed. Just create your
-files and they work.
+**src/app/** is your code (scaffolded projects). No boilerplate `__init__.py` files needed.
+
+**Flexible project structures**: The framework auto-discovers code in `app.X`, `{your_package}.X`,
+or flat modules. Scaffolded projects use `src/app/`; non-scaffolded projects can use any structure.
 
 ## 🔐 Authentication
 

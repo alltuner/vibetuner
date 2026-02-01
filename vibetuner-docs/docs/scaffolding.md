@@ -32,6 +32,20 @@ all the boilerplate:
 - Localization setup
 - Environment file templates
 
+### Flexible Project Structures
+
+The auto-discovery system supports multiple project layouts:
+
+| Structure | Example | When to use |
+|-----------|---------|-------------|
+| `src/app/` | `src/app/models/post.py` | Scaffolded projects (default) |
+| `src/{package}/` | `src/myapp/models/post.py` | Custom package name |
+| Flat | `models.py` | Simple projects, scripts |
+
+The framework tries these in order: `app.X` → `{package_name}.X` → `X`
+
+Scaffolded projects use `src/app/` by convention, configured in `pyproject.toml`.
+
 ## Template Prompts
 
 - `company_name` – default `Acme Corp`. Displayed in generated metadata, email
