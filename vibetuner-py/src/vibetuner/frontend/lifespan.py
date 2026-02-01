@@ -42,6 +42,6 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 try:
     lifespan = import_module_by_name("frontend").lifespan
-except ModuleNotFoundError:
+except (ModuleNotFoundError, AttributeError):
     logger.warning("No tasks module found; skipping custom task registration.")
     lifespan = base_lifespan
