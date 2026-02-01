@@ -4,6 +4,7 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 
 from vibetuner.context import ctx
+from vibetuner.importer import import_module_by_name
 from vibetuner.logging import logger
 from vibetuner.mongo import init_mongodb, teardown_mongodb
 from vibetuner.sqlmodel import init_sqlmodel, teardown_sqlmodel
@@ -40,11 +41,7 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 
 try:
-    from app.frontend.lifespan import lifespan  # ty: ignore
+    lifespan = import_module_by_name("frontend").lifespan
 except ModuleNotFoundError:
-    # Silent pass for missing app.frontend.lifespan module (expected in some projects)
-    lifespan = base_lifespan
-except ImportError as e:
-    # Log warning for any import error (including syntax errors, missing dependencies, etc.)
-    logger.warning(f"Failed to import app.frontend.lifespan: {e}. Using base lifespan.")
+    logger.warning("No tasks module found; skipping custom task registration.")
     lifespan = base_lifespan

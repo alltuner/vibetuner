@@ -5,24 +5,16 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 import vibetuner.frontend.lifespan as lifespan_module
+from vibetuner.importer import import_module_by_name
 from vibetuner.logging import logger
 from vibetuner.paths import paths
 
-from .deps import (
-    LangDep as LangDep,
-    LangPrefixDep as LangPrefixDep,
-    MagicCookieDep as MagicCookieDep,
-)
 from .lifespan import ctx
 from .middleware import middlewares
 from .routes import auth, debug, health, language, meta, user
+from .routes.auth import register_oauth_routes
 from .routing import LocalizedRouter as LocalizedRouter, localized as localized
-from .templates import (
-    hreflang_tags as hreflang_tags,
-    lang_url_for as lang_url_for,
-    render_template,
-    url_for_language as url_for_language,
-)
+from .templates import render_template
 
 
 _registered_routers: list[APIRouter] = []
@@ -32,36 +24,26 @@ def register_router(router: APIRouter) -> None:
     _registered_routers.append(router)
 
 
+# First try to import user defined oauth
 try:
-    import app.frontend.oauth as _app_oauth  # type: ignore[unresolved-import] # noqa: F401
-    import app.frontend.routes as _app_routes  # type: ignore[unresolved-import] # noqa: F401
+    import_module_by_name("frontend").oauth  # noqa: B018
+except (ModuleNotFoundError, AttributeError):
+    logger.debug("No frontend oauth module found for custom OAuth providers.")
 
-    # Register OAuth routes after providers are registered
-    from .routes.auth import register_oauth_routes
+# Then import user defined routes to ensure they can use the registered providers
+try:
+    import_module_by_name("frontend").routes  # noqa: B018
+except (ModuleNotFoundError, AttributeError):
+    logger.debug("No frontend routes module found for custom routes.")
 
-    register_oauth_routes()
-except ModuleNotFoundError:
-    # Silent pass for missing app.frontend.oauth or app.frontend.routes modules (expected in some projects)
-    pass
-except ImportError as e:
-    # Log warning for any import error (including syntax errors, missing dependencies, etc.)
-    logger.warning(
-        f"Failed to import app.frontend.oauth or app.frontend.routes: {e}. OAuth and custom routes will not be available."
-    )
+# Then register OAuth routes after providers are registered
+register_oauth_routes()
 
 try:
-    from app.frontend.middleware import (
-        middlewares as app_middlewares,  # type: ignore[unresolved-import]
-    )
-
-    middlewares.extend(app_middlewares)
-except ModuleNotFoundError:
-    pass
-except ImportError as e:
-    # Log warning for any import error (including syntax errors, missing dependencies, etc.)
-    logger.warning(
-        f"Failed to import app.frontend.middleware: {e}. Additional middlewares will not be available."
-    )
+    app_middleware = import_module_by_name("frontend").middleware
+    middlewares.extend(app_middleware.middlewares)
+except (ModuleNotFoundError, AttributeError):
+    logger.debug("No frontend middleware module found for custom middlewares.")
 
 
 dependencies: list[Any] = [

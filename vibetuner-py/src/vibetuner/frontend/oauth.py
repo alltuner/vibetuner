@@ -1,7 +1,7 @@
 from typing import Optional
 
 from authlib.integrations.base_client.errors import OAuthError
-from authlib.integrations.starlette_client import OAuth  # ty: ignore[unresolved-import]
+from authlib.integrations.starlette_client import OAuth
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
