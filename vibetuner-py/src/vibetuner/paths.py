@@ -138,14 +138,21 @@ class PathSettings(BaseSettings):
 
     def _get_statics_type_path(self, statics_type: str) -> Path:
         """Get project statics path for a given type."""
-        if self.statics and (self.statics / statics_type).is_dir():
-            return self.statics / statics_type
-        else:
-            logger.warning(
-                f"{statics_type.upper()} static directory not found; falling back to package statics."
-            )
+        project_path = self.statics / statics_type if self.statics else None
 
-            return package_statics / statics_type
+        # Check if project path exists and has real content (not just dotfiles/placeholders)
+        if project_path and project_path.is_dir():
+            has_real_files = any(
+                not f.name.startswith(".") for f in project_path.iterdir()
+            )
+            if has_real_files:
+                return project_path
+
+        logger.debug(
+            f"{statics_type.upper()} static directory not found or empty; "
+            "using package statics."
+        )
+        return package_statics / statics_type
 
     @computed_field
     @property
