@@ -142,18 +142,21 @@ User Action → HTMX Request → FastAPI → Partial HTML → Update DOM
 
 ### FastAPI Application
 
-**Location**: `src/app/frontend/__init__.py`
-Application initialization and middleware stack:
+The vibetuner framework handles application initialization automatically. Routes are
+**auto-discovered** from `src/app/frontend/routes/`:
 
 ```python
-from fastapi import FastAPI
-from vibetuner.frontend.middleware import setup_middleware
-from app.frontend.routes import blog, api
-app = FastAPI()
-setup_middleware(app)  # Auth, sessions, i18n, static files
-app.include_router(blog.router)
-app.include_router(api.router)
+# src/app/frontend/routes/blog.py - automatically registered
+from fastapi import APIRouter
+
+router = APIRouter(prefix="/blog", tags=["blog"])
+
+@router.get("/")
+async def list_posts():
+    return {"posts": []}
 ```
+
+The framework finds any `router` variable and registers it. No manual `include_router()` needed.
 
 ### Database Layer
 
@@ -240,10 +243,10 @@ from app.tasks.emails import send_welcome_email
 task = await send_welcome_email.enqueue(user_id="123")
 ```
 
-**Lifespan Management**: Tasks use `src/app/tasks/lifespan.py` for worker lifecycle:
+**Lifespan Management**: For custom worker lifecycle, create `src/app/tasks/lifespan.py`:
 
 ```python
-# src/app/tasks/lifespan.py
+# src/app/tasks/lifespan.py (optional - only if you need custom startup/shutdown)
 @asynccontextmanager
 async def lifespan():
     async with base_lifespan() as worker_context:
@@ -251,6 +254,8 @@ async def lifespan():
         yield CustomContext(**worker_context.model_dump())
         # Custom shutdown logic
 ```
+
+If no custom lifespan is provided, the framework uses `base_lifespan` automatically.
 
 Worker process runs separately:
 

@@ -44,11 +44,12 @@ def import_module_by_name(module_name: str) -> None:
 
             module_to_import = f"{package}.{module_name}" if package else module_name
 
-            return import_module(module_to_import)
+            module = import_module(module_to_import)
             logger.info(
                 f"Successfully imported module '{module_name}' "
                 f"from package '{package or 'top-level'}'."
             )
+            return module
         except (ModuleNotFoundError, ImportError) as e:
             logger.debug(
                 f"Failed to import module '{module_name}' "

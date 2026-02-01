@@ -25,6 +25,6 @@ async def base_lifespan() -> AsyncGenerator[Context, None]:
 
 try:
     lifespan = import_module_by_name("tasks").lifespan
-except ModuleNotFoundError:
-    logger.warning("No tasks module found; skipping custom task registration.")
+except (ModuleNotFoundError, AttributeError):
+    logger.warning("No tasks lifespan found; using base lifespan.")
     lifespan = base_lifespan
