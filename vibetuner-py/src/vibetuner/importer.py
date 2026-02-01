@@ -1,27 +1,13 @@
-import tomllib
 from importlib import import_module
 from types import ModuleType
 
 from vibetuner.logging import logger
-from vibetuner.paths import paths
+from vibetuner.pyproject import get_project_name
 
 
 def _package_name() -> str | None:
     """Get the current package name, or None if not in a package."""
-
-    if not paths.root:
-        return None
-
-    pyproject_file = paths.root / "pyproject.toml"
-
-    if not pyproject_file.exists():
-        return None
-
-    project_name = (
-        tomllib.loads(pyproject_file.read_text()).get("project", {}).get("name", None)
-    )
-
-    return project_name if project_name else None
+    return get_project_name()
 
 
 def import_module_by_name(module_name: str) -> ModuleType:

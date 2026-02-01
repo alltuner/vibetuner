@@ -1,6 +1,6 @@
 [project]
 name = "{{ project_slug }}"
-dynamic = ["version"]
+version = "0.0.0"
 description = "{{ project_description }}"
 {% if author_name or author_email -%}
 authors = [
@@ -16,9 +16,7 @@ authors = [
 readme = "README.md"
 requires-python = ">={{ python_version }}"
 dependencies = [
-    # These are the base dependencies of AllTuner's blessed stack
     "vibetuner>=4.0.0",
-    # Below this line you can add your dependencies
 ]
 
 [project.scripts]
@@ -27,39 +25,15 @@ vibetuner = "vibetuner.cli:app"
 [dependency-groups]
 dev = [
   "vibetuner[dev]",
-  # Add below this line any dev dependencies you need for development
 ]
 
 [build-system]
-requires = ["hatchling", "uv-dynamic-versioning"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.6.6"]
+build-backend = "uv_build"
 
 [tool.uv]
-cache-keys = [
-    { file = "pyproject.toml" },
-    { git = { commit = true, tags = true } },
-]
-
-[tool.uv-dynamic-versioning]
-fallback-version = "0.0.0"
-
-[tool.hatch.version]
-source = "uv-dynamic-versioning"
-
-[tool.hatch.build.hooks.version]
-path = "src/app/_version.py"
-template = '''
-version = "{version}"
-'''
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/app"]
+cache-keys = [{ file = "pyproject.toml" }]
 
 # To develop against a local copy of vibetuner-py, add:
-#
 # [tool.uv.sources]
 # vibetuner = { path = "packages/vibetuner-py", editable = true }
-#
-# Then run: uv sync
-# Local Python changes will be picked up immediately.
-# Note: Docker builds use --no-sources to ignore this for production.

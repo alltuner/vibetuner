@@ -43,10 +43,6 @@ FROM python-deps AS python-app
 # Copy application source code
 COPY src/ src/
 
-# Set version for dynamic versioning
-ARG VERSION=0.0.0
-ENV UV_DYNAMIC_VERSIONING_BYPASS=$VERSION
-
 # Install project in editable mode, copy vibetuner templates, and clean up test/doc files
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
@@ -107,6 +103,7 @@ RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
 FROM python:${PYTHON_VERSION}-slim AS runtime
 
 ARG ENVIRONMENT=dev
+ARG VERSION=0.0.0
 
 WORKDIR /app
 
@@ -140,6 +137,7 @@ COPY --link --chmod=755 start.sh /start.sh
 # Configure environment for Python application
 ENV PATH="/app/.venv/bin:$PATH" \
     ENVIRONMENT=${ENVIRONMENT} \
+    APP_VERSION=${VERSION} \
     PYTHONDONTWRITEBYTECODE=1
 
 EXPOSE 8000

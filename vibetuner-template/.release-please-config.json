@@ -2,7 +2,7 @@
   "packages": {
     ".": {
       "changelog-path": "CHANGELOG.md",
-      "release-type": "simple",
+      "release-type": "python",
       "include-component-in-tag": false,
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,

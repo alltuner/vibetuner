@@ -1,7 +1,7 @@
 import 'helpers.justfile'
 
 PYTHON_VERSION := `tr -d '\n\r' < .python-version`
-VERSION := `uv run dunamai from git 2>/dev/null || echo 0.0.0`
+VERSION := `uv run python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])"`
 PROJECT_SLUG := `uv run python -c "import yaml, os; p='.copier-answers.yml'; print((yaml.safe_load(open(p)) if os.path.exists(p) else {}).get('project_slug', 'scaffolding').strip())"`
 FQDN := `uv run python -c "import yaml, os, sys; p='.copier-answers.yml'; print((yaml.safe_load(open(p)) if os.path.exists(p) else {}).get('fqdn', '').strip()) if os.path.exists(p) else print('')"`
 ENABLE_WATCHTOWER := `uv run python -c "import yaml, os, sys; p='.copier-answers.yml'; print(str((yaml.safe_load(open(p)) if os.path.exists(p) else {}).get('enable_watchtower', False)).lower()) if os.path.exists(p) else print('false')"`
