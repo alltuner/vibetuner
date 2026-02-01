@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.3](https://github.com/alltuner/vibetuner/compare/v5.0.2...v5.0.3) (2026-02-01)
+
+
+### Bug Fixes
+
+* fix loader of routes ([#871](https://github.com/alltuner/vibetuner/issues/871)) ([4c84d63](https://github.com/alltuner/vibetuner/commit/4c84d635043a163889aa6c71385af4d827a6fc46))
+
 ## [5.0.2](https://github.com/alltuner/vibetuner/compare/v5.0.1...v5.0.2) (2026-02-01)
 
 
