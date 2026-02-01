@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.0.1](https://github.com/alltuner/vibetuner/compare/v4.0.0...v4.0.1) (2026-02-01)
+
+
+### Bug Fixes
+
+* require vibetuner&gt;=4.0.0 in scaffolded projects ([#855](https://github.com/alltuner/vibetuner/issues/855)) ([4186839](https://github.com/alltuner/vibetuner/commit/41868390b1f31a4d5bea878978e22ffb694133ae))
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency @alltuner/vibetuner to v4 ([#857](https://github.com/alltuner/vibetuner/issues/857)) ([325cb46](https://github.com/alltuner/vibetuner/commit/325cb4662a399356c762923d0502da7bb5d8ded5))
+
 ## [4.0.0](https://github.com/alltuner/vibetuner/compare/v3.5.0...v4.0.0) (2026-02-01)
 
 
