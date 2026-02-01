@@ -2,12 +2,14 @@
 # ABOUTME: Reads version from APP_VERSION env var (Docker) or pyproject.toml (local dev).
 
 import os
+from functools import lru_cache
 
 from git import InvalidGitRepositoryError, Repo
 
 from vibetuner.pyproject import get_project_version
 
 
+@lru_cache
 def _get_git_branch() -> str | None:
     """Get current git branch name, or None if not in a git repo."""
     try:
