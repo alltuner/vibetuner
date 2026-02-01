@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/alltuner/vibetuner/compare/v3.5.0...v4.0.0) (2026-02-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* self-sufficient vibetuner - no more scaffolding boilerplate ([#853](https://github.com/alltuner/vibetuner/issues/853))
+
+### Features
+
+* self-sufficient vibetuner - no more scaffolding boilerplate ([#853](https://github.com/alltuner/vibetuner/issues/853)) ([8747a5e](https://github.com/alltuner/vibetuner/commit/8747a5ea6c134bb9bdda3260c2edaeb1c67ed899))
+
 ## [3.5.0](https://github.com/alltuner/vibetuner/compare/v3.4.3...v3.5.0) (2026-01-29)
 
 
