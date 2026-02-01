@@ -35,7 +35,6 @@ def import_module_by_name(module_name: str) -> None:
     # Lastly, we try the bare module name
     packages_to_try.append(None)
 
-    module_loaded = False
     for package in packages_to_try:
         try:
             logger.debug(
@@ -45,13 +44,11 @@ def import_module_by_name(module_name: str) -> None:
 
             module_to_import = f"{package}.{module_name}" if package else module_name
 
-            import_module(module_to_import)
+            return import_module(module_to_import)
             logger.info(
                 f"Successfully imported module '{module_name}' "
                 f"from package '{package or 'top-level'}'."
             )
-            module_loaded = True
-            return module_loaded
         except (ModuleNotFoundError, ImportError) as e:
             logger.debug(
                 f"Failed to import module '{module_name}' "
@@ -59,4 +56,4 @@ def import_module_by_name(module_name: str) -> None:
             )
             continue
 
-    return module_loaded
+    raise ModuleNotFoundError(f"Module '{module_name}' not found in any known package.")

@@ -117,5 +117,7 @@ app.add_typer(run_app, name="run")
 app.add_typer(scaffold_app, name="scaffold")
 
 
-if not import_module_by_name("cli"):
+try:
+    import_module_by_name("cli")
+except ModuleNotFoundError:
     logger.warning("No cli modules found. Skipping user CLI commands.")

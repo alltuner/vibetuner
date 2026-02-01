@@ -40,9 +40,10 @@ async def init_mongodb() -> None:
     if mongo_client is None:
         return
 
-    if not import_module_by_name("models"):
-        logger.warning("No models module found; skipping model registration.")
-        return
+    try:
+        import_module_by_name("models")
+    except ModuleNotFoundError:
+        logger.warning("No models module found; skipping custom model registration.")
 
     await init_beanie(
         database=mongo_client[settings.mongo_dbname],
