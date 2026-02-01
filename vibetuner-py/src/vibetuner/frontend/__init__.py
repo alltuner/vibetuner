@@ -26,14 +26,15 @@ def register_router(router: APIRouter) -> None:
 
 # First try to import user defined oauth
 try:
-    import_module_by_name("frontend").oauth  # noqa: B018
+    import_module_by_name("frontend.oauth")
 except (ModuleNotFoundError, AttributeError):
     logger.debug("No frontend oauth module found for custom OAuth providers.")
 
 # Then import user defined routes to ensure they can use the registered providers
 try:
-    import_module_by_name("frontend").routes  # noqa: B018
-except (ModuleNotFoundError, AttributeError):
+    _ = import_module_by_name("frontend.routes")
+except (ModuleNotFoundError, AttributeError) as e:
+    print("hola", e)
     logger.debug("No frontend routes module found for custom routes.")
 
 # Then register OAuth routes after providers are registered
