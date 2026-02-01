@@ -9,23 +9,39 @@ Built by [All Tuner Labs](https://www.alltuner.com) for rapid iteration and mode
 
 ## ✨ What You Get
 
+### Option 1: Just add the package
+
+```bash
+uv add vibetuner
+vibetuner run dev
+# → Working app at http://localhost:8000
+```
+
+### Option 2: Full project scaffolding
+
 ```bash
 uvx vibetuner scaffold new my-project
 cd my-project && just dev
-# → Full application running at http://localhost:8000
+# → Full application with Docker, CI/CD, and more
 ```
 
-**In 30 seconds you have:**
+**What vibetuner provides immediately (no scaffolding needed)**:
 
 - ✅ FastAPI backend with async support
-- ✅ **Flexible database**: MongoDB (Beanie) or SQL (SQLModel/SQLAlchemy)
 - ✅ OAuth + magic link authentication
+- ✅ Default templates and styles
+- ✅ Hot reload in development
+- ✅ Auto-discovery of your routes, models, and tasks
+
+**What scaffolding adds**:
+
+- ✅ **Flexible database**: MongoDB (Beanie) or SQL (SQLModel/SQLAlchemy)
 - ✅ HTMX reactive frontend
 - ✅ Tailwind CSS + DaisyUI styling
 - ✅ Docker dev/prod environments
 - ✅ Background jobs with Redis (optional)
 - ✅ i18n support
-- ✅ Hot reload for everything
+- ✅ CI/CD workflows
 
 ## 🚀 Quick Start
 
@@ -144,16 +160,16 @@ The `vibetuner` package is installed as a dependency. Your application code live
 
 ```text
 my-app/
-├── src/app/                # Your application code
-│   ├── config.py           # App configuration
-│   ├── cli/                # Your CLI commands
+├── src/app/                # Your application code (you create this)
+│   ├── config.py           # App configuration (optional)
+│   ├── cli/                # Your CLI commands (auto-discovered)
 │   ├── frontend/           # Your web routes
-│   │   └── routes/
-│   ├── models/             # Your database models
+│   │   └── routes/        # (auto-discovered)
+│   ├── models/             # Your database models (auto-discovered)
 │   ├── services/           # Your business logic
-│   └── tasks/              # Your background jobs
+│   └── tasks/              # Your background jobs (auto-discovered)
 ├── templates/              # Jinja2 templates
-│   ├── frontend/           # Web templates
+│   ├── frontend/           # Web templates (override defaults)
 │   ├── email/              # Email templates
 │   └── markdown/           # Markdown templates
 ├── assets/statics/         # Static files (css, js, img, fonts)
@@ -161,8 +177,11 @@ my-app/
 └── Dockerfile              # Production deployment
 ```
 
-**vibetuner** (installed package) handles auth, database, email, etc.
-**src/app/** is your code; edit freely.
+**vibetuner** (installed package) handles auth, database, email, auto-discovery, and more.
+**src/app/** is your code (scaffolded projects). No boilerplate `__init__.py` files needed.
+
+**Flexible project structures**: The framework auto-discovers code in `app.X`, `{your_package}.X`,
+or flat modules. Scaffolded projects use `src/app/`; non-scaffolded projects can use any structure.
 
 ## 🔐 Authentication
 

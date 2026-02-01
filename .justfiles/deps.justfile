@@ -12,7 +12,7 @@ update-py:
 # Update dependencies in vibetuner-template
 [group('Dependencies')]
 update-template:
-    @cd vibetuner-template && uv lock --upgrade && uv sync --all-extras && bun update
+    @cd vibetuner-template && bun update
 
 # Update root scaffolding deps
 [group('Dependencies')]
@@ -29,13 +29,13 @@ update-and-commit: update-all
     @git add pyproject.toml uv.lock \
         vibetuner-js/package.json vibetuner-js/bun.lock \
         vibetuner-py/pyproject.toml vibetuner-py/uv.lock \
-        vibetuner-template/pyproject.toml vibetuner-template/package.json
+        vibetuner-template/package.json
 
     @git commit -m "chore: update dependencies" \
         pyproject.toml uv.lock \
         vibetuner-js/package.json vibetuner-js/bun.lock \
         vibetuner-py/pyproject.toml vibetuner-py/uv.lock \
-        vibetuner-template/pyproject.toml vibetuner-template/package.json \
+        vibetuner-template/package.json \
         || echo "No changes to commit"
 
 # Full dependency update cycle: update deps, pre-commit, create PR, merge, return to main

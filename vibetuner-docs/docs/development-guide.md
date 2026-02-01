@@ -192,27 +192,25 @@ just feature-rebase
 
 ### Adding New Routes
 
-Create a new file in `src/app/frontend/routes/`:
+Create a new file in `src/app/frontend/routes/`. Routes are **automatically discovered**, no
+registration needed:
 
 ```python
 # src/app/frontend/routes/blog.py
 from fastapi import APIRouter
+
 router = APIRouter(prefix="/blog", tags=["blog"])
+
 @router.get("/")
 async def list_posts():
-return {"posts": []}
+    return {"posts": []}
 ```
 
-Register in `src/app/frontend/__init__.py`:
-
-```python
-from app.frontend.routes import blog
-app.include_router(blog.router)
-```
+The framework finds any `router` variable in route files and registers it automatically.
 
 ### Adding Database Models
 
-Create models in `src/app/models/`. The approach depends on your database choice:
+Create models in `src/app/models/`. Models are **automatically discovered** and initialized.
 
 #### MongoDB (Beanie ODM)
 
@@ -230,6 +228,8 @@ class Post(Document):
         name = "posts"
 ```
 
+No `__init__.py` registration needed. The framework auto-discovers Beanie Documents.
+
 #### SQL (SQLModel)
 
 ```python
@@ -244,13 +244,6 @@ class Post(SQLModel, table=True):
 ```
 
 For SQL databases, create tables with: `vibetuner db create-schema`
-
-Register models in `src/app/models/__init__.py`:
-
-```python
-from app.models.post import Post
-__all__ = ["Post"]
-```
 
 ### Creating Templates
 
@@ -308,7 +301,8 @@ environment. If no name is provided, the function name becomes the filter name.
 
 ### Adding Background Jobs
 
-If you enabled background jobs, create tasks in `src/app/tasks/`:
+If you enabled background jobs, create tasks in `src/app/tasks/`. Task modules are
+**automatically discovered**:
 
 ```python
 # src/app/tasks/emails.py
@@ -326,14 +320,6 @@ async def send_welcome_email(user_id: str):
             html_content="<h1>Welcome!</h1>"
         )
     return {"status": "sent"}
-```
-
-Register tasks in `src/app/tasks/__init__.py`:
-
-```python
-# src/app/tasks/__init__.py
-__all__ = ["emails"]
-from . import emails  # noqa: F401
 ```
 
 Queue jobs from your routes:

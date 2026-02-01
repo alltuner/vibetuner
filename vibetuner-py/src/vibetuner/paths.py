@@ -11,6 +11,7 @@ from vibetuner.logging import logger
 # Package-relative paths (for bundled templates in the vibetuner package)
 _package_files = files("vibetuner")
 _package_templates_traversable = _package_files / "templates"
+_package_statics_traversable = _package_files / "assets" / "statics"
 
 
 def _get_package_templates_path() -> Path:
@@ -20,6 +21,17 @@ def _get_package_templates_path() -> Path:
     except (TypeError, ValueError):
         raise RuntimeError(
             "Package templates are in a non-filesystem location. "
+            "This is not yet supported."
+        ) from None
+
+
+def _get_package_statics_path() -> Path:
+    """Get package statics path, works for both installed and editable installs."""
+    try:
+        return Path(str(_package_statics_traversable))
+    except (TypeError, ValueError):
+        raise RuntimeError(
+            "Package statics are in a non-filesystem location. "
             "This is not yet supported."
         ) from None
 
@@ -56,9 +68,9 @@ def create_core_templates_symlink(target: Path) -> None:
     )
 
 
-# Package templates always available
+# Package templates and statics always available
 package_templates = _get_package_templates_path()
-core_templates = package_templates  # Alias for backwards compatibility
+package_statics = _get_package_statics_path()
 
 
 class PathSettings(BaseSettings):
@@ -71,7 +83,6 @@ class PathSettings(BaseSettings):
     )
 
     root: Path | None = None
-    fallback_path: str = "defaults"
 
     @model_validator(mode="after")
     def detect_project_root(self) -> Self:
@@ -125,6 +136,17 @@ class PathSettings(BaseSettings):
         """Project assets directory."""
         return self.root / "assets" if self.root else None
 
+    def _get_statics_type_path(self, statics_type: str) -> Path:
+        """Get project statics path for a given type."""
+        if self.statics and (self.statics / statics_type).is_dir():
+            return self.statics / statics_type
+        else:
+            logger.warning(
+                f"{statics_type.upper()} static directory not found; falling back to package statics."
+            )
+
+            return package_statics / statics_type
+
     @computed_field
     @property
     def statics(self) -> Path | None:
@@ -135,31 +157,31 @@ class PathSettings(BaseSettings):
     @property
     def css(self) -> Path | None:
         """Project CSS directory."""
-        return self.root / "assets" / "statics" / "css" if self.root else None
+        return self._get_statics_type_path("css")
 
     @computed_field
     @property
     def js(self) -> Path | None:
         """Project JavaScript directory."""
-        return self.root / "assets" / "statics" / "js" if self.root else None
+        return self._get_statics_type_path("js")
 
     @computed_field
     @property
     def favicons(self) -> Path | None:
         """Project favicons directory."""
-        return self.root / "assets" / "statics" / "favicons" if self.root else None
+        return self._get_statics_type_path("favicons")
 
     @computed_field
     @property
     def img(self) -> Path | None:
         """Project images directory."""
-        return self.root / "assets" / "statics" / "img" if self.root else None
+        return self._get_statics_type_path("img")
 
     @computed_field
     @property
     def fonts(self) -> Path | None:
         """Project fonts directory."""
-        return self.root / "assets" / "statics" / "fonts" if self.root else None
+        return self._get_statics_type_path("fonts")
 
     # Template paths (always return a list, project + package)
     @computed_field
@@ -198,63 +220,57 @@ class PathSettings(BaseSettings):
         paths.append(package_templates / "markdown")
         return paths
 
-    def to_template_path_list(self, path: Path) -> list[Path]:
-        """Convert path to list with fallback."""
-        return [path, path / self.fallback_path]
+    @computed_field
+    @property
+    def app_code(self) -> list[Path]:
+        """Project application code directory."""
+        code_paths: list[Path] = []
 
-    def fallback_static_default(self, static_type: str, file_name: str) -> Path:
-        """Return a fallback path for a static file."""
-        if self.statics is None:
-            raise RuntimeError(
-                "Project root not detected. Cannot access static assets."
+        if not self.root:
+            return code_paths
+
+        src_tree = self.root / "src"
+        if src_tree.is_dir():
+            code_paths.append(src_tree)
+
+        app_path = self.root / "app.py"
+        if app_path.is_file():
+            code_paths.append(app_path)
+
+        return code_paths
+
+    @property
+    def reload_paths(self) -> list[Path]:
+        """Get list of paths to watch for reloads in dev mode."""
+
+        paths = [
+            p
+            for group in (
+                self.frontend_templates,
+                self.email_templates,
+                self.markdown_templates,
             )
+            if group
+            for p in group
+            if p.is_dir()
+        ] + self.app_code
 
-        paths_to_check = [
-            self.statics / static_type / file_name,
-            self.statics / self.fallback_path / static_type / file_name,
-        ]
-
-        for path in paths_to_check:
-            if path.exists():
-                return path
-
-        raise FileNotFoundError(
-            f"Could not find {file_name} in any of the fallback paths: {paths_to_check}"
-        )
+        return paths
 
 
 # Global settings instance with lazy auto-detection
-_settings = PathSettings()
+paths = PathSettings()
 
-
-def to_template_path_list(path: Path) -> list[Path]:
-    """Convert path to list with fallback."""
-    return _settings.to_template_path_list(path)
-
-
-def fallback_static_default(static_type: str, file_name: str) -> Path:
-    """Return a fallback path for a static file."""
-    return _settings.fallback_static_default(static_type, file_name)
-
-
-# Expose settings instance for direct access
-paths = _settings
 
 # Module-level variables that delegate to settings (backwards compatibility)
 # Access like: from vibetuner.paths import frontend_templates
 # Or better: from vibetuner.paths import paths; paths.frontend_templates
-root = _settings.root
-templates = _settings.templates
-app_templates = _settings.app_templates
-locales = _settings.locales
-config_vars = _settings.config_vars
-assets = _settings.assets
-statics = _settings.statics
-css = _settings.css
-js = _settings.js
-favicons = _settings.favicons
-img = _settings.img
-fonts = _settings.fonts
-frontend_templates = _settings.frontend_templates
-email_templates = _settings.email_templates
-markdown_templates = _settings.markdown_templates
+root = paths.root
+templates = paths.templates
+app_templates = paths.app_templates
+locales = paths.locales
+config_vars = paths.config_vars
+assets = paths.assets
+frontend_templates = paths.frontend_templates
+email_templates = paths.email_templates
+markdown_templates = paths.markdown_templates

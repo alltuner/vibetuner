@@ -27,7 +27,7 @@ def _get_base_paths_for_namespace(
     path_list = []
     if paths.app_templates is not None:
         path_list.append(paths.app_templates)
-    path_list.append(paths.core_templates)
+    path_list.append(paths.package_templates)
     return path_list
 
 

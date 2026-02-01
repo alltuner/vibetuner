@@ -9,9 +9,9 @@ creates distinctive, production-grade interfaces that avoid generic AI aesthetic
 
 **Key locations**:
 
-- Routes: `src/app/frontend/routes/`
+- Routes: `src/app/frontend/routes/` (auto-discovered)
 - Templates: `templates/frontend/`
-- Models: `src/app/models/`
+- Models: `src/app/models/` (auto-discovered)
 - CSS config: `config.css`
 
 **Stack**: HTMX for interactivity (not JavaScript frameworks), Tailwind classes in templates.
@@ -20,6 +20,29 @@ creates distinctive, production-grade interfaces that avoid generic AI aesthetic
 
 - `vibetuner` package code (installed dependency, not in your repo)
 - `assets/statics/css/bundle.css` or `js/bundle.js` (auto-generated)
+
+---
+
+## Self-Sufficient Framework
+
+Vibetuner is designed to work out of the box. The framework auto-discovers your code:
+
+- **Routes**: Any `router` in `frontend/routes/*.py` is automatically registered
+- **Models**: Any Beanie `Document` in `models/*.py` is automatically initialized
+- **Tasks**: Task modules are auto-discovered from `tasks/`
+- **CLI commands**: Custom commands in `cli/` are auto-loaded
+
+**No boilerplate `__init__.py` files needed.** Just create your files and they work.
+
+### Supported Project Structures
+
+The auto-discovery system tries these locations in order:
+
+1. `app.X` - Scaffolded projects use `src/app/` (this template)
+2. `{package_name}.X` - Uses the `name` from your `pyproject.toml`
+3. `X` - Flat structure (e.g., `models.py` at project root)
+
+**Scaffolded projects** use `src/app/` by convention. **Non-scaffolded projects** can use any structure.
 
 ---
 
@@ -210,19 +233,19 @@ auto-detects the current worktree. You can also pass a directory path instead of
 
 ```text
 src/
-└── app/                       # ✅ YOUR APPLICATION CODE
-    ├── config.py             # App-specific configuration
-    ├── cli/                  # ✅ ADD YOUR CLI COMMANDS
-    ├── frontend/             # ✅ ADD YOUR ROUTES
-    │   └── routes/          # Your HTTP handlers
-    ├── models/              # ✅ ADD YOUR MODELS
-    ├── services/            # ✅ ADD YOUR SERVICES
-    └── tasks/               # ✅ ADD YOUR BACKGROUND JOBS
+└── app/                       # YOUR APPLICATION CODE (created by you)
+    ├── config.py             # App-specific configuration (optional)
+    ├── cli/                  # ADD YOUR CLI COMMANDS (auto-discovered)
+    ├── frontend/             # ADD YOUR ROUTES
+    │   └── routes/          # Your HTTP handlers (auto-discovered)
+    ├── models/              # ADD YOUR MODELS (auto-discovered)
+    ├── services/            # ADD YOUR SERVICES
+    └── tasks/               # ADD YOUR BACKGROUND JOBS (auto-discovered)
 
 templates/
-├── frontend/              # ✅ YOUR CUSTOM FRONTEND TEMPLATES
-├── email/                 # ✅ YOUR CUSTOM EMAIL TEMPLATES
-└── markdown/              # ✅ YOUR CUSTOM MARKDOWN TEMPLATES
+├── frontend/              # YOUR CUSTOM FRONTEND TEMPLATES
+├── email/                 # YOUR CUSTOM EMAIL TEMPLATES
+└── markdown/              # YOUR CUSTOM MARKDOWN TEMPLATES
 
 assets/statics/
 ├── css/bundle.css          # Auto-generated from config.css
@@ -238,6 +261,7 @@ assets/statics/
 - Email service, blob storage
 - Base templates, middleware, default routes
 - MongoDB setup, logging, configuration
+- Auto-discovery of your routes, models, tasks
 - **Changes**: File issues at `https://github.com/alltuner/vibetuner`
 
 **`src/app/`** - Your application space
@@ -253,6 +277,9 @@ assets/statics/
 
 ### Adding Routes
 
+Create a file in `src/app/frontend/routes/`. Routes are **automatically discovered** - no
+registration needed:
+
 ```python
 # src/app/frontend/routes/dashboard.py
 from fastapi import APIRouter, Request, Depends
@@ -266,7 +293,11 @@ async def dashboard(request: Request, user=Depends(get_current_user)):
     return render_template("dashboard.html.jinja", request, {"user": user})
 ```
 
+The framework finds any `router` variable in route files and registers it automatically.
+
 ### Adding Models
+
+Create models in `src/app/models/`. Models are **automatically discovered** and initialized:
 
 ```python
 # src/app/models/post.py
@@ -284,6 +315,8 @@ class Post(Document, TimeStampMixin):
         name = "posts"
         indexes = ["author", "db_insert_dt"]
 ```
+
+No `__init__.py` registration needed. The framework auto-discovers Beanie Documents.
 
 ### Adding Services
 
@@ -359,7 +392,8 @@ magic cookie authentication in production.
 
 ### Adding Background Tasks
 
-If background jobs are enabled, tasks use the `vibetuner.tasks.worker`:
+If background jobs are enabled, tasks use the `vibetuner.tasks.worker`. Task modules are
+**automatically discovered**:
 
 ```python
 # src/app/tasks/emails.py
@@ -375,10 +409,10 @@ async def send_digest_email(user_id: str):
 # task = await send_digest_email.enqueue(user.id)
 ```
 
-**Important**: Register tasks by importing them in `src/app/tasks/lifespan.py` within the lifespan context:
+For custom task lifespan (optional), create `src/app/tasks/lifespan.py`:
 
 ```python
-# src/app/tasks/lifespan.py
+# src/app/tasks/lifespan.py (optional - only if you need custom startup/shutdown)
 from contextlib import asynccontextmanager
 from vibetuner.tasks.lifespan import base_lifespan
 from vibetuner.context import Context
@@ -386,15 +420,12 @@ from vibetuner.context import Context
 @asynccontextmanager
 async def lifespan():
     async with base_lifespan() as worker_context:
-        # Import task modules HERE after the worker is initialized
-        from . import emails  # noqa: F401
-
+        # Custom startup logic here
         yield Context(**worker_context.model_dump())
+        # Custom shutdown logic here
 ```
 
-**Why not `__init__.py`?** Importing task modules in `__init__.py` causes circular imports because the worker
-needs to import `lifespan.py` before it's fully initialized. See `src/app/tasks/AGENTS.md` for detailed
-explanation.
+If no custom lifespan is provided, the framework uses `base_lifespan` automatically.
 
 ### Template Override
 
@@ -432,19 +463,15 @@ DEBUG=true  # Development only
 
 ```python
 from vibetuner.config import project_settings
-from app.config import settings
 
 # Project-level (read-only from vibetuner)
 project_settings.project_slug
 project_settings.project_name
 project_settings.mongodb_url
 project_settings.supported_languages
-
-# Application-specific (your config)
-settings.debug              # bool
-settings.version           # str
-settings.aws_access_key_id # SecretStr | None
 ```
+
+For app-specific settings, create `src/app/config.py` with your own Pydantic Settings class.
 
 ## Testing
 
@@ -509,11 +536,11 @@ message = _("Operation completed")
 ```python
 from beanie.operators import Eq
 
-# ✅ GOOD
+# GOOD
 async def get_user_by_email(email: str) -> User | None:
     return await User.find_one(Eq(User.email, email))
 
-# ❌ BAD
+# BAD
 def get_usr(e):
     return User.find_one(User.email == e)  # Wrong: sync call, no types
 ```
@@ -532,19 +559,19 @@ This project uses Tailwind CSS 4. Follow these patterns for maintainable styles:
 **Use Tailwind utility classes directly in templates:**
 
 ```jinja
-{# ✅ GOOD: Standard utilities #}
+{# GOOD: Standard utilities #}
 <div class="p-4 text-lg font-bold bg-blue-500">
 
-{# ✅ GOOD: Arbitrary values for one-off custom values #}
+{# GOOD: Arbitrary values for one-off custom values #}
 <div class="text-[13px] bg-[#1DB954]">
 
-{# ✅ GOOD: Arbitrary properties for animations #}
+{# GOOD: Arbitrary properties for animations #}
 <div class="animate-fade-in [animation-delay:100ms]">
 
-{# ✅ GOOD: Arbitrary values for complex gradients #}
+{# GOOD: Arbitrary values for complex gradients #}
 <div class="bg-[radial-gradient(ellipse_at_top,rgba(242,100,48,0.08)_0%,transparent_50%)]">
 
-{# ❌ BAD: Inline styles (djLint H021 will flag these) #}
+{# BAD: Inline styles (djLint H021 will flag these) #}
 <div style="animation-delay: 100ms">
 <div style="background: radial-gradient(...)">
 ```

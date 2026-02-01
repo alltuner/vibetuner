@@ -8,6 +8,8 @@ from starlette_babel import gettext_lazy as _, gettext_lazy as ngettext
 from starlette_babel.contrib.jinja import configure_jinja_env
 
 from vibetuner.context import ctx as data_ctx
+from vibetuner.importer import import_module_by_name
+from vibetuner.logging import logger
 from vibetuner.paths import frontend_templates
 from vibetuner.templates import render_static_template
 from vibetuner.time import age_in_timedelta
@@ -344,16 +346,9 @@ jinja_env.filters["duration"] = format_duration
 
 # Import user-defined filters to trigger registration
 try:
-    import app.frontend.templates as _app_templates  # type: ignore[import-not-found] # noqa: F401
-except ModuleNotFoundError:
-    # Silent pass - templates module is optional
-    pass
-except ImportError as e:
-    from vibetuner.logging import logger
-
-    logger.warning(
-        f"Failed to import app.frontend.templates: {e}. Custom filters will not be available."
-    )
+    import_module_by_name("frontend").templates  # noqa: B018
+except (ModuleNotFoundError, AttributeError):
+    logger.debug("No frontend templates module found for custom filters.")
 
 # Apply all registered custom filters
 for filter_name, filter_func in _filter_registry.items():

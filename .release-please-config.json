@@ -56,11 +56,6 @@
           "path": "vibetuner-py/pyproject.toml",
           "jsonpath": "$.project.version"
         },
-        {
-          "type": "toml",
-          "path": "vibetuner-template/pyproject.toml",
-          "jsonpath": "$.project.version"
-        },
         "vibetuner-js/package.json"
       ]
     }

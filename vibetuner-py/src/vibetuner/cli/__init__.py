@@ -3,7 +3,6 @@
 import importlib.metadata
 import inspect
 from functools import partial, wraps
-from importlib import import_module
 
 import asyncer
 import typer
@@ -14,6 +13,7 @@ from vibetuner.cli.db import db_app
 from vibetuner.cli.notify import notify_app
 from vibetuner.cli.run import run_app
 from vibetuner.cli.scaffold import scaffold_app
+from vibetuner.importer import import_module_by_name
 from vibetuner.logging import LogLevel, logger, setup_logging
 
 
@@ -116,13 +116,8 @@ app.add_typer(notify_app, name="notify")
 app.add_typer(run_app, name="run")
 app.add_typer(scaffold_app, name="scaffold")
 
+
 try:
-    import_module("app.cli")
+    import_module_by_name("cli")
 except ModuleNotFoundError:
-    # Silent pass for missing app.cli module (expected in some projects)
-    pass
-except ImportError as e:
-    # Log warning for any import error (including syntax errors, missing dependencies, etc.)
-    logger.warning(
-        f"Failed to import app.cli: {e}. User CLI commands will not be available."
-    )
+    logger.warning("No cli modules found. Skipping user CLI commands.")

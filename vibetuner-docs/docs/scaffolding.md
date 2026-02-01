@@ -9,6 +9,43 @@ fully configured project from the files in `vibetuner-template/`. Answers to the
 prompts below are stored in `.copier-answers.yml` inside the generated project,
 so subsequent updates can reuse them.
 
+## Self-Sufficient Framework
+
+Vibetuner is designed to work immediately after `uv add vibetuner`. The scaffolding
+provides project configuration and infrastructure, while the framework handles
+all the boilerplate:
+
+**What the framework provides (no scaffolding needed)**:
+
+- Working FastAPI app with authentication
+- Default templates and styles
+- Hot reload in development
+- CLI tools (`vibetuner run dev`, `vibetuner run prod`)
+- Auto-discovery of routes, models, tasks
+
+**What scaffolding adds**:
+
+- Project metadata (name, slug, description)
+- Docker configuration (dev and prod)
+- CI/CD workflows
+- Justfile commands
+- Localization setup
+- Environment file templates
+
+### Flexible Project Structures
+
+The auto-discovery system supports multiple project layouts:
+
+| Structure | Example | When to use |
+|-----------|---------|-------------|
+| `src/app/` | `src/app/models/post.py` | Scaffolded projects (default) |
+| `src/{package}/` | `src/myapp/models/post.py` | Custom package name |
+| Flat | `models.py` | Simple projects, scripts |
+
+The framework tries these in order: `app.X` → `{package_name}.X` → `X`
+
+Scaffolded projects use `src/app/` by convention, configured in `pyproject.toml`.
+
 ## Template Prompts
 
 - `company_name` – default `Acme Corp`. Displayed in generated metadata, email
@@ -31,12 +68,11 @@ Watchtower, etc.).
 and `uv` settings.
 - `supported_languages` – default `[]`. JSON/YAML list of language codes (for
 example `["es", "fr"]`), adds translation skeletons.
-- `redis_url` – default empty. Used when background jobs are enabled.
-- `mongodb_url` – default empty. MongoDB connection string written to `.env.local`.
-- `database_url` – default empty. SQL database connection string (PostgreSQL, MySQL,
-  MariaDB, SQLite) written to `.env.local`.
 - `enable_watchtower` – default `false`. Only prompted when `fqdn` is set; adds
   Watchtower service to production Docker Compose.
+
+Database URLs (`MONGODB_URL`, `DATABASE_URL`, `REDIS_URL`) are configured via
+environment variables in `.env`, not scaffolding prompts.
 
 ### Supplying Values Non-Interactively
 

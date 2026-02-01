@@ -1,13 +1,13 @@
 import arel
 
-from vibetuner.paths import css as css_path, js as js_path, templates as templates_path
+from vibetuner.paths import paths
 
 
 hotreload = arel.HotReload(
     paths=[
-        arel.Path(str(js_path)),
-        arel.Path(str(css_path)),
-        arel.Path(str(templates_path)),
+        arel.Path(str(paths.js)),
+        arel.Path(str(paths.css)),
+        arel.Path(str(paths.templates)),
     ],
     reconnect_interval=2,
 )
