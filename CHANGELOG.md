@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.0.2](https://github.com/alltuner/vibetuner/compare/v5.0.1...v5.0.2) (2026-02-01)
+
+
+### Bug Fixes
+
+* make frontend lifespan optional ([#867](https://github.com/alltuner/vibetuner/issues/867)) ([7ca776a](https://github.com/alltuner/vibetuner/commit/7ca776ab202b401625d56806a45ccfcaf3d04fd5))
+
+
+### Miscellaneous Chores
+
+* update deps ([#870](https://github.com/alltuner/vibetuner/issues/870)) ([d68d881](https://github.com/alltuner/vibetuner/commit/d68d881f32944b17367e411ff7f768204a758b49))
+* update deps 2026-02-01 ([ad45423](https://github.com/alltuner/vibetuner/commit/ad45423936eaa53b2367d34b4b983e1c2972aae8))
+
 ## [5.0.1](https://github.com/alltuner/vibetuner/compare/v5.0.0...v5.0.1) (2026-02-01)
 
 
