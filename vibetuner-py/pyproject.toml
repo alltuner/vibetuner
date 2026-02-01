@@ -49,7 +49,7 @@ dependencies = [
   "typer-slim[standard]>=0.21.1",
   "deprecated>=1.3.1",
   "sqlmodel>=0.0.31",
-  "gitpython>=3.1.0",
+  "gitpython>=3.1.46",
 ]
 
 [project.scripts]
@@ -65,7 +65,7 @@ Changelog = "https://github.com/alltuner/vibetuner/blob/main/CHANGELOG.md"
 [project.optional-dependencies]
 dev = [
   # These are the development dependencies of AllTuner's blessed stack
-  "babel>=2.17.0",
+  "babel>=2.18.0",
   "cloudflare>=4.3.1",
   "djlint>=1.36.4",
   "granian[pname,reload]>=2.6.1",
