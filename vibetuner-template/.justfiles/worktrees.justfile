@@ -1,22 +1,21 @@
 # ABOUTME: Git worktree management commands
 # ABOUTME: Enables feature branch development in isolated worktrees
 
-# Helper to compute worktree directory from branch name
-_worktree-dir NAME:
-    @echo "worktrees/$(echo -n '{{NAME}}' | sha256sum | cut -c1-8)"
-
 # Create a new feature worktree
 [group('Features')]
 feature-new NAME:
     #!/usr/bin/env bash
     set -euo pipefail
     BRANCH_NAME="{{NAME}}"
-    HASH=$(echo -n "$BRANCH_NAME" | sha256sum | cut -c1-8)
-    WORKTREE_DIR="worktrees/$HASH"
-    mkdir -p worktrees
+    SAFE_NAME=$(echo "$BRANCH_NAME" | tr '/' '-')
+    REPO_ROOT=$(git rev-parse --show-toplevel)
+    REPO_NAME=$(basename "$REPO_ROOT")
+    WORKTREE_BASE="$(dirname "$REPO_ROOT")/${REPO_NAME}.wt"
+    WORKTREE_DIR="${WORKTREE_BASE}/${SAFE_NAME}"
+    mkdir -p "$WORKTREE_BASE"
     git worktree add "$WORKTREE_DIR" -b "$BRANCH_NAME" main
     if [[ -f .env ]]; then
-        ln -sf "$(pwd)/.env" "$WORKTREE_DIR/.env"
+        ln -sf "${REPO_ROOT}/.env" "$WORKTREE_DIR/.env"
     fi
     command -v mise &> /dev/null && (cd "$WORKTREE_DIR" && mise trust) || true
     echo ""
@@ -40,7 +39,7 @@ feature-done NAME="":
     if [[ -z "$INPUT" ]]; then
         # No argument: detect current worktree
         CURRENT_DIR=$(pwd)
-        if [[ "$CURRENT_DIR" != *"/worktrees/"* ]]; then
+        if [[ "$CURRENT_DIR" != *".wt/"* ]]; then
             echo "Error: Not in a worktree directory. Provide a branch name or path."
             exit 1
         fi
@@ -52,10 +51,12 @@ feature-done NAME="":
         WORKTREE_DIR=$(cd "$INPUT" && git rev-parse --show-toplevel)
         BRANCH_NAME=$(cd "$INPUT" && git rev-parse --abbrev-ref HEAD)
     else
-        # Input is a branch name (existing behavior)
+        # Input is a branch name
         BRANCH_NAME="$INPUT"
-        HASH=$(echo -n "$BRANCH_NAME" | sha256sum | cut -c1-8)
-        WORKTREE_DIR="worktrees/$HASH"
+        SAFE_NAME=$(echo "$BRANCH_NAME" | tr '/' '-')
+        REPO_ROOT=$(git rev-parse --show-toplevel)
+        REPO_NAME=$(basename "$REPO_ROOT")
+        WORKTREE_DIR="$(dirname "$REPO_ROOT")/${REPO_NAME}.wt/${SAFE_NAME}"
     fi
 
     if [[ ! -d "$WORKTREE_DIR" ]]; then
@@ -91,7 +92,7 @@ feature-drop NAME="":
     if [[ -z "$INPUT" ]]; then
         # No argument: detect current worktree
         CURRENT_DIR=$(pwd)
-        if [[ "$CURRENT_DIR" != *"/worktrees/"* ]]; then
+        if [[ "$CURRENT_DIR" != *".wt/"* ]]; then
             echo "Error: Not in a worktree directory. Provide a branch name or path."
             exit 1
         fi
@@ -103,10 +104,12 @@ feature-drop NAME="":
         WORKTREE_DIR=$(cd "$INPUT" && git rev-parse --show-toplevel)
         BRANCH_NAME=$(cd "$INPUT" && git rev-parse --abbrev-ref HEAD)
     else
-        # Input is a branch name (existing behavior)
+        # Input is a branch name
         BRANCH_NAME="$INPUT"
-        HASH=$(echo -n "$BRANCH_NAME" | sha256sum | cut -c1-8)
-        WORKTREE_DIR="worktrees/$HASH"
+        SAFE_NAME=$(echo "$BRANCH_NAME" | tr '/' '-')
+        REPO_ROOT=$(git rev-parse --show-toplevel)
+        REPO_NAME=$(basename "$REPO_ROOT")
+        WORKTREE_DIR="$(dirname "$REPO_ROOT")/${REPO_NAME}.wt/${SAFE_NAME}"
     fi
 
     if [[ ! -d "$WORKTREE_DIR" ]]; then
@@ -138,12 +141,12 @@ feature-list:
     git worktree list --porcelain | while read -r line; do
         if [[ "$line" == worktree* ]]; then
             path="${line#worktree }"
-            if [[ "$path" == *"/worktrees/"* ]]; then
+            if [[ "$path" == *".wt/"* ]]; then
                 read -r head_line
                 read -r branch_line
                 branch="${branch_line#branch refs/heads/}"
                 echo "  $branch"
-                echo "    → $path"
+                echo "    -> $path"
                 echo ""
             fi
         fi

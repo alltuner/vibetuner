@@ -144,7 +144,7 @@ just start-branch feature-name
 
 # Option B: Worktree (parallel development, isolated environment)
 just feature-new feature-name
-cd worktrees/$(echo -n "feature-name" | sha256sum | cut -c1-8)
+cd ../vibetuner.wt/feature-name
 ```
 
 Use worktrees when working on multiple features simultaneously or when you need complete

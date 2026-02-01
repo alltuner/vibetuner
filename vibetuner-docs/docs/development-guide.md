@@ -137,11 +137,11 @@ copy of the repository with its own branch, allowing true parallel development.
 
 ```bash
 just feature-new feat/user-dashboard
-# Creates worktrees/a1b2c3d4/ with branch feat/user-dashboard
+# Creates ../myproject.wt/feat-user-dashboard/ with branch feat/user-dashboard
 # Symlinks .env for shared configuration
 # Runs mise trust if available
 
-cd worktrees/a1b2c3d4
+cd ../myproject.wt/feat-user-dashboard
 # Work on your feature...
 ```
 
@@ -164,7 +164,7 @@ just feature-done
 just feature-done feat/user-dashboard
 
 # By directory path
-just feature-done ./worktrees/a1b2c3d4
+just feature-done ../myproject.wt/feat-user-dashboard
 ```
 
 If you're inside the worktree when running `feature-done`, you'll be reminded to `cd` back to
@@ -183,7 +183,7 @@ just feature-drop feat/abandoned-idea
 Rebase your feature branch on latest main:
 
 ```bash
-cd worktrees/a1b2c3d4
+cd ../myproject.wt/feat-user-dashboard
 just feature-rebase
 # Fetches origin/main and rebases your branch on top
 ```
