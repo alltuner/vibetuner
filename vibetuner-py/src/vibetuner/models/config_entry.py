@@ -6,15 +6,12 @@ from typing import Any, Literal
 from beanie import Document, Indexed
 from pydantic import Field
 
-from vibetuner.models.registry import register_model
-
 from .mixins import TimeStampMixin
 
 
 ConfigValueType = Literal["str", "int", "float", "bool", "json"]
 
 
-@register_model
 class ConfigEntryModel(Document, TimeStampMixin):
     """Runtime configuration entry stored in MongoDB.
 

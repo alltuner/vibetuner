@@ -1,3 +1,5 @@
+# ABOUTME: MongoDB client and Beanie ODM initialization.
+# ABOUTME: Manages connection lifecycle and model registration.
 from typing import Optional
 
 from beanie import init_beanie
@@ -5,9 +7,9 @@ from deprecated import deprecated
 from pymongo import AsyncMongoClient
 
 from vibetuner.config import settings
-from vibetuner.importer import import_module_by_name
+from vibetuner.loader import load_app_config
 from vibetuner.logging import logger
-from vibetuner.models.registry import get_all_models
+from vibetuner.models import __all__ as core_models
 
 
 # Global singleton, created lazily
@@ -15,10 +17,7 @@ mongo_client: Optional[AsyncMongoClient] = None
 
 
 def _ensure_client() -> None:
-    """
-    Lazily create the global MongoDB client if mongodb_url is configured.
-    Safe to call many times.
-    """
+    """Lazily create the global MongoDB client if mongodb_url is configured."""
     global mongo_client
 
     if settings.mongodb_url is None:
@@ -33,6 +32,12 @@ def _ensure_client() -> None:
         logger.debug("MongoDB client created.")
 
 
+def _get_all_models() -> list[type]:
+    """Get all models: core vibetuner models + user models from tune.py."""
+    app_config = load_app_config()
+    return list(core_models) + list(app_config.models)
+
+
 async def init_mongodb() -> None:
     """Initialize MongoDB and register Beanie models."""
     _ensure_client()
@@ -40,14 +45,12 @@ async def init_mongodb() -> None:
     if mongo_client is None:
         return
 
-    try:
-        import_module_by_name("models")
-    except ModuleNotFoundError:
-        logger.warning("No models module found; skipping custom model registration.")
+    all_models = _get_all_models()
+    logger.debug(f"Initializing Beanie with {len(all_models)} models")
 
     await init_beanie(
         database=mongo_client[settings.mongo_dbname],
-        document_models=get_all_models(),
+        document_models=all_models,
     )
 
     logger.info("MongoDB + Beanie initialized successfully.")

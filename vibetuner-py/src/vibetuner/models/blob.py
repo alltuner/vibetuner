@@ -11,8 +11,6 @@ from typing import Self
 from beanie import Document
 from pydantic import Field
 
-from vibetuner.models.registry import register_model
-
 from .mixins import TimeStampMixin
 
 
@@ -23,7 +21,6 @@ class BlobStatus(StrEnum):
     ERROR = "error"
 
 
-@register_model
 class BlobModel(Document, TimeStampMixin):
     status: BlobStatus = Field(
         default=BlobStatus.PENDING,

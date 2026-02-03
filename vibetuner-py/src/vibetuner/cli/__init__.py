@@ -13,7 +13,7 @@ from vibetuner.cli.db import db_app
 from vibetuner.cli.notify import notify_app
 from vibetuner.cli.run import run_app
 from vibetuner.cli.scaffold import scaffold_app
-from vibetuner.importer import import_module_by_name
+from vibetuner.loader import ConfigurationError, load_app_config
 from vibetuner.logging import LogLevel, logger, setup_logging
 
 
@@ -116,8 +116,16 @@ app.add_typer(notify_app, name="notify")
 app.add_typer(run_app, name="run")
 app.add_typer(scaffold_app, name="scaffold")
 
-
+# Add user CLI commands from tune.py
 try:
-    import_module_by_name("cli")
-except ModuleNotFoundError:
-    logger.warning("No cli modules found. Skipping user CLI commands.")
+    _app_config = load_app_config()
+    if _app_config.cli:
+        # Add user's Typer app as a sub-command group or merge commands
+        for command in _app_config.cli.registered_commands:
+            app.registered_commands.append(command)
+        for group in _app_config.cli.registered_groups:
+            app.registered_groups.append(group)
+        logger.debug("Registered user CLI commands from tune.py")
+except ConfigurationError:
+    # Not in a project directory or tune.py misconfigured, skip user CLI
+    pass

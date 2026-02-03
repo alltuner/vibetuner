@@ -4,8 +4,6 @@ from beanie import Document
 from beanie.operators import Eq
 from pydantic import BaseModel, Field
 
-from vibetuner.models.registry import register_model
-
 from .mixins import TimeStampMixin
 
 
@@ -16,7 +14,6 @@ class OauthProviderModel(BaseModel):
     config: dict[str, str]
 
 
-@register_model
 class OAuthAccountModel(Document, TimeStampMixin):
     provider: str = Field(
         ...,

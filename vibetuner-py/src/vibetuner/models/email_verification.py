@@ -12,12 +12,9 @@ from beanie import Document
 from beanie.operators import Eq, Set
 from pydantic import Field
 
-from vibetuner.models.registry import register_model
 from vibetuner.time import now
 
 
-# Email verification token model
-@register_model
 class EmailVerificationTokenModel(Document):
     email: str = Field(
         ...,
