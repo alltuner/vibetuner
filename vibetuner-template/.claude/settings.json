@@ -60,6 +60,7 @@
       "Bash(unzip:*)",
       "Bash(uv:*)",
       "Bash(uvx uv-bump:*)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
       "mcp__ide__getDiagnostics",
       "mcp__mongodb__find",
       "mcp__mongodb__indexes",
