@@ -18,7 +18,7 @@ from sse_starlette.sse import EventSourceResponse
 from vibetuner.config import settings
 from vibetuner.context import ctx
 from vibetuner.models import UserModel
-from vibetuner.models.registry import get_all_models
+from vibetuner.mongo import get_all_models
 
 from ..deps import MAGIC_COOKIE_NAME
 from ..templates import render_template

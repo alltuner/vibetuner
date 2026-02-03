@@ -230,7 +230,9 @@ Optional Redis-based background processing using Streaq:
 
 ```python
 # Define task in src/app/tasks/emails.py
-from vibetuner.tasks.worker import worker
+from vibetuner.tasks.worker import get_worker
+
+worker = get_worker()
 
 @worker.task()
 async def send_welcome_email(user_id: str):

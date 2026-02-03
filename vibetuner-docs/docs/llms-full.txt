@@ -316,9 +316,11 @@ If you enabled background jobs, create tasks in `src/app/tasks/`:
 
 ```python
 # src/app/tasks/emails.py
-from vibetuner.tasks.worker import worker
+from vibetuner.tasks.worker import get_worker
 from vibetuner.models import UserModel
 from vibetuner.services.email import send_email
+
+worker = get_worker()
 
 @worker.task()
 async def send_welcome_email(user_id: str):

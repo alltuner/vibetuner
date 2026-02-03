@@ -493,7 +493,9 @@ Create tasks with the `@worker.task()` decorator, then list them in `tune.py`:
 
 ```python
 # src/app/tasks/emails.py
-from vibetuner.tasks.worker import worker
+from vibetuner.tasks.worker import get_worker
+
+worker = get_worker()
 
 @worker.task()
 async def send_digest_email(user_id: str):

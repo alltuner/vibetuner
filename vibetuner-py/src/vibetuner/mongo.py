@@ -32,7 +32,7 @@ def _ensure_client() -> None:
         logger.debug("MongoDB client created.")
 
 
-def _get_all_models() -> list[type]:
+def get_all_models() -> list[type]:
     """Get all models: core vibetuner models + user models from tune.py."""
     app_config = load_app_config()
     return list(core_models) + list(app_config.models)
@@ -45,7 +45,7 @@ async def init_mongodb() -> None:
     if mongo_client is None:
         return
 
-    all_models = _get_all_models()
+    all_models = get_all_models()
     logger.debug(f"Initializing Beanie with {len(all_models)} models")
 
     await init_beanie(

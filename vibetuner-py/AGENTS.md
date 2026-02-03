@@ -159,7 +159,8 @@ Streaq worker instance configured with:
 - Queue name based on project slug
 - Lifespan from `tasks/lifespan.py`
 
-Users import this worker to define tasks: `from vibetuner.tasks.worker import worker`
+Users import the worker using `get_worker()` for type-safe access:
+`from vibetuner.tasks.worker import get_worker`
 
 ### `paths.py`
 

@@ -22,13 +22,14 @@ This module contains the scaffolding's core task components:
 **For your application tasks:**
 
 - Create them in `src/app/tasks/` instead
-- Import the worker from vibetuner: `from vibetuner.tasks.worker import worker`
+- Import the worker using `get_worker()` for type-safe access
 
 ## Quick Reference
 
 Tasks are only available if job queue was enabled during scaffolding.
 
-The worker is defined in `vibetuner.tasks.worker` and should be imported from there in your app tasks.
+The worker is defined in `vibetuner.tasks.worker`. Use `get_worker()` to import it with proper type
+checking (returns `Worker` instead of `Worker | None`).
 
 ## User Task Pattern (for reference)
 
@@ -37,7 +38,9 @@ Your application tasks in `src/app/tasks/` should follow this pattern:
 ```python
 # src/app/tasks/emails.py
 from vibetuner.models import UserModel
-from vibetuner.tasks.worker import worker
+from vibetuner.tasks.worker import get_worker
+
+worker = get_worker()
 
 @worker.task()
 async def send_welcome_email(user_id: str) -> dict[str, str]:
