@@ -27,11 +27,84 @@ __all__ = [
 ]
 
 
-def timeago(dt):
+def _timeago_verbose(diff: timedelta, dt) -> str:
+    """Format timedelta as verbose relative time string."""
+    if diff < timedelta(seconds=60):
+        seconds = diff.seconds
+        return ngettext(
+            "%(seconds)d second ago",
+            "%(seconds)d seconds ago",
+            seconds,
+        ) % {"seconds": seconds}
+    if diff < timedelta(minutes=60):
+        minutes = diff.seconds // 60
+        return ngettext(
+            "%(minutes)d minute ago",
+            "%(minutes)d minutes ago",
+            minutes,
+        ) % {"minutes": minutes}
+    if diff < timedelta(days=1):
+        hours = diff.seconds // 3600
+        return ngettext("%(hours)d hour ago", "%(hours)d hours ago", hours) % {
+            "hours": hours,
+        }
+    if diff < timedelta(days=2):
+        return _("yesterday")
+    if diff < timedelta(days=65):
+        days = diff.days
+        return ngettext("%(days)d day ago", "%(days)d days ago", days) % {
+            "days": days,
+        }
+    if diff < timedelta(days=365):
+        months = diff.days // 30
+        return ngettext("%(months)d month ago", "%(months)d months ago", months) % {
+            "months": months,
+        }
+    if diff < timedelta(days=365 * 4):
+        years = diff.days // 365
+        return ngettext("%(years)d year ago", "%(years)d years ago", years) % {
+            "years": years,
+        }
+    return dt.strftime("%b %d, %Y")
+
+
+def _timeago_short(diff: timedelta, dt) -> str:
+    """Format timedelta as compact relative time string."""
+    if diff < timedelta(seconds=60):
+        return ngettext("just now", "just now", 1)
+    if diff < timedelta(minutes=60):
+        minutes = diff.seconds // 60
+        return ngettext("%(minutes)dm ago", "%(minutes)dm ago", minutes) % {
+            "minutes": minutes,
+        }
+    if diff < timedelta(days=1):
+        hours = diff.seconds // 3600
+        return ngettext("%(hours)dh ago", "%(hours)dh ago", hours) % {"hours": hours}
+    if diff < timedelta(days=2):
+        return ngettext("%(days)dd ago", "%(days)dd ago", 1) % {"days": 1}
+    if diff < timedelta(days=7):
+        days = diff.days
+        return ngettext("%(days)dd ago", "%(days)dd ago", days) % {"days": days}
+    if diff < timedelta(days=30):
+        weeks = diff.days // 7
+        return ngettext("%(weeks)dw ago", "%(weeks)dw ago", weeks) % {"weeks": weeks}
+    if diff < timedelta(days=365):
+        months = diff.days // 30
+        return ngettext("%(months)dmo ago", "%(months)dmo ago", months) % {
+            "months": months,
+        }
+    if diff < timedelta(days=365 * 4):
+        years = diff.days // 365
+        return ngettext("%(years)dy ago", "%(years)dy ago", years) % {"years": years}
+    return dt.strftime("%b %d, %Y")
+
+
+def timeago(dt, short: bool = False):
     """Converts a datetime object to a human-readable string representing the time elapsed since the given datetime.
 
     Args:
         dt (datetime): The datetime object to convert.
+        short (bool): If True, use compact format like "5m ago" instead of "5 minutes ago".
 
     Returns:
         str: A human-readable string representing the time elapsed since the given datetime,
@@ -39,47 +112,14 @@ def timeago(dt):
         "X months ago", or "X years ago". If the datetime is more than 4 years old,
         it returns the date in the format "MMM DD, YYYY".
 
+        In short format, returns compact strings like "just now", "5m ago", "2h ago", etc.
+
     """
     try:
         diff = age_in_timedelta(dt)
-
-        if diff < timedelta(seconds=60):
-            seconds = diff.seconds
-            return ngettext(
-                "%(seconds)d second ago",
-                "%(seconds)d seconds ago",
-                seconds,
-            ) % {"seconds": seconds}
-        if diff < timedelta(minutes=60):
-            minutes = diff.seconds // 60
-            return ngettext(
-                "%(minutes)d minute ago",
-                "%(minutes)d minutes ago",
-                minutes,
-            ) % {"minutes": minutes}
-        if diff < timedelta(days=1):
-            hours = diff.seconds // 3600
-            return ngettext("%(hours)d hour ago", "%(hours)d hours ago", hours) % {
-                "hours": hours,
-            }
-        if diff < timedelta(days=2):
-            return _("yesterday")
-        if diff < timedelta(days=65):
-            days = diff.days
-            return ngettext("%(days)d day ago", "%(days)d days ago", days) % {
-                "days": days,
-            }
-        if diff < timedelta(days=365):
-            months = diff.days // 30
-            return ngettext("%(months)d month ago", "%(months)d months ago", months) % {
-                "months": months,
-            }
-        if diff < timedelta(days=365 * 4):
-            years = diff.days // 365
-            return ngettext("%(years)d year ago", "%(years)d years ago", years) % {
-                "years": years,
-            }
-        return dt.strftime("%b %d, %Y")
+        if short:
+            return _timeago_short(diff, dt)
+        return _timeago_verbose(diff, dt)
     except Exception:
         return ""
 
