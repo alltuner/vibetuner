@@ -1,5 +1,19 @@
 # Changelog
 
+## [6.0.3](https://github.com/alltuner/vibetuner/compare/v6.0.2...v6.0.3) (2026-02-03)
+
+
+### Bug Fixes
+
+* resolve circular imports and missing module references ([#885](https://github.com/alltuner/vibetuner/issues/885)) ([d6f7091](https://github.com/alltuner/vibetuner/commit/d6f7091040ba65a09a58816cadad042cb542b579))
+* use conventional commit format for deps-pr title ([#890](https://github.com/alltuner/vibetuner/issues/890)) ([0381f53](https://github.com/alltuner/vibetuner/commit/0381f53307d268d1e240853b767a83f31ee5c8ce))
+
+
+### Miscellaneous Chores
+
+* trigger release workflow ([#888](https://github.com/alltuner/vibetuner/issues/888)) ([d023b7b](https://github.com/alltuner/vibetuner/commit/d023b7b025545e124da0ecdd4e9a05fdd5c32fd2))
+* update deps 2026-02-03 ([743e0e0](https://github.com/alltuner/vibetuner/commit/743e0e0cd542e4d1e9e210b2458bcc83e3ece539))
+
 ## [6.0.2](https://github.com/alltuner/vibetuner/compare/v6.0.1...v6.0.2) (2026-02-03)
 
 
