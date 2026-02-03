@@ -6,7 +6,6 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 
 from vibetuner.context import ctx
-from vibetuner.loader import load_app_config
 from vibetuner.logging import logger
 from vibetuner.mongo import init_mongodb, teardown_mongodb
 from vibetuner.sqlmodel import init_sqlmodel, teardown_sqlmodel
@@ -43,6 +42,17 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await teardown_mongodb()
 
 
-# Use user's frontend_lifespan from tune.py if provided, otherwise use base
-_app_config = load_app_config()
-lifespan = _app_config.frontend_lifespan or base_lifespan
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """Frontend lifespan that lazy-loads user's frontend_lifespan from tune.py.
+
+    This wrapper prevents circular imports when tune.py imports vibetuner.frontend
+    modules that depend on base_lifespan.
+    """
+    from vibetuner.loader import load_app_config
+
+    app_config = load_app_config()
+    actual_lifespan = app_config.frontend_lifespan or base_lifespan
+
+    async with actual_lifespan(app):
+        yield
