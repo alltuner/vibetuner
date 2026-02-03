@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.0.2](https://github.com/alltuner/vibetuner/compare/v6.0.1...v6.0.2) (2026-02-03)
+
+
+### Bug Fixes
+
+* lazy-load worker lifespan to avoid circular imports ([#881](https://github.com/alltuner/vibetuner/issues/881)) ([807226b](https://github.com/alltuner/vibetuner/commit/807226b73d6f5b89fcf35316168958f449c56a5e))
+
 ## [6.0.1](https://github.com/alltuner/vibetuner/compare/v6.0.0...v6.0.1) (2026-02-03)
 
 
