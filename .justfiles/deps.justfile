@@ -75,7 +75,7 @@ deps-pr:
 
     # Push and create PR
     git push -u origin "$BRANCH"
-    gh pr create --fill --base main
+    gh pr create --title "chore: update deps ${DATE_STAMP}" --body "" --base main
 
     # Merge the PR (squash) with conventional commit title
     gh pr merge --squash --delete-branch --subject "chore: update deps ${DATE_STAMP}"
