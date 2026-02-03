@@ -1,11 +1,13 @@
+# ABOUTME: FastAPI application factory for vibetuner frontend.
+# ABOUTME: Loads user config from tune.py and wires routes, middleware, etc.
 from typing import Any
 
-from fastapi import APIRouter, Depends as Depends, FastAPI, Request
+from fastapi import Depends as Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 import vibetuner.frontend.lifespan as lifespan_module
-from vibetuner.importer import import_module_by_name
+from vibetuner.loader import load_app_config
 from vibetuner.logging import logger
 from vibetuner.paths import paths
 
@@ -17,35 +19,12 @@ from .routing import LocalizedRouter as LocalizedRouter, localized as localized
 from .templates import render_template
 
 
-_registered_routers: list[APIRouter] = []
+# Load user's app configuration
+_app_config = load_app_config()
 
-
-def register_router(router: APIRouter) -> None:
-    _registered_routers.append(router)
-
-
-# First try to import user defined oauth
-try:
-    import_module_by_name("frontend.oauth")
-except (ModuleNotFoundError, AttributeError):
-    logger.debug("No frontend oauth module found for custom OAuth providers.")
-
-# Then import user defined routes to ensure they can use the registered providers
-try:
-    _ = import_module_by_name("frontend.routes")
-except (ModuleNotFoundError, AttributeError) as e:
-    print("hola", e)
-    logger.debug("No frontend routes module found for custom routes.")
-
-# Then register OAuth routes after providers are registered
-register_oauth_routes()
-
-try:
-    app_middleware = import_module_by_name("frontend").middleware
-    middlewares.extend(app_middleware.middlewares)
-except (ModuleNotFoundError, AttributeError):
-    logger.debug("No frontend middleware module found for custom middlewares.")
-
+# Add user middleware to the list (before app creation)
+for mw in _app_config.middleware:
+    middlewares.append(mw)
 
 dependencies: list[Any] = [
     # Add any dependencies that should be available globally
@@ -97,13 +76,19 @@ if ctx.DEBUG:
         name="hot-reload",
     )
 
+# Core routes
 app.include_router(meta.router)
 app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(language.router)
 
-for router in _registered_routers:
+# Register OAuth routes for configured providers
+register_oauth_routes()
+
+# User routes from tune.py
+for router in _app_config.routes:
     app.include_router(router)
+    logger.debug(f"Registered user router: {router}")
 
 
 @app.get("/", name="homepage", response_class=HTMLResponse)
@@ -111,6 +96,7 @@ def default_index(request: Request) -> HTMLResponse:
     return render_template("index.html.jinja", request)
 
 
+# Debug and health routes (always last)
 app.include_router(debug.auth_router)
 app.include_router(debug.router)
 app.include_router(health.router)

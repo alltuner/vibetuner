@@ -8,7 +8,7 @@ from starlette_babel import gettext_lazy as _, gettext_lazy as ngettext
 from starlette_babel.contrib.jinja import configure_jinja_env
 
 from vibetuner.context import ctx as data_ctx
-from vibetuner.importer import import_module_by_name
+from vibetuner.loader import load_app_config
 from vibetuner.logging import logger
 from vibetuner.paths import frontend_templates
 from vibetuner.templates import render_static_template
@@ -21,39 +21,10 @@ __all__ = [
     "render_static_template",
     "render_template",
     "render_template_string",
-    "register_filter",
     "lang_url_for",
     "url_for_language",
     "hreflang_tags",
 ]
-
-
-_filter_registry: dict[str, Any] = {}
-
-
-def register_filter(name: str | None = None):
-    """Decorator to register a custom Jinja2 filter.
-
-    Args:
-        name: Optional custom name for the filter. If not provided,
-              uses the function name.
-
-    Usage:
-        @register_filter()
-        def my_filter(value):
-            return value.upper()
-
-        @register_filter("custom_name")
-        def another_filter(value):
-            return value.lower()
-    """
-
-    def decorator(func):
-        filter_name = name or func.__name__
-        _filter_registry[filter_name] = func
-        return func
-
-    return decorator
 
 
 def timeago(dt):
@@ -344,15 +315,25 @@ jinja_env.filters["format_datetime"] = format_datetime
 jinja_env.filters["format_duration"] = format_duration
 jinja_env.filters["duration"] = format_duration
 
-# Import user-defined filters to trigger registration
-try:
-    import_module_by_name("frontend").templates  # noqa: B018
-except (ModuleNotFoundError, AttributeError):
-    logger.debug("No frontend templates module found for custom filters.")
+# Apply user-defined filters from tune.py
+_app_config = load_app_config()
+_builtin_filters = set(jinja_env.filters.keys())
 
-# Apply all registered custom filters
-for filter_name, filter_func in _filter_registry.items():
-    jinja_env.filters[filter_name] = filter_func
+for filter_name, filter_func in _app_config.template_filters.items():
+    if filter_name in _builtin_filters:
+        logger.warning(
+            f"Custom filter '{filter_name}' overrides built-in filter. "
+            "Consider using a different name to avoid confusion."
+        )
+    try:
+        # Validate that the filter is callable
+        if not callable(filter_func):
+            logger.error(f"Template filter '{filter_name}' is not callable, skipping")
+            continue
+        jinja_env.filters[filter_name] = filter_func
+        logger.debug(f"Registered custom filter: {filter_name}")
+    except Exception as e:
+        logger.error(f"Failed to register template filter '{filter_name}': {e}")
 
 # Configure Jinja environment after all filters are registered
 configure_jinja_env(jinja_env)

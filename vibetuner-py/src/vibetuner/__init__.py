@@ -1,2 +1,6 @@
-# Your code goes here (add your code between this line and the EOF comment)
-# End of file
+# ABOUTME: Main vibetuner package entry point.
+# ABOUTME: Exports VibetunerApp for user configuration.
+from vibetuner.app_config import VibetunerApp
+
+
+__all__ = ["VibetunerApp"]

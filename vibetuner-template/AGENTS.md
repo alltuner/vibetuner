@@ -9,9 +9,10 @@ creates distinctive, production-grade interfaces that avoid generic AI aesthetic
 
 **Key locations**:
 
-- Routes: `src/app/frontend/routes/` (auto-discovered)
+- Routes: `src/app/frontend/routes/`
 - Templates: `templates/frontend/`
-- Models: `src/app/models/` (auto-discovered)
+- Models: `src/app/models/`
+- App config: `src/app/tune.py` (only if customizing)
 - CSS config: `config.css`
 
 **Stack**: HTMX for interactivity (not JavaScript frameworks), Tailwind classes in templates.
@@ -23,26 +24,78 @@ creates distinctive, production-grade interfaces that avoid generic AI aesthetic
 
 ---
 
-## Self-Sufficient Framework
+## App Configuration (`tune.py`)
 
-Vibetuner is designed to work out of the box. The framework auto-discovers your code:
+Vibetuner uses explicit configuration. You declare what your app uses in `tune.py`.
 
-- **Routes**: Any `router` in `frontend/routes/*.py` is automatically registered
-- **Models**: Any Beanie `Document` in `models/*.py` is automatically initialized
-- **Tasks**: Task modules are auto-discovered from `tasks/`
-- **CLI commands**: Custom commands in `cli/` are auto-loaded
+### Zero-Config Mode
 
-**No boilerplate `__init__.py` files needed.** Just create your files and they work.
+New projects work out of the box with no configuration:
 
-### Supported Project Structures
+```bash
+uv run vibetuner run dev frontend   # Works immediately
+uv run vibetuner run dev worker     # Works immediately
+```
 
-The auto-discovery system tries these locations in order:
+### Adding Custom Components
 
-1. `app.X` - Scaffolded projects use `src/app/` (this template)
-2. `{package_name}.X` - Uses the `name` from your `pyproject.toml`
-3. `X` - Flat structure (e.g., `models.py` at project root)
+When you need custom routes, models, etc., create `src/app/tune.py`:
 
-**Scaffolded projects** use `src/app/` by convention. **Non-scaffolded projects** can use any structure.
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+
+from app.frontend.routes import app_router
+from app.models import Post, Comment
+
+app = VibetunerApp(
+    routes=[app_router],
+    models=[Post, Comment],
+)
+```
+
+### Full Configuration Example
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+
+# Explicit imports - errors surface immediately
+from app.models import Post, Comment, Tag
+from app.frontend.routes import app_router
+from app.frontend.middleware import rate_limiter
+from app.frontend.templates import format_date_catalan
+from app.frontend.lifespan import lifespan
+from app.tasks.notifications import send_notification
+from app.cli import admin_commands
+
+app = VibetunerApp(
+    # Models (used by frontend and worker)
+    models=[Post, Comment, Tag],
+
+    # Frontend
+    routes=[app_router],
+    middleware=[rate_limiter],
+    template_filters={"ca_date": format_date_catalan},
+    frontend_lifespan=lifespan,
+
+    # OAuth providers
+    oauth_providers=["google", "github"],
+
+    # Worker tasks
+    tasks=[send_notification],
+
+    # CLI extensions
+    cli=admin_commands,
+)
+```
+
+### Benefits
+
+- **Clear errors**: Import errors show exact location (no hidden failures)
+- **IDE support**: Autocomplete and type checking work
+- **Explicit dependencies**: You see exactly what's loaded
+- **Zero-config option**: Delete `tune.py` if you don't need customization
 
 ---
 
@@ -234,13 +287,17 @@ auto-detects the current worktree. You can also pass a directory path instead of
 ```text
 src/
 └── app/                       # YOUR APPLICATION CODE (created by you)
+    ├── tune.py               # App configuration (optional, only if customizing)
     ├── config.py             # App-specific configuration (optional)
-    ├── cli/                  # ADD YOUR CLI COMMANDS (auto-discovered)
-    ├── frontend/             # ADD YOUR ROUTES
-    │   └── routes/          # Your HTTP handlers (auto-discovered)
-    ├── models/              # ADD YOUR MODELS (auto-discovered)
-    ├── services/            # ADD YOUR SERVICES
-    └── tasks/               # ADD YOUR BACKGROUND JOBS (auto-discovered)
+    ├── cli/                  # Your CLI commands
+    ├── frontend/             # Your routes and frontend logic
+    │   ├── routes/          # Your HTTP handlers
+    │   ├── middleware.py    # Custom middleware (optional)
+    │   ├── templates.py     # Custom template filters (optional)
+    │   └── lifespan.py      # Custom startup/shutdown (optional)
+    ├── models/              # Your Beanie document models
+    ├── services/            # Your business logic
+    └── tasks/               # Your background jobs
 
 templates/
 ├── frontend/              # YOUR CUSTOM FRONTEND TEMPLATES
@@ -261,7 +318,6 @@ assets/statics/
 - Email service, blob storage
 - Base templates, middleware, default routes
 - MongoDB setup, logging, configuration
-- Auto-discovery of your routes, models, tasks
 - **Changes**: File issues at `https://github.com/alltuner/vibetuner`
 
 **`src/app/`** - Your application space
@@ -277,8 +333,7 @@ assets/statics/
 
 ### Adding Routes
 
-Create a file in `src/app/frontend/routes/`. Routes are **automatically discovered** - no
-registration needed:
+Create routes in `src/app/frontend/routes/`, then register them in `tune.py`:
 
 ```python
 # src/app/frontend/routes/dashboard.py
@@ -293,11 +348,30 @@ async def dashboard(request: Request, user=Depends(get_current_user)):
     return render_template("dashboard.html.jinja", request, {"user": user})
 ```
 
-The framework finds any `router` variable in route files and registers it automatically.
+```python
+# src/app/frontend/routes/__init__.py
+from fastapi import APIRouter
+from .dashboard import router as dashboard_router
+from .settings import router as settings_router
+
+app_router = APIRouter()
+app_router.include_router(dashboard_router)
+app_router.include_router(settings_router)
+```
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.frontend.routes import app_router
+
+app = VibetunerApp(
+    routes=[app_router],
+)
+```
 
 ### Adding Models
 
-Create models in `src/app/models/`. Models are **automatically discovered** and initialized:
+Create models in `src/app/models/`, then list them in `tune.py`:
 
 ```python
 # src/app/models/post.py
@@ -316,9 +390,27 @@ class Post(Document, TimeStampMixin):
         indexes = ["author", "db_insert_dt"]
 ```
 
-No `__init__.py` registration needed. The framework auto-discovers Beanie Documents.
+```python
+# src/app/models/__init__.py
+from .post import Post
+from .comment import Comment
+
+__all__ = [Post, Comment]
+```
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.models import Post, Comment
+
+app = VibetunerApp(
+    models=[Post, Comment],
+)
+```
 
 ### Adding Services
+
+Services don't need registration - just import them where needed:
 
 ```python
 # src/app/services/notifications.py
@@ -332,68 +424,72 @@ async def send_notification(user_email: str, message: str):
     )
 ```
 
-### Runtime Configuration
+### Adding Template Filters
 
-For settings that can be changed at runtime without redeploying, use the runtime configuration system:
+Create filter functions and pass them to `tune.py`:
 
 ```python
-# src/app/config.py - Register config values at module load time
-from vibetuner.runtime_config import register_config_value
+# src/app/frontend/templates.py
+from datetime import datetime
 
-register_config_value(
-    key="features.dark_mode",
-    default=False,
-    value_type="bool",
-    category="features",
-    description="Enable dark mode for users",
-)
+def format_date_catalan(dt: datetime) -> str:
+    """Format date in Catalan style."""
+    return dt.strftime("%d/%m/%Y")
 
-register_config_value(
-    key="limits.max_uploads",
-    default=10,
-    value_type="int",
-    category="limits",
-    description="Maximum uploads per user per day",
-)
-
-# Mark sensitive values as secrets (masked in debug UI, not editable)
-register_config_value(
-    key="api.secret_key",
-    default="default-key",
-    value_type="str",
-    category="api",
-    description="API secret key",
-    is_secret=True,
-)
+def truncate_words(text: str, max_words: int = 20) -> str:
+    """Truncate text to max_words."""
+    words = text.split()
+    if len(words) <= max_words:
+        return text
+    return " ".join(words[:max_words]) + "..."
 ```
 
 ```python
-# Access config values anywhere in your app
-from vibetuner.runtime_config import get_config
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.frontend.templates import format_date_catalan, truncate_words
 
-async def some_handler():
-    dark_mode = await get_config("features.dark_mode")
-    max_uploads = await get_config("limits.max_uploads", default=5)
-
-    if dark_mode:
-        return render_dark_theme()
+app = VibetunerApp(
+    template_filters={
+        "ca_date": format_date_catalan,
+        "truncate": truncate_words,
+    },
+)
 ```
 
-**Value types**: `bool`, `int`, `float`, `str`, `json`
+Use in templates: `{{ post.created_at | ca_date }}` or `{{ post.content | truncate(30) }}`
 
-**Resolution priority** (highest to lowest):
+### Adding Middleware
 
-1. Runtime overrides (in-memory, for debugging)
-2. MongoDB values (persistent)
-3. Registered defaults (code)
+Create middleware and pass to `tune.py`:
 
-**Debug UI**: Navigate to `/debug/config` to view and edit config values. Requires DEBUG mode or
-magic cookie authentication in production.
+```python
+# src/app/frontend/middleware.py
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
+
+middlewares = [
+    Middleware(
+        CORSMiddleware,
+        allow_origins=["https://example.com"],
+        allow_methods=["*"],
+    ),
+]
+```
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.frontend.middleware import middlewares
+
+app = VibetunerApp(
+    middleware=middlewares,
+)
+```
 
 ### Adding Background Tasks
 
-If background jobs are enabled, tasks use the `vibetuner.tasks.worker`. Task modules are
-**automatically discovered**:
+Create tasks with the `@worker.task()` decorator, then list them in `tune.py`:
 
 ```python
 # src/app/tasks/emails.py
@@ -403,29 +499,81 @@ from vibetuner.tasks.worker import worker
 async def send_digest_email(user_id: str):
     # Task logic here
     return {"status": "sent"}
-
-# Queue from routes:
-# from app.tasks.emails import send_digest_email
-# task = await send_digest_email.enqueue(user.id)
 ```
-
-For custom task lifespan (optional), create `src/app/tasks/lifespan.py`:
 
 ```python
-# src/app/tasks/lifespan.py (optional - only if you need custom startup/shutdown)
-from contextlib import asynccontextmanager
-from vibetuner.tasks.lifespan import base_lifespan
-from vibetuner.context import Context
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.tasks.emails import send_digest_email
 
-@asynccontextmanager
-async def lifespan():
-    async with base_lifespan() as worker_context:
-        # Custom startup logic here
-        yield Context(**worker_context.model_dump())
-        # Custom shutdown logic here
+app = VibetunerApp(
+    tasks=[send_digest_email],
+)
 ```
 
-If no custom lifespan is provided, the framework uses `base_lifespan` automatically.
+Queue from routes:
+
+```python
+from app.tasks.emails import send_digest_email
+task = await send_digest_email.enqueue(user.id)
+```
+
+### Custom Lifespan
+
+For custom startup/shutdown logic, create a lifespan and pass to `tune.py`:
+
+```python
+# src/app/frontend/lifespan.py
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from vibetuner.frontend.lifespan import base_lifespan
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with base_lifespan(app):
+        # Custom startup logic
+        print("App starting with custom logic")
+        yield
+        # Custom shutdown logic
+        print("App shutting down with custom logic")
+```
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.frontend.lifespan import lifespan
+
+app = VibetunerApp(
+    frontend_lifespan=lifespan,
+)
+```
+
+### Runtime Configuration
+
+For settings that can be changed at runtime without redeploying:
+
+```python
+# src/app/config.py
+from vibetuner.runtime_config import register_config_value
+
+register_config_value(
+    key="features.dark_mode",
+    default=False,
+    value_type="bool",
+    category="features",
+    description="Enable dark mode for users",
+)
+```
+
+```python
+# Access config values anywhere
+from vibetuner.runtime_config import get_config
+
+async def some_handler():
+    dark_mode = await get_config("features.dark_mode")
+```
+
+**Debug UI**: Navigate to `/debug/config` to view and edit config values.
 
 ### Template Override
 
@@ -433,16 +581,11 @@ To customize templates, create them in your templates directory:
 
 ```bash
 # Create custom frontend templates
-# templates/frontend/dashboard.html.jinja
+templates/frontend/dashboard.html.jinja
 
 # Create custom email templates
-# templates/email/default/welcome.html.jinja
-
-# Create custom markdown templates
-# templates/markdown/default/terms.md.jinja
+templates/email/default/welcome.html.jinja
 ```
-
-The template system searches `templates/{namespace}/` for your custom templates.
 
 ## Configuration
 
@@ -568,12 +711,8 @@ This project uses Tailwind CSS 4. Follow these patterns for maintainable styles:
 {# GOOD: Arbitrary properties for animations #}
 <div class="animate-fade-in [animation-delay:100ms]">
 
-{# GOOD: Arbitrary values for complex gradients #}
-<div class="bg-[radial-gradient(ellipse_at_top,rgba(242,100,48,0.08)_0%,transparent_50%)]">
-
 {# BAD: Inline styles (djLint H021 will flag these) #}
 <div style="animation-delay: 100ms">
-<div style="background: radial-gradient(...)">
 ```
 
 **Define reusable design tokens in `assets/statics/css/config.css`:**
@@ -583,27 +722,10 @@ This project uses Tailwind CSS 4. Follow these patterns for maintainable styles:
   /* Custom colors */
   --color-brand-primary: #009ddc;
   --color-brand-secondary: #f26430;
-
-  /* Custom shadows */
-  --shadow-glow-primary: 0 0 80px rgba(0, 157, 220, 0.2);
-
-  /* Custom animations */
-  --animate-fade-in: fade-in 0.5s ease-out forwards;
 }
 ```
 
-Then use them in templates:
-
-```jinja
-<div class="text-brand-primary shadow-glow-primary animate-fade-in">
-```
-
-**Important:**
-
-- Never use inline `style=""` attributes - djLint will flag these
-- Use arbitrary values for one-off custom styles
-- Extract to `@theme` only when values are reused across multiple templates
-- Prefer Tailwind's arbitrary syntax over creating custom CSS classes
+Then use them in templates: `<div class="text-brand-primary">`
 
 ## MCP Servers Available
 
@@ -622,8 +744,8 @@ Then use them in templates:
 6. **Use uv exclusively** for Python packages (never pip/poetry/conda)
 7. **Override, don't modify** core templates - create in `templates/` instead
 8. **Never inspect** `assets/statics/css/bundle.css` or `assets/statics/js/bundle.js` - These are
-   auto-generated bundles containing minified CSS/JS from the build process. Reading them wastes
-   context and provides no useful information. Edit `config.css` and `config.js` instead.
+   auto-generated bundles. Edit `config.css` and `config.js` instead.
+9. **Configure in `tune.py`** - Don't rely on auto-discovery; explicitly list routes, models, etc.
 
 ## Custom Project Instructions
 

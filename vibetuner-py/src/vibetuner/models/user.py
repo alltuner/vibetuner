@@ -12,8 +12,6 @@ from beanie.operators import Eq
 from pydantic import BaseModel, Field
 from pydantic_extra_types.language_code import LanguageAlpha2
 
-from vibetuner.models.registry import register_model
-
 from .mixins import TimeStampMixin
 from .oauth import OAuthAccountModel
 from .types import Link
@@ -46,7 +44,6 @@ class UserSettings(BaseModel):
         )
 
 
-@register_model
 class UserModel(Document, TimeStampMixin):
     email: str | None = Field(
         default=None,
