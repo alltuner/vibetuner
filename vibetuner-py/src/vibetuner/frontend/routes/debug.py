@@ -27,6 +27,28 @@ from ..templates import render_template
 # Claude Code event broadcasting
 _claude_events: deque[dict[str, Any]] = deque(maxlen=100)
 _claude_subscribers: set[asyncio.Queue] = set()
+_shutdown_event: asyncio.Event | None = None
+
+
+def _get_shutdown_event() -> asyncio.Event:
+    """Get or create the shutdown event for the current event loop."""
+    global _shutdown_event
+    if _shutdown_event is None:
+        _shutdown_event = asyncio.Event()
+    return _shutdown_event
+
+
+async def shutdown_sse_connections() -> None:
+    """Signal all SSE connections to terminate gracefully."""
+    event = _get_shutdown_event()
+    event.set()
+    await asyncio.sleep(0.1)
+
+
+def reset_sse_state() -> None:
+    """Reset SSE state for dev mode reloads."""
+    global _shutdown_event
+    _shutdown_event = None
 
 
 def check_debug_access(request: Request):
@@ -568,13 +590,17 @@ async def debug_claude_webhook(request: Request):
 
 async def _event_generator(queue: asyncio.Queue):
     """Generate SSE events from the queue."""
+    shutdown_event = _get_shutdown_event()
     try:
-        while True:
-            event = await queue.get()
-            yield {
-                "event": event["type"],
-                "data": event,
-            }
+        while not shutdown_event.is_set():
+            try:
+                event = await asyncio.wait_for(queue.get(), timeout=1.0)
+                yield {
+                    "event": event["type"],
+                    "data": event,
+                }
+            except asyncio.TimeoutError:
+                continue
     except asyncio.CancelledError:
         pass
 
