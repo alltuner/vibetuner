@@ -267,20 +267,54 @@ Add templates in `templates/`:
 {% endblock content %}
 ```
 
+### Built-in Template Filters
+
+Vibetuner provides several built-in template filters for common formatting needs:
+
+| Filter | Usage | Output |
+|--------|-------|--------|
+| `timeago` | `{{ dt \| timeago }}` | "5 minutes ago" |
+| `timeago(short=True)` | `{{ dt \| timeago(short=True) }}` | "5m ago" |
+| `format_date` | `{{ dt \| format_date }}` | "January 15, 2025" |
+| `format_datetime` | `{{ dt \| format_datetime }}` | "January 15, 2025 at 2:30 PM" |
+| `format_duration` / `duration` | `{{ seconds \| duration }}` | "5 min" or "30 sec" |
+
+#### timeago Filter
+
+The `timeago` filter converts a datetime to a human-readable relative time string:
+
+```html
+<span>Created {{ post.created_at | timeago }}</span>
+<!-- Output: "5 minutes ago", "yesterday", "3 months ago", etc. -->
+
+<!-- Short format for compact displays -->
+<span>{{ post.created_at | timeago(short=True) }}</span>
+<!-- Output: "5m ago", "1d ago", "3mo ago", etc. -->
+```
+
+Short format outputs:
+
+| Time Range | Short Format |
+|------------|--------------|
+| < 60 seconds | "just now" |
+| < 60 minutes | "Xm ago" |
+| < 24 hours | "Xh ago" |
+| < 7 days | "Xd ago" |
+| < 30 days | "Xw ago" |
+| < 365 days | "Xmo ago" |
+| < 4 years | "Xy ago" |
+| >= 4 years | "MMM DD, YYYY" |
+
 ### Adding Custom Template Filters
 
-Create custom Jinja2 filters in `src/app/frontend/templates.py`:
+Register custom Jinja2 filters via the `template_filters` dict in `VibetunerApp`:
 
 ```python
 # src/app/frontend/templates.py
-from vibetuner.frontend.templates import register_filter
-
-@register_filter()
 def uppercase(value):
     """Convert value to uppercase"""
     return str(value).upper()
 
-@register_filter("money")
 def format_money(value):
     """Format value as USD currency"""
     try:
@@ -289,15 +323,25 @@ def format_money(value):
         return str(value)
 ```
 
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.frontend.templates import uppercase, format_money
+
+app = VibetunerApp(
+    template_filters={
+        "uppercase": uppercase,
+        "money": format_money,
+    },
+)
+```
+
 Use in templates:
 
 ```html
 <h1>{{ user.name | uppercase }}</h1>
 <p>Price: {{ product.price | money }}</p>
 ```
-
-The `@register_filter()` decorator automatically registers filters with the Jinja
-environment. If no name is provided, the function name becomes the filter name.
 
 ### Adding Background Jobs
 
