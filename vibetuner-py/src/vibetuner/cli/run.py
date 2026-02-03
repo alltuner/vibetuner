@@ -87,6 +87,7 @@ def _run_frontend(
         port=port,
         interface=Interfaces.ASGI,
         workers=workers,
+        workers_kill_timeout=5,
         reload=is_dev,
         reload_paths=paths.reload_paths if is_dev else [],
         log_level="info",
