@@ -26,6 +26,15 @@ async def base_lifespan() -> AsyncGenerator[Context, None]:
     logger.info("Vibetuner task worker stopping")
 
 
-# Use user's worker_lifespan from tune.py if provided, otherwise use base
-_app_config = load_app_config()
-lifespan = _app_config.worker_lifespan or base_lifespan
+@asynccontextmanager
+async def lifespan() -> AsyncGenerator[Context, None]:
+    """Worker lifespan that lazy-loads user's worker_lifespan from tune.py.
+
+    This wrapper prevents circular imports when tune.py imports tasks that
+    use @worker.task() or @worker.cron() decorators.
+    """
+    app_config = load_app_config()
+    actual_lifespan = app_config.worker_lifespan or base_lifespan
+
+    async with actual_lifespan() as context:
+        yield context
