@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.0.1](https://github.com/alltuner/vibetuner/compare/v6.0.0...v6.0.1) (2026-02-03)
+
+
+### Bug Fixes
+
+* lazy-load custom template filters to avoid circular imports ([#877](https://github.com/alltuner/vibetuner/issues/877)) ([013f686](https://github.com/alltuner/vibetuner/commit/013f686d6768eab935742819ae8e0f80c9238897))
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency @alltuner/vibetuner to v6 ([#879](https://github.com/alltuner/vibetuner/issues/879)) ([6dd7ec8](https://github.com/alltuner/vibetuner/commit/6dd7ec84cb17d150d3fce46142f17bd493e836e5))
+
 ## [6.0.0](https://github.com/alltuner/vibetuner/compare/v5.0.3...v6.0.0) (2026-02-03)
 
 
