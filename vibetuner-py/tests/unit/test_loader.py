@@ -114,7 +114,9 @@ class TestLoadAppConfig:
 
         with (
             patch("vibetuner.loader.get_project_name", return_value="myapp"),
-            patch("vibetuner.loader.import_module", return_value=mock_module) as mock_import,
+            patch(
+                "vibetuner.loader.import_module", return_value=mock_module
+            ) as mock_import,
         ):
             config1 = load_app_config()
             config2 = load_app_config()
