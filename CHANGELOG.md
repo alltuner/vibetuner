@@ -1,5 +1,16 @@
 # Changelog
 
+## [6.0.0](https://github.com/alltuner/vibetuner/compare/v5.0.3...v6.0.0) (2026-02-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace magic imports with explicit tune.py configuration ([#873](https://github.com/alltuner/vibetuner/issues/873))
+
+### Features
+
+* replace magic imports with explicit tune.py configuration ([#873](https://github.com/alltuner/vibetuner/issues/873)) ([9bea69c](https://github.com/alltuner/vibetuner/commit/9bea69c22535a1b789bb34518cbf31549c40392d))
+
 ## [5.0.3](https://github.com/alltuner/vibetuner/compare/v5.0.2...v5.0.3) (2026-02-01)
 
 
