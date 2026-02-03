@@ -317,9 +317,23 @@ jinja_env.filters["duration"] = format_duration
 
 # Apply user-defined filters from tune.py
 _app_config = load_app_config()
+_builtin_filters = set(jinja_env.filters.keys())
+
 for filter_name, filter_func in _app_config.template_filters.items():
-    jinja_env.filters[filter_name] = filter_func
-    logger.debug(f"Registered custom filter: {filter_name}")
+    if filter_name in _builtin_filters:
+        logger.warning(
+            f"Custom filter '{filter_name}' overrides built-in filter. "
+            "Consider using a different name to avoid confusion."
+        )
+    try:
+        # Validate that the filter is callable
+        if not callable(filter_func):
+            logger.error(f"Template filter '{filter_name}' is not callable, skipping")
+            continue
+        jinja_env.filters[filter_name] = filter_func
+        logger.debug(f"Registered custom filter: {filter_name}")
+    except Exception as e:
+        logger.error(f"Failed to register template filter '{filter_name}': {e}")
 
 # Configure Jinja environment after all filters are registered
 configure_jinja_env(jinja_env)
