@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.1.0](https://github.com/alltuner/vibetuner/compare/v6.0.3...v6.1.0) (2026-02-03)
+
+
+### Features
+
+* add short format to timeago filter ([#895](https://github.com/alltuner/vibetuner/issues/895)) ([7013131](https://github.com/alltuner/vibetuner/commit/7013131687035e9e2f74d4c87b9dc095cedd1db9))
+
+
+### Bug Fixes
+
+* ensure Ctrl+C cleanly stops dev server with SSE connections ([#894](https://github.com/alltuner/vibetuner/issues/894)) ([cac0c0c](https://github.com/alltuner/vibetuner/commit/cac0c0cc6930392a76ed7e1081297ea3725d593c))
+
 ## [6.0.3](https://github.com/alltuner/vibetuner/compare/v6.0.2...v6.0.3) (2026-02-03)
 
 
