@@ -27,7 +27,7 @@ creates distinctive, production-grade interfaces that avoid generic AI aesthetic
 ## Framework Documentation
 
 For comprehensive vibetuner framework documentation, see:
-<https://vibetuner.alltuner.com/llms.txt>
+https://vibetuner.alltuner.com/llms.txt
 
 This URL provides AI-optimized documentation covering the full vibetuner API, patterns, and
 best practices.
