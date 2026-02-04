@@ -25,7 +25,7 @@ update-all: update-js update-py update-template update-root
 
 # Update all dependencies and commit changes
 [group('Dependencies')]
-update-and-commit: update-all
+update-and-commit: update-all update-precommit
     @git add pyproject.toml uv.lock \
         vibetuner-js/package.json vibetuner-js/bun.lock \
         vibetuner-py/pyproject.toml vibetuner-py/uv.lock \
@@ -37,6 +37,15 @@ update-and-commit: update-all
         vibetuner-py/pyproject.toml vibetuner-py/uv.lock \
         vibetuner-template/package.json \
         || echo "No changes to commit"
+
+# Update pre-commit hooks and commit changes
+[group('Dependencies')]
+update-precommit:
+    @uv run prek auto-update
+    @git add vibetuner-template/.pre-commit-config.yaml
+    @git commit -m "chore: update pre-commit hooks" \
+        vibetuner-template/.pre-commit-config.yaml \
+        || echo "No pre-commit changes to commit"
 
 # Full dependency update cycle: update deps, pre-commit, create PR, merge, return to main
 [group('Dependencies')]
@@ -55,15 +64,8 @@ deps-pr:
     # Create feature branch
     git checkout -b "$BRANCH"
 
-    # Update dependencies (reuse existing recipe)
+    # Update dependencies and pre-commit hooks
     just update-and-commit
-
-    # Update pre-commit hooks
-    prek auto-update
-    git add vibetuner-template/.pre-commit-config.yaml
-    git commit -m "chore: update pre-commit hooks" \
-        vibetuner-template/.pre-commit-config.yaml \
-        || echo "No pre-commit changes to commit"
 
     # Check if we have any commits beyond main
     if [ "$(git rev-list main..HEAD --count)" -eq 0 ]; then

@@ -11,7 +11,6 @@ from vibetuner.mongo import init_mongodb, teardown_mongodb
 from vibetuner.sqlmodel import init_sqlmodel, teardown_sqlmodel
 
 from .hotreload import hotreload
-from .routes.debug import reset_sse_state, shutdown_sse_connections
 
 
 @asynccontextmanager
@@ -32,11 +31,8 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         await RuntimeConfig.refresh_cache()
         logger.debug("Runtime config cache initialized")
 
-    reset_sse_state()
-
     yield
 
-    await shutdown_sse_connections()
     logger.info("Vibetuner frontend stopping")
     if ctx.DEBUG:
         await hotreload.shutdown()
