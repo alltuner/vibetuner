@@ -86,6 +86,12 @@ vibetuner run dev [frontend|worker] [--port PORT] [--host HOST] [--workers COUNT
 
 - `--auto-port` – Use deterministic port based on project path (8001-8999). Mutually exclusive
   with `--port`.
+
+```bash
+# Example with auto-port (uses deterministic port 8001-8999)
+vibetuner run dev --auto-port
+```
+
 - Sets `DEBUG=1` and enables hot reload.
 - `service` defaults to `frontend`.
 - Frontend watches `src/app/` and `templates/` for changes.
