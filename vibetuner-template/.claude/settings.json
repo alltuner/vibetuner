@@ -167,29 +167,6 @@
           }
         ]
       }
-    ],
-    "Notification": [
-      {
-        "matcher": ".",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "just claude-notify",
-            "timeout": 5000
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "just claude-notify",
-            "timeout": 5000
-          }
-        ]
-      }
     ]
   },
   "extraKnownMarketplaces": {

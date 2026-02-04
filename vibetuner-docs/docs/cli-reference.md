@@ -19,6 +19,7 @@ Creates a project from the local Vibetuner Copier template.
 - `--defaults`, `-d` – Accept default answers for every prompt (non-interactive).
 - `--data key=value` – Override individual template variables. Repeat for
 multiple overrides.
+- `--branch`, `-b` – Use specific branch/tag from the vibetuner template repository.
 - `DESTINATION` must not already exist.
 
 #### Examples
@@ -33,6 +34,9 @@ vibetuner scaffold new my-project \
 --defaults \
 --data project_name="My Project" \
 --data python_version="3.12"
+
+# Test from a specific branch
+vibetuner scaffold new my-project --branch fix/scaffold-command
 ```
 
 See the [Scaffolding Reference](scaffolding.md) for a complete description of
@@ -49,7 +53,26 @@ Brings an existing project up to date with the current template.
 - `PATH` defaults to the current directory.
 - `--skip-answered / --no-skip-answered` controls whether previously answered
 prompts are re-asked (defaults to skipping).
+- `--branch`, `-b` – Use specific branch/tag from the vibetuner template repository.
 - Exits with an error if `.copier-answers.yml` is missing.
+
+### `adopt`
+
+```bash
+vibetuner scaffold adopt [PATH] [options]
+```
+
+Adopts vibetuner scaffolding for an existing project that already has vibetuner as a dependency.
+
+- `PATH` defaults to the current directory.
+- Requires `pyproject.toml` with vibetuner in dependencies.
+- Fails if `.copier-answers.yml` already exists (use `update` instead).
+
+#### Options
+
+- `--defaults`, `-d` – Accept default answers for every prompt (non-interactive).
+- `--data key=value` – Override individual template variables.
+- `--branch`, `-b` – Use specific branch/tag from the vibetuner template repository.
 
 ## `vibetuner run`
 
@@ -58,9 +81,11 @@ Starts framework services without Docker.
 ### `dev`
 
 ```bash
-vibetuner run dev [frontend|worker] [--port PORT] [--host HOST] [--workers COUNT]
+vibetuner run dev [frontend|worker] [--port PORT] [--host HOST] [--workers COUNT] [--auto-port]
 ```
 
+- `--auto-port` – Use deterministic port based on project path (8001-8999). Mutually exclusive
+  with `--port`.
 - Sets `DEBUG=1` and enables hot reload.
 - `service` defaults to `frontend`.
 - Frontend watches `src/app/` and `templates/` for changes.
@@ -109,6 +134,18 @@ vibetuner db create-schema
 
 **Note:** This command is only for SQL databases. MongoDB collections are created
 automatically when documents are inserted.
+
+## `vibetuner version`
+
+Show version information.
+
+```bash
+vibetuner version [--app]
+```
+
+### Options
+
+- `--app`, `-a` – Show app settings version even if not in a project directory.
 
 ## Related Commands
 

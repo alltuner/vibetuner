@@ -83,6 +83,9 @@ src/app/_version.py
 
 
 ############################################################
-# Vibetuner dev server port file
+# Worktrees and Temporary Files
 ############################################################
-.vibetuner-port
+.wt/*
+!.wt/.placeholder
+tmp/*
+!tmp/.placeholder

@@ -24,6 +24,56 @@ creates distinctive, production-grade interfaces that avoid generic AI aesthetic
 
 ---
 
+## Framework Documentation
+
+For comprehensive vibetuner framework documentation, see:
+<https://vibetuner.alltuner.com/llms.txt>
+
+This URL provides AI-optimized documentation covering the full vibetuner API, patterns, and
+best practices.
+
+---
+
+## Reporting Issues
+
+The `vibetuner` package is a dependency you should not modify. For bugs or feature requests:
+
+- **File issues at**: <https://github.com/alltuner/vibetuner/issues>
+- Include reproduction steps and relevant error messages
+- Check existing issues before creating new ones
+
+---
+
+## Python Tooling
+
+**IMPORTANT**: Always run Python and Python tools with `uv run`:
+
+```bash
+uv run python script.py             # Run Python scripts
+uv run vibetuner run dev frontend   # Start dev server
+uv run vibetuner scaffold update    # Update scaffolding
+uv run ruff format .                # Format code
+```
+
+The `vibetuner[dev]` extra provides all development tools:
+
+- `babel` - Translation extraction and compilation
+- `djlint` - Jinja template formatting and linting
+- `taplo` - TOML formatting
+- `rumdl` - Markdown linting
+- `granian[reload]` - ASGI server with hot reload
+
+These are already included in scaffolded projects via `pyproject.toml`.
+
+---
+
+## Migration Guide
+
+If migrating from an older vibetuner version that used auto-discovery:
+See **MIGRATION-TO-TUNE-PY.md** in the project root for migration instructions.
+
+---
+
 ## App Configuration (`tune.py`)
 
 Vibetuner uses explicit configuration. You declare what your app uses in `tune.py`.
@@ -748,6 +798,9 @@ Then use them in templates: `<div class="text-brand-primary">`
 8. **Never inspect** `assets/statics/css/bundle.css` or `assets/statics/js/bundle.js` - These are
    auto-generated bundles. Edit `config.css` and `config.js` instead.
 9. **Configure in `tune.py`** - Don't rely on auto-discovery; explicitly list routes, models, etc.
+10. **Use `tmp/` for testing** - The `tmp/` directory is gitignored and should be used for any
+    temporary test files, experiments, or scaffolding tests. Never commit test files outside this
+    directory.
 
 ## Custom Project Instructions
 
