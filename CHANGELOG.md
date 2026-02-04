@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.1.1](https://github.com/alltuner/vibetuner/compare/v6.1.0...v6.1.1) (2026-02-04)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump vibetuner from 6.0.2 to 6.1.0 ([#897](https://github.com/alltuner/vibetuner/issues/897)) ([68d789c](https://github.com/alltuner/vibetuner/commit/68d789cd113991583709d367908f6fb75460ba86))
+
+
+### Documentation Updates
+
+* update documentation and remove claude notification system ([#899](https://github.com/alltuner/vibetuner/issues/899)) ([7ca6ca6](https://github.com/alltuner/vibetuner/commit/7ca6ca6402b8b1d90a7ed4deb063dbeb20ad6bd4))
+
 ## [6.1.0](https://github.com/alltuner/vibetuner/compare/v6.0.3...v6.1.0) (2026-02-03)
 
 
