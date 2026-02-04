@@ -38,6 +38,15 @@ update-and-commit: update-all
         vibetuner-template/package.json \
         || echo "No changes to commit"
 
+# Update pre-commit hooks and commit changes
+[group('Dependencies')]
+update-precommit:
+    @uv run prek auto-update
+    @git add vibetuner-template/.pre-commit-config.yaml
+    @git commit -m "chore: update pre-commit hooks" \
+        vibetuner-template/.pre-commit-config.yaml \
+        || echo "No pre-commit changes to commit"
+
 # Full dependency update cycle: update deps, pre-commit, create PR, merge, return to main
 [group('Dependencies')]
 deps-pr:
@@ -59,11 +68,7 @@ deps-pr:
     just update-and-commit
 
     # Update pre-commit hooks
-    prek auto-update
-    git add vibetuner-template/.pre-commit-config.yaml
-    git commit -m "chore: update pre-commit hooks" \
-        vibetuner-template/.pre-commit-config.yaml \
-        || echo "No pre-commit changes to commit"
+    just update-precommit
 
     # Check if we have any commits beyond main
     if [ "$(git rev-list main..HEAD --count)" -eq 0 ]; then
