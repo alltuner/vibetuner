@@ -70,7 +70,7 @@ class LocaleDetectionSettings(BaseSettings):
         case_sensitive=False,
         extra="ignore",
         env_prefix="LOCALE_",
-        env_file=".env",
+        env_file=("../.env", ".env"),
     )
 
 
@@ -215,7 +215,7 @@ class CoreConfiguration(BaseSettings):
         return f"{self.project.project_slug}:"
 
     model_config = SettingsConfigDict(
-        case_sensitive=False, extra="ignore", env_file=".env"
+        case_sensitive=False, extra="ignore", env_file=("../.env", ".env")
     )
 
 

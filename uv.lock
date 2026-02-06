@@ -2900,7 +2900,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "6.1.4"
+version = "6.1.5"
 source = { directory = "vibetuner-py" }
 dependencies = [
     { name = "aioboto3" },
@@ -2994,7 +2994,7 @@ provides-extras = ["dev", "test"]
 
 [[package]]
 name = "vibetuner-scaffolding"
-version = "6.1.4"
+version = "6.1.5"
 source = { virtual = "." }
 
 [package.dev-dependencies]
