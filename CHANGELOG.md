@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.1.3](https://github.com/alltuner/vibetuner/compare/v6.1.2...v6.1.3) (2026-02-06)
+
+
+### Code Refactoring
+
+* remove custom worktree conventions ([#904](https://github.com/alltuner/vibetuner/issues/904)) ([fd6bfe8](https://github.com/alltuner/vibetuner/commit/fd6bfe822dc6b5346efdd87dc376b849e286dd13))
+
 ## [6.1.2](https://github.com/alltuner/vibetuner/compare/v6.1.1...v6.1.2) (2026-02-06)
 
 
