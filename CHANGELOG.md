@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.1.4](https://github.com/alltuner/vibetuner/compare/v6.1.3...v6.1.4) (2026-02-06)
+
+
+### Code Refactoring
+
+* remove mise from project toolchain ([#906](https://github.com/alltuner/vibetuner/issues/906)) ([e0438dd](https://github.com/alltuner/vibetuner/commit/e0438dd4668e702f582ce168978e475f15073267))
+
 ## [6.1.3](https://github.com/alltuner/vibetuner/compare/v6.1.2...v6.1.3) (2026-02-06)
 
 
