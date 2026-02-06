@@ -88,9 +88,7 @@ After `vibetuner scaffold new`, Copier executes the commands listed in `copier.y
 
 - `just git-init {{ project_slug }}` – initializes a git repository and tags `v0.0.1`.
 - `uv sync` – installs Python dependencies defined by the scaffold.
-- `mise trust` – trusts the generated `.mise.toml` (optional tooling setup). *
-- `uv run prek install` – installs the repository’s pre-commit (prek) hooks.
-> \* See the mise documentation for details; no additional action is required if you skip mise.
+- `uv run prek install` – installs the repository's pre-commit (prek) hooks.
 
 ## Updating Existing Projects
 

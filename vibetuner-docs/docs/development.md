@@ -322,26 +322,6 @@ When contributing, keep these principles in mind:
 3. **Modern Stack**: Use latest stable versions, async-first
 4. **Assistant-Friendly**: Clear patterns, good documentation, predictable structure
 
-## mise Usage
-
-Generated projects include a `.mise.toml` file that:
-
-- Auto-creates Python virtual environments with `uv`
-- Installs tools: `uv`, `bun`, `just`, `gh`
-
-This is **optional** but provides convenience. Projects work fine with just `uv` if you prefer:
-
-```bash
-# Without mise
-uv sync
-uv run vibetuner run dev
-# With mise (auto-activates venv)
-mise trust
-vibetuner run dev
-```
-
-The scaffolding project itself doesn't require mise - just `uv` and `bun`.
-
 ## Getting Help
 
 - **Issues**: [github.com/alltuner/vibetuner/issues](https://github.com/alltuner/vibetuner/issues)
