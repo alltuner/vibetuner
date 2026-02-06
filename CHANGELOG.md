@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.2.0](https://github.com/alltuner/vibetuner/compare/v6.1.5...v6.2.0) (2026-02-06)
+
+
+### Features
+
+* load parent .env before local .env in configuration ([#910](https://github.com/alltuner/vibetuner/issues/910)) ([2993ae1](https://github.com/alltuner/vibetuner/commit/2993ae1a759a51cbbd6ee40210469d5e33333600))
+
 ## [6.1.5](https://github.com/alltuner/vibetuner/compare/v6.1.4...v6.1.5) (2026-02-06)
 
 
