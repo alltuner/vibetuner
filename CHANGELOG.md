@@ -1,5 +1,14 @@
 # Changelog
 
+## [6.1.2](https://github.com/alltuner/vibetuner/compare/v6.1.1...v6.1.2) (2026-02-06)
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency uv_build to &gt;=0.10,&lt;0.11 ([#900](https://github.com/alltuner/vibetuner/issues/900)) ([da5845c](https://github.com/alltuner/vibetuner/commit/da5845c6dd35c37ca22957c12248db8feacb7f13))
+* **deps:** update ghcr.io/astral-sh/uv docker tag to v0.10 ([#901](https://github.com/alltuner/vibetuner/issues/901)) ([0867450](https://github.com/alltuner/vibetuner/commit/0867450471f216252810b867e1751969b343fd78))
+* update deps 2026-02-06 ([41d0715](https://github.com/alltuner/vibetuner/commit/41d07155498715d69998b39805a175627ba8cded))
+
 ## [6.1.1](https://github.com/alltuner/vibetuner/compare/v6.1.0...v6.1.1) (2026-02-04)
 
 
