@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.1.5](https://github.com/alltuner/vibetuner/compare/v6.1.4...v6.1.5) (2026-02-06)
+
+
+### Documentation Updates
+
+* clarify uv as sole Python tool in agent instructions ([#908](https://github.com/alltuner/vibetuner/issues/908)) ([fdcdd20](https://github.com/alltuner/vibetuner/commit/fdcdd20f3d931efc29a8da802c1b7aee571fe5db))
+
 ## [6.1.4](https://github.com/alltuner/vibetuner/compare/v6.1.3...v6.1.4) (2026-02-06)
 
 
