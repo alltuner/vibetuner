@@ -83,9 +83,7 @@ src/app/_version.py
 
 
 ############################################################
-# Worktrees and Temporary Files
+# Temporary Files
 ############################################################
-.wt/*
-!.wt/.placeholder
 tmp/*
 !tmp/.placeholder

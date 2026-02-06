@@ -26,10 +26,3 @@ pr:
 [group('gitflow')]
 merge:
     gh pr merge --squash --delete-branch
-
-# Starts a new branch for development
-[group('gitflow')]
-start-branch BRANCH: _check-clean _check-unpushed-commits
-    git checkout main
-    git pull origin main
-    git checkout -b "{{ BRANCH }}"
