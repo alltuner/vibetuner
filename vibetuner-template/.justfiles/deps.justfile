@@ -16,37 +16,28 @@ update-and-commit-repo-deps: update-repo-deps
 
 # Create PR with updated dependencies and scaffolding
 [group('Dependencies')]
-deps-scaffolding-pr: _check-clean
+deps-scaffolding-pr:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    # Ensure we're on main
-    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-    if [ "$CURRENT_BRANCH" != "main" ]; then
-        echo "❌ Must be on main branch (currently on $CURRENT_BRANCH)"
-        exit 1
-    fi
-
-    # Ensure main is up to date
-    git pull origin main
-
-    # Generate timestamped branch name
     BRANCH="chore/deps-scaffolding-$(date +%Y-%m-%d-%H%M)"
+    WORKTREE_DIR=$(mktemp -d)
 
-    # Create feature branch
-    git checkout -b "$BRANCH"
+    cleanup() { git worktree remove --force "$WORKTREE_DIR" 2>/dev/null; git branch -D "$BRANCH" 2>/dev/null; }
+    trap cleanup ERR
 
-    # Update dependencies and commit
+    git fetch origin main
+    git worktree add -b "$BRANCH" "$WORKTREE_DIR" origin/main
+
+    cd "$WORKTREE_DIR"
+
     just update-and-commit-repo-deps
 
-    # Check if deps commit was created
-    if [ "$(git rev-list main..HEAD --count)" -eq 0 ]; then
-        echo "ℹ️  No dependency changes - continuing with scaffolding update"
-        # Create empty commit so we can push and create PR
+    if [ "$(git rev-list origin/main..HEAD --count)" -eq 0 ]; then
+        echo "No dependency changes - continuing with scaffolding update"
         git commit --allow-empty -m "chore: update scaffolding"
     fi
 
-    # Push and create PR
     git push -u origin "$BRANCH"
     DATE=$(date +%Y-%m-%d)
     gh pr create \
@@ -58,16 +49,17 @@ deps-scaffolding-pr: _check-clean
     just update-scaffolding
 
     echo ""
-    echo "═══════════════════════════════════════════════════════════"
-    echo "📋 PR created. Next steps:"
-    echo "═══════════════════════════════════════════════════════════"
+    echo "PR created. Next steps:"
     echo ""
-    echo "1. Review scaffolding changes and resolve any conflicts"
-    echo "2. Stage and commit your changes:"
+    echo "1. cd $WORKTREE_DIR"
+    echo "2. Review scaffolding changes and resolve any conflicts"
+    echo "3. Stage and commit your changes:"
     echo "   git add -A && git commit -m 'chore: resolve scaffolding conflicts'"
-    echo "3. Push to update the PR:"
+    echo "4. Push to update the PR:"
     echo "   git push"
-    echo "4. Merge the PR when ready"
+    echo "5. Merge the PR when ready"
+    echo "6. Remove the worktree:"
+    echo "   cd - && git worktree remove $WORKTREE_DIR"
     echo ""
 
 # Install dependencies from lockfiles

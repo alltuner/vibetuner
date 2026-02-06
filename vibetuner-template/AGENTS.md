@@ -315,21 +315,6 @@ just deploy-latest HOST      # Deploy to remote host
 just update-scaffolding      # Update project to latest vibetuner template
 ```
 
-#### Parallel Development
-
-Work on multiple features simultaneously using isolated worktrees:
-
-```bash
-just feature-new NAME        # Create isolated worktree with new branch from main
-just feature-list            # List all active feature worktrees
-just feature-done [NAME]     # Remove worktree and delete merged branch
-just feature-drop [NAME]     # Force remove worktree and delete branch (even if unmerged)
-just feature-rebase          # Sync current branch with origin/main
-```
-
-The `NAME` parameter for `feature-done` and `feature-drop` is optional. If omitted, the command
-auto-detects the current worktree. You can also pass a directory path instead of a branch name.
-
 ## Architecture
 
 ### Directory Structure

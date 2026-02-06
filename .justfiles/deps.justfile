@@ -47,42 +47,31 @@ update-precommit:
         vibetuner-template/.pre-commit-config.yaml \
         || echo "No pre-commit changes to commit"
 
-# Full dependency update cycle: update deps, pre-commit, create PR, merge, return to main
+# Full dependency update cycle: update deps, pre-commit, create PR, merge
 [group('Dependencies')]
 deps-pr:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    # Generate timestamped branch name
     DATE_STAMP=$(date +%Y-%m-%d)
     BRANCH="chore/update-deps-${DATE_STAMP}-$(date +%H%M)"
+    WORKTREE_DIR=$(mktemp -d)
 
-    # Ensure we're on main and up to date
-    git checkout main
-    git pull origin main
+    cleanup() { git worktree remove --force "$WORKTREE_DIR" 2>/dev/null; git branch -D "$BRANCH" 2>/dev/null; }
+    trap cleanup EXIT
 
-    # Create feature branch
-    git checkout -b "$BRANCH"
+    git fetch origin main
+    git worktree add -b "$BRANCH" "$WORKTREE_DIR" origin/main
 
-    # Update dependencies and pre-commit hooks
+    cd "$WORKTREE_DIR"
+
     just update-and-commit
 
-    # Check if we have any commits beyond main
-    if [ "$(git rev-list main..HEAD --count)" -eq 0 ]; then
-        echo "✅ All dependencies already up to date"
-        git checkout main
-        git branch -D "$BRANCH"
+    if [ "$(git rev-list origin/main..HEAD --count)" -eq 0 ]; then
+        echo "All dependencies already up to date"
         exit 0
     fi
 
-    # Push and create PR
     git push -u origin "$BRANCH"
     gh pr create --title "chore: update deps ${DATE_STAMP}" --body "" --base main
-
-    # Merge the PR (squash) with conventional commit title
     gh pr merge --squash --delete-branch --subject "chore: update deps ${DATE_STAMP}"
-
-    # Return to main
-    git checkout main
-    git pull origin main
-    echo "✅ Dependencies updated and merged"
