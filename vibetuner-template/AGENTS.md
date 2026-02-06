@@ -46,14 +46,20 @@ The `vibetuner` package is a dependency you should not modify. For bugs or featu
 
 ## Python Tooling
 
-**IMPORTANT**: Always run Python and Python tools with `uv run`:
+**IMPORTANT**: `uv` is the sole Python tool for this project. Never use `python`, `python3`, `pip`,
+`poetry`, or `conda` directly. Always go through `uv run`:
 
 ```bash
-uv run python script.py             # Run Python scripts
+uv run python script.py             # Run any ad-hoc Python script
+uv run python -c "print('hello')"   # Run one-off Python expressions
 uv run vibetuner run dev frontend   # Start dev server
 uv run vibetuner scaffold update    # Update scaffolding
 uv run ruff format .                # Format code
+uv add package-name                 # Add a dependency
 ```
+
+This ensures the correct virtual environment and dependencies are always available. If you need to
+run any Python code (debugging, one-off scripts, REPL), use `uv run python`.
 
 The `vibetuner[dev]` extra provides all development tools:
 
