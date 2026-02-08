@@ -789,9 +789,6 @@ Then use them in templates: `<div class="text-brand-primary">`
 8. **Never inspect** `assets/statics/css/bundle.css` or `assets/statics/js/bundle.js` - These are
    auto-generated bundles. Edit `config.css` and `config.js` instead.
 9. **Configure in `tune.py`** - Don't rely on auto-discovery; explicitly list routes, models, etc.
-10. **Use `tmp/` for testing** - The `tmp/` directory is gitignored and should be used for any
-    temporary test files, experiments, or scaffolding tests. Never commit test files outside this
-    directory.
 
 ## Custom Project Instructions
 
