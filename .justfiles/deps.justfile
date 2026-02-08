@@ -74,4 +74,5 @@ deps-pr:
 
     git push -u origin "$BRANCH"
     gh pr create --title "chore: update deps ${DATE_STAMP}" --body "" --base main
-    gh pr merge --squash --delete-branch --subject "chore: update deps ${DATE_STAMP}"
+    gh pr merge --squash --subject "chore: update deps ${DATE_STAMP}"
+    git push origin --delete "$BRANCH" 2>/dev/null || true
