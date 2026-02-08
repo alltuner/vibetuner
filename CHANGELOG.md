@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.2.3](https://github.com/alltuner/vibetuner/compare/v6.2.2...v6.2.3) (2026-02-08)
+
+
+### Bug Fixes
+
+* remove install-deps from local dev commands ([#917](https://github.com/alltuner/vibetuner/issues/917)) ([c01bc73](https://github.com/alltuner/vibetuner/commit/c01bc737223a06e4ddb4055135aef6283de32038))
+
+
+### Miscellaneous Chores
+
+* ignore local settings ([#919](https://github.com/alltuner/vibetuner/issues/919)) ([38a7267](https://github.com/alltuner/vibetuner/commit/38a7267fe1c994f7eb7de6ef8830213ed27b8747))
+
 ## [6.2.2](https://github.com/alltuner/vibetuner/compare/v6.2.1...v6.2.2) (2026-02-08)
 
 
