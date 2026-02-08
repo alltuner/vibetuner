@@ -2,7 +2,7 @@ import 'deps.justfile'
 
 # Runs the dev environment with watch mode and cleans up orphans
 [group('Local Development')]
-dev: install-deps
+dev:
     ENVIRONMENT=development \
     COMPOSE_BAKE=true \
     PYTHON_VERSION={{ PYTHON_VERSION }} \
@@ -11,22 +11,22 @@ dev: install-deps
 
 # Runs the dev environment locally without Docker
 [group('Local Development')]
-local-dev PORT="8000": install-deps
+local-dev PORT="8000":
     @DEBUG=true vibetuner run dev --port {{ PORT }}
 
 # Runs local dev with auto-assigned port (deterministic per project path)
 [group('Local Development')]
-local-dev-auto: install-deps
+local-dev-auto:
     @DEBUG=true vibetuner run dev --auto-port
 
 # Runs the task worker locally without Docker
 [group('Local Development')]
-worker-dev: install-deps
+worker-dev:
     @DEBUG=true vibetuner run dev worker
 
 # Runs local dev server and assets in parallel (auto-port)
 [group('Local Development')]
-local-all: install-deps
+local-all:
     bunx concurrently --kill-others \
         --names "web,assets" \
         --prefix-colors "blue,green" \
@@ -35,7 +35,7 @@ local-all: install-deps
 
 # Runs local dev server, assets, and worker in parallel (requires Redis)
 [group('Local Development')]
-local-all-with-worker: install-deps
+local-all-with-worker:
     bunx concurrently --kill-others \
         --names "web,assets,worker" \
         --prefix-colors "blue,green,yellow" \
