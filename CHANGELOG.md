@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.2.2](https://github.com/alltuner/vibetuner/compare/v6.2.1...v6.2.2) (2026-02-08)
+
+
+### Miscellaneous Chores
+
+* remove .claude, .opencode, .mcp.json, opencode.json, and tmp from template ([#915](https://github.com/alltuner/vibetuner/issues/915)) ([05bc9db](https://github.com/alltuner/vibetuner/commit/05bc9dbdd911ed32be2bfea46d7d24486a022ca7))
+
 ## [6.2.1](https://github.com/alltuner/vibetuner/compare/v6.2.0...v6.2.1) (2026-02-08)
 
 
