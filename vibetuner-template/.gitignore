@@ -75,3 +75,5 @@ src/app/_version.py
 ############################################################
 .playwright-mcp/
 
+
+.claude/settings.local.json
