@@ -232,6 +232,7 @@ This project uses **git tags** for versioning:
 ### Development (Local)
 
 ```bash
+just install-deps            # Run once after cloning or updating lockfiles
 just local-all               # Runs server + assets with auto-port (recommended)
 just local-all-with-worker   # Includes background worker (requires Redis)
 ```

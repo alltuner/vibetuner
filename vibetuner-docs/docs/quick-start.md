@@ -105,6 +105,7 @@ Everything runs in containers with hot reload. Changes to code, templates, and a
 ### Local Development
 
 ```bash
+just install-deps    # Run once after cloning or updating lockfiles
 just local-all
 ```
 
