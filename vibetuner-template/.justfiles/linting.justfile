@@ -1,7 +1,7 @@
 # Lint markdown files including dot directories
 [group('Code quality: linting')]
 lint-md:
-    @uv run rumdl check . .claude .github
+    @uv run rumdl check . .github
 
 # Lint Python files with ruff
 [group('Code quality: linting')]
