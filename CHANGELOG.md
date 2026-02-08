@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.2.1](https://github.com/alltuner/vibetuner/compare/v6.2.0...v6.2.1) (2026-02-08)
+
+
+### Bug Fixes
+
+* remove --delete-branch from deps-pr gh merge ([fcbd818](https://github.com/alltuner/vibetuner/commit/fcbd81844e5304530c8ce3d431b040bb513da9bb))
+
+
+### Miscellaneous Chores
+
+* update deps 2026-02-08 ([ca43c81](https://github.com/alltuner/vibetuner/commit/ca43c81325029818ff091a4945186915f3264d40))
+
 ## [6.2.0](https://github.com/alltuner/vibetuner/compare/v6.1.5...v6.2.0) (2026-02-06)
 
 
