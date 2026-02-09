@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.3.4](https://github.com/alltuner/vibetuner/compare/v6.3.3...v6.3.4) (2026-02-09)
+
+
+### Bug Fixes
+
+* releasing should not install deps to avoid polluting the dir ([#936](https://github.com/alltuner/vibetuner/issues/936)) ([fafeead](https://github.com/alltuner/vibetuner/commit/fafeead2aad19ec00511d952cfba668bb2e0ae94))
+
 ## [6.3.3](https://github.com/alltuner/vibetuner/compare/v6.3.2...v6.3.3) (2026-02-09)
 
 
