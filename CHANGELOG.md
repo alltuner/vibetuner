@@ -1,5 +1,13 @@
 # Changelog
 
+## [6.3.1](https://github.com/alltuner/vibetuner/compare/v6.3.0...v6.3.1) (2026-02-09)
+
+
+### Bug Fixes
+
+* add missing __init__.py to template for uv_build ([#923](https://github.com/alltuner/vibetuner/issues/923)) ([9269bd6](https://github.com/alltuner/vibetuner/commit/9269bd636205d708e67fa08131735ab523ff970d))
+* use uv run vibetuner in local dev recipes ([#925](https://github.com/alltuner/vibetuner/issues/925)) ([c8f54e6](https://github.com/alltuner/vibetuner/commit/c8f54e62ccb59a37058679cc10277566a52d4976))
+
 ## [6.3.0](https://github.com/alltuner/vibetuner/compare/v6.2.3...v6.3.0) (2026-02-09)
 
 
