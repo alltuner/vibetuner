@@ -57,28 +57,10 @@ bun dev  # Start frontend asset building with hot reload
 - **htmx-ext-preload**: Preload extension for faster navigation
 - **htmx-ext-sse**: Server-sent events extension for real-time updates
 
-### Build Tools
-
-- **concurrently**: Run multiple dev servers simultaneously
-
 ## Usage in Generated Projects
 
-In a Vibetuner-generated project, the package is automatically configured:
-
-```json
-{
-  "dependencies": {
-    "@alltuner/vibetuner": "^2.8.0"
-  },
-  "scripts": {
-    "dev": "concurrently \"bun:watch:*\"",
-    "watch:css": "tailwindcss ...",
-    "watch:js": "esbuild ..."
-  }
-}
-```
-
-The frontend asset pipeline is preconfigured for:
+In a Vibetuner-generated project, the package is automatically configured. The frontend asset
+pipeline is preconfigured for:
 
 - Tailwind CSS compilation with DaisyUI
 - HTMX integration
