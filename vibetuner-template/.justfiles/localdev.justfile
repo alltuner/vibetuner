@@ -12,17 +12,17 @@ dev:
 # Runs the dev environment locally without Docker
 [group('Local Development')]
 local-dev PORT="8000":
-    @DEBUG=true vibetuner run dev --port {{ PORT }}
+    @DEBUG=true uv run vibetuner run dev --port {{ PORT }}
 
 # Runs local dev with auto-assigned port (deterministic per project path)
 [group('Local Development')]
 local-dev-auto:
-    @DEBUG=true vibetuner run dev --auto-port
+    @DEBUG=true uv run vibetuner run dev --auto-port
 
 # Runs the task worker locally without Docker
 [group('Local Development')]
 worker-dev:
-    @DEBUG=true vibetuner run dev worker
+    @DEBUG=true uv run vibetuner run dev worker
 
 _ensure-deps:
     @[ -d node_modules ] || bun install
