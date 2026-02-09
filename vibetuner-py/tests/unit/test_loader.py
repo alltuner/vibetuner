@@ -5,6 +5,7 @@ from types import ModuleType
 from unittest.mock import patch
 
 import pytest
+from beanie import Document
 from vibetuner.app_config import VibetunerApp
 from vibetuner.loader import ConfigurationError, load_app_config
 
@@ -46,8 +47,9 @@ class TestLoadAppConfig:
     def test_loads_valid_tune_py(self):
         """When tune.py exists with valid app, loads it."""
 
-        class FakeModel:
-            pass
+        class FakeModel(Document):
+            class Settings:
+                name = "fake_models"
 
         mock_app = VibetunerApp(models=[FakeModel])
 
@@ -146,8 +148,9 @@ class TestVibetunerApp:
     def test_accepts_models(self):
         """VibetunerApp accepts model classes."""
 
-        class FakeModel:
-            pass
+        class FakeModel(Document):
+            class Settings:
+                name = "fake_models"
 
         app = VibetunerApp(models=[FakeModel])
 
