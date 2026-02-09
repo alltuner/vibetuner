@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.3.2](https://github.com/alltuner/vibetuner/compare/v6.3.1...v6.3.2) (2026-02-09)
+
+
+### Bug Fixes
+
+* resolve bun dev race condition producing empty bundle.css ([#927](https://github.com/alltuner/vibetuner/issues/927)) ([e5a3933](https://github.com/alltuner/vibetuner/commit/e5a3933ed77b6b773d19150d5756a1730a2c3a62))
+
 ## [6.3.1](https://github.com/alltuner/vibetuner/compare/v6.3.0...v6.3.1) (2026-02-09)
 
 
