@@ -6,12 +6,12 @@ format-py:
 # Format TOML files with taplo
 [group('Code quality: formatting')]
 format-toml:
-    @uv run taplo fmt
+    @uv run --frozen taplo fmt
 
 # Format Jinja files with djlint
 [group('Code quality: formatting')]
 format-jinja:
-    @uv run djlint . --reformat
+    @uv run --frozen djlint . --reformat
 
 # Format YAML files with dprint
 [group('Code quality: formatting')]
@@ -21,7 +21,7 @@ format-yaml:
 # Format Markdown files with rumdl
 [group('Code quality: formatting')]
 format-md:
-    @uv run rumdl fmt
+    @uv run --frozen rumdl fmt
 
 # Format all code
 [group('Code quality: formatting')]

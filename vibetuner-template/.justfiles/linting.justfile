@@ -1,7 +1,7 @@
 # Lint markdown files including dot directories
 [group('Code quality: linting')]
 lint-md:
-    @uv run rumdl check . .github
+    @uv run --frozen rumdl check . .github
 
 # Lint Python files with ruff
 [group('Code quality: linting')]
@@ -11,12 +11,12 @@ lint-py:
 # Lint TOML files with taplo (check only)
 [group('Code quality: linting')]
 lint-toml:
-    @uv run taplo fmt --check
+    @uv run --frozen taplo fmt --check
 
 # Lint Jinja files with djlint
 [group('Code quality: linting')]
 lint-jinja:
-    @uv run djlint . --lint
+    @uv run --frozen djlint . --lint
 
 # Lint YAML files with dprint
 [group('Code quality: linting')]
