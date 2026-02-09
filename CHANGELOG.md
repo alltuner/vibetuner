@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.3.0](https://github.com/alltuner/vibetuner/compare/v6.2.3...v6.3.0) (2026-02-09)
+
+
+### Features
+
+* auto-install deps and replace concurrently with bun run --parallel ([#920](https://github.com/alltuner/vibetuner/issues/920)) ([cbb7a99](https://github.com/alltuner/vibetuner/commit/cbb7a99d0571e301044ba6fcca6a689a268b899c))
+
 ## [6.2.3](https://github.com/alltuner/vibetuner/compare/v6.2.2...v6.2.3) (2026-02-08)
 
 
