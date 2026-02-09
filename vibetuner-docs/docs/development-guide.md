@@ -2,6 +2,11 @@
 
 Daily development workflow for Vibetuner projects.
 
+!!! note "Package name convention"
+    In all examples, `app` refers to your project's Python package (the directory under `src/`).
+    The actual name depends on your project slug (e.g., `src/myproject/` for a project named
+    "myproject").
+
 ## Development Environment
 
 Vibetuner supports two development modes:

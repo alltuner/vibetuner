@@ -3,6 +3,11 @@
 This guide covers development workflows for working on **Vibetuner itself**, not for using Vibetuner to create projects.
 For documentation on using Vibetuner to build applications, see the [Development Guide](development-guide.md).
 
+!!! note "Package name convention"
+    In all examples, `app` refers to your project's Python package (the directory under `src/`).
+    The actual name depends on your project slug (e.g., `src/myproject/` for a project named
+    "myproject").
+
 ## Prerequisites
 
 - **Python 3.11+**: For the vibetuner-py package

@@ -2,6 +2,11 @@
 
 Command-line entry points provided by the `vibetuner` package.
 
+!!! note "Package name convention"
+    In all examples, `app` refers to your project's Python package (the directory under `src/`).
+    The actual name depends on your project slug (e.g., `src/myproject/` for a project named
+    "myproject").
+
 ## `vibetuner scaffold`
 
 ### `new`

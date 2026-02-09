@@ -156,7 +156,8 @@ just test-build-prod  # Test production build locally
 
 ## 🏗️ Project Structure
 
-The `vibetuner` package is installed as a dependency. Your application code lives in `src/app/`:
+The `vibetuner` package is installed as a dependency. Your application code lives under `src/`
+in a directory named after your project slug (shown as `app` below):
 
 ```text
 my-app/
@@ -178,10 +179,11 @@ my-app/
 ```
 
 **vibetuner** (installed package) handles auth, database, email, auto-discovery, and more.
-**src/app/** is your code (scaffolded projects). No boilerplate `__init__.py` files needed.
+Your code goes in `src/<your_package>/` (scaffolded projects). No boilerplate `__init__.py`
+files needed.
 
-**Flexible project structures**: The framework auto-discovers code in `app.X`, `{your_package}.X`,
-or flat modules. Scaffolded projects use `src/app/`; non-scaffolded projects can use any structure.
+**Flexible project structures**: The framework auto-discovers code from your package directory.
+Scaffolded projects use `src/<project_slug>/`; non-scaffolded projects can use any structure.
 
 ## 🔐 Authentication
 

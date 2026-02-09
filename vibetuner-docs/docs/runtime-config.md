@@ -3,6 +3,11 @@
 A layered configuration system for managing application settings that can be changed at runtime and
 optionally persisted to MongoDB.
 
+!!! note "Package name convention"
+    In all examples, `app` refers to your project's Python package (the directory under `src/`).
+    The actual name depends on your project slug (e.g., `src/myproject/` for a project named
+    "myproject").
+
 ## Overview
 
 Runtime configuration provides a way to manage application settings that:
