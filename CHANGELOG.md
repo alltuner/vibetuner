@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.3.6](https://github.com/alltuner/vibetuner/compare/v6.3.5...v6.3.6) (2026-02-09)
+
+
+### Bug Fixes
+
+* add --frozen to all uv run commands in justfiles ([#941](https://github.com/alltuner/vibetuner/issues/941)) ([fc06a7a](https://github.com/alltuner/vibetuner/commit/fc06a7a17bcb71089973c36eea7149c2833ec3be))
+
 ## [6.3.5](https://github.com/alltuner/vibetuner/compare/v6.3.4...v6.3.5) (2026-02-09)
 
 
