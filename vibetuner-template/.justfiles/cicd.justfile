@@ -38,7 +38,7 @@ build-prod: _check-clean _check-last-commit-tagged install-deps
 
 # Builds the prod image with COMPOSE_BAKE set (only if on a clean, tagged commit)
 [group('CI/CD')]
-release: _check-clean _check-last-commit-tagged install-deps
+release: _check-clean _check-last-commit-tagged
     ENVIRONMENT=prod \
     VERSION={{ VERSION }} \
     PYTHON_VERSION={{ PYTHON_VERSION }} \
