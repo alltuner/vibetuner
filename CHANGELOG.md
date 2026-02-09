@@ -1,5 +1,13 @@
 # Changelog
 
+## [6.3.5](https://github.com/alltuner/vibetuner/compare/v6.3.4...v6.3.5) (2026-02-09)
+
+
+### Bug Fixes
+
+* defer GitPython import to prevent crash when git is unavailable ([#940](https://github.com/alltuner/vibetuner/issues/940)) ([3e8b7e9](https://github.com/alltuner/vibetuner/commit/3e8b7e9b00e461cd223765bc3af1ad310b93a2d6))
+* run copier with uvx to prevent pollution of scaffolding ([#938](https://github.com/alltuner/vibetuner/issues/938)) ([c876f76](https://github.com/alltuner/vibetuner/commit/c876f76796c4ea2c2427fa6d69df489e411c0c75))
+
 ## [6.3.4](https://github.com/alltuner/vibetuner/compare/v6.3.3...v6.3.4) (2026-02-09)
 
 
