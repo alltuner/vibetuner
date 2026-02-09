@@ -2,6 +2,12 @@
 
 FastAPI + MongoDB + HTMX web application scaffolded from AllTuner's template.
 
+> **Package name**: Throughout this document, `app` is used as the package name in paths
+> (`src/app/`) and imports (`from app.models import ...`). Your actual package name is the
+> directory under `src/`, derived from your project slug. If your project is called "radar",
+> replace `app` with `radar`: paths become `src/radar/`, imports become `from radar.models ...`.
+> Check `ls src/` if unsure.
+
 ## Executive Summary
 
 **For frontend work**: Use the `/frontend-design` skill for building pages and components. It

@@ -2,6 +2,11 @@
 
 Get started with Vibetuner in 5 minutes.
 
+!!! note "Package name convention"
+    In all examples, `app` refers to your project's Python package (the directory under `src/`).
+    The actual name depends on your project slug (e.g., `src/myproject/` for a project named
+    "myproject").
+
 ## Prerequisites
 
 - **Python 3.11+**: [python.org/downloads](https://www.python.org/downloads/)

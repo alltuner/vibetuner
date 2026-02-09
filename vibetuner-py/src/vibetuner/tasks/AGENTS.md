@@ -2,6 +2,10 @@
 
 **IMMUTABLE SCAFFOLDING CODE** - This is the framework's core background task infrastructure.
 
+> **Package name convention**: Where this document references `src/app/` or `from app.`,
+> `app` is a placeholder for the user's actual Python package name (the directory under `src/`,
+> derived from their project slug).
+
 ## What's Here
 
 This module contains the scaffolding's core task components:

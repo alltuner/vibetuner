@@ -6,6 +6,7 @@ Important notes:
 
 - Vibetuner consists of three packages: a Python framework (`vibetuner`), a JavaScript package (`@alltuner/vibetuner`), and a Copier scaffolding template
 - The framework separates immutable framework code (`vibetuner` package) from your application code (`src/app/`) for clean updates
+- In all examples, `app` refers to your project's Python package (the directory under `src/`). The actual name depends on your project slug (e.g., `src/myproject/` for a project named "myproject")
 - HTMX is used instead of React/Vue for simplicity - server-rendered HTML with sprinkles of interactivity
 - All tools are chosen for speed: uv (Python), bun (JavaScript), Granian (ASGI server), Ruff (linting)
 - The project is designed to work excellently with AI coding assistants like Claude, Cursor, and ChatGPT

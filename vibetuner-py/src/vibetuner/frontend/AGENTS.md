@@ -3,6 +3,10 @@
 This is the core frontend infrastructure for the vibetuner framework. This guide is for **developers
 working on the framework**, not end users.
 
+> **Package name convention**: Where this document references `src/app/` or `from app.`,
+> `app` is a placeholder for the user's actual Python package name (the directory under `src/`,
+> derived from their project slug).
+
 ## Module Structure
 
 ```text

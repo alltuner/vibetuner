@@ -3,6 +3,10 @@
 This is the core Python framework package for Vibetuner. This guide is for **developers working on the
 vibetuner package itself**, not for end users.
 
+> **Package name convention**: Where this document references `src/app/` or `from app.`,
+> `app` is a placeholder for the user's actual Python package name (the directory under `src/`,
+> derived from their project slug).
+
 ## Package Structure
 
 ```text

@@ -8,6 +8,11 @@ Vibetuner generates full-stack web applications with authentication, database,
 frontend, Docker deployment, and CLI tools pre-configured. Built by
 [All Tuner Labs](https://alltuner.com) for rapid iteration and modern development.
 
+!!! note "Package name convention"
+    In all examples, `app` refers to your project's Python package (the directory under `src/`).
+    The actual name depends on your project slug (e.g., `src/myproject/` for a project named
+    "myproject").
+
 ## What You Get
 
 ```bash
