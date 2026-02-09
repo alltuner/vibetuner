@@ -41,7 +41,7 @@ update-and-commit: update-all update-precommit
 # Update pre-commit hooks and commit changes
 [group('Dependencies')]
 update-precommit:
-    @uv run prek auto-update
+    @uv run --frozen prek auto-update
     @git add vibetuner-template/.pre-commit-config.yaml
     @git commit -m "chore: update pre-commit hooks" \
         vibetuner-template/.pre-commit-config.yaml \

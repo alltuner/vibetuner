@@ -6,12 +6,12 @@ i18n: extract-translations update-locale-files compile-locales
 # Extracts translations from source files
 [group('localization')]
 extract-translations:
-    @uv run pybabel extract -F babel.cfg -o locales/messages.pot .
+    @uv run --frozen pybabel extract -F babel.cfg -o locales/messages.pot .
 
 # Creates a new language file for localization
 [group('localization')]
 new-locale LANG:
-    @uv run pybabel init -i locales/messages.pot -d locales -l {{ LANG }}
+    @uv run --frozen pybabel init -i locales/messages.pot -d locales -l {{ LANG }}
 
 # Updates existing language files for localization
 [group('localization')]
@@ -21,7 +21,7 @@ update-locale-files:
 # Compiles the language files into binary format
 [group('localization')]
 compile-locales:
-    @uv run pybabel compile -d locales
+    @uv run --frozen pybabel compile -d locales
 
 # Dump untranslated strings per language to a given DEST directory
 [group('localization')]
