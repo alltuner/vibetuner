@@ -2,6 +2,7 @@ _preserve_symlinks: True
 _skip_if_exists:
   - .env
   - .release-please-manifest.json
+  - "src/{{ project_slug | replace('-', '_') }}/__init__.py"
 _subdirectory: vibetuner-template
 _templates_suffix: .j2
 
