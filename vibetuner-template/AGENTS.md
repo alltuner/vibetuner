@@ -791,6 +791,12 @@ Then use them in templates: `<div class="text-brand-primary">`
    auto-generated bundles. Edit `config.css` and `config.js` instead.
 9. **Configure in `tune.py`** - Don't rely on auto-discovery; explicitly list routes, models, etc.
 
+## Improving These Instructions
+
+If any framework usage instructions or agent guidelines are unclear, incomplete, or caused
+you to make a mistake, file an issue at <https://github.com/alltuner/vibetuner/issues> so
+we can fix it.
+
 ## Custom Project Instructions
 
 Add project-specific notes here.
