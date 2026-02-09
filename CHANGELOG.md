@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.3.7](https://github.com/alltuner/vibetuner/compare/v6.3.6...v6.3.7) (2026-02-09)
+
+
+### Miscellaneous Chores
+
+* bump uv_build ([#943](https://github.com/alltuner/vibetuner/issues/943)) ([2c35591](https://github.com/alltuner/vibetuner/commit/2c3559199468679ac96d63c64b8ecff4689c247e))
+
 ## [6.3.6](https://github.com/alltuner/vibetuner/compare/v6.3.5...v6.3.6) (2026-02-09)
 
 
