@@ -24,9 +24,13 @@ local-dev-auto:
 worker-dev:
     @DEBUG=true vibetuner run dev worker
 
+_ensure-deps:
+    @[ -d node_modules ] || bun install
+    @[ -d .venv ] || uv sync --all-extras
+
 # Runs local dev server and assets in parallel (auto-port)
 [group('Local Development')]
-local-all:
+local-all: _ensure-deps
     bunx concurrently --kill-others \
         --names "web,assets" \
         --prefix-colors "blue,green" \
@@ -35,7 +39,7 @@ local-all:
 
 # Runs local dev server, assets, and worker in parallel (requires Redis)
 [group('Local Development')]
-local-all-with-worker:
+local-all-with-worker: _ensure-deps
     bunx concurrently --kill-others \
         --names "web,assets,worker" \
         --prefix-colors "blue,green,yellow" \
