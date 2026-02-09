@@ -1,5 +1,18 @@
 # Changelog
 
+## [6.3.3](https://github.com/alltuner/vibetuner/compare/v6.3.2...v6.3.3) (2026-02-09)
+
+
+### Bug Fixes
+
+* move render_template out of frontend package to prevent circular imports ([#935](https://github.com/alltuner/vibetuner/issues/935)) ([7c88d7b](https://github.com/alltuner/vibetuner/commit/7c88d7b483ebbab9734a8b240e9608e45d4bc6fe))
+* use dynamic project name for model import in db CLI ([#934](https://github.com/alltuner/vibetuner/issues/934)) ([a506467](https://github.com/alltuner/vibetuner/commit/a50646730142f74b91484f58b6805895ef66a059))
+
+
+### Documentation Updates
+
+* clarify that app in paths/imports is a placeholder for project slug ([#932](https://github.com/alltuner/vibetuner/issues/932)) ([844ec4c](https://github.com/alltuner/vibetuner/commit/844ec4caa34feb8518fee32207f8220fce2ca190))
+
 ## [6.3.2](https://github.com/alltuner/vibetuner/compare/v6.3.1...v6.3.2) (2026-02-09)
 
 
