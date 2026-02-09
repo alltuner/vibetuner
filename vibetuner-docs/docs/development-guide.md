@@ -473,7 +473,7 @@ handle language prefix redirects:
 ```python
 from fastapi import Request
 from vibetuner.frontend import LocalizedRouter
-from vibetuner.frontend.templates import render_template
+from vibetuner import render_template
 
 # All routes in this router are localized
 legal_router = LocalizedRouter(prefix="/legal", localized=True)
@@ -499,7 +499,7 @@ For individual routes on a regular `APIRouter`, use the `@localized` decorator:
 ```python
 from fastapi import APIRouter, Request
 from vibetuner.frontend import localized
-from vibetuner.frontend.templates import render_template
+from vibetuner import render_template
 
 router = APIRouter()
 
@@ -555,7 +555,7 @@ Route definition:
 # src/app/frontend/routes/legal.py
 from fastapi import Request
 from vibetuner.frontend import LocalizedRouter
-from vibetuner.frontend.templates import render_template
+from vibetuner import render_template
 
 router = LocalizedRouter(tags=["legal"], localized=True)
 

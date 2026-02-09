@@ -67,7 +67,7 @@ Copy package templates to override them:
 ### Rendering from Routes
 
 ```python
-from vibetuner.frontend.templates import render_template
+from vibetuner import render_template
 
 @router.get("/dashboard")
 async def dashboard(request: Request):

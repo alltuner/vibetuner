@@ -380,8 +380,8 @@ Create routes in `src/app/frontend/routes/`, then register them in `tune.py`:
 ```python
 # src/app/frontend/routes/dashboard.py
 from fastapi import APIRouter, Request, Depends
+from vibetuner import render_template
 from vibetuner.frontend.deps import get_current_user
-from vibetuner.frontend.templates import render_template
 
 router = APIRouter()
 
