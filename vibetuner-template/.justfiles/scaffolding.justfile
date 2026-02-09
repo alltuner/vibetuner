@@ -4,7 +4,7 @@ import 'deps.justfile'
 [group('scaffolding')]
 update-scaffolding:
     @echo "Updating project scaffolding..."
-    @copier update -A --trust
+    @uvx copier update -A --trust
     
     # Check package.json and conditionally install
     @if [ -f package.json ]; then \
