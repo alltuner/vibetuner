@@ -21,14 +21,20 @@ def create_schema_cmd() -> None:
     from importlib import import_module
 
     from vibetuner.logging import logger
+    from vibetuner.pyproject import get_project_name
 
-    # Import app.models to register SQLModel tables before schema creation
-    try:
-        import_module("app.models")
-    except ModuleNotFoundError:
-        logger.warning("app.models not found. Only core models will be created.")
-    except ImportError as e:
-        logger.warning(f"Failed to import app.models: {e}")
+    # Import project models to register SQLModel tables before schema creation
+    package_name = get_project_name()
+    if package_name is not None:
+        try:
+            import_module(f"{package_name}.models")
+        except ModuleNotFoundError:
+            logger.warning(
+                "{}.models not found. Only core models will be created.",
+                package_name,
+            )
+        except ImportError as e:
+            logger.warning("Failed to import {}.models: {}", package_name, e)
 
     async def _create() -> None:
         from vibetuner.sqlmodel import create_schema
