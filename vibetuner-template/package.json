@@ -7,9 +7,9 @@
     "setup-tw-sources": "[ -d .core-templates ] && [ ! -L .core-templates ] || (rm -rf .core-templates && ln -s $(uv run python -c \"import vibetuner; print(vibetuner.__path__[0])\")/templates/frontend .core-templates)",
     "dev:css": "bun run setup-tw-sources && bun tailwindcss -w -i config.css -o assets/statics/css/bundle.css",
     "dev:js": "bun build config.js --watch --outdir=assets/statics/js --entry-naming=\"bundle.[ext]\" --sourcemap",
-    "dev": "concurrently 'bun dev:css' 'bun dev:js'",
+    "dev": "bun run --parallel dev:css dev:js",
     "build-prod:css": "bun run setup-tw-sources && bun tailwindcss -i config.css --minify -o assets/statics/css/bundle.css",
     "build-prod:js": "bun build config.js --minify --outdir=assets/statics/js --entry-naming=\"bundle.[ext]\"",
-    "build-prod": "concurrently 'bun build-prod:css' 'bun build-prod:js'"
+    "build-prod": "bun run --parallel build-prod:css build-prod:js"
   }
 }
