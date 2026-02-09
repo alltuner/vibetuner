@@ -4,8 +4,6 @@
 import os
 from functools import lru_cache
 
-from git import InvalidGitRepositoryError, Repo
-
 from vibetuner.pyproject import get_project_version
 
 
@@ -13,10 +11,16 @@ from vibetuner.pyproject import get_project_version
 def _get_git_branch() -> str | None:
     """Get current git branch name, or None if not in a git repo."""
     try:
+        from git import InvalidGitRepositoryError, Repo
+    except ImportError:
+        # GitPython not installed or git binary not available
+        return None
+    try:
         repo = Repo(search_parent_directories=True)
         return repo.active_branch.name
     except (InvalidGitRepositoryError, TypeError):
-        # TypeError is raised when HEAD is detached
+        # InvalidGitRepositoryError: not in a git repo
+        # TypeError: HEAD is detached
         return None
 
 
