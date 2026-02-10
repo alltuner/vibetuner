@@ -24,9 +24,17 @@ Vibetuner includes:
 2. Create a new project or select existing
 3. Enable Google+ API
 4. Create OAuth 2.0 credentials
-5. Add authorized redirect URI: `http://localhost:8000/auth/google/callback`
+5. Add authorized redirect URI: `http://localhost:8000/auth/provider/google`
+6. Enable in `tune.py`:
 
-Add to `.env`:
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+
+app = VibetunerApp(oauth_providers=["google"])
+```
+
+Add credentials to `.env`:
 
 ```bash
 GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
@@ -37,20 +45,43 @@ GOOGLE_CLIENT_SECRET=your-client-secret
 
 1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
 2. Create a new OAuth App
-3. Set callback URL: `http://localhost:8000/auth/github/callback`
+3. Set callback URL: `http://localhost:8000/auth/provider/github`
+4. Enable in `tune.py`:
 
-Add to `.env`:
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+
+app = VibetunerApp(oauth_providers=["github"])
+```
+
+Add credentials to `.env`:
 
 ```bash
 GITHUB_CLIENT_ID=your-client-id
 GITHUB_CLIENT_SECRET=your-client-secret
 ```
 
+You can enable multiple providers at once:
+
+```python
+app = VibetunerApp(oauth_providers=["google", "github"])
+```
+
 ### Adding More Providers
 
-Vibetuner uses [Authlib](https://authlib.org/) which supports many OAuth providers.
-To add additional providers, file an issue at [github.com/alltuner/vibetuner](https://github.com/alltuner/vibetuner/issues)
-or extend authentication in your `src/app/` code.
+Google and GitHub are built-in. For other providers, use
+`register_oauth_provider()` directly:
+
+```python
+from vibetuner.frontend.oauth import register_oauth_provider
+from vibetuner.models.oauth import OauthProviderModel
+
+register_oauth_provider("twitter", OauthProviderModel(...))
+```
+
+To request a new built-in provider, file an issue at
+[github.com/alltuner/vibetuner](https://github.com/alltuner/vibetuner/issues).
 
 ## Magic Link Authentication
 
@@ -244,8 +275,8 @@ SECRET_KEY=your-generated-secret-key
 Use exact URLs in OAuth provider settings:
 
 ```text
-Development: http://localhost:8000/auth/google/callback
-Production: https://example.com/auth/google/callback
+Development: http://localhost:8000/auth/provider/google
+Production: https://example.com/auth/provider/google
 ```
 
 ### Rate Limiting
