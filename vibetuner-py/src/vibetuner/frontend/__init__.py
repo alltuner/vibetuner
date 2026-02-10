@@ -13,6 +13,7 @@ from vibetuner.paths import paths
 
 from .lifespan import ctx
 from .middleware import middlewares
+from .oauth import auto_register_providers
 from .routes import auth, debug, health, language, meta, user
 from .routes.auth import register_oauth_routes
 from .routing import LocalizedRouter as LocalizedRouter, localized as localized
@@ -76,14 +77,17 @@ if ctx.DEBUG:
         name="hot-reload",
     )
 
+# Auto-register OAuth providers from config + env vars
+auto_register_providers(_app_config.oauth_providers)
+
+# Register OAuth routes on auth.router (must happen before include_router)
+register_oauth_routes()
+
 # Core routes
 app.include_router(meta.router)
 app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(language.router)
-
-# Register OAuth routes for configured providers
-register_oauth_routes()
 
 # User routes from tune.py
 for router in _app_config.routes:

@@ -1,3 +1,6 @@
+# ABOUTME: OAuth provider integration using Authlib.
+# ABOUTME: Handles provider registration, builtin configs, and auth flow handlers.
+import os
 from typing import Optional
 
 from authlib.integrations.base_client.errors import OAuthError
@@ -9,6 +12,7 @@ from pydantic_extra_types.language_code import LanguageAlpha2
 from starlette.authentication import BaseUser
 
 from vibetuner.frontend.routes import get_homepage_url
+from vibetuner.logging import logger
 from vibetuner.models.oauth import OAuthAccountModel, OauthProviderModel
 from vibetuner.models.user import UserModel
 
@@ -67,6 +71,63 @@ PROVIDER_IDENTIFIERS: dict[str, str] = {}
 
 def get_oauth_providers() -> list[str]:
     return list(_PROVIDERS.keys())
+
+
+_BUILTIN_PROVIDERS: dict[str, OauthProviderModel] = {
+    "google": OauthProviderModel(
+        identifier="sub",
+        params={
+            "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration",
+        },
+        client_kwargs={"scope": "openid email profile"},
+        config={},
+    ),
+    "github": OauthProviderModel(
+        identifier="id",
+        params={
+            "authorize_url": "https://github.com/login/oauth/authorize",
+            "access_token_url": "https://github.com/login/oauth/access_token",
+            "api_base_url": "https://api.github.com/",
+            "userinfo_endpoint": "https://api.github.com/user",
+        },
+        client_kwargs={"scope": "user:email"},
+        config={},
+    ),
+}
+
+
+def auto_register_providers(provider_names: list[str]) -> None:
+    """Register OAuth providers from builtin configs and environment variables."""
+    known = sorted(_BUILTIN_PROVIDERS.keys())
+    for name in provider_names:
+        if name not in _BUILTIN_PROVIDERS:
+            logger.warning(f"Unknown OAuth provider '{name}', known providers: {known}")
+            continue
+
+        env_prefix = name.upper()
+        client_id = os.environ.get(f"{env_prefix}_CLIENT_ID")
+        client_secret = os.environ.get(f"{env_prefix}_CLIENT_SECRET")
+
+        if not client_id or not client_secret:
+            logger.warning(
+                f"Skipping OAuth provider '{name}': "
+                f"set {env_prefix}_CLIENT_ID and {env_prefix}_CLIENT_SECRET"
+            )
+            continue
+
+        builtin = _BUILTIN_PROVIDERS[name]
+        provider = OauthProviderModel(
+            identifier=builtin.identifier,
+            params=builtin.params,
+            client_kwargs=builtin.client_kwargs,
+            config={
+                **builtin.config,
+                f"{env_prefix}_CLIENT_ID": client_id,
+                f"{env_prefix}_CLIENT_SECRET": client_secret,
+            },
+        )
+        register_oauth_provider(name, provider)
+        logger.info(f"Auto-registered OAuth provider: {name}")
 
 
 async def _handle_user_account(
