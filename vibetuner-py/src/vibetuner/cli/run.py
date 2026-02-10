@@ -34,7 +34,7 @@ def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
         console.print(
             "[red]Error: Redis URL not configured. Workers will not be started.[/red]"
         )
-        raise typer.Exit(code=0)
+        raise typer.Exit(code=1)
 
     is_dev = mode == "dev"
 
@@ -53,16 +53,26 @@ def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
     worker_path = "vibetuner.tasks.worker.worker"
     verbose = True if is_dev else settings.debug
 
-    # Start monitoring web UI in a background process
+    # Start monitoring web UI and additional workers as background processes
     web_host = "0.0.0.0"  # noqa: S104
-    Process(target=run_web, args=(web_host, port, worker_path)).start()
+    processes: list[Process] = []
 
-    # Start additional worker processes
+    web_process = Process(target=run_web, args=(web_host, port, worker_path))
+    web_process.start()
+    processes.append(web_process)
+
     for _ in range(workers - 1):
-        Process(target=run_worker, args=(worker_path, False, is_dev, verbose)).start()
+        p = Process(target=run_worker, args=(worker_path, False, is_dev, verbose))
+        p.start()
+        processes.append(p)
 
     # Run main worker in the current process (blocks)
-    run_worker(worker_path, False, is_dev, verbose)
+    try:
+        run_worker(worker_path, False, is_dev, verbose)
+    finally:
+        for p in processes:
+            p.terminate()
+            p.join(timeout=5)
 
 
 def _run_frontend(
