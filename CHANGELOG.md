@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.4.1](https://github.com/alltuner/vibetuner/compare/v6.4.0...v6.4.1) (2026-02-10)
+
+
+### Code Refactoring
+
+* use pydantic-settings for OAuth credentials ([#962](https://github.com/alltuner/vibetuner/issues/962)) ([dabee2a](https://github.com/alltuner/vibetuner/commit/dabee2acd5a05802fbe462c5a2eb55b3a7324c24))
+
 ## [6.4.0](https://github.com/alltuner/vibetuner/compare/v6.3.9...v6.4.0) (2026-02-10)
 
 
