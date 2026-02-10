@@ -1,6 +1,6 @@
 [project]
 name = "vibetuner-scaffolding"
-version = "6.3.7"
+version = "6.3.8"
 requires-python = ">=3.11"
 
 [tool.uv.sources]
