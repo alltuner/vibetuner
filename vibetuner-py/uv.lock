@@ -225,15 +225,6 @@ wheels = [
 ]
 
 [[package]]
-name = "async-lru"
-version = "2.1.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ef/c3/bbf34f15ea88dfb649ab2c40f9d75081784a50573a9ea431563cab64adb8/async_lru-2.1.0.tar.gz", hash = "sha256:9eeb2fecd3fe42cc8a787fc32ead53a3a7158cc43d039c3c55ab3e4e5b2a80ed", size = 12041, upload-time = "2026-01-17T22:52:18.931Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/2e/e9/eb6a5db5ac505d5d45715388e92bced7a5bb556facc4d0865d192823f2d2/async_lru-2.1.0-py3-none-any.whl", hash = "sha256:fa12dcf99a42ac1280bc16c634bbaf06883809790f6304d85cdab3f666f33a7e", size = 6933, upload-time = "2026-01-17T22:52:17.389Z" },
-]
-
-[[package]]
 name = "async-timeout"
 version = "5.0.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2685,7 +2676,7 @@ wheels = [
 
 [[package]]
 name = "streaq"
-version = "5.2.2"
+version = "6.0.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -2695,16 +2686,16 @@ dependencies = [
     { name = "uvloop", marker = "sys_platform != 'win32'" },
     { name = "watchfiles" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c6/10/158f1a6508c144a654d8a78309507469a836490a6139198939b596c8b866/streaq-5.2.2.tar.gz", hash = "sha256:9e51ad7e9606651304e1a630fe3f72089633735a2d48c426fe0fd6ec67ed11d7", size = 29031, upload-time = "2025-08-28T22:02:02.617Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/16/0d/e34ca02cf07f3e78741d9658315bb3ee66cbcd71990f23a233817f69cda5/streaq-6.0.1.tar.gz", hash = "sha256:c865a5868fd923f608d33d3d7bb21c51768a9565d1c063294a83abac21cd4978", size = 32026, upload-time = "2026-02-09T18:50:36.224Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e8/33/c02b8a783327ddd41fdb77a564d2691e4ca1e4281f9d5a77e9f8959bd28f/streaq-5.2.2-py3-none-any.whl", hash = "sha256:eac4a060587ad03830839d39777fd32f8fcd745d31013b771c531d7fa7f123fa", size = 35577, upload-time = "2025-08-28T22:02:01.25Z" },
+    { url = "https://files.pythonhosted.org/packages/24/1f/54b62de3caf5f3c3bb701c21f577b91ae27666609201fd28bdb6f294fc3b/streaq-6.0.1-py3-none-any.whl", hash = "sha256:14aca8004e581db17d47ca964d237ddafe97894040dd0599e0a4c628ba19c598", size = 37562, upload-time = "2026-02-09T18:50:37.22Z" },
 ]
 
 [package.optional-dependencies]
 web = [
-    { name = "async-lru" },
     { name = "fastapi" },
     { name = "jinja2" },
+    { name = "pydantic" },
     { name = "python-multipart" },
     { name = "uvicorn" },
 ]
@@ -3034,7 +3025,7 @@ requires-dist = [
     { name = "sse-starlette", specifier = ">=3.2.0" },
     { name = "starlette-babel", specifier = ">=1.0.3" },
     { name = "starlette-htmx", specifier = ">=0.1.1" },
-    { name = "streaq", extras = ["web"], specifier = "<6.0.0" },
+    { name = "streaq", extras = ["web"], specifier = ">=6.0.1,<7.0.0" },
     { name = "taplo", marker = "extra == 'dev'", specifier = ">=0.9.3" },
     { name = "typer-slim", extras = ["standard"], specifier = ">=0.21.1" },
     { name = "types-aioboto3", extras = ["s3"], marker = "extra == 'dev'", specifier = ">=15.5.0" },

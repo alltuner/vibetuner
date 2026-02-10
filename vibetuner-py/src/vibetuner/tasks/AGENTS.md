@@ -41,17 +41,18 @@ Your application tasks in `src/app/tasks/` should follow this pattern:
 
 ```python
 # src/app/tasks/emails.py
+from streaq import WorkerDepends
 from vibetuner.models import UserModel
 from vibetuner.tasks.worker import get_worker
 
 worker = get_worker()
 
 @worker.task()
-async def send_welcome_email(user_id: str) -> dict[str, str]:
+async def send_welcome_email(user_id: str, ctx=WorkerDepends()) -> dict[str, str]:
     """Example background job."""
 
-    # Access context
-    res = await worker.context.http_client.get(url)
+    # Access worker context via dependency injection
+    res = await ctx.http_client.get(url)
 
     if user := await UserModel.get(user_id):
         # Perform side effects
@@ -100,6 +101,13 @@ from . import new_tasks  # noqa: F401
 task = await send_digest_email.enqueue(account_id)
 
 status = await task.status()
-result = await task.result(timeout=30)
+task_result = await task.result(timeout=30)
+
+# task_result.result is a property that throws StreaqError on failure
+if task_result.success:
+    value = task_result.result
+else:
+    error = task_result.exception
+
 await task.abort()  # Cancel if needed
 ```

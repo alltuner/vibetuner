@@ -21,8 +21,11 @@ DEFAULT_WORKER_PORT = 11111
 
 
 def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
-    """Start the background worker process."""
-    from streaq.cli import main as streaq_main
+    """Start the background worker process with monitoring web UI."""
+    from multiprocessing import Process
+
+    from streaq.cli import run_worker
+    from streaq.ui import run_web
 
     from vibetuner.config import settings
 
@@ -31,7 +34,7 @@ def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
         console.print(
             "[red]Error: Redis URL not configured. Workers will not be started.[/red]"
         )
-        raise typer.Exit(code=0)
+        raise typer.Exit(code=1)
 
     is_dev = mode == "dev"
 
@@ -47,15 +50,29 @@ def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
     else:
         console.print(f"[dim]Workers: {workers}[/dim]")
 
-    streaq_main(
-        worker_path="vibetuner.tasks.worker.worker",
-        workers=workers,
-        reload=is_dev,
-        verbose=True if is_dev else settings.debug,
-        web=True,
-        host="0.0.0.0",  # noqa: S104
-        port=port,
-    )
+    worker_path = "vibetuner.tasks.worker.worker"
+    verbose = True if is_dev else settings.debug
+
+    # Start monitoring web UI and additional workers as background processes
+    web_host = "0.0.0.0"  # noqa: S104
+    processes: list[Process] = []
+
+    web_process = Process(target=run_web, args=(web_host, port, worker_path))
+    web_process.start()
+    processes.append(web_process)
+
+    for _ in range(workers - 1):
+        p = Process(target=run_worker, args=(worker_path, False, is_dev, verbose))
+        p.start()
+        processes.append(p)
+
+    # Run main worker in the current process (blocks)
+    try:
+        run_worker(worker_path, False, is_dev, verbose)
+    finally:
+        for p in processes:
+            p.terminate()
+            p.join(timeout=5)
 
 
 def _run_frontend(
