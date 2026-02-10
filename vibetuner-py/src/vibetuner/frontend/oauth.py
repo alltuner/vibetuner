@@ -1,6 +1,5 @@
 # ABOUTME: OAuth provider integration using Authlib.
 # ABOUTME: Handles provider registration, builtin configs, and auth flow handlers.
-import os
 from typing import Optional
 
 from authlib.integrations.base_client.errors import OAuthError
@@ -97,24 +96,26 @@ _BUILTIN_PROVIDERS: dict[str, OauthProviderModel] = {
 
 
 def auto_register_providers(provider_names: list[str]) -> None:
-    """Register OAuth providers from builtin configs and environment variables."""
+    """Register OAuth providers from builtin configs and settings credentials."""
+    from vibetuner.config import settings
+
     known = sorted(_BUILTIN_PROVIDERS.keys())
     for name in provider_names:
         if name not in _BUILTIN_PROVIDERS:
             logger.warning(f"Unknown OAuth provider '{name}', known providers: {known}")
             continue
 
-        env_prefix = name.upper()
-        client_id = os.environ.get(f"{env_prefix}_CLIENT_ID")
-        client_secret = os.environ.get(f"{env_prefix}_CLIENT_SECRET")
+        client_id = getattr(settings, f"{name}_client_id", None)
+        client_secret = getattr(settings, f"{name}_client_secret", None)
 
         if not client_id or not client_secret:
             logger.warning(
                 f"Skipping OAuth provider '{name}': "
-                f"set {env_prefix}_CLIENT_ID and {env_prefix}_CLIENT_SECRET"
+                f"set {name}_client_id and {name}_client_secret in env or .env"
             )
             continue
 
+        env_prefix = name.upper()
         builtin = _BUILTIN_PROVIDERS[name]
         provider = OauthProviderModel(
             identifier=builtin.identifier,
@@ -122,8 +123,8 @@ def auto_register_providers(provider_names: list[str]) -> None:
             client_kwargs=builtin.client_kwargs,
             config={
                 **builtin.config,
-                f"{env_prefix}_CLIENT_ID": client_id,
-                f"{env_prefix}_CLIENT_SECRET": client_secret,
+                f"{env_prefix}_CLIENT_ID": client_id.get_secret_value(),
+                f"{env_prefix}_CLIENT_SECRET": client_secret.get_secret_value(),
             },
         )
         register_oauth_provider(name, provider)

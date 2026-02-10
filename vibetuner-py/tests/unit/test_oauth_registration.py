@@ -1,12 +1,12 @@
 # ABOUTME: Tests for OAuth provider auto-registration from config.
-# ABOUTME: Verifies builtin providers, env var handling, and route wiring.
+# ABOUTME: Verifies builtin providers, settings-based credentials, and route wiring.
 # ruff: noqa: S101
 import copy
-import os
-from unittest.mock import patch
 
 import pytest
 from loguru import logger
+from pydantic import SecretStr
+from vibetuner.config import settings
 from vibetuner.frontend.oauth import (
     _BUILTIN_PROVIDERS,
     _PROVIDERS,
@@ -55,23 +55,21 @@ class TestBuiltinProviders:
 class TestAutoRegisterProviders:
     """Tests for the auto_register_providers() function."""
 
-    def test_registers_with_env_vars(self):
-        env = {
-            "GOOGLE_CLIENT_ID": "test-id",
-            "GOOGLE_CLIENT_SECRET": "test-secret",
-        }
-        with patch.dict(os.environ, env, clear=False):
-            auto_register_providers(["google"])
+    def test_registers_with_settings(self, monkeypatch):
+        monkeypatch.setattr(settings, "google_client_id", SecretStr("test-id"))
+        monkeypatch.setattr(settings, "google_client_secret", SecretStr("test-secret"))
+
+        auto_register_providers(["google"])
 
         assert "google" in get_oauth_providers()
         assert PROVIDER_IDENTIFIERS["google"] == "sub"
 
-    def test_skips_missing_env_vars(self, log_sink):
+    def test_skips_missing_credentials(self, log_sink):
         auto_register_providers(["google"])
 
         assert "google" not in get_oauth_providers()
         log_text = "\n".join(log_sink)
-        assert "GOOGLE_CLIENT_ID" in log_text
+        assert "google_client_id" in log_text
 
     def test_skips_unknown_provider(self, log_sink):
         auto_register_providers(["myspace"])
@@ -80,23 +78,21 @@ class TestAutoRegisterProviders:
         log_text = "\n".join(log_sink)
         assert "myspace" in log_text
 
-    def test_partial_env_vars(self):
+    def test_partial_credentials(self, monkeypatch):
         """Only client ID set, no secret."""
-        env = {"GITHUB_CLIENT_ID": "just-id"}
-        with patch.dict(os.environ, env, clear=False):
-            auto_register_providers(["github"])
+        monkeypatch.setattr(settings, "github_client_id", SecretStr("just-id"))
+
+        auto_register_providers(["github"])
 
         assert "github" not in get_oauth_providers()
 
-    def test_multiple_providers(self):
-        env = {
-            "GOOGLE_CLIENT_ID": "g-id",
-            "GOOGLE_CLIENT_SECRET": "g-secret",
-            "GITHUB_CLIENT_ID": "gh-id",
-            "GITHUB_CLIENT_SECRET": "gh-secret",
-        }
-        with patch.dict(os.environ, env, clear=False):
-            auto_register_providers(["google", "github"])
+    def test_multiple_providers(self, monkeypatch):
+        monkeypatch.setattr(settings, "google_client_id", SecretStr("g-id"))
+        monkeypatch.setattr(settings, "google_client_secret", SecretStr("g-secret"))
+        monkeypatch.setattr(settings, "github_client_id", SecretStr("gh-id"))
+        monkeypatch.setattr(settings, "github_client_secret", SecretStr("gh-secret"))
+
+        auto_register_providers(["google", "github"])
 
         assert set(get_oauth_providers()) == {"google", "github"}
 
@@ -106,16 +102,13 @@ class TestAutoRegisterProviders:
         assert get_oauth_providers() == []
         assert log_sink == []
 
-    def test_does_not_mutate_builtins(self):
+    def test_does_not_mutate_builtins(self, monkeypatch):
         """Builtin config dict should not be modified by registration."""
         google_before = copy.deepcopy(_BUILTIN_PROVIDERS["google"])
 
-        env = {
-            "GOOGLE_CLIENT_ID": "test-id",
-            "GOOGLE_CLIENT_SECRET": "test-secret",
-        }
-        with patch.dict(os.environ, env, clear=False):
-            auto_register_providers(["google"])
+        monkeypatch.setattr(settings, "google_client_id", SecretStr("test-id"))
+        monkeypatch.setattr(settings, "google_client_secret", SecretStr("test-secret"))
+        auto_register_providers(["google"])
 
         google_after = _BUILTIN_PROVIDERS["google"]
         assert google_after.identifier == google_before.identifier
@@ -126,13 +119,10 @@ class TestAutoRegisterProviders:
 class TestOAuthRouteRegistration:
     """Tests for OAuth route wiring on auth.router."""
 
-    def test_routes_added_after_registration(self):
-        env = {
-            "GOOGLE_CLIENT_ID": "test-id",
-            "GOOGLE_CLIENT_SECRET": "test-secret",
-        }
-        with patch.dict(os.environ, env, clear=False):
-            auto_register_providers(["google"])
+    def test_routes_added_after_registration(self, monkeypatch):
+        monkeypatch.setattr(settings, "google_client_id", SecretStr("test-id"))
+        monkeypatch.setattr(settings, "google_client_secret", SecretStr("test-secret"))
+        auto_register_providers(["google"])
 
         routes_before = len(router.routes)
 
