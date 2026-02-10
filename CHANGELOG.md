@@ -1,5 +1,14 @@
 # Changelog
 
+## [6.3.8](https://github.com/alltuner/vibetuner/compare/v6.3.7...v6.3.8) (2026-02-10)
+
+
+### Bug Fixes
+
+* lazy-import git in scaffold.py to prevent CLI crash in production ([#952](https://github.com/alltuner/vibetuner/issues/952)) ([ebe4112](https://github.com/alltuner/vibetuner/commit/ebe4112e849ce9268170b1281dc3035d9d854fbb))
+* remove --no-sources from Dockerfile deps stage ([#950](https://github.com/alltuner/vibetuner/issues/950)) ([e4f13ea](https://github.com/alltuner/vibetuner/commit/e4f13eaa04fcfdd37eeb4c3c1c75b863a6a81684))
+* use --frozen instead of --locked in Dockerfile uv sync ([#947](https://github.com/alltuner/vibetuner/issues/947)) ([f412eb5](https://github.com/alltuner/vibetuner/commit/f412eb57d5b26587567818f2b2c115e18df4cf17))
+
 ## [6.3.7](https://github.com/alltuner/vibetuner/compare/v6.3.6...v6.3.7) (2026-02-09)
 
 
