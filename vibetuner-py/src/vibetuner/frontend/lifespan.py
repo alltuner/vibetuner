@@ -31,7 +31,14 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         await RuntimeConfig.refresh_cache()
         logger.debug("Runtime config cache initialized")
 
-    yield
+    # Initialize worker's Redis connection for task enqueuing from routes
+    if settings.workers_available:
+        from vibetuner.tasks.worker import get_worker
+
+        async with get_worker():
+            yield
+    else:
+        yield
 
     logger.info("Vibetuner frontend stopping")
     if ctx.DEBUG:

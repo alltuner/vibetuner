@@ -21,8 +21,11 @@ DEFAULT_WORKER_PORT = 11111
 
 
 def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
-    """Start the background worker process."""
-    from streaq.cli import main as streaq_main
+    """Start the background worker process with monitoring web UI."""
+    from multiprocessing import Process
+
+    from streaq.cli import run_worker
+    from streaq.ui import run_web
 
     from vibetuner.config import settings
 
@@ -47,15 +50,19 @@ def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
     else:
         console.print(f"[dim]Workers: {workers}[/dim]")
 
-    streaq_main(
-        worker_path="vibetuner.tasks.worker.worker",
-        workers=workers,
-        reload=is_dev,
-        verbose=True if is_dev else settings.debug,
-        web=True,
-        host="0.0.0.0",  # noqa: S104
-        port=port,
-    )
+    worker_path = "vibetuner.tasks.worker.worker"
+    verbose = True if is_dev else settings.debug
+
+    # Start monitoring web UI in a background process
+    web_host = "0.0.0.0"  # noqa: S104
+    Process(target=run_web, args=(web_host, port, worker_path)).start()
+
+    # Start additional worker processes
+    for _ in range(workers - 1):
+        Process(target=run_worker, args=(worker_path, False, is_dev, verbose)).start()
+
+    # Run main worker in the current process (blocks)
+    run_worker(worker_path, False, is_dev, verbose)
 
 
 def _run_frontend(
