@@ -33,7 +33,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
-    uv sync --locked --no-sources --no-install-project --no-group dev
+    uv sync --frozen --no-sources --no-install-project --no-group dev
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 3: Install Project (editable mode for source access)
@@ -48,7 +48,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
-    uv sync --locked --no-group dev && \
+    uv sync --frozen --no-group dev && \
     cp -r $(.venv/bin/python -c "import vibetuner; print(vibetuner.__path__[0])")/templates/frontend .core-templates && \
     find .venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null || true && \
     find .venv -type f \( -name '*.md' -o -name '*.rst' -o -name '*.txt' \) ! -path '*/METADATA' -delete 2>/dev/null || true
