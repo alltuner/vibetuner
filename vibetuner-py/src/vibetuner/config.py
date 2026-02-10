@@ -167,6 +167,12 @@ class CoreConfiguration(BaseSettings):
     r2_secret_key: SecretStr | None = None
     r2_default_region: str = "auto"
 
+    # OAuth provider credentials (read from env / .env)
+    google_client_id: SecretStr | None = None
+    google_client_secret: SecretStr | None = None
+    github_client_id: SecretStr | None = None
+    github_client_secret: SecretStr | None = None
+
     worker_concurrency: int = 16
 
     # Locale detection settings
