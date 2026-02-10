@@ -2,13 +2,46 @@
 # ABOUTME: Tests project data inference and validation logic
 # ruff: noqa: S101
 
+import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from typer.testing import CliRunner
 from vibetuner.cli import app
-from vibetuner.cli.scaffold import _infer_project_data
+from vibetuner.cli.scaffold import _get_git_config, _infer_project_data
+
+
+class TestGetGitConfig:
+    """Test _get_git_config handles missing git gracefully."""
+
+    def test_returns_none_when_git_unavailable(self):
+        """Test that _get_git_config returns None when git module can't be imported."""
+        with patch.dict(sys.modules, {"git": None}):
+            result = _get_git_config("user.name", Path("/tmp"))
+            assert result is None
+
+    def test_scaffold_module_loads_without_git(self):
+        """Verify scaffold module can be imported when git is unavailable.
+
+        This is a regression test for the production Docker crash where
+        the git binary is missing from python:slim images.
+        """
+        import subprocess
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "import sys; sys.modules['git'] = None; "
+                "from vibetuner.cli.scaffold import _get_git_config",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, (
+            f"scaffold.py failed to import without git: {result.stderr}"
+        )
 
 
 class TestInferProjectData:
