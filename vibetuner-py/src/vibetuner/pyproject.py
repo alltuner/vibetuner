@@ -4,6 +4,7 @@
 import tomllib
 from functools import lru_cache
 
+from vibetuner.logging import logger
 from vibetuner.paths import paths
 
 
@@ -14,6 +15,14 @@ def read_pyproject() -> dict:
         return {}
     pyproject_file = paths.root / "pyproject.toml"
     if not pyproject_file.exists():
+        if (paths.root / ".copier-answers.yml").exists():
+            logger.warning(
+                "pyproject.toml not found in project root ({}), but "
+                ".copier-answers.yml exists. This usually means pyproject.toml "
+                "was not copied into the runtime environment. Custom tune.py "
+                "configuration will be ignored.",
+                paths.root,
+            )
         return {}
     return tomllib.load(pyproject_file.open("rb"))
 
