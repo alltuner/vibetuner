@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.3.9](https://github.com/alltuner/vibetuner/compare/v6.3.8...v6.3.9) (2026-02-10)
+
+
+### Bug Fixes
+
+* add pyproject.toml to Dockerfile runtime stage and warn on missing config ([#954](https://github.com/alltuner/vibetuner/issues/954)) ([98acee1](https://github.com/alltuner/vibetuner/commit/98acee1fde953126c76f3ab01a686cc3519c24b8))
+
 ## [6.3.8](https://github.com/alltuner/vibetuner/compare/v6.3.7...v6.3.8) (2026-02-10)
 
 
