@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.4.0](https://github.com/alltuner/vibetuner/compare/v6.3.9...v6.4.0) (2026-02-10)
+
+
+### Features
+
+* auto-register OAuth providers from oauth_providers config ([#959](https://github.com/alltuner/vibetuner/issues/959)) ([81ee179](https://github.com/alltuner/vibetuner/commit/81ee1799c16d428e9092b4d330e29980d79110bb))
+
 ## [6.3.9](https://github.com/alltuner/vibetuner/compare/v6.3.8...v6.3.9) (2026-02-10)
 
 
