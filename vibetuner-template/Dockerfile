@@ -128,8 +128,8 @@ COPY --link templates/email templates/email/
 COPY --link --from=frontend-build /app/assets/statics/css/bundle.css assets/statics/css/bundle.css
 COPY --link --from=frontend-build /app/assets/statics/js/bundle.js assets/statics/js/bundle.js
 
-# Copy configuration file (used as project root marker)
-COPY --link .copier-answers.yml ./
+# Copy configuration files (used as project root marker and for package metadata)
+COPY --link .copier-answers.yml pyproject.toml ./
 
 # Copy startup script with executable permissions (--chmod eliminates separate RUN layer)
 COPY --link --chmod=755 start.sh /start.sh

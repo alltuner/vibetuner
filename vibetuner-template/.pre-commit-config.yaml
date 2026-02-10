@@ -19,7 +19,7 @@ repos:
       # Run the linter (check only, no auto-fix).
       - id: ruff-check
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.1.15
+    rev: v0.1.17
     hooks:
       - id: rumdl
         name: rumdl check
