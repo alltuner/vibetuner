@@ -1,5 +1,16 @@
 # Changelog
 
+## [7.0.0](https://github.com/alltuner/vibetuner/compare/v6.4.1...v7.0.0) (2026-02-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade streaq dependency from v5 to v6 ([#956](https://github.com/alltuner/vibetuner/issues/956))
+
+### Features
+
+* upgrade streaq dependency from v5 to v6 ([#956](https://github.com/alltuner/vibetuner/issues/956)) ([41ec3dd](https://github.com/alltuner/vibetuner/commit/41ec3dd88b9f22dc40e4d12d14d448aa10747771))
+
 ## [6.4.1](https://github.com/alltuner/vibetuner/compare/v6.4.0...v6.4.1) (2026-02-10)
 
 
