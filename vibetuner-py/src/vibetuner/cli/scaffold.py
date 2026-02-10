@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Annotated
 
 import copier
-import git
 import typer
 from rich.console import Console
 
@@ -20,6 +19,10 @@ def _get_git_config(key: str, cwd: Path) -> str | None:
         key: Config key in "section.option" format (e.g., "user.name", "user.email")
         cwd: Directory to search for git repository from
     """
+    try:
+        import git
+    except ImportError:
+        return None
     try:
         repo = git.Repo(cwd, search_parent_directories=True)
         reader = repo.config_reader()
