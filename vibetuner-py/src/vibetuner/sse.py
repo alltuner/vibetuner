@@ -1,7 +1,5 @@
 # ABOUTME: Server-Sent Events helpers for real-time streaming with HTMX.
 # ABOUTME: Provides decorator for SSE endpoints, broadcast function, and Redis pub/sub backend.
-from __future__ import annotations
-
 import asyncio
 import json
 from collections.abc import AsyncGenerator, Callable
