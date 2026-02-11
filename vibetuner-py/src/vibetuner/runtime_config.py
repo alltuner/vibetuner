@@ -1,6 +1,7 @@
 # ABOUTME: Layered runtime configuration system with MongoDB persistence.
 # ABOUTME: Provides get/set config with priority: runtime overrides > MongoDB > registered defaults.
 
+import asyncio
 import json
 from collections.abc import Callable, Coroutine
 from datetime import datetime, timedelta
@@ -54,6 +55,7 @@ class RuntimeConfig:
     _runtime_overrides: dict[str, Any] = {}
     _config_cache: dict[str, Any] = {}
     _cache_last_refresh: datetime | None = None
+    _refresh_lock: asyncio.Lock = asyncio.Lock()
 
     @classmethod
     def is_cache_stale(cls) -> bool:
@@ -64,25 +66,33 @@ class RuntimeConfig:
 
     @classmethod
     async def refresh_cache(cls) -> None:
-        """Reload all config values from MongoDB into cache."""
-        cls._config_cache.clear()
+        """Reload all config values from MongoDB into cache.
 
-        if settings.mongodb_url is None:
-            logger.debug("MongoDB not available, config cache empty")
+        Uses an internal lock to prevent concurrent refreshes from any caller.
+        """
+        async with cls._refresh_lock:
+            # Double-check staleness after acquiring the lock
+            if not cls.is_cache_stale():
+                return
+
+            cls._config_cache.clear()
+
+            if settings.mongodb_url is None:
+                logger.debug("MongoDB not available, config cache empty")
+                cls._cache_last_refresh = now()
+                return
+
+            try:
+                from vibetuner.models.config_entry import ConfigEntryModel
+
+                entries = await ConfigEntryModel.find_all().to_list()
+                for entry in entries:
+                    cls._config_cache[entry.key] = entry.value
+                logger.debug(f"Config cache refreshed with {len(entries)} entries")
+            except Exception as e:
+                logger.warning(f"Failed to refresh config cache from MongoDB: {e}")
+
             cls._cache_last_refresh = now()
-            return
-
-        try:
-            from vibetuner.models.config_entry import ConfigEntryModel
-
-            entries = await ConfigEntryModel.find_all().to_list()
-            for entry in entries:
-                cls._config_cache[entry.key] = entry.value
-            logger.debug(f"Config cache refreshed with {len(entries)} entries")
-        except Exception as e:
-            logger.warning(f"Failed to refresh config cache from MongoDB: {e}")
-
-        cls._cache_last_refresh = now()
 
     @classmethod
     async def get(cls, key: str, default: Any = None) -> Any:
