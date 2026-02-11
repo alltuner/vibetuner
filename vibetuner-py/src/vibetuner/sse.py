@@ -1,7 +1,5 @@
 # ABOUTME: Server-Sent Events helpers for real-time streaming with HTMX.
 # ABOUTME: Provides decorator for SSE endpoints, broadcast function, and Redis pub/sub backend.
-from __future__ import annotations
-
 import asyncio
 import json
 from collections.abc import AsyncGenerator, Callable
@@ -55,7 +53,11 @@ _redis_listener_task: asyncio.Task | None = None
 
 
 def _parse_redis_message(message: dict, prefix: str) -> tuple[str, dict] | None:
-    """Parse a Redis pub/sub message into (channel, payload) or None."""
+    """Parse a Redis pub/sub message into (channel, payload) or None.
+
+    Returns None and logs a warning for malformed messages (invalid JSON,
+    missing keys, wrong types) instead of raising.
+    """
     if message["type"] != "pmessage":
         return None
 
@@ -68,7 +70,26 @@ def _parse_redis_message(message: dict, prefix: str) -> tuple[str, dict] | None:
     if isinstance(data, bytes):
         data = data.decode()
 
-    payload = json.loads(data)
+    try:
+        payload = json.loads(data)
+    except (json.JSONDecodeError, TypeError) as exc:
+        logger.warning("SSE Redis message has invalid JSON on {}: {}", channel, exc)
+        return None
+
+    if not isinstance(payload, dict):
+        logger.warning(
+            "SSE Redis message is not a dict on {}: {!r}",
+            channel,
+            type(payload).__name__,
+        )
+        return None
+
+    if "event" not in payload and "data" not in payload:
+        logger.warning(
+            "SSE Redis message missing 'event' and 'data' keys on {}", channel
+        )
+        return None
+
     return channel, {
         "event": payload.get("event", "message"),
         "data": payload.get("data", ""),
