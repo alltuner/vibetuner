@@ -322,6 +322,11 @@ def config_value(
     """
 
     def decorator(func: Callable[[], Any]) -> Callable[[], Coroutine[Any, Any, Any]]:
+        if func.__code__.co_argcount > 0:
+            raise ValueError(
+                f"@config_value() decorated function '{func.__name__}' must take no parameters, "
+                f"but it has {func.__code__.co_argcount}"
+            )
         default = func()
         register_config_value(
             key=key,
