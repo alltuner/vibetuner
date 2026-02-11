@@ -2,6 +2,7 @@
 # ABOUTME: Provides decorator for SSE endpoints, broadcast function, and Redis pub/sub backend.
 import asyncio
 import json
+import re
 from collections.abc import AsyncGenerator, Callable
 from contextlib import suppress
 from functools import wraps
@@ -12,6 +13,36 @@ from sse_starlette.sse import EventSourceResponse
 
 from vibetuner.logging import logger
 from vibetuner.rendering import render_template_string
+
+
+# ────────────────────────────────────────────────────────────────
+#  Channel name validation
+# ────────────────────────────────────────────────────────────────
+
+_MAX_CHANNEL_LENGTH = 128
+_CHANNEL_NAME_RE = re.compile(r"^[a-zA-Z0-9\-:_.]+$")
+
+
+def _validate_channel_name(channel: str) -> None:
+    """Validate an SSE channel name.
+
+    Channel names must be non-empty, at most 128 characters, and contain only
+    alphanumeric characters, hyphens, colons, underscores, and dots.
+
+    Raises:
+        ValueError: If the channel name is invalid.
+    """
+    if not channel:
+        raise ValueError("Channel name must not be empty")
+    if len(channel) > _MAX_CHANNEL_LENGTH:
+        raise ValueError(
+            f"Channel name exceeds maximum length of {_MAX_CHANNEL_LENGTH} characters"
+        )
+    if not _CHANNEL_NAME_RE.match(channel):
+        raise ValueError(
+            "Channel name contains invalid characters. "
+            "Allowed: alphanumeric, hyphens, colons, underscores, dots"
+        )
 
 
 # ────────────────────────────────────────────────────────────────
@@ -183,6 +214,8 @@ async def broadcast(
             ctx={"post": post},
         )
     """
+    _validate_channel_name(channel)
+
     if template is not None:
         if request is None:
             raise ValueError("request is required when broadcasting with a template")
@@ -311,6 +344,7 @@ def sse_endpoint(
                     "or the function to be an async generator."
                 )
 
+            _validate_channel_name(ch)
             return EventSourceResponse(_stream_from_channel(ch))
 
         if router is not None:
