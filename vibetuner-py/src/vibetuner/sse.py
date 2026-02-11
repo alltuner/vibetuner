@@ -81,6 +81,7 @@ def _dispatch_local(channel: str, payload: dict[str, str]) -> None:
 # ────────────────────────────────────────────────────────────────
 
 _redis_listener_task: asyncio.Task | None = None
+_redis_publish_client = None
 
 
 def _parse_redis_message(message: dict, prefix: str) -> tuple[str, dict] | None:
@@ -171,29 +172,50 @@ async def _start_redis_listener() -> None:
 
 
 async def _stop_redis_listener() -> None:
-    """Cancel the Redis listener task."""
+    """Cancel the Redis listener task and close the publish client."""
     global _redis_listener_task
     if _redis_listener_task is not None:
         _redis_listener_task.cancel()
         with suppress(asyncio.CancelledError):
             await _redis_listener_task
         _redis_listener_task = None
+    await _close_redis_publish_client()
+
+
+async def _get_redis_publish_client():
+    """Get or create the cached Redis client for publishing."""
+    global _redis_publish_client
+    if _redis_publish_client is None:
+        from vibetuner.config import settings
+
+        if settings.redis_url is None:
+            return None
+
+        import redis.asyncio as aioredis
+
+        _redis_publish_client = aioredis.from_url(str(settings.redis_url))
+    return _redis_publish_client
+
+
+async def _close_redis_publish_client() -> None:
+    """Close the cached Redis publish client."""
+    global _redis_publish_client
+    if _redis_publish_client is not None:
+        await _redis_publish_client.aclose()
+        _redis_publish_client = None
 
 
 async def _publish_to_redis(channel: str, payload: dict[str, str]) -> None:
     """Publish a payload to Redis for multi-worker broadcasting (best-effort)."""
     try:
-        from vibetuner.config import settings
-
-        if settings.redis_url is None:
+        client = await _get_redis_publish_client()
+        if client is None:
             return
 
-        import redis.asyncio as aioredis
+        from vibetuner.config import settings
 
-        client = aioredis.from_url(str(settings.redis_url))
         redis_channel = f"{settings.redis_key_prefix}sse:{channel}"
         await client.publish(redis_channel, json.dumps(payload))
-        await client.aclose()
     except Exception:
         logger.debug("Redis SSE publish failed (local dispatch still succeeded)")
 
