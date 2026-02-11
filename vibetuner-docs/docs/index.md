@@ -26,10 +26,15 @@ cd my-project && just dev
 - ✅ FastAPI backend with async support
 - ✅ **Flexible database**: MongoDB (Beanie) or SQL (SQLModel/SQLAlchemy)
 - ✅ OAuth + magic link authentication
-- ✅ HTMX reactive frontend
+- ✅ HTMX reactive frontend with SSE real-time updates
 - ✅ Tailwind CSS + DaisyUI styling
 - ✅ Docker dev/prod environments
-- ✅ Background jobs with Redis (optional)
+- ✅ Background jobs with Redis + robust retry/dead letters (optional)
+- ✅ CRUD route factory — generate REST endpoints from a model
+- ✅ Runtime configuration with MongoDB persistence
+- ✅ Testing fixtures (mock auth, mock tasks, temp DB)
+- ✅ Health monitoring endpoints with service-level checks
+- ✅ `vibetuner doctor` project diagnostics CLI
 - ✅ i18n support
 - ✅ Hot reload for everything
 

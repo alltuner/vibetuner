@@ -598,6 +598,110 @@ app = VibetunerApp(
 )
 ```
 
+### CRUD Factory
+
+Generate full CRUD endpoints for a Beanie model in one call:
+
+```python
+# src/app/frontend/routes/posts.py
+from vibetuner.crud import create_crud_routes, Operation
+from app.models import Post
+
+post_routes = create_crud_routes(
+    Post,
+    prefix="/api/posts",
+    tags=["posts"],
+    sortable_fields=["created_at", "title"],
+    filterable_fields=["status", "author_id"],
+    searchable_fields=["title", "content"],
+    page_size=25,
+)
+```
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.frontend.routes.posts import post_routes
+
+app = VibetunerApp(routes=[post_routes])
+```
+
+This generates GET (list with pagination/filtering/sorting/search), POST (create),
+GET `/{id}` (read), PATCH `/{id}` (update), DELETE `/{id}` endpoints.
+
+Use `operations={Operation.LIST, Operation.READ}` to limit which endpoints are
+generated. Add `pre_create`, `post_create`, `pre_update`, `post_update`,
+`pre_delete`, `post_delete` hooks for custom logic. Use `create_schema`,
+`update_schema`, `response_schema` for custom Pydantic models.
+
+### SSE (Server-Sent Events)
+
+**IMPORTANT**: Import SSE helpers from `vibetuner.sse`, NOT `vibetuner.frontend.sse`.
+
+```python
+from vibetuner.sse import sse_endpoint, broadcast
+```
+
+**Channel-based endpoint (auto-subscribe):**
+
+```python
+from fastapi import APIRouter, Request
+from vibetuner.sse import sse_endpoint
+
+router = APIRouter()
+
+@sse_endpoint("/events/notifications", channel="notifications", router=router)
+async def notifications_stream(request: Request):
+    pass  # channel kwarg handles everything
+```
+
+**Dynamic channel:**
+
+```python
+@sse_endpoint("/events/room/{room_id}", router=router)
+async def room_stream(request: Request, room_id: str):
+    return f"room:{room_id}"
+```
+
+**Broadcasting:**
+
+```python
+from vibetuner.sse import broadcast
+
+# Raw HTML
+await broadcast("notifications", "update", data="<div>New!</div>")
+
+# With template
+await broadcast(
+    "feed", "new-post",
+    template="partials/post.html.jinja",
+    request=request,
+    ctx={"post": post},
+)
+```
+
+**HTMX client:**
+
+```html
+<div hx-ext="sse" sse-connect="/events/notifications" sse-swap="update">
+</div>
+```
+
+### Template Context Providers
+
+Register variables available in every template render:
+
+```python
+# src/app/frontend/context.py
+from vibetuner.rendering import register_globals, register_context_provider
+
+register_globals({"site_title": "My App", "og_image": "/static/og.png"})
+
+@register_context_provider
+def dynamic_context() -> dict:
+    return {"feature_flags": get_flags()}
+```
+
 ### Runtime Configuration
 
 For settings that can be changed at runtime without redeploying:
@@ -637,6 +741,74 @@ templates/frontend/dashboard.html.jinja
 templates/email/default/welcome.html.jinja
 ```
 
+### Debugging with `vibetuner doctor`
+
+Run diagnostics to validate your project setup:
+
+```bash
+uv run vibetuner doctor
+```
+
+Checks project structure, `tune.py` configuration, environment variables, service
+connectivity (MongoDB, Redis, S3), models, templates, dependencies, and port
+availability. Exits with code 1 if errors are found.
+
+## Testing
+
+Vibetuner provides pytest fixtures for testing. Fixtures are auto-discovered when
+vibetuner is installed.
+
+```python
+import pytest
+from unittest.mock import patch
+
+@pytest.mark.asyncio
+async def test_dashboard(vibetuner_client, mock_auth):
+    mock_auth.login(name="Alice", email="alice@example.com")
+    resp = await vibetuner_client.get("/dashboard")
+    assert resp.status_code == 200
+
+@pytest.mark.asyncio
+async def test_signup_queues_email(vibetuner_client, mock_tasks):
+    with patch(
+        "app.tasks.emails.send_welcome_email",
+        mock_tasks.send_welcome_email,
+    ):
+        resp = await vibetuner_client.post("/signup", data={...})
+    assert mock_tasks.send_welcome_email.enqueue.called
+
+@pytest.mark.asyncio
+async def test_feature_flag(override_config):
+    await override_config("features.dark_mode", True)
+    from vibetuner.runtime_config import RuntimeConfig
+    assert await RuntimeConfig.get("features.dark_mode") is True
+```
+
+**Available fixtures:**
+
+- `vibetuner_client` — Async HTTP client with full middleware stack
+- `vibetuner_app` — FastAPI app instance (override for custom apps)
+- `vibetuner_db` — Temporary MongoDB database, dropped on teardown
+- `mock_auth` — Mock authentication: `mock_auth.login(...)` / `.logout()`
+- `mock_tasks` — Mock background tasks without Redis
+- `override_config` — Override RuntimeConfig with auto-cleanup
+
+### Prerequisites
+
+The development server must be running:
+
+```bash
+just local-all
+```
+
+### Playwright MCP Integration
+
+This project includes Playwright MCP for browser testing. The app runs on
+`http://localhost:8000`.
+
+**Authentication**: If testing protected routes, you'll need to authenticate
+manually in the browser when prompted.
+
 ## Configuration
 
 ### Environment Variables
@@ -665,24 +837,6 @@ project_settings.supported_languages
 ```
 
 For app-specific settings, create `src/app/config.py` with your own Pydantic Settings class.
-
-## Testing
-
-### Prerequisites
-
-The development server must be running:
-
-```bash
-just local-all
-```
-
-### Playwright MCP Integration
-
-This project includes Playwright MCP for browser testing. The app runs on
-`http://localhost:8000`.
-
-**Authentication**: If testing protected routes, you'll need to authenticate
-manually in the browser when prompted.
 
 ## Localization
 

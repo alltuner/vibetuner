@@ -143,6 +143,53 @@ Jinja2 Template → HTML with HTMX → Client
 User Action → HTMX Request → FastAPI → Partial HTML → Update DOM
 ```
 
+## Vibetuner Package Modules
+
+The `vibetuner` Python package provides the following key modules:
+
+| Module | Description |
+|--------|-------------|
+| `vibetuner.config` | Pydantic Settings with environment variable support |
+| `vibetuner.runtime_config` | Layered runtime configuration (MongoDB + in-memory) |
+| `vibetuner.rendering` | Jinja2 template rendering with context providers |
+| `vibetuner.crud` | Generic CRUD route factory for Beanie documents |
+| `vibetuner.sse` | Server-Sent Events helpers with Redis pub/sub |
+| `vibetuner.testing` | Pytest fixtures for test client, mock auth, mock tasks |
+| `vibetuner.mongo` | MongoDB connection and model registration |
+| `vibetuner.sqlmodel` | SQLModel/SQLAlchemy integration |
+| `vibetuner.frontend` | FastAPI app, auth, middleware, route discovery |
+| `vibetuner.services` | DI wrappers for email, blob storage, runtime config |
+| `vibetuner.tasks` | Background job infrastructure (Streaq worker, robust tasks) |
+| `vibetuner.cli` | CLI commands (scaffold, run, db, doctor) |
+| `vibetuner.templates` | Static template rendering utilities |
+
+### Services Module (`vibetuner.services`)
+
+Provides FastAPI dependency injection wrappers and centralized error messages:
+
+- `get_email_service()` — DI wrapper for `EmailService`
+- `get_blob_service()` — DI wrapper for `BlobService`
+- `get_runtime_config()` — DI wrapper for `RuntimeConfig` with cache refresh
+- `vibetuner.services.errors` — Rich error panels with actionable fix
+  instructions for unconfigured services (MongoDB, Redis, S3/R2, Email)
+
+### Tasks Module (`vibetuner.tasks`)
+
+Background job infrastructure built on Streaq and Redis:
+
+- `worker.py` — Streaq worker setup and configuration
+- `context.py` — Task context management (DB, HTTP client)
+- `robust.py` — `@robust_task` decorator with exponential backoff retries
+  and MongoDB dead letter collection for permanently failed tasks
+
+### CLI Module (`vibetuner.cli`)
+
+- `scaffold` — Create and update projects from the Copier template
+- `run` — Development and production server management
+- `db` — Database schema commands (`create-schema`)
+- `doctor` — Validate project setup (structure, env vars, service
+  connectivity, models, templates, dependencies, port availability)
+
 ## Core Components
 
 ### FastAPI Application
@@ -270,6 +317,159 @@ Worker process runs separately:
 just worker-dev  # Development
 docker compose up worker  # Production
 ```
+
+### CRUD Route Factory
+
+**Location**: `vibetuner.crud`
+Generate a full set of list/create/read/update/delete routes from a Beanie
+Document model with one function call:
+
+```python
+from vibetuner.crud import create_crud_routes
+from app.models import Post
+
+router = create_crud_routes(
+    Post,
+    prefix="/posts",
+    tags=["posts"],
+    sortable_fields=["created_at", "title"],
+    filterable_fields=["status", "author_id"],
+    searchable_fields=["title", "body"],
+)
+app.include_router(router)
+```
+
+Features:
+
+- Pagination (offset/limit), sorting, equality filtering, text search
+- Field selection via `?fields=title,status`
+- Custom create/update/response Pydantic schemas
+- Pre/post hooks for create, update, and delete operations
+- FastAPI dependencies for route-level auth or rate limiting
+- Configurable operation set (e.g. read-only: `{Operation.LIST, Operation.READ}`)
+
+### Server-Sent Events (SSE)
+
+**Location**: `vibetuner.sse`
+Real-time streaming over HTTP with HTMX integration:
+
+```python
+from vibetuner.sse import sse_endpoint, broadcast
+
+# Subscribe clients to a channel
+@sse_endpoint("/events/notifications", channel="notifications", router=router)
+async def notifications_stream(request: Request):
+    pass  # channel kwarg handles everything
+
+# Broadcast from anywhere (routes, tasks, services)
+await broadcast("notifications", "update", data="<div>New item!</div>")
+```
+
+Architecture:
+
+- **In-process registry** — asyncio queues per channel for single-worker
+- **Redis pub/sub bridge** — optional, for multi-worker broadcasting
+- **Template rendering** — broadcast rendered Jinja2 partials directly
+- **Keepalive** — automatic 30-second keepalive comments
+- Supports both channel-based (subscribe/broadcast) and generator-based
+  (full control) endpoints
+
+### Robust Background Tasks
+
+**Location**: `vibetuner.tasks.robust`
+Drop-in replacement for `@worker.task()` with retry and failure handling:
+
+```python
+from vibetuner.tasks.robust import robust_task
+
+@robust_task(max_retries=5, backoff_max=600)
+async def send_report(account_id: str, ctx=WorkerDepends()):
+    ...
+```
+
+- Exponential backoff (`delay = base ** tries`, capped at `backoff_max`)
+- Dead letter collection in MongoDB after all retries exhausted
+- Optional `on_failure` callback (sync or async)
+- Streaq middleware-based — works alongside normal `@worker.task()` tasks
+
+### Testing Utilities
+
+**Location**: `vibetuner.testing`
+Pytest fixtures for testing vibetuner applications without external services:
+
+| Fixture | Purpose |
+|---------|---------|
+| `vibetuner_client` | Async HTTP test client (httpx + ASGITransport) |
+| `vibetuner_app` | Overridable FastAPI app fixture |
+| `vibetuner_db` | Temporary MongoDB database with auto-teardown |
+| `mock_auth` | Patch authentication (login/logout without sessions) |
+| `mock_tasks` | Record `enqueue` calls without Redis |
+| `override_config` | Override `RuntimeConfig` values with auto-cleanup |
+
+### Template Context System
+
+**Location**: `vibetuner.rendering`
+Two mechanisms to inject variables into every template render:
+
+```python
+from vibetuner.rendering import register_globals, register_context_provider
+
+# Static globals — merged into every render call
+register_globals({"site_title": "My App", "og_image": "/static/og.png"})
+
+# Dynamic providers — called on each render
+@register_context_provider
+def analytics_context() -> dict[str, Any]:
+    return {"analytics_id": settings.analytics_id}
+```
+
+### Runtime Configuration
+
+**Location**: `vibetuner.runtime_config`
+Layered configuration with MongoDB persistence:
+
+```text
+Priority (highest → lowest):
+1. Runtime overrides — in-memory, for debugging/testing
+2. MongoDB values — persistent, survives restarts
+3. Registered defaults — defined in code
+```
+
+Register config values declaratively:
+
+```python
+from vibetuner.runtime_config import config_value, ConfigGroup, ConfigField
+
+# Decorator style
+@config_value("features.dark_mode", value_type="bool", category="features")
+def dark_mode() -> bool:
+    return False  # default
+
+# Class style
+class FeatureFlags(ConfigGroup, category="features"):
+    dark_mode = ConfigField(
+        default=False, value_type="bool", description="Enable dark mode"
+    )
+    max_items = ConfigField(
+        default=50, value_type="int", description="Max items per page"
+    )
+```
+
+### Health Monitoring
+
+**Location**: `vibetuner.frontend.routes.health`
+Built-in health check endpoints:
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /health/ping` | Liveness probe (no external calls) |
+| `GET /health` | Basic health with version and uptime |
+| `GET /health?detailed=true` | Service-level checks with latency |
+| `GET /health/ready` | Readiness probe (all services reachable) |
+| `GET /health/id` | Instance identification (PID, port, startup time) |
+
+The detailed check probes MongoDB, Redis, S3/R2, and email — reporting
+status and latency for each configured service.
 
 ## Frontend Architecture
 
