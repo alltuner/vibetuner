@@ -1,5 +1,6 @@
 # ABOUTME: Generic CRUD route factory for Beanie Document and SQLModel classes.
 # ABOUTME: Generates list/create/read/update/delete routes with pagination, filtering, and sorting.
+import re
 from collections.abc import Callable
 from enum import StrEnum
 from typing import Any
@@ -45,8 +46,9 @@ def _apply_search(query, request: Request, searchable: list[str]):
     """Apply text search across searchable fields."""
     q = request.query_params.get("q")
     if q and searchable:
+        escaped_q = re.escape(q)
         search_filter = {
-            "$or": [{f: {"$regex": q, "$options": "i"}} for f in searchable]
+            "$or": [{f: {"$regex": escaped_q, "$options": "i"}} for f in searchable]
         }
         query = query.find(search_filter)
     return query
