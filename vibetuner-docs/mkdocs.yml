@@ -76,6 +76,7 @@ nav:
       - Authentication: authentication.md
       - Runtime Configuration: runtime-config.md
       - Deployment: deployment.md
+      - HTMX v2 → v4 Migration: htmx-migration.md
   - Contributing:
       - Development Workflow: development.md
       - Contributing Guidelines: contributing.md
