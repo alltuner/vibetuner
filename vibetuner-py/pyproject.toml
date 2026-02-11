@@ -62,6 +62,9 @@ Repository = "https://github.com/alltuner/vibetuner"
 Issues = "https://github.com/alltuner/vibetuner/issues"
 Changelog = "https://github.com/alltuner/vibetuner/blob/main/CHANGELOG.md"
 
+[project.entry-points."pytest11"]
+vibetuner = "vibetuner.testing"
+
 [project.optional-dependencies]
 dev = [
   # These are the development dependencies of AllTuner's blessed stack
