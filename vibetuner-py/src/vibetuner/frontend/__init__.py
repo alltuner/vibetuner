@@ -35,9 +35,9 @@ dependencies: list[Any] = [
 app = FastAPI(
     debug=ctx.DEBUG,
     lifespan=lifespan_module.lifespan,
-    docs_url=None,
-    redoc_url=None,
-    openapi_url=None,
+    docs_url="/docs" if ctx.DEBUG else None,
+    redoc_url="/redoc" if ctx.DEBUG else None,
+    openapi_url="/openapi.json" if ctx.DEBUG else None,
     middleware=middlewares,
     dependencies=dependencies,
 )
