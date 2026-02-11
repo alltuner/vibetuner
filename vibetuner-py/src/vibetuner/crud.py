@@ -421,6 +421,8 @@ def _select_fields(
     """Return only the selected fields from a document."""
     data = doc.model_dump()
     filtered = {k: v for k, v in data.items() if k in selected or k == "id"}
+    if "id" in filtered:
+        filtered["id"] = str(doc.id)
     if response_schema:
         return response_schema.model_validate(filtered).model_dump(
             include=selected | {"id"}
