@@ -1,5 +1,6 @@
 # ABOUTME: Jinja2 template rendering for HTML responses.
 # ABOUTME: Lives outside vibetuner.frontend to avoid circular imports with tune.py.
+import threading
 from collections.abc import Callable
 from datetime import timedelta
 from typing import Any
@@ -31,6 +32,7 @@ __all__ = [
 
 
 # App-level template context: static globals and dynamic providers
+_context_lock = threading.RLock()
 _template_globals: dict[str, Any] = {}
 _context_providers: list[Callable[[], dict[str, Any]]] = []
 
@@ -53,7 +55,8 @@ def register_globals(globals_dict: dict[str, Any]) -> None:
             "og_image": "/static/og.png",
         })
     """
-    _template_globals.update(globals_dict)
+    with _context_lock:
+        _template_globals.update(globals_dict)
 
 
 def register_context_provider(func=None):
@@ -75,12 +78,14 @@ def register_context_provider(func=None):
     """
     if func is not None:
         # Used as @register_context_provider (without parentheses)
-        _context_providers.append(func)
+        with _context_lock:
+            _context_providers.append(func)
         return func
 
     # Used as @register_context_provider()
     def decorator(fn):
-        _context_providers.append(fn)
+        with _context_lock:
+            _context_providers.append(fn)
         return fn
 
     return decorator
@@ -88,8 +93,10 @@ def register_context_provider(func=None):
 
 def _collect_provider_context() -> dict[str, Any]:
     """Run all registered context providers and merge results."""
+    with _context_lock:
+        providers = list(_context_providers)
     result: dict[str, Any] = {}
-    for provider in _context_providers:
+    for provider in providers:
         try:
             ctx = provider()
             if isinstance(ctx, dict):
@@ -391,9 +398,11 @@ def render_template(
     _ensure_custom_filters()
     ctx = ctx or {}
     language = getattr(request.state, "language", data_ctx.default_language)
+    with _context_lock:
+        globals_snapshot = dict(_template_globals)
     merged_ctx = {
         **data_ctx.model_dump(),
-        **_template_globals,
+        **globals_snapshot,
         **_collect_provider_context(),
         "request": request,
         "language": language,
@@ -431,9 +440,11 @@ def render_template_string(
     _ensure_custom_filters()
     ctx = ctx or {}
     language = getattr(request.state, "language", data_ctx.default_language)
+    with _context_lock:
+        globals_snapshot = dict(_template_globals)
     merged_ctx = {
         **data_ctx.model_dump(),
-        **_template_globals,
+        **globals_snapshot,
         **_collect_provider_context(),
         "request": request,
         "language": language,
