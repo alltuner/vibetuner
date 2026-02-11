@@ -86,6 +86,104 @@ def debug_version(request: Request):
     return render_template("debug/version.html.jinja", request)
 
 
+# Skeleton template block definitions for introspection
+_SKELETON_BLOCKS = [
+    {
+        "name": "title",
+        "location": "<head> > <title>",
+        "description": "Sets the page title shown in the browser tab.",
+        "example": '{% block title %}My Page{% endblock title %}',
+    },
+    {
+        "name": "head",
+        "location": "<head> (after default meta/CSS/JS)",
+        "description": "Inject additional meta tags, stylesheets, or inline styles.",
+        "example": (
+            "{% block head %}\n"
+            '    <link rel="stylesheet" href="/extra.css" />\n'
+            "{% endblock head %}"
+        ),
+    },
+    {
+        "name": "start_of_body",
+        "location": "<body> (first child)",
+        "description": "Content rendered before the header. Useful for banners or skip-nav links.",
+        "example": (
+            "{% block start_of_body %}\n"
+            '    <a href="#main" class="sr-only">Skip to content</a>\n'
+            "{% endblock start_of_body %}"
+        ),
+    },
+    {
+        "name": "header",
+        "location": "<body> (before main content)",
+        "description": (
+            "The page header. Includes the default header unless SKIP_HEADER is set. "
+            "Override to replace the entire header."
+        ),
+        "example": (
+            "{% block header %}\n"
+            "    <nav>Custom navigation</nav>\n"
+            "{% endblock header %}"
+        ),
+    },
+    {
+        "name": "body",
+        "location": "<body> (between header and footer)",
+        "description": "Primary content area. This is where your page content goes.",
+        "example": (
+            "{% block body %}\n"
+            "    <main>Hello, world!</main>\n"
+            "{% endblock body %}"
+        ),
+    },
+    {
+        "name": "content",
+        "location": "Inside {% block body %} (alias)",
+        "description": (
+            "Alias for the body block. Use either body or content — "
+            "content is the conventional name in Django/Flask/Laravel."
+        ),
+        "example": (
+            "{% block content %}\n"
+            "    <main>Hello, world!</main>\n"
+            "{% endblock content %}"
+        ),
+    },
+    {
+        "name": "footer",
+        "location": "<body> (after main content)",
+        "description": (
+            "The page footer. Includes the default footer unless SKIP_FOOTER is set. "
+            "Override to replace the entire footer."
+        ),
+        "example": (
+            "{% block footer %}\n"
+            "    <footer>Custom footer</footer>\n"
+            "{% endblock footer %}"
+        ),
+    },
+    {
+        "name": "end_of_body",
+        "location": "<body> (last child)",
+        "description": "Content rendered after the footer. Ideal for deferred scripts or modals.",
+        "example": (
+            "{% block end_of_body %}\n"
+            '    <script src="/app.js" defer></script>\n'
+            "{% endblock end_of_body %}"
+        ),
+    },
+]
+
+
+@router.get("/blocks", response_class=HTMLResponse)
+def debug_blocks(request: Request):
+    """Debug endpoint to list available skeleton template blocks."""
+    return render_template(
+        "debug/blocks.html.jinja", request, {"blocks": _SKELETON_BLOCKS}
+    )
+
+
 @router.get("/info", response_class=HTMLResponse)
 def debug_info(request: Request):
     cookies = dict(request.cookies)
