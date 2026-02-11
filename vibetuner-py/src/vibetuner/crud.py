@@ -147,13 +147,25 @@ def _register_create_route(
     @router.post("", name=f"{collection_name}_create", status_code=201)
     async def create_item(request: Request, data: schema):  # type: ignore[valid-type]
         if pre_create:
-            data = await pre_create(data, request) or data
+            try:
+                data = await pre_create(data, request) or data
+            except HTTPException:
+                raise
+            except Exception as exc:
+                logger.error("Hook execution failed: pre_create: {}", exc)
+                raise HTTPException(status_code=500, detail="Hook execution failed: pre_create")
 
         doc = model(**data.model_dump())
         await doc.insert()
 
         if post_create:
-            await post_create(doc, request)
+            try:
+                await post_create(doc, request)
+            except HTTPException:
+                raise
+            except Exception as exc:
+                logger.error("Hook execution failed: post_create: {}", exc)
+                raise HTTPException(status_code=500, detail="Hook execution failed: post_create")
 
         return _serialize_one(doc, response_schema)
 
@@ -196,14 +208,26 @@ def _register_update_route(
             raise HTTPException(status_code=404, detail="Not found")
 
         if pre_update:
-            data = await pre_update(doc, data, request) or data
+            try:
+                data = await pre_update(doc, data, request) or data
+            except HTTPException:
+                raise
+            except Exception as exc:
+                logger.error("Hook execution failed: pre_update: {}", exc)
+                raise HTTPException(status_code=500, detail="Hook execution failed: pre_update")
 
         update_data = data.model_dump(exclude_unset=True)
         if update_data:
             await doc.set(update_data)
 
         if post_update:
-            await post_update(doc, request)
+            try:
+                await post_update(doc, request)
+            except HTTPException:
+                raise
+            except Exception as exc:
+                logger.error("Hook execution failed: post_update: {}", exc)
+                raise HTTPException(status_code=500, detail="Hook execution failed: post_update")
 
         return _serialize_one(doc, response_schema)
 
@@ -222,12 +246,24 @@ def _register_delete_route(
             raise HTTPException(status_code=404, detail="Not found")
 
         if pre_delete:
-            await pre_delete(doc, request)
+            try:
+                await pre_delete(doc, request)
+            except HTTPException:
+                raise
+            except Exception as exc:
+                logger.error("Hook execution failed: pre_delete: {}", exc)
+                raise HTTPException(status_code=500, detail="Hook execution failed: pre_delete")
 
         await doc.delete()
 
         if post_delete:
-            await post_delete(doc, request)
+            try:
+                await post_delete(doc, request)
+            except HTTPException:
+                raise
+            except Exception as exc:
+                logger.error("Hook execution failed: post_delete: {}", exc)
+                raise HTTPException(status_code=500, detail="Hook execution failed: post_delete")
 
         return None
 
