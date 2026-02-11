@@ -1,3 +1,4 @@
+import asyncio
 import os
 import time
 from datetime import datetime
@@ -11,6 +12,8 @@ from vibetuner.paths import root as root_path
 
 
 router = APIRouter(prefix="/health")
+
+HEALTH_CHECK_TIMEOUT_SECONDS = 5
 
 # Store startup time for instance identification and uptime calculation
 _startup_time = datetime.now()
@@ -104,10 +107,14 @@ async def _check_mongodb() -> dict[str, Any]:
             return {"status": "not_initialized"}
 
         start = time.monotonic()
-        await mongo_client.admin.command("ping")
+        async with asyncio.timeout(HEALTH_CHECK_TIMEOUT_SECONDS):
+            await mongo_client.admin.command("ping")
         latency_ms = round((time.monotonic() - start) * 1000, 1)
 
         return {"status": "connected", "latency_ms": latency_ms}
+    except TimeoutError:
+        logger.warning("MongoDB health check timed out")
+        return {"status": "error", "error": "Health check timed out"}
     except Exception as e:
         logger.warning("MongoDB health check failed: {}", e)
         return {"status": "error", "error": str(e)}
@@ -121,11 +128,15 @@ async def _check_redis() -> dict[str, Any]:
         r = aioredis.from_url(str(settings.redis_url))
         try:
             start = time.monotonic()
-            await r.ping()
+            async with asyncio.timeout(HEALTH_CHECK_TIMEOUT_SECONDS):
+                await r.ping()
             latency_ms = round((time.monotonic() - start) * 1000, 1)
             return {"status": "connected", "latency_ms": latency_ms}
         finally:
             await r.aclose()
+    except TimeoutError:
+        logger.warning("Redis health check timed out")
+        return {"status": "error", "error": "Health check timed out"}
     except Exception as e:
         logger.warning("Redis health check failed: {}", e)
         return {"status": "error", "error": str(e)}
