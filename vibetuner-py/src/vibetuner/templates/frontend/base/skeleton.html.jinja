@@ -11,7 +11,9 @@
             {% endblock title %}
         </title>
         <link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
-        <script src="{{ url_for('js', path='bundle.js').path }}"></script>
+        {% block scripts %}
+            <script src="{{ url_for('js', path='bundle.js').path }}"></script>
+        {% endblock scripts %}
         {% if umami_website_id and not DEBUG %}
             <script defer src="/meta.js" data-website-id="{{ umami_website_id }}"></script>
         {% endif %}
