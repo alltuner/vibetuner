@@ -16,13 +16,13 @@ router = APIRouter(prefix="/health")
 HEALTH_CHECK_TIMEOUT_SECONDS = 5
 
 
-def _sanitize_error(e: Exception) -> str:
+def _sanitize_error(e: Exception, *, service: str = "unknown") -> str:
     """Return a sanitized error message safe for health check responses.
 
     Strips connection strings, file paths, and other potentially sensitive
     information. Returns only the exception type for external consumers.
     """
-    return f"Service unavailable ({type(e).__name__})"
+    return f"{service}: service unavailable ({type(e).__name__})"
 
 
 # Store startup time for instance identification and uptime calculation
@@ -127,7 +127,7 @@ async def _check_mongodb() -> dict[str, Any]:
         return {"status": "error", "error": "Health check timed out"}
     except Exception as e:
         logger.warning("MongoDB health check failed: {}", e)
-        return {"status": "error", "error": _sanitize_error(e)}
+        return {"status": "error", "error": _sanitize_error(e, service="mongodb")}
 
 
 _redis_client = None
@@ -165,7 +165,7 @@ async def _check_redis() -> dict[str, Any]:
         global _redis_client
         if _redis_client is r:
             _redis_client = None
-        return {"status": "error", "error": _sanitize_error(e)}
+        return {"status": "error", "error": _sanitize_error(e, service="redis")}
 
 
 def _check_s3() -> dict[str, Any]:
