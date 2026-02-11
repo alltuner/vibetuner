@@ -32,7 +32,7 @@ def get_worker() -> Worker:
             pass
     """
     if worker is None:
-        raise RuntimeError(
-            "Workers not configured. Set REDIS_URL and ensure workers are enabled."
-        )
+        from vibetuner.services.errors import redis_not_configured
+
+        raise RuntimeError(redis_not_configured())
     return worker

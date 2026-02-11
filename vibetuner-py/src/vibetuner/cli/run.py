@@ -30,10 +30,9 @@ def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
     from vibetuner.config import settings
 
     if not settings.workers_available:
-        logger.warning("Redis URL not configured. Workers will not be started.")
-        console.print(
-            "[red]Error: Redis URL not configured. Workers will not be started.[/red]"
-        )
+        from vibetuner.services.errors import redis_not_configured
+
+        redis_not_configured()
         raise typer.Exit(code=1)
 
     is_dev = mode == "dev"
