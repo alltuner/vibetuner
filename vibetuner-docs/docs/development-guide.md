@@ -624,6 +624,392 @@ Language switcher using `url_for_language`:
 </div>
 ```
 
+## CRUD Factory
+
+Generate complete REST API endpoints from Beanie Document models with a single function call.
+
+### Basic Usage
+
+```python
+from vibetuner.crud import create_crud_routes
+from app.models.post import Post
+
+post_routes = create_crud_routes(Post, prefix="/posts", tags=["posts"])
+```
+
+Include the router in your app (via `tune.py` routes or `app.include_router()`):
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.routes.posts import post_routes
+
+app = VibetunerApp(routes=[post_routes])
+```
+
+This generates five endpoints:
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/posts` | List with pagination, filtering, search, sort |
+| `POST` | `/posts` | Create a new document |
+| `GET` | `/posts/{item_id}` | Read a single document |
+| `PATCH` | `/posts/{item_id}` | Partial update |
+| `DELETE` | `/posts/{item_id}` | Delete a document |
+
+### Filtering, Searching, and Sorting
+
+```python
+post_routes = create_crud_routes(
+    Post,
+    prefix="/posts",
+    sortable_fields=["created_at", "title"],
+    filterable_fields=["status", "author_id"],
+    searchable_fields=["title", "content"],
+    page_size=25,
+    max_page_size=100,
+)
+```
+
+Query examples:
+
+- `GET /posts?status=published` — equality filter
+- `GET /posts?q=python` — text search across searchable fields
+- `GET /posts?sort=-created_at,title` — sort descending by date, then title
+- `GET /posts?offset=20&limit=10` — pagination
+- `GET /posts?fields=title,status` — sparse field selection
+
+### Lifecycle Hooks
+
+Attach async callbacks to intercept create, update, and delete operations:
+
+```python
+async def check_permissions(doc, data, request):
+    if request.state.user.id != str(doc.author_id):
+        raise HTTPException(403, "Not your post")
+    return data
+
+post_routes = create_crud_routes(
+    Post,
+    prefix="/posts",
+    pre_update=check_permissions,
+    post_create=notify_subscribers,
+)
+```
+
+Available hooks:
+
+| Hook | Signature |
+|------|-----------|
+| `pre_create` | `async (data, request) -> data` |
+| `post_create` | `async (doc, request)` |
+| `pre_update` | `async (doc, data, request) -> data` |
+| `post_update` | `async (doc, request)` |
+| `pre_delete` | `async (doc, request)` |
+| `post_delete` | `async (doc, request)` |
+
+### Custom Schemas
+
+Override the auto-generated Pydantic schemas for create/update payloads
+or response serialization:
+
+```python
+from pydantic import BaseModel
+
+class PostCreate(BaseModel):
+    title: str
+    content: str
+
+class PostResponse(BaseModel):
+    id: str
+    title: str
+    status: str
+
+post_routes = create_crud_routes(
+    Post,
+    create_schema=PostCreate,
+    response_schema=PostResponse,
+)
+```
+
+### Restricting Operations
+
+Only generate the endpoints you need:
+
+```python
+from vibetuner.crud import create_crud_routes, Operation
+
+# Read-only API
+post_routes = create_crud_routes(
+    Post,
+    operations={Operation.LIST, Operation.READ},
+)
+```
+
+### Route-Level Dependencies
+
+Apply FastAPI dependencies (e.g., authentication) to all generated routes:
+
+```python
+from vibetuner.frontend.auth import require_auth
+
+post_routes = create_crud_routes(
+    Post,
+    dependencies=[require_auth],
+)
+```
+
+## SSE / Real-Time Streaming
+
+Server-Sent Events helpers for pushing real-time updates to the browser,
+designed for use with HTMX.
+
+### Channel-Based Streaming
+
+Subscribe clients to a named channel and broadcast updates from anywhere:
+
+```python
+from vibetuner.sse import sse_endpoint, broadcast
+
+router = APIRouter()
+
+# Endpoint that auto-subscribes to the "notifications" channel
+@sse_endpoint("/events/notifications", channel="notifications", router=router)
+async def notifications_stream(request: Request):
+    pass  # channel kwarg handles the subscription
+```
+
+Broadcast from any route or background task:
+
+```python
+from vibetuner.sse import broadcast
+
+@router.post("/posts")
+async def create_post(request: Request):
+    post = await Post(**data).insert()
+    # Push HTML fragment to all subscribers
+    await broadcast(
+        "notifications",
+        "new-post",
+        data="<div>New post created!</div>",
+    )
+    return post
+```
+
+### Dynamic Channels
+
+Return a channel name from the decorated function for per-resource streams:
+
+```python
+@sse_endpoint("/events/room/{room_id}", router=router)
+async def room_stream(request: Request, room_id: str):
+    return f"room:{room_id}"  # subscribe to this channel
+```
+
+### Template-Rendered Broadcasts
+
+Broadcast rendered Jinja2 partials instead of raw strings:
+
+```python
+await broadcast(
+    "feed",
+    "new-post",
+    template="partials/post_card.html.jinja",
+    request=request,
+    ctx={"post": post},
+)
+```
+
+### Generator-Based Streaming
+
+For full control, yield events directly from an async generator:
+
+```python
+@sse_endpoint("/events/clock", router=router)
+async def clock_stream(request: Request):
+    while True:
+        yield {"event": "tick", "data": datetime.now().isoformat()}
+        await asyncio.sleep(5)
+```
+
+### HTMX Integration
+
+Connect an SSE endpoint to HTMX with the `sse-connect` extension:
+
+```html
+<div hx-ext="sse" sse-connect="/events/notifications">
+    <div sse-swap="new-post" hx-swap="beforeend">
+        <!-- new posts appear here -->
+    </div>
+</div>
+```
+
+### Multi-Worker Support
+
+When Redis is configured (`REDIS_URL`), broadcasts are relayed across
+all worker processes via Redis pub/sub automatically. No extra setup needed.
+
+## Template Context Providers
+
+Inject variables into every `render_template()` call without passing them
+explicitly each time.
+
+### Static Globals
+
+Use `register_globals()` to set values available in all templates:
+
+```python
+# src/app/config.py
+from vibetuner.rendering import register_globals
+
+register_globals({
+    "site_title": "My App",
+    "og_image": "/static/og.png",
+    "support_email": "help@example.com",
+})
+```
+
+Values are merged into the template context on every render. Explicit
+context passed to `render_template()` takes precedence over globals.
+
+### Dynamic Context Providers
+
+Use `@register_context_provider` for values that are computed at render time:
+
+```python
+from vibetuner.rendering import register_context_provider
+from vibetuner.runtime_config import get_config
+
+@register_context_provider
+def feature_flags() -> dict[str, Any]:
+    return {"show_beta_banner": True}
+
+# Also works with parentheses
+@register_context_provider()
+def analytics_context() -> dict[str, Any]:
+    return {"analytics_id": "UA-XXX"}
+```
+
+Provider functions must return a `dict[str, Any]`. They run synchronously on
+every `render_template()` call. Multiple providers can be registered and their
+results are merged.
+
+## Service Dependency Injection
+
+Vibetuner provides FastAPI `Depends()` wrappers for built-in services.
+
+### Available Services
+
+```python
+from fastapi import Depends
+from vibetuner.services import (
+    get_email_service,
+    get_blob_service,
+    get_runtime_config,
+)
+```
+
+### Email Service
+
+```python
+from vibetuner.services import get_email_service
+from vibetuner.services.email import EmailService
+
+@router.post("/contact")
+async def contact(
+    email_svc: EmailService = Depends(get_email_service),
+):
+    await email_svc.send_email(
+        to_address="support@example.com",
+        subject="Contact form",
+        html_body="<p>Hello</p>",
+        text_body="Hello",
+    )
+```
+
+### Blob Storage Service
+
+```python
+from vibetuner.services import get_blob_service
+from vibetuner.services.blob import BlobService
+
+@router.post("/upload")
+async def upload(
+    blobs: BlobService = Depends(get_blob_service),
+):
+    await blobs.put_object(...)
+```
+
+### Runtime Config
+
+```python
+from vibetuner.services import get_runtime_config
+from vibetuner.runtime_config import RuntimeConfig
+
+@router.get("/settings")
+async def app_settings(
+    config: RuntimeConfig = Depends(get_runtime_config),
+):
+    dark_mode = await config.get("features.dark_mode")
+    return {"dark_mode": dark_mode}
+```
+
+The dependency automatically refreshes the config cache if it is stale.
+
+## Health Check Endpoints
+
+Built-in health endpoints are available at `/health` for liveness probes,
+readiness checks, and service diagnostics.
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /health` | Fast liveness check (status + version + uptime) |
+| `GET /health?detailed=true` | Checks all configured services with latency |
+| `GET /health/ready` | Readiness probe — all services must be reachable |
+| `GET /health/ping` | Ultra-fast liveness — returns `{"status": "ok"}` |
+| `GET /health/id` | Instance identification (slug, port, PID, startup time) |
+
+### Liveness Check
+
+```bash
+curl http://localhost:8000/health
+# {"status": "healthy", "version": "1.0.0", "uptime_seconds": 3600}
+```
+
+### Detailed Health Check
+
+```bash
+curl http://localhost:8000/health?detailed=true
+# {
+#   "status": "healthy",
+#   "version": "1.0.0",
+#   "uptime_seconds": 3600,
+#   "services": {
+#     "mongodb": {"status": "connected", "latency_ms": 2.1},
+#     "redis": {"status": "connected", "latency_ms": 0.5}
+#   }
+# }
+```
+
+If any service reports an error, the overall status becomes `"degraded"`.
+
+### Readiness Probe
+
+Use `/health/ready` in Kubernetes or Docker health checks to ensure all
+services are reachable before routing traffic:
+
+```yaml
+# docker-compose.yml
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:8000/health/ready"]
+  interval: 30s
+  timeout: 5s
+  retries: 3
+```
+
+Services checked automatically based on configuration: MongoDB, Redis,
+S3/R2 endpoint, and email (Mailjet).
+
 ## Debugging
 
 ### View Logs
@@ -680,6 +1066,84 @@ async def test_create_post():
     await post.insert()  # MongoDB with Beanie
     found = await Post.get(post.id)
     assert found.title == "Test"
+```
+
+### Built-in Test Fixtures
+
+Vibetuner provides pytest fixtures in `vibetuner.testing` for common
+test scenarios. Add this import to your `conftest.py`:
+
+```python
+# tests/conftest.py
+from vibetuner.testing import *  # noqa: F403
+```
+
+#### `vibetuner_client` — Async HTTP Test Client
+
+Full-stack async test client with middleware, sessions, and HTMX support:
+
+```python
+async def test_homepage(vibetuner_client):
+    resp = await vibetuner_client.get("/")
+    assert resp.status_code == 200
+```
+
+Override `vibetuner_app` fixture to supply a custom FastAPI app instance.
+
+#### `vibetuner_db` — Temporary MongoDB Database
+
+Creates a unique test database, initialises Beanie with all registered
+models, and drops the database on teardown:
+
+```python
+async def test_create_post(vibetuner_db):
+    post = Post(title="Test", content="Content")
+    await post.insert()
+    assert await Post.get(post.id) is not None
+```
+
+Skips the test automatically if `MONGODB_URL` is not set.
+
+#### `mock_auth` — Authentication Mocking
+
+Patches the auth backend so requests appear authenticated without real
+sessions or cookies:
+
+```python
+async def test_profile(vibetuner_client, mock_auth):
+    mock_auth.login(name="Alice", email="alice@example.com")
+    resp = await vibetuner_client.get("/user/profile")
+    assert resp.status_code == 200
+
+    mock_auth.logout()
+    resp = await vibetuner_client.get("/user/profile")
+    assert resp.status_code != 200
+```
+
+#### `mock_tasks` — Background Task Mocking
+
+Test background task enqueuing without Redis:
+
+```python
+from unittest.mock import patch
+
+async def test_signup(vibetuner_client, mock_tasks):
+    with patch(
+        "app.tasks.emails.send_welcome_email",
+        mock_tasks.send_welcome_email,
+    ):
+        resp = await vibetuner_client.post("/signup", data={...})
+    assert mock_tasks.send_welcome_email.enqueue.called
+```
+
+#### `override_config` — Runtime Config Overrides
+
+Override `RuntimeConfig` values for a single test with automatic cleanup:
+
+```python
+async def test_feature_flag(override_config):
+    await override_config("features.dark_mode", True)
+    # Test code that reads the config value
 ```
 
 ## Code Quality

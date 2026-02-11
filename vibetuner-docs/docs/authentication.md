@@ -68,20 +68,75 @@ You can enable multiple providers at once:
 app = VibetunerApp(oauth_providers=["google", "github"])
 ```
 
-### Adding More Providers
+### Adding Custom OAuth Providers
 
-Google and GitHub are built-in. For other providers, use
-`register_oauth_provider()` directly:
+Google and GitHub are built-in. Add any other OAuth provider using the
+`custom_oauth_providers` dict in `tune.py`:
 
 ```python
-from vibetuner.frontend.oauth import register_oauth_provider
+# src/app/tune.py
+from vibetuner import VibetunerApp
 from vibetuner.models.oauth import OauthProviderModel
 
-register_oauth_provider("twitter", OauthProviderModel(...))
+app = VibetunerApp(
+    oauth_providers=["google"],  # built-in providers
+    custom_oauth_providers={
+        "twitter": OauthProviderModel(
+            identifier="id",          # field in userinfo for unique ID
+            params={
+                "authorize_url": "https://twitter.com/i/oauth2/authorize",
+                "access_token_url": "https://api.twitter.com/2/oauth2/token",
+                "userinfo_endpoint": "https://api.twitter.com/2/users/me",
+            },
+            client_kwargs={"scope": "users.read tweet.read"},
+            config={
+                "TWITTER_CLIENT_ID": "your-client-id",
+                "TWITTER_CLIENT_SECRET": "your-client-secret",
+            },
+        ),
+    },
+)
 ```
 
-To request a new built-in provider, file an issue at
+#### `OauthProviderModel` Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `identifier` | `str` | Userinfo field that contains the unique user ID |
+| `params` | `dict` | OAuth endpoint URLs (`authorize_url`, etc.) |
+| `client_kwargs` | `dict` | Client settings (e.g., `{"scope": "..."}`) |
+| `config` | `dict` | Credentials (`CLIENT_ID`, `CLIENT_SECRET`) |
+
+The callback URL for any provider follows the pattern:
+`/auth/provider/{provider_name}`
+
+For more built-in providers, file an issue at
 [github.com/alltuner/vibetuner](https://github.com/alltuner/vibetuner/issues).
+
+### OAuth Account Linking
+
+Vibetuner resolves returning users by their **OAuth account ID** (the
+combination of `provider` + `provider_user_id`), not by email address.
+This makes authentication resilient to email changes on the provider side.
+
+The resolution flow works as follows:
+
+1. **OAuth account exists** — User is found through the stored link between
+   `OAuthAccountModel` and `UserModel`. Works even if the user's email has
+   changed on the provider.
+2. **OAuth account is new, email matches existing user** — The new OAuth
+   account is linked to the existing user. This lets users sign in with
+   multiple providers (e.g., Google and GitHub) and land on the same
+   account.
+3. **OAuth account is new, no matching email** — A new user account is
+   created with the OAuth account linked.
+
+This approach means:
+
+- Users can change their email on Google/GitHub without losing access
+- Multiple OAuth providers can be linked to one user account
+- The `OAuthAccountModel` stores per-provider profile data (email, name,
+  picture) separately from the main `UserModel`
 
 ## Magic Link Authentication
 

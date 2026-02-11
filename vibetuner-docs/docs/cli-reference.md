@@ -146,6 +146,81 @@ vibetuner db create-schema
 **Note:** This command is only for SQL databases. MongoDB collections are created
 automatically when documents are inserted.
 
+## `vibetuner doctor`
+
+Validates your project setup and diagnoses common configuration issues.
+
+```bash
+vibetuner doctor
+```
+
+Runs diagnostic checks across eight categories and prints a colour-coded
+report. Exits with code 1 if any errors are found.
+
+### Check Categories
+
+| Category | What it checks |
+|----------|---------------|
+| **Project Structure** | Root detection, `.copier-answers.yml`, `.env` file, `src/` layout |
+| **App Configuration** | Loads `tune.py` and reports import or config errors |
+| **Environment** | Environment mode, `SESSION_KEY` strength |
+| **Service Connectivity** | TCP reachability of MongoDB, Redis, R2/S3 endpoints |
+| **Models** | Counts and lists registered Beanie document models |
+| **Templates** | Verifies `templates/` directory and checks Jinja2 syntax |
+| **Dependencies** | Installed versions of vibetuner, FastAPI, Beanie, Granian, Pydantic |
+| **Ports** | Availability of ports 8000 (frontend) and 11111 (worker UI) |
+
+### Example Output
+
+```text
+Project Structure
+  ✓ Project root: /path/to/myproject
+  ✓ .copier-answers.yml: Found
+  ✓ .env file: Found
+  ✓ src/ layout: Package: myapp
+
+App Configuration
+  ✓ tune.py: Loaded successfully
+
+Environment
+  ✓ Environment: development
+  ! SESSION_KEY: Using default — set a unique secret in .env
+
+Service Connectivity
+  ✓ MongoDB: localhost:27017 reachable
+  - Redis: REDIS_URL not configured
+
+Models
+  ✓ Registered models: 3 model(s): UserModel, OAuthAccountModel, Post
+
+Templates
+  ✓ Templates dir: Found
+  ✓ Template syntax: 12 file(s) checked
+
+Dependencies
+  ✓ vibetuner: v0.5.0
+  ✓ fastapi: v0.115.0
+  ✓ beanie: v1.27.0
+  ✓ granian: v1.7.0
+  ✓ pydantic: v2.10.0
+
+Ports
+  ✓ Frontend (8000): Available
+  ✓ Worker UI (11111): Available
+
+Summary
+  Passed   15
+  Warnings  1
+  Errors    0
+```
+
+### Status Icons
+
+- **✓** (green) — check passed
+- **!** (yellow) — warning, non-blocking issue
+- **✗** (red) — error, must be fixed
+- **-** (dim) — skipped (not applicable)
+
 ## `vibetuner version`
 
 Show version information.

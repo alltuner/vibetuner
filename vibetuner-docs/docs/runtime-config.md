@@ -195,6 +195,116 @@ is_stale = RuntimeConfig.is_cache_stale()
 entries = await RuntimeConfig.get_all_config()
 ```
 
+### `config_value` Decorator
+
+A decorator alternative to `register_config_value` that registers a config
+key and returns an async getter. The decorated function provides the default:
+
+```python
+from vibetuner.runtime_config import config_value
+
+@config_value("features.dark_mode", value_type="bool", category="features")
+def dark_mode() -> bool:
+    """Enable dark mode for users."""
+    return False  # default value
+
+@config_value(
+    "limits.max_uploads",
+    value_type="int",
+    category="limits",
+    description="Maximum uploads per user per day",
+)
+def max_uploads() -> int:
+    return 10
+
+# In an async context, call the decorated function to get the resolved value:
+enabled = await dark_mode()
+limit = await max_uploads()
+```
+
+The decorator:
+
+1. Calls the function once at import time to capture the default
+2. Registers the key with `register_config_value()`
+3. Replaces the function with an async wrapper that resolves the value
+   through the config layer stack (runtime override > MongoDB > default)
+4. Uses the function's docstring as the config description if none is
+   provided explicitly
+5. Exposes the key as `dark_mode.key` for programmatic access
+
+#### `config_value` Parameters
+
+```python
+@config_value(
+    key: str,                    # Dot-notation config key
+    *,
+    value_type: str = "str",     # "str", "int", "float", "bool", "json"
+    description: str | None,     # Falls back to function docstring
+    category: str = "general",   # Grouping in debug UI
+    is_secret: bool = False,     # Mask in debug UI
+)
+```
+
+### `ConfigGroup` Class
+
+Group related config values into a typed class. Fields are auto-registered
+when the class is defined:
+
+```python
+from vibetuner.runtime_config import ConfigGroup, ConfigField
+
+class FeatureFlags(ConfigGroup, category="features"):
+    dark_mode = ConfigField(
+        default=False,
+        value_type="bool",
+        description="Enable dark mode",
+    )
+    max_items = ConfigField(
+        default=50,
+        value_type="int",
+        description="Max items per page",
+    )
+    api_key = ConfigField(
+        default="default-key",
+        value_type="str",
+        description="External API key",
+        is_secret=True,
+    )
+```
+
+Access values with `await`:
+
+```python
+# In an async context:
+enabled = await FeatureFlags.dark_mode    # bool
+limit = await FeatureFlags.max_items      # int
+```
+
+Each field is registered under `"{category}.{field_name}"`, so
+`FeatureFlags.dark_mode` registers the key `"features.dark_mode"`.
+
+#### `ConfigField` Parameters
+
+```python
+ConfigField(
+    default: Any,                # Default value
+    value_type: str = "str",     # "str", "int", "float", "bool", "json"
+    description: str | None,     # Human-readable description
+    is_secret: bool = False,     # Mask in debug UI, prevent editing
+)
+```
+
+#### When to Use Each API
+
+| API | Best for |
+|-----|----------|
+| `register_config_value()` | Imperative registration at module level |
+| `@config_value()` | Single standalone config values with defaults |
+| `ConfigGroup` | Groups of related settings (feature flags, limits) |
+
+All three APIs share the same underlying `RuntimeConfig` resolution and
+appear together in the debug UI at `/debug/config`.
+
 ## Debug UI
 
 The debug UI at `/debug/config` provides:

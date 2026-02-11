@@ -24,11 +24,37 @@ Important notes:
 - [Tech Stack](https://vibetuner.alltuner.com/tech-stack.html.md): Detailed information about all technologies used and why they were chosen
 - [Authentication](https://vibetuner.alltuner.com/authentication.html.md): OAuth and magic link authentication setup and configuration
 
+## Features
+
+- **CRUD Factory**: `create_crud_routes()` generates list/create/read/update/delete
+  endpoints for Beanie models with pagination, filtering, sorting, and search
+- **SSE Helpers**: `@sse_endpoint()` and `broadcast()` for real-time streaming with
+  HTMX. Import from `vibetuner.sse`. Redis pub/sub for multi-worker support
+- **Template Context Providers**: `register_globals()` and `@register_context_provider`
+  inject variables into every template render
+- **Service DI**: `get_email_service()`, `get_blob_service()`, `get_runtime_config()`
+  FastAPI dependency wrappers
+- **Health Checks**: `/health`, `/health/ping`, `/health/ready`, `/health/id` endpoints
+  with service connectivity checks
+- **Robust Tasks**: `@robust_task()` decorator with exponential backoff retries and
+  MongoDB dead letter collection
+- **Streaq UI**: Task queue monitoring dashboard at `/debug/tasks`
+- **Doctor CLI**: `vibetuner doctor` validates project setup, services, and config
+- **Config Decorators**: `@config_value()` and `ConfigGroup` for type-safe runtime
+  configuration
+- **Testing Fixtures**: `vibetuner_client`, `mock_auth`, `mock_tasks`,
+  `override_config`, `vibetuner_db` pytest fixtures
+- **Error Messages**: Actionable error messages with env var examples, Docker
+  commands, and documentation links
+
 ## Reference
 
-- [CLI Reference](https://vibetuner.alltuner.com/cli-reference.html.md): Complete reference for `vibetuner scaffold`, `vibetuner run`, and `vibetuner db` commands
-- [Scaffolding Reference](https://vibetuner.alltuner.com/scaffolding.html.md): Template prompts, post-generation tasks, and updating existing projects
-- [Deployment](https://vibetuner.alltuner.com/deployment.html.md): Docker production builds, environment configuration, and deployment options
+- [CLI Reference](https://vibetuner.alltuner.com/cli-reference.html.md):
+  Commands for `vibetuner scaffold`, `vibetuner run`, `vibetuner db`, and `vibetuner doctor`
+- [Scaffolding Reference](https://vibetuner.alltuner.com/scaffolding.html.md):
+  Template prompts, post-generation tasks, and updating existing projects
+- [Deployment](https://vibetuner.alltuner.com/deployment.html.md):
+  Docker production builds, environment configuration, and deployment options
 
 ## Development
 

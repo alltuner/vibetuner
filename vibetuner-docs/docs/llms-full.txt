@@ -706,6 +706,421 @@ async def home(request: Request):
     })
 ```
 
+### CRUD Factory
+
+Vibetuner includes a CRUD route factory that generates list, create, read, update,
+and delete endpoints for Beanie Document models with one function call.
+
+```python
+from vibetuner.crud import create_crud_routes, Operation
+from app.models import Post
+
+# Generate all CRUD routes
+post_routes = create_crud_routes(
+    Post,
+    prefix="/api/posts",
+    tags=["posts"],
+    sortable_fields=["created_at", "title"],
+    filterable_fields=["status", "author_id"],
+    searchable_fields=["title", "content"],
+    page_size=25,
+    max_page_size=100,
+)
+```
+
+Register the router in `tune.py`:
+
+```python
+app = VibetunerApp(routes=[post_routes])
+```
+
+**Generated endpoints:**
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/posts` | List with pagination, filtering, sorting, search |
+| POST | `/api/posts` | Create a new document |
+| GET | `/api/posts/{item_id}` | Read a single document |
+| PATCH | `/api/posts/{item_id}` | Update a document (partial) |
+| DELETE | `/api/posts/{item_id}` | Delete a document |
+
+**Query parameters for list:**
+
+- `offset` / `limit` — Pagination (default page size: 25)
+- `sort` — Comma-separated fields, prefix with `-` for descending (e.g., `?sort=-created_at`)
+- `q` — Text search across searchable fields (case-insensitive regex)
+- `fields` — Comma-separated field names to include in response
+- Any filterable field as a query param (e.g., `?status=published`)
+
+**Limiting operations:**
+
+```python
+# Only generate list and read (no create/update/delete)
+post_routes = create_crud_routes(
+    Post,
+    operations={Operation.LIST, Operation.READ},
+)
+```
+
+**Custom schemas and hooks:**
+
+```python
+from pydantic import BaseModel
+
+class PostCreate(BaseModel):
+    title: str
+    content: str
+
+class PostResponse(BaseModel):
+    id: str
+    title: str
+
+async def before_create(data, request):
+    data.author_id = request.state.user.id
+    return data
+
+post_routes = create_crud_routes(
+    Post,
+    create_schema=PostCreate,
+    response_schema=PostResponse,
+    pre_create=before_create,
+    post_create=lambda doc, req: print(f"Created {doc.id}"),
+    pre_update=lambda doc, data, req: data,
+    post_update=lambda doc, req: None,
+    pre_delete=lambda doc, req: None,
+    post_delete=lambda doc, req: None,
+    dependencies=[require_auth],
+)
+```
+
+### Server-Sent Events (SSE)
+
+Vibetuner provides SSE helpers for real-time streaming with HTMX. Import from
+`vibetuner.sse` (not `vibetuner.frontend.sse`).
+
+```python
+from vibetuner.sse import sse_endpoint, broadcast
+```
+
+**Channel-based endpoint (auto-subscribe):**
+
+```python
+from fastapi import APIRouter, Request
+from vibetuner.sse import sse_endpoint
+
+router = APIRouter()
+
+@sse_endpoint("/events/notifications", channel="notifications", router=router)
+async def notifications_stream(request: Request):
+    pass  # channel kwarg handles everything
+```
+
+**Dynamic channel based on path params:**
+
+```python
+@sse_endpoint("/events/room/{room_id}", router=router)
+async def room_stream(request: Request, room_id: str):
+    return f"room:{room_id}"  # return channel name
+```
+
+**Generator-based (full control):**
+
+```python
+import asyncio
+
+@sse_endpoint("/events/custom", router=router)
+async def custom_stream(request: Request):
+    while True:
+        yield {"event": "tick", "data": "ping"}
+        await asyncio.sleep(5)
+```
+
+**Broadcasting events:**
+
+```python
+from vibetuner.sse import broadcast
+
+# Raw data
+await broadcast("notifications", "update", data="<div>New item!</div>")
+
+# With template rendering
+await broadcast(
+    "feed",
+    "new-post",
+    template="partials/post.html.jinja",
+    request=request,
+    ctx={"post": post},
+)
+```
+
+SSE uses in-process channels by default. When Redis is configured, events are
+automatically bridged via Redis pub/sub for multi-worker support.
+
+**HTMX client example:**
+
+```html
+<div hx-ext="sse" sse-connect="/events/notifications" sse-swap="update">
+    <!-- Updates appear here -->
+</div>
+```
+
+### Template Context Providers
+
+Register static globals or dynamic context providers available in every template.
+
+**Static globals:**
+
+```python
+from vibetuner.rendering import register_globals
+
+register_globals({
+    "site_title": "My App",
+    "og_image": "/static/og.png",
+})
+```
+
+**Dynamic providers (called on every render):**
+
+```python
+from vibetuner.rendering import register_context_provider
+
+@register_context_provider
+def site_context() -> dict:
+    return {"site_title": settings.site_title, "year": 2025}
+
+# Also works with parentheses
+@register_context_provider()
+def analytics_context() -> dict:
+    return {"analytics_id": "UA-XXX"}
+```
+
+Values from providers and globals are merged into every `render_template()` call.
+User-provided context in the render call takes precedence.
+
+### Service Dependency Injection
+
+Vibetuner provides FastAPI `Depends()` wrappers for built-in services:
+
+```python
+from fastapi import Depends
+from vibetuner.services import (
+    get_email_service,
+    get_blob_service,
+    get_runtime_config,
+)
+
+@router.post("/send")
+async def send(email=Depends(get_email_service)):
+    await email.send_email(to_address="user@example.com", ...)
+
+@router.post("/upload")
+async def upload(blobs=Depends(get_blob_service)):
+    await blobs.upload(file_data, filename)
+
+@router.get("/settings")
+async def settings_page(config=Depends(get_runtime_config)):
+    value = await config.get("features.dark_mode")
+```
+
+### Health Check Endpoints
+
+Built-in health check routes are mounted at `/health`:
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /health/ping` | Liveness probe — always fast, no external calls |
+| `GET /health` | Basic health with uptime. Add `?detailed=true` for service checks |
+| `GET /health/ready` | Readiness probe — checks all configured services |
+| `GET /health/id` | Instance identification (app name, port, PID, startup time) |
+
+The detailed health check and readiness probe test MongoDB, Redis, S3/R2, and email
+connectivity with latency measurements. Returns `"degraded"` or `"not_ready"` if
+any required service is down.
+
+### Robust Tasks (Retries & Dead Letters)
+
+For tasks that need automatic retry with exponential backoff:
+
+```python
+from vibetuner.tasks.robust import robust_task
+
+@robust_task(max_retries=5, backoff_base=2.0, backoff_max=600)
+async def send_report(account_id: str):
+    # If this raises, it retries with exponential backoff
+    ...
+```
+
+**Parameters:**
+
+- `max_retries` — Maximum attempts before giving up (default: 3)
+- `backoff_base` — Base for exponential backoff: delay = base^tries (default: 2.0)
+- `backoff_max` — Maximum backoff delay in seconds (default: 300)
+- `timeout` — Task timeout (forwarded to Streaq)
+- `on_failure` — Callback on permanent failure: `(task_name, task_id, exception)`
+
+After all retries are exhausted, the task is saved to the `dead_letters` MongoDB
+collection as a `DeadLetterModel` document with task name, error details, and
+try count.
+
+### Streaq Task Queue UI
+
+When background workers are configured, Vibetuner automatically mounts the Streaq
+task queue UI at `/debug/tasks`. This provides a web interface for monitoring
+queued, running, and completed tasks. Access is restricted by the same debug
+access check used for other debug routes.
+
+### `vibetuner doctor`
+
+A diagnostic CLI command that validates your project setup:
+
+```bash
+vibetuner doctor
+```
+
+Checks performed:
+
+- **Project structure** — root directory, `.copier-answers.yml`, `.env`, `src/` layout
+- **App configuration** — `tune.py` loads without errors
+- **Environment** — environment mode, SESSION_KEY
+- **Service connectivity** — MongoDB, Redis, R2/S3 reachability
+- **Models** — registered Beanie models
+- **Templates** — template directory exists, basic syntax checks
+- **Dependencies** — vibetuner, FastAPI, Beanie, Granian versions
+- **Ports** — 8000 (frontend) and 11111 (worker UI) availability
+
+Output uses colored status icons and a summary table. Exits with code 1 if
+any errors are found.
+
+### Config Decorators and ConfigGroup
+
+In addition to `register_config_value()`, you can use decorators and classes:
+
+**`@config_value` decorator:**
+
+```python
+from vibetuner.runtime_config import config_value
+
+@config_value("features.dark_mode", value_type="bool", category="features")
+def dark_mode() -> bool:
+    return False  # default value
+
+# Later, in an async context:
+enabled = await dark_mode()
+```
+
+**`ConfigGroup` class:**
+
+```python
+from vibetuner.runtime_config import ConfigGroup, ConfigField
+
+class FeatureFlags(ConfigGroup, category="features"):
+    dark_mode = ConfigField(
+        default=False, value_type="bool", description="Enable dark mode"
+    )
+    max_items = ConfigField(
+        default=50, value_type="int", description="Max items per page"
+    )
+
+# Later:
+enabled = await FeatureFlags.dark_mode
+max_items = await FeatureFlags.max_items
+```
+
+All registered config values are viewable and editable at `/debug/config`.
+
+### Testing Utilities
+
+Vibetuner provides pytest fixtures for testing your application. Install the
+plugin by adding `vibetuner` to your test dependencies — fixtures are
+auto-discovered.
+
+**Available fixtures:**
+
+| Fixture | Description |
+|---------|-------------|
+| `vibetuner_client` | Async HTTP test client with full middleware |
+| `vibetuner_app` | The FastAPI app instance (override for custom apps) |
+| `vibetuner_db` | Temporary MongoDB database with Beanie initialized |
+| `mock_auth` | Mock authentication without real sessions |
+| `mock_tasks` | Mock background tasks without Redis |
+| `override_config` | Override RuntimeConfig values with auto-cleanup |
+
+**Example test:**
+
+```python
+import pytest
+from unittest.mock import patch
+
+@pytest.mark.asyncio
+async def test_dashboard(vibetuner_client, mock_auth):
+    mock_auth.login(name="Alice", email="alice@example.com")
+    resp = await vibetuner_client.get("/dashboard")
+    assert resp.status_code == 200
+
+@pytest.mark.asyncio
+async def test_signup_sends_email(vibetuner_client, mock_tasks):
+    with patch(
+        "app.tasks.emails.send_welcome_email",
+        mock_tasks.send_welcome_email,
+    ):
+        resp = await vibetuner_client.post("/signup", data={...})
+    assert mock_tasks.send_welcome_email.enqueue.called
+
+@pytest.mark.asyncio
+async def test_feature_flag(override_config):
+    await override_config("features.dark_mode", True)
+    from vibetuner.runtime_config import RuntimeConfig
+    value = await RuntimeConfig.get("features.dark_mode")
+    assert value is True
+```
+
+### Default Language Configuration
+
+Set the default language and supported languages in your project settings:
+
+```bash
+# .env or project config
+DEFAULT_LANGUAGE=en
+SUPPORTED_LANGUAGES=["es","fr","ca"]
+```
+
+The `default_language` setting (defaults to `"en"`) controls the locale used when
+no language is detected from the request. It affects template rendering,
+i18n middleware, and hreflang tag generation.
+
+### Centralized Error Messages
+
+When a service is not configured (MongoDB, Redis, S3, email), vibetuner displays
+actionable error messages with:
+
+- The exact `.env` variables needed
+- Example values
+- Docker commands for local development
+- Links to documentation
+- Hints for disabling the service if not needed
+
+These errors are displayed as rich console panels via `vibetuner.services.errors`.
+
+### Import Ordering in tune.py
+
+When configuring `tune.py`, import order matters. Vibetuner framework imports
+(like `from vibetuner import VibetunerApp`) must come before your application
+imports (like `from app.models import Post`). This ensures the framework is
+initialized before your application code tries to use it.
+
+```python
+# src/app/tune.py — correct order
+from vibetuner import VibetunerApp           # framework first
+
+from app.models import Post, Comment          # then your app
+from app.frontend.routes import app_router
+
+app = VibetunerApp(
+    models=[Post, Comment],
+    routes=[app_router],
+)
+```
+
 ## Reference
 
 ### CLI Reference
@@ -824,6 +1239,18 @@ Creates all database tables defined in SQLModel metadata. This command:
 - Models must be defined using SQLModel with `table=True`
 
 **Note:** This command is only for SQL databases. MongoDB collections are created automatically when documents are inserted.
+
+#### `vibetuner doctor`
+
+Run diagnostic checks on your project:
+
+```bash
+vibetuner doctor
+```
+
+Validates project structure, configuration, service connectivity, models,
+templates, dependencies, and port availability. Exits with code 1 if errors
+are found.
 
 #### `vibetuner version`
 

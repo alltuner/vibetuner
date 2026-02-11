@@ -160,6 +160,76 @@ Vibetuner supports multiple database backends. All are optional - choose what fi
 **Links:**
 - [GitHub](https://github.com/tastyware/streaq)
 
+## Framework Patterns
+
+### CRUD Route Factory
+
+**Why:** Eliminate boilerplate for standard data endpoints.
+
+- Generate list/create/read/update/delete routes from a Beanie Document
+- Built-in pagination, sorting, filtering, and text search
+- Pre/post hooks for custom logic (validation, side effects)
+- Custom request/response schemas
+- Field selection for partial responses
+
+### Server-Sent Events (SSE)
+
+**Why:** Real-time updates without WebSocket complexity.
+
+- Channel-based pub/sub with `broadcast()` / `sse_endpoint()`
+- In-process asyncio queues for single-worker mode
+- Redis pub/sub bridge for multi-worker deployments
+- Render Jinja2 templates directly as SSE payloads
+- Automatic keepalive for long-lived connections
+- Works natively with HTMX `hx-ext="sse"`
+
+### Runtime Configuration
+
+**Why:** Change app behavior without redeployment.
+
+- Layered resolution: runtime overrides > MongoDB > code defaults
+- `@config_value` decorator and `ConfigGroup` class for type-safe access
+- Cache with configurable TTL to avoid per-request DB queries
+- FastAPI dependency (`get_runtime_config`) for route injection
+
+### Testing Framework
+
+**Why:** Test vibetuner apps without external services.
+
+- `vibetuner_client` — async HTTP client with full middleware stack
+- `vibetuner_db` — temporary MongoDB with auto-teardown
+- `mock_auth` — patch authentication without sessions or cookies
+- `mock_tasks` — record background task enqueue calls without Redis
+- `override_config` — temporarily override runtime config values
+
+### Health Monitoring
+
+**Why:** Production observability out of the box.
+
+- `/health/ping` — fast liveness probe
+- `/health?detailed=true` — service-level latency checks
+- `/health/ready` — readiness probe for orchestrators
+- Checks MongoDB, Redis, S3/R2, and email connectivity
+- Reports version, uptime, and instance identity
+
+### Robust Task Processing
+
+**Why:** Reliable background jobs in production.
+
+- `@robust_task` decorator with exponential backoff retries
+- Dead letter collection in MongoDB for failed tasks
+- Optional failure callback (sync or async)
+- Works alongside standard `@worker.task()` tasks
+
+### Project Diagnostics
+
+**Why:** Fast troubleshooting for new and existing projects.
+
+- `vibetuner doctor` CLI command
+- Validates project structure, env vars, service connectivity
+- Checks models, templates, dependencies, and port availability
+- Rich console output with actionable fix instructions
+
 ## Development Tools
 
 ### uv
