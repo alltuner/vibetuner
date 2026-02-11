@@ -433,3 +433,182 @@ class TestValueTypeValidation:
 
         result = RuntimeConfig._validate_value({"key": "value"}, "json")
         assert result == {"key": "value"}
+
+
+class TestConfigValueDecorator:
+    """Tests for the @config_value decorator."""
+
+    def test_config_value_registers_key(self):
+        """@config_value registers the key in the registry."""
+        from vibetuner.runtime_config import RuntimeConfig, config_value
+
+        RuntimeConfig._config_registry.clear()
+
+        @config_value("test.decorator_key", value_type="bool", category="test")
+        def my_flag() -> bool:
+            return True
+
+        assert "test.decorator_key" in RuntimeConfig._config_registry
+        entry = RuntimeConfig._config_registry["test.decorator_key"]
+        assert entry["default"] is True
+        assert entry["value_type"] == "bool"
+        assert entry["category"] == "test"
+
+    def test_config_value_uses_docstring_as_description(self):
+        """@config_value uses function docstring as description when none provided."""
+        from vibetuner.runtime_config import RuntimeConfig, config_value
+
+        RuntimeConfig._config_registry.clear()
+
+        @config_value("test.docstring_key", value_type="str")
+        def my_setting() -> str:
+            """My setting description."""
+            return "default"
+
+        entry = RuntimeConfig._config_registry["test.docstring_key"]
+        assert entry["description"] == "My setting description."
+
+    def test_config_value_explicit_description_overrides_docstring(self):
+        """Explicit description takes precedence over docstring."""
+        from vibetuner.runtime_config import RuntimeConfig, config_value
+
+        RuntimeConfig._config_registry.clear()
+
+        @config_value(
+            "test.explicit_desc", value_type="str", description="Explicit desc"
+        )
+        def my_setting() -> str:
+            """Docstring desc."""
+            return "default"
+
+        entry = RuntimeConfig._config_registry["test.explicit_desc"]
+        assert entry["description"] == "Explicit desc"
+
+    @pytest.mark.asyncio
+    async def test_config_value_returns_default(self):
+        """Decorated function returns default when no overrides exist."""
+        from vibetuner.runtime_config import RuntimeConfig, config_value
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        @config_value("test.deco_default", value_type="int")
+        def max_retries() -> int:
+            return 3
+
+        result = await max_retries()
+        assert result == 3
+
+    @pytest.mark.asyncio
+    async def test_config_value_returns_override(self):
+        """Decorated function returns runtime override when set."""
+        from vibetuner.runtime_config import RuntimeConfig, config_value
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        @config_value("test.deco_override", value_type="int")
+        def max_retries() -> int:
+            return 3
+
+        RuntimeConfig._runtime_overrides["test.deco_override"] = 10
+
+        result = await max_retries()
+        assert result == 10
+
+    def test_config_value_exposes_key_attribute(self):
+        """Decorated function has .key attribute for introspection."""
+        from vibetuner.runtime_config import RuntimeConfig, config_value
+
+        RuntimeConfig._config_registry.clear()
+
+        @config_value("test.key_attr", value_type="str")
+        def my_val() -> str:
+            return "val"
+
+        assert my_val.key == "test.key_attr"
+
+
+class TestConfigGroup:
+    """Tests for the ConfigGroup class-based API."""
+
+    def test_config_group_registers_fields(self):
+        """ConfigGroup subclass auto-registers ConfigField entries."""
+        from vibetuner.runtime_config import ConfigField, ConfigGroup, RuntimeConfig
+
+        RuntimeConfig._config_registry.clear()
+
+        class MyFlags(ConfigGroup, category="flags"):
+            dark_mode = ConfigField(
+                default=False, value_type="bool", description="Enable dark mode"
+            )
+            max_items = ConfigField(
+                default=50, value_type="int", description="Max items per page"
+            )
+
+        assert "flags.dark_mode" in RuntimeConfig._config_registry
+        assert "flags.max_items" in RuntimeConfig._config_registry
+
+        dark = RuntimeConfig._config_registry["flags.dark_mode"]
+        assert dark["default"] is False
+        assert dark["value_type"] == "bool"
+        assert dark["category"] == "flags"
+
+        items = RuntimeConfig._config_registry["flags.max_items"]
+        assert items["default"] == 50
+        assert items["value_type"] == "int"
+
+    @pytest.mark.asyncio
+    async def test_config_group_field_access_returns_default(self):
+        """Accessing a ConfigField returns the default via layered resolution."""
+        from vibetuner.runtime_config import ConfigField, ConfigGroup, RuntimeConfig
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        class Settings(ConfigGroup, category="settings"):
+            page_size = ConfigField(
+                default=25, value_type="int", description="Page size"
+            )
+
+        result = await Settings.page_size
+        assert result == 25
+
+    @pytest.mark.asyncio
+    async def test_config_group_field_access_returns_override(self):
+        """Accessing a ConfigField returns the runtime override when set."""
+        from vibetuner.runtime_config import ConfigField, ConfigGroup, RuntimeConfig
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        class Settings(ConfigGroup, category="settings"):
+            page_size = ConfigField(
+                default=25, value_type="int", description="Page size"
+            )
+
+        RuntimeConfig._runtime_overrides["settings.page_size"] = 100
+
+        result = await Settings.page_size
+        assert result == 100
+
+    def test_config_group_field_is_secret(self):
+        """ConfigField with is_secret=True is registered as secret."""
+        from vibetuner.runtime_config import ConfigField, ConfigGroup, RuntimeConfig
+
+        RuntimeConfig._config_registry.clear()
+
+        class Secrets(ConfigGroup, category="secrets"):
+            api_key = ConfigField(
+                default="changeme",
+                value_type="str",
+                description="API key",
+                is_secret=True,
+            )
+
+        entry = RuntimeConfig._config_registry["secrets.api_key"]
+        assert entry["is_secret"] is True

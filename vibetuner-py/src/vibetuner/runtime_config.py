@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable, Coroutine
 from datetime import datetime, timedelta
+from functools import wraps
 from typing import Any, Literal, TypedDict
 
 from vibetuner.config import settings
@@ -295,3 +297,112 @@ async def get_config(key: str, default: Any = None) -> Any:
         Config value from highest priority source
     """
     return await RuntimeConfig.get(key, default)
+
+
+def config_value(
+    key: str,
+    *,
+    value_type: ConfigValueType = "str",
+    description: str | None = None,
+    category: str = "general",
+    is_secret: bool = False,
+) -> Callable[[Callable[[], Any]], Callable[[], Coroutine[Any, Any, Any]]]:
+    """Decorator that registers a runtime config value.
+
+    The decorated function provides the default value. At runtime, calling the
+    decorated function returns the resolved value from the config layer stack
+    (runtime override > MongoDB > registered default).
+
+    Example::
+
+        @config_value("features.dark_mode", value_type="bool", category="features")
+        def dark_mode() -> bool:
+            return False  # default
+
+        # Later, in an async context:
+        enabled = await dark_mode()
+    """
+
+    def decorator(func: Callable[[], Any]) -> Callable[[], Coroutine[Any, Any, Any]]:
+        default = func()
+        register_config_value(
+            key=key,
+            default=default,
+            value_type=value_type,
+            description=description or func.__doc__,
+            category=category,
+            is_secret=is_secret,
+        )
+
+        @wraps(func)
+        async def wrapper() -> Any:
+            return await RuntimeConfig.get(key, default)
+
+        wrapper.key = key  # type: ignore[attr-defined]
+        return wrapper
+
+    return decorator
+
+
+class ConfigGroup:
+    """Base class for grouped config values with type-safe field access.
+
+    Subclass and declare fields as ``ConfigField`` descriptors. All fields are
+    auto-registered with ``RuntimeConfig`` when the class body is executed.
+
+    Example::
+
+        class FeatureFlags(ConfigGroup, category="features"):
+            dark_mode = ConfigField(
+                default=False, value_type="bool", description="Enable dark mode"
+            )
+            max_items = ConfigField(
+                default=50, value_type="int", description="Max items per page"
+            )
+
+        # Later, in an async context:
+        enabled = await FeatureFlags.dark_mode
+    """
+
+    def __init_subclass__(cls, category: str = "general", **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        cls._category = category
+        for attr_name, field in list(vars(cls).items()):
+            if isinstance(field, ConfigField):
+                field._bind(cls, attr_name)
+
+
+class ConfigField:
+    """Descriptor that registers a single config value within a ``ConfigGroup``.
+
+    Accessing the field on the class returns a coroutine that resolves the
+    current value through the config layer stack.
+    """
+
+    def __init__(
+        self,
+        default: Any,
+        value_type: ConfigValueType = "str",
+        description: str | None = None,
+        is_secret: bool = False,
+    ) -> None:
+        self.default = default
+        self.value_type = value_type
+        self.description = description
+        self.is_secret = is_secret
+        self.key: str | None = None
+
+    def _bind(self, owner: type, name: str) -> None:
+        category = getattr(owner, "_category", "general")
+        self.key = f"{category}.{name}"
+        register_config_value(
+            key=self.key,
+            default=self.default,
+            value_type=self.value_type,
+            description=self.description,
+            category=category,
+            is_secret=self.is_secret,
+        )
+
+    def __get__(self, obj: Any, objtype: type | None = None) -> Coroutine[Any, Any, Any]:
+        return RuntimeConfig.get(self.key, self.default)  # type: ignore[arg-type]
