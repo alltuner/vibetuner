@@ -363,6 +363,30 @@ def render_template(
     ctx: dict[str, Any] | None = None,
     **kwargs: Any,
 ) -> HTMLResponse:
+    """Render a Jinja2 template and return an HTMLResponse.
+
+    The template search path already includes the ``templates/frontend/``
+    directory, so template names should be **relative to that directory**.
+
+    Args:
+        template: Path to template file relative to ``templates/frontend/``.
+            Use ``"blog/list.html.jinja"``, **not** ``"frontend/blog/list.html.jinja"``.
+        request: FastAPI Request object.
+        ctx: Optional context dictionary merged into the template context.
+        **kwargs: Extra keyword arguments forwarded to ``TemplateResponse``.
+
+    Returns:
+        HTMLResponse with the rendered template.
+
+    Example::
+
+        # Correct - path is relative to templates/frontend/
+        render_template("blog/list.html.jinja", request)
+        render_template("admin/dashboard.html.jinja", request, {"stats": stats})
+
+        # Wrong - "frontend/" prefix is redundant and will cause a TemplateNotFound error
+        render_template("frontend/blog/list.html.jinja", request)  # TemplateNotFound!
+    """
     _ensure_custom_filters()
     ctx = ctx or {}
     language = getattr(request.state, "language", data_ctx.default_language)

@@ -176,10 +176,10 @@ For SQL databases, create tables with: `vibetuner db create-schema`
 
 ### Creating Templates
 
-Add templates in `templates/`:
+Add templates in `templates/frontend/`:
 
 ```html
-<!-- templates/blog/list.html.jinja -->
+<!-- templates/frontend/blog/list.html.jinja -->
 {% extends "base/skeleton.html.jinja" %}
 {% block content %}
     <div class="container mx-auto">
@@ -194,6 +194,27 @@ Add templates in `templates/`:
         </div>
     </div>
 {% endblock content %}
+```
+
+#### Template Path Convention
+
+The template search path already includes `templates/frontend/`, so when calling
+`render_template()` use paths **relative to that directory**:
+
+```python
+# Correct - path relative to templates/frontend/
+render_template("blog/list.html.jinja", request)
+render_template("admin/dashboard.html.jinja", request)
+
+# Wrong - "frontend/" prefix is redundant and causes TemplateNotFound
+render_template("frontend/blog/list.html.jinja", request)  # TemplateNotFound!
+```
+
+The same convention applies to `{% extends %}` and `{% include %}` inside templates:
+
+```html
+{% extends "base/skeleton.html.jinja" %}          {# correct #}
+{% extends "frontend/base/skeleton.html.jinja" %} {# wrong #}
 ```
 
 ### Built-in Template Filters
