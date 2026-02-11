@@ -3,9 +3,12 @@
 
 from collections.abc import AsyncGenerator
 
+from fastapi import HTTPException
+
+from vibetuner.logging import logger
 from vibetuner.runtime_config import RuntimeConfig
 from vibetuner.services.blob import BlobService
-from vibetuner.services.email import EmailService
+from vibetuner.services.email import EmailService, EmailServiceNotConfiguredError
 
 
 async def get_email_service() -> AsyncGenerator[EmailService, None]:
@@ -16,7 +19,13 @@ async def get_email_service() -> AsyncGenerator[EmailService, None]:
         async def send(email: EmailService = Depends(get_email_service)):
             await email.send_email(...)
     """
-    service = EmailService()
+    try:
+        service = EmailService()
+    except EmailServiceNotConfiguredError as e:
+        logger.error("Failed to initialize EmailService: {}", e)
+        raise HTTPException(
+            status_code=503, detail="Email service is not available"
+        ) from e
     yield service
 
 
@@ -28,7 +37,13 @@ async def get_blob_service() -> AsyncGenerator[BlobService, None]:
         async def upload(blobs: BlobService = Depends(get_blob_service)):
             await blobs.put_object(...)
     """
-    service = BlobService()
+    try:
+        service = BlobService()
+    except ValueError as e:
+        logger.error("Failed to initialize BlobService: {}", e)
+        raise HTTPException(
+            status_code=503, detail="Blob storage service is not available"
+        ) from e
     yield service
 
 
