@@ -1,5 +1,16 @@
 # Changelog
 
+## [7.0.1](https://github.com/alltuner/vibetuner/compare/v7.0.0...v7.0.1) (2026-02-11)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump @alltuner/vibetuner from 6.4.0 to 7.0.0 in /vibetuner-template ([#966](https://github.com/alltuner/vibetuner/issues/966)) ([8efbbb3](https://github.com/alltuner/vibetuner/commit/8efbbb3bcb5d14de233991d98674a336fddcd776))
+* **deps:** bump cryptography from 46.0.4 to 46.0.5 ([#971](https://github.com/alltuner/vibetuner/issues/971)) ([88fab70](https://github.com/alltuner/vibetuner/commit/88fab7046ff17a4927b7c826c1ac82baff4ab6e4))
+* **deps:** bump cryptography from 46.0.4 to 46.0.5 in /vibetuner-py ([#970](https://github.com/alltuner/vibetuner/issues/970)) ([b485553](https://github.com/alltuner/vibetuner/commit/b4855537b4dba20208d02b1e570373bad577d3ca))
+* **deps:** update dependency @alltuner/vibetuner to v7 ([#968](https://github.com/alltuner/vibetuner/issues/968)) ([9998321](https://github.com/alltuner/vibetuner/commit/9998321e608a563df4e68fccd89d15e7bff70040))
+* **deps:** update redis docker tag to v8.6 ([#969](https://github.com/alltuner/vibetuner/issues/969)) ([5514103](https://github.com/alltuner/vibetuner/commit/5514103f949715a284812786abb4ec8e9a27436c))
+
 ## [7.0.0](https://github.com/alltuner/vibetuner/compare/v6.4.1...v7.0.0) (2026-02-10)
 
 
