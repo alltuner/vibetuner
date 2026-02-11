@@ -7,12 +7,15 @@ from vibetuner.rendering import (
     render_template,
     render_template_string,
 )
+from vibetuner.sse import broadcast, sse_endpoint
 
 
 __all__ = [
     "VibetunerApp",
+    "broadcast",
     "register_context_provider",
     "register_globals",
     "render_template",
     "render_template_string",
+    "sse_endpoint",
 ]

@@ -13,7 +13,6 @@ from fastapi import APIRouter, Request
 from sse_starlette.sse import EventSourceResponse
 
 from vibetuner.logging import logger
-from vibetuner.rendering import render_template_string
 
 
 # ────────────────────────────────────────────────────────────────
@@ -188,6 +187,8 @@ async def broadcast(
     if template is not None:
         if request is None:
             raise ValueError("request is required when broadcasting with a template")
+        from vibetuner.rendering import render_template_string
+
         data = render_template_string(template, request, ctx)
 
     payload = {"event": event, "data": data}
@@ -204,6 +205,8 @@ async def _stream_from_generator(
     result: AsyncGenerator, template: str | None, request: Request
 ) -> AsyncGenerator[dict[str, str], None]:
     """Yield SSE events from a user-provided async generator."""
+    from vibetuner.rendering import render_template_string
+
     async for event in result:
         if isinstance(event, dict):
             data = event.get("data", "")
