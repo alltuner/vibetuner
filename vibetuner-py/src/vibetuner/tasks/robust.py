@@ -139,13 +139,17 @@ def robust_task(
             ``(task_name: str, task_id: str, exc: Exception)``.  May be async.
         **task_kwargs: Extra keyword arguments forwarded to ``worker.task()``.
     """
+    task_name_arg = task_kwargs.pop("name", None)
+    if task_name_arg is not None and not isinstance(task_name_arg, str):
+        raise TypeError(f"task name must be a string, got {type(task_name_arg).__name__}")
+
     from vibetuner.tasks.worker import get_worker
 
     worker = get_worker()
     _ensure_middleware(worker)
 
     def decorator(fn: Callable) -> Any:
-        task_name = task_kwargs.pop("name", None) or fn.__name__
+        task_name = task_name_arg or fn.__name__
         _configs[task_name] = _RobustConfig(
             max_retries=max_retries,
             backoff_base=backoff_base,
