@@ -6,6 +6,7 @@ from collections.abc import AsyncGenerator
 
 from fastapi import HTTPException
 
+
 from vibetuner.logging import logger
 from vibetuner.runtime_config import RuntimeConfig
 from vibetuner.services.blob import BlobService
@@ -64,5 +65,8 @@ async def get_runtime_config() -> AsyncGenerator[RuntimeConfig, None]:
         async with _cache_lock:
             # Double-check after acquiring the lock
             if RuntimeConfig.is_cache_stale():
-                await RuntimeConfig.refresh_cache()
+                try:
+                    await RuntimeConfig.refresh_cache()
+                except Exception:
+                    logger.warning("Failed to refresh runtime config cache")
     yield RuntimeConfig()
