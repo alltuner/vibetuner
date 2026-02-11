@@ -1,7 +1,5 @@
 # ABOUTME: Pytest fixtures and testing utilities for vibetuner applications.
 # ABOUTME: Provides test client, mock auth, mock DB, mock tasks, and config overrides.
-from __future__ import annotations
-
 import uuid
 from typing import Any, AsyncGenerator
 from unittest.mock import AsyncMock, patch
