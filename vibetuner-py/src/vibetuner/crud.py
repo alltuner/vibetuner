@@ -118,7 +118,6 @@ def _register_list_route(
         fields: str | None = Query(
             None, description="Comma-separated field names to include"
         ),
-        **kwargs,
     ):
         query = model.find()
         query = _apply_filters(query, request, filterable)
