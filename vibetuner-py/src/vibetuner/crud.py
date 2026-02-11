@@ -340,7 +340,9 @@ def create_crud_routes(
         _register_read_route(router, model, collection_name, response_schema)
 
     if Operation.UPDATE in ops:
-        _us = update_schema or create_schema or _build_create_schema(model)
+        _us = update_schema or _build_update_schema(
+            create_schema or _build_create_schema(model)
+        )
         _register_update_route(
             router,
             model,
@@ -391,6 +393,22 @@ def _build_create_schema(model: type[Document]) -> type[BaseModel]:
         {
             "__annotations__": {n: t for n, (t, _) in fields.items()},
             **{n: f for n, (_, f) in fields.items()},
+        },
+    )
+
+
+def _build_update_schema(create_schema: type[BaseModel]) -> type[BaseModel]:
+    """Build a partial update schema from a create schema with all fields Optional."""
+    fields: dict[str, Any] = {}
+    for name, field_info in create_schema.model_fields.items():
+        fields[name] = (field_info.annotation | None, None)
+
+    return type(
+        f"{create_schema.__name__.removesuffix('Create')}Update",
+        (BaseModel,),
+        {
+            "__annotations__": {n: t for n, (t, _) in fields.items()},
+            **{n: default for n, (_, default) in fields.items()},
         },
     )
 
