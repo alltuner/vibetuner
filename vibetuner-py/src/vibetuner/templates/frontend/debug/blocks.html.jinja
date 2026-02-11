@@ -1,0 +1,59 @@
+{% extends "base/skeleton.html.jinja" %}
+
+{% block title %}
+    Template Blocks - Debug
+{% endblock title %}
+{% block body %}
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-base-content mb-2">Template Blocks</h1>
+            <p class="text-base-content/70">
+                Available blocks in <code class="text-sm bg-base-200 px-1.5 py-0.5 rounded">base/skeleton.html.jinja</code> for template inheritance
+            </p>
+        </header>
+        <!-- Usage Hint -->
+        <div class="alert alert-info mb-8">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                </path>
+            </svg>
+            <div>
+                <p class="font-semibold">How to use</p>
+                <p>
+                    Extend the skeleton template and override any block below.
+                    Using a wrong block name causes a silent blank page.
+                </p>
+                <pre class="mt-2 text-xs"><code>{% raw %}{%- extends "base/skeleton.html.jinja" -%}
+{% block content %}
+    &lt;h1&gt;My Page&lt;/h1&gt;
+{% endblock content %}{% endraw %}</code></pre>
+            </div>
+        </div>
+        <!-- Blocks List -->
+        <div class="space-y-4">
+            {% for block in blocks %}
+                <div class="card bg-base-100 shadow border border-base-200">
+                    <div class="card-body p-5">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="flex-1">
+                                <h2 class="font-mono text-lg font-bold text-primary">{{ block.name }}</h2>
+                                <p class="text-base-content/70 text-sm mt-1">{{ block.description }}</p>
+                                <p class="text-xs text-base-content/50 mt-1">
+                                    Location: <code class="bg-base-200 px-1 py-0.5 rounded">{{ block.location }}</code>
+                                </p>
+                            </div>
+                            <span class="badge badge-outline badge-sm shrink-0">block</span>
+                        </div>
+                        <div class="mt-3">
+                            <pre class="bg-base-200 rounded-lg p-3 text-xs overflow-x-auto"><code>{{ block.example }}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <!-- Debug Navigation Footer -->
+        {% include "debug/components/debug_nav.html.jinja" %}
+
+    </div>
+{% endblock body %}
