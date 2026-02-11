@@ -1,5 +1,6 @@
 # ABOUTME: Jinja2 template rendering for HTML responses.
 # ABOUTME: Lives outside vibetuner.frontend to avoid circular imports with tune.py.
+from collections.abc import Callable
 from datetime import timedelta
 from typing import Any
 
@@ -31,7 +32,7 @@ __all__ = [
 
 # App-level template context: static globals and dynamic providers
 _template_globals: dict[str, Any] = {}
-_context_providers: list[Any] = []
+_context_providers: list[Callable[[], dict[str, Any]]] = []
 
 
 def register_globals(globals_dict: dict[str, Any]) -> None:
