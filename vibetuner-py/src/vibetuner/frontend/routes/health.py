@@ -13,6 +13,8 @@ from vibetuner.paths import root as root_path
 
 router = APIRouter(prefix="/health")
 
+HEALTH_CHECK_TIMEOUT_SECONDS = 5
+
 # Store startup time for instance identification and uptime calculation
 _startup_time = datetime.now()
 _startup_monotonic = time.monotonic()
@@ -105,7 +107,7 @@ async def _check_mongodb() -> dict[str, Any]:
             return {"status": "not_initialized"}
 
         start = time.monotonic()
-        async with asyncio.timeout(5):
+        async with asyncio.timeout(HEALTH_CHECK_TIMEOUT_SECONDS):
             await mongo_client.admin.command("ping")
         latency_ms = round((time.monotonic() - start) * 1000, 1)
 
@@ -126,7 +128,7 @@ async def _check_redis() -> dict[str, Any]:
         r = aioredis.from_url(str(settings.redis_url))
         try:
             start = time.monotonic()
-            async with asyncio.timeout(5):
+            async with asyncio.timeout(HEALTH_CHECK_TIMEOUT_SECONDS):
                 await r.ping()
             latency_ms = round((time.monotonic() - start) * 1000, 1)
             return {"status": "connected", "latency_ms": latency_ms}
