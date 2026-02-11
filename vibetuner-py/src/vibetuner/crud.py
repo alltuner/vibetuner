@@ -152,7 +152,7 @@ def _register_create_route(
             except HTTPException:
                 raise
             except Exception as exc:
-                logger.error("Hook execution failed: pre_create: {}", exc)
+                logger.error(f"Hook execution failed: pre_create: {exc}")
                 raise HTTPException(status_code=500, detail="Hook execution failed: pre_create")
 
         doc = model(**data.model_dump())
@@ -164,7 +164,7 @@ def _register_create_route(
             except HTTPException:
                 raise
             except Exception as exc:
-                logger.error("Hook execution failed: post_create: {}", exc)
+                logger.error(f"Hook execution failed: post_create: {exc}")
                 raise HTTPException(status_code=500, detail="Hook execution failed: post_create")
 
         return _serialize_one(doc, response_schema)
@@ -213,7 +213,7 @@ def _register_update_route(
             except HTTPException:
                 raise
             except Exception as exc:
-                logger.error("Hook execution failed: pre_update: {}", exc)
+                logger.error(f"Hook execution failed: pre_update: {exc}")
                 raise HTTPException(status_code=500, detail="Hook execution failed: pre_update")
 
         update_data = data.model_dump(exclude_unset=True)
@@ -226,7 +226,7 @@ def _register_update_route(
             except HTTPException:
                 raise
             except Exception as exc:
-                logger.error("Hook execution failed: post_update: {}", exc)
+                logger.error(f"Hook execution failed: post_update: {exc}")
                 raise HTTPException(status_code=500, detail="Hook execution failed: post_update")
 
         return _serialize_one(doc, response_schema)
@@ -251,7 +251,7 @@ def _register_delete_route(
             except HTTPException:
                 raise
             except Exception as exc:
-                logger.error("Hook execution failed: pre_delete: {}", exc)
+                logger.error(f"Hook execution failed: pre_delete: {exc}")
                 raise HTTPException(status_code=500, detail="Hook execution failed: pre_delete")
 
         await doc.delete()
@@ -262,7 +262,7 @@ def _register_delete_route(
             except HTTPException:
                 raise
             except Exception as exc:
-                logger.error("Hook execution failed: post_delete: {}", exc)
+                logger.error(f"Hook execution failed: post_delete: {exc}")
                 raise HTTPException(status_code=500, detail="Hook execution failed: post_delete")
 
         return None
