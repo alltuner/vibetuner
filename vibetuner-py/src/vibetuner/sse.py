@@ -207,6 +207,7 @@ async def _close_redis_publish_client() -> None:
 
 async def _publish_to_redis(channel: str, payload: dict[str, str]) -> None:
     """Publish a payload to Redis for multi-worker broadcasting (best-effort)."""
+    global _redis_publish_client
     try:
         client = await _get_redis_publish_client()
         if client is None:
@@ -216,6 +217,9 @@ async def _publish_to_redis(channel: str, payload: dict[str, str]) -> None:
 
         redis_channel = f"{settings.redis_key_prefix}sse:{channel}"
         await client.publish(redis_channel, json.dumps(payload))
+    except (ConnectionError, OSError):
+        logger.debug("Redis SSE publish failed due to connection error, resetting client")
+        _redis_publish_client = None
     except Exception:
         logger.debug("Redis SSE publish failed (local dispatch still succeeded)")
 
