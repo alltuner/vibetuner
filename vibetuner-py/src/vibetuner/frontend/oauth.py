@@ -135,6 +135,17 @@ def auto_register_providers(
 
     # Register custom providers (fully configured by the user)
     for name, provider in (custom_providers or {}).items():
+        if not isinstance(name, str):
+            logger.warning(
+                f"Skipping custom OAuth provider with non-string key: {name!r}"
+            )
+            continue
+        if not isinstance(provider, OauthProviderModel):
+            logger.warning(
+                f"Skipping custom OAuth provider '{name}': expected OauthProviderModel, "
+                f"got {type(provider).__name__}"
+            )
+            continue
         if name in _PROVIDERS:
             logger.warning(
                 f"Custom OAuth provider '{name}' conflicts with already-registered provider, skipping"
