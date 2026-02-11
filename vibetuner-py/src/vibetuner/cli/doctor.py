@@ -1,6 +1,5 @@
 # ABOUTME: Validates project setup: structure, env vars, service connectivity, models, templates.
 # ABOUTME: Provides `vibetuner doctor` CLI command for diagnosing project issues.
-from __future__ import annotations
 
 import importlib.metadata
 import socket

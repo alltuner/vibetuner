@@ -1,8 +1,6 @@
 # ABOUTME: Layered runtime configuration system with MongoDB persistence.
 # ABOUTME: Provides get/set config with priority: runtime overrides > MongoDB > registered defaults.
 
-from __future__ import annotations
-
 import json
 from collections.abc import Callable, Coroutine
 from datetime import datetime, timedelta

@@ -1,6 +1,5 @@
 # ABOUTME: Robust task decorator with retries, dead letters, and failure notifications.
 # ABOUTME: Wraps Streaq tasks with exponential backoff and MongoDB dead letter collection.
-from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
