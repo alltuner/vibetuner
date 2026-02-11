@@ -762,6 +762,90 @@ just sync
 
 Syncs both Python and JavaScript dependencies.
 
+## Common Import Pitfalls
+
+When working with `tune.py` and the framework internals, certain import patterns cause
+circular imports. This section explains the rules and how to avoid problems.
+
+### Why Circular Imports Happen
+
+The framework loads your `tune.py` via `vibetuner.loader` at startup. If `tune.py` imports
+a module that itself imports `vibetuner.loader` (or anything that triggers `tune.py` to be
+loaded again), you get a circular import.
+
+### Safe vs. Unsafe Imports in tune.py
+
+| Import | Safe? | Notes |
+|--------|-------|-------|
+| `from vibetuner.rendering import render_template` | Yes | `rendering.py` lives outside `vibetuner.frontend` specifically to avoid cycles |
+| `from vibetuner import render_template` | Yes | Re-export of the above |
+| `from vibetuner.frontend.templates import render_template` | No | `vibetuner.frontend.__init__` imports from `loader`, which imports `tune.py` |
+| `from vibetuner.frontend import localized` | No | Same reason — triggers `vibetuner.frontend.__init__` |
+| `from vibetuner.frontend.routing import LocalizedRouter` | Yes | Direct submodule import bypasses `__init__` |
+
+**Rule of thumb:** never import from `vibetuner.frontend` (the package) in `tune.py`.
+Import from specific submodules (`vibetuner.frontend.routing`, `vibetuner.frontend.deps`)
+or use the top-level re-exports (`vibetuner.rendering`).
+
+### Background Task Modules
+
+Task modules listed in `VibetunerApp.tasks` are imported after model initialization.
+If a task module imports a model at the top level, the model class must already be defined
+in `src/app/models/`:
+
+```python
+# src/app/tasks/emails.py
+from vibetuner.tasks.worker import get_worker
+from app.models.user import User  # OK — models are initialized before tasks load
+
+worker = get_worker()
+
+@worker.task()
+async def send_welcome(user_id: str):
+    user = await User.get(user_id)
+    ...
+```
+
+### Lifespan and Lazy Imports
+
+The framework's `lifespan()` function uses lazy imports to break potential cycles:
+
+```python
+# vibetuner/frontend/lifespan.py
+async def lifespan(app):
+    # Lazy import — tune.py may import vibetuner.frontend submodules
+    from vibetuner.loader import load_app_config
+    app_config = load_app_config()
+    ...
+```
+
+If you provide a custom `frontend_lifespan` in `tune.py`, follow the same pattern — use
+lazy imports for any `vibetuner.frontend` submodules you need inside the lifespan body:
+
+```python
+# src/app/tune.py
+from contextlib import asynccontextmanager
+from vibetuner import VibetunerApp
+from vibetuner.frontend.lifespan import base_lifespan
+
+@asynccontextmanager
+async def my_lifespan(app):
+    async with base_lifespan(app):
+        # Lazy import to avoid circular dependency
+        from vibetuner.frontend.hotreload import hotreload  # noqa: F811
+        ...
+        yield
+
+app = VibetunerApp(frontend_lifespan=my_lifespan)
+```
+
+### Quick Checklist
+
+1. In `tune.py`, import from `vibetuner.*` (top-level) or specific submodules, never from
+   `vibetuner.frontend` as a package.
+2. Task modules can import models at the top level — they load after model init.
+3. Custom lifespans should lazy-import `vibetuner.frontend.*` inside the function body.
+
 ## Next Steps
 
 - [Authentication](authentication.md) - Set up OAuth providers
