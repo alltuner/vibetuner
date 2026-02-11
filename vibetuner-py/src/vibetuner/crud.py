@@ -1,7 +1,5 @@
 # ABOUTME: Generic CRUD route factory for Beanie Document and SQLModel classes.
 # ABOUTME: Generates list/create/read/update/delete routes with pagination, filtering, and sorting.
-from __future__ import annotations
-
 from collections.abc import Callable
 from enum import StrEnum
 from typing import Any
