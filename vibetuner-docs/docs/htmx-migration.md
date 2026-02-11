@@ -162,6 +162,76 @@ import "htmx-ext-preload";
 import "htmx.org/dist/ext/hx-preload.js";
 ```
 
+## Common Migration Issues
+
+### SSE elements stop updating after upgrade
+
+**Symptom:** SSE-powered elements no longer receive updates.
+
+**Cause:** The `hx-ext="sse"` attribute was removed but the SSE extension script is
+still being loaded, conflicting with htmx v4's built-in SSE support.
+
+**Fix:** Remove both the `hx-ext="sse"` attribute and any `<script>` tag loading
+`htmx-ext-sse`. The `sse-connect` and `sse-swap` attributes work natively in v4.
+
+### `window.htmx` is undefined in inline scripts
+
+**Symptom:** Inline `<script>` tags or browser console show `htmx is not defined`.
+
+**Cause:** htmx v4 uses a default export that must be explicitly assigned to `window`.
+
+**Fix:** Update your JS entry point:
+
+```javascript
+import htmx from "htmx.org";
+window.htmx = htmx;
+```
+
+### Attributes no longer inherited by child elements
+
+**Symptom:** Buttons or links inside a container stop working because they relied on
+a parent's `hx-target`, `hx-swap`, or similar attribute.
+
+**Cause:** htmx v4 no longer inherits attributes by default.
+
+**Fix:** Add `:inherited` to the parent attribute:
+
+```html
+<!-- Before: <div hx-target="#results"> -->
+<div hx-target:inherited="#results">
+```
+
+### Preload extension not working
+
+**Symptom:** `preload="mouseover"` has no effect after upgrade.
+
+**Cause:** The import path changed and the old `hx-ext="preload"` is no longer needed.
+
+**Fix:** Update your import and remove `hx-ext`:
+
+```javascript
+// Before: import "htmx-ext-preload";
+import "htmx.org/dist/ext/hx-preload.js";
+```
+
+```html
+<!-- Before: <body hx-ext="preload"> -->
+<body>
+```
+
+### `hx-vars` attribute ignored
+
+**Symptom:** Dynamic values previously set via `hx-vars` are no longer sent.
+
+**Cause:** `hx-vars` was removed in v4.
+
+**Fix:** Use `hx-vals` with the `js:` prefix:
+
+```html
+<!-- Before: hx-vars="token:getToken()" -->
+hx-vals='js:{"token": getToken()}'
+```
+
 ## Migration Checklist
 
 - [ ] Remove all `hx-ext="sse"` attributes from SSE elements
