@@ -49,7 +49,7 @@ def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
     else:
         console.print(f"[dim]Workers: {workers}[/dim]")
 
-    worker_path = "vibetuner.tasks.worker.worker"
+    worker_path = "vibetuner.tasks.worker:worker"
     verbose = True if is_dev else settings.debug
 
     # Start monitoring web UI and additional workers as background processes
