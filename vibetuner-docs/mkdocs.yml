@@ -72,6 +72,7 @@ nav:
       - Installation: installation.md
   - User Guide:
       - Development: development-guide.md
+      - Background Tasks: background-tasks.md
       - Authentication: authentication.md
       - Runtime Configuration: runtime-config.md
       - Deployment: deployment.md
