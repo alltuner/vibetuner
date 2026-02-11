@@ -145,7 +145,7 @@ def robust_task(
     _ensure_middleware(worker)
 
     def decorator(fn: Callable) -> Any:
-        task_name = task_kwargs.get("name") or fn.__name__
+        task_name = task_kwargs.pop("name", None) or fn.__name__
         _configs[task_name] = _RobustConfig(
             max_retries=max_retries,
             backoff_base=backoff_base,
@@ -153,6 +153,7 @@ def robust_task(
             on_failure=on_failure,
         )
         return worker.task(
+            name=task_name,
             max_tries=max_retries,
             timeout=timeout,
             **task_kwargs,
