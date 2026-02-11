@@ -1,8 +1,6 @@
 # ABOUTME: Centralized, actionable error messages for unconfigured services.
 # ABOUTME: Provides rich console output with example values, setup commands, and doc links.
 
-from __future__ import annotations
-
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
