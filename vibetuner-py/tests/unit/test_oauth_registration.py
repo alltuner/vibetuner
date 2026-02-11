@@ -15,6 +15,7 @@ from vibetuner.frontend.oauth import (
     get_oauth_providers,
 )
 from vibetuner.frontend.routes.auth import register_oauth_routes, router
+from vibetuner.models.oauth import OauthProviderModel
 
 
 @pytest.fixture(autouse=True)
@@ -114,6 +115,67 @@ class TestAutoRegisterProviders:
         assert google_after.identifier == google_before.identifier
         assert google_after.config == google_before.config
         assert google_after.params == google_before.params
+
+
+class TestCustomProviders:
+    """Tests for custom OAuth provider registration."""
+
+    def test_registers_custom_provider(self):
+        custom = {
+            "discord": OauthProviderModel(
+                identifier="id",
+                params={"authorize_url": "https://discord.com/oauth2/authorize"},
+                client_kwargs={"scope": "identify email"},
+                config={"DISCORD_CLIENT_ID": "test", "DISCORD_CLIENT_SECRET": "secret"},
+            ),
+        }
+        auto_register_providers([], custom_providers=custom)
+
+        assert "discord" in get_oauth_providers()
+        assert PROVIDER_IDENTIFIERS["discord"] == "id"
+
+    def test_custom_provider_skips_conflict(self, monkeypatch, log_sink):
+        """Custom provider should not overwrite an already-registered builtin."""
+        monkeypatch.setattr(settings, "google_client_id", SecretStr("g-id"))
+        monkeypatch.setattr(settings, "google_client_secret", SecretStr("g-secret"))
+
+        custom = {
+            "google": OauthProviderModel(
+                identifier="custom-id",
+                params={},
+                client_kwargs={"scope": "custom"},
+                config={},
+            ),
+        }
+        auto_register_providers(["google"], custom_providers=custom)
+
+        # Builtin google should win
+        assert PROVIDER_IDENTIFIERS["google"] == "sub"
+        log_text = "\n".join(log_sink)
+        assert "conflicts" in log_text
+
+    def test_custom_and_builtin_together(self, monkeypatch):
+        monkeypatch.setattr(settings, "google_client_id", SecretStr("g-id"))
+        monkeypatch.setattr(settings, "google_client_secret", SecretStr("g-secret"))
+
+        custom = {
+            "twitter": OauthProviderModel(
+                identifier="id",
+                params={},
+                client_kwargs={"scope": "tweet.read"},
+                config={
+                    "TWITTER_CLIENT_ID": "t-id",
+                    "TWITTER_CLIENT_SECRET": "t-secret",
+                },
+            ),
+        }
+        auto_register_providers(["google"], custom_providers=custom)
+
+        assert set(get_oauth_providers()) == {"google", "twitter"}
+
+    def test_none_custom_providers(self):
+        auto_register_providers([], custom_providers=None)
+        assert get_oauth_providers() == []
 
 
 class TestOAuthRouteRegistration:

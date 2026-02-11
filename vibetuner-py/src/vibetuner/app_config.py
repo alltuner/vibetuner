@@ -8,6 +8,8 @@ from pydantic import BaseModel, ConfigDict
 from starlette.middleware import Middleware
 from typer import Typer
 
+from vibetuner.models.oauth import OauthProviderModel
+
 
 class VibetunerApp(BaseModel):
     """Explicit configuration for a vibetuner application.
@@ -40,6 +42,9 @@ class VibetunerApp(BaseModel):
 
     # OAuth providers (e.g., ["google", "github"])
     oauth_providers: list[str] = []
+
+    # Custom OAuth providers (e.g., {"twitter": OauthProviderModel(...)})
+    custom_oauth_providers: dict[str, OauthProviderModel] = {}
 
     # Worker
     tasks: list[Callable[..., Any]] = []

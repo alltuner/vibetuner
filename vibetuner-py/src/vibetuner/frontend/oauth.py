@@ -95,8 +95,11 @@ _BUILTIN_PROVIDERS: dict[str, OauthProviderModel] = {
 }
 
 
-def auto_register_providers(provider_names: list[str]) -> None:
-    """Register OAuth providers from builtin configs and settings credentials."""
+def auto_register_providers(
+    provider_names: list[str],
+    custom_providers: dict[str, OauthProviderModel] | None = None,
+) -> None:
+    """Register OAuth providers from builtin configs, settings credentials, and custom configs."""
     from vibetuner.config import settings
 
     known = sorted(_BUILTIN_PROVIDERS.keys())
@@ -129,6 +132,16 @@ def auto_register_providers(provider_names: list[str]) -> None:
         )
         register_oauth_provider(name, provider)
         logger.info(f"Auto-registered OAuth provider: {name}")
+
+    # Register custom providers (fully configured by the user)
+    for name, provider in (custom_providers or {}).items():
+        if name in _PROVIDERS:
+            logger.warning(
+                f"Custom OAuth provider '{name}' conflicts with already-registered provider, skipping"
+            )
+            continue
+        register_oauth_provider(name, provider)
+        logger.info(f"Registered custom OAuth provider: {name}")
 
 
 async def _handle_user_account(

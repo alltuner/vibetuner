@@ -78,7 +78,7 @@ if ctx.DEBUG:
     )
 
 # Auto-register OAuth providers from config + env vars
-auto_register_providers(_app_config.oauth_providers)
+auto_register_providers(_app_config.oauth_providers, _app_config.custom_oauth_providers)
 
 # Register OAuth routes on auth.router (must happen before include_router)
 register_oauth_routes()
