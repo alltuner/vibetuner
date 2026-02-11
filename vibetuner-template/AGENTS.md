@@ -683,7 +683,7 @@ await broadcast(
 **HTMX client:**
 
 ```html
-<div hx-ext="sse" sse-connect="/events/notifications" sse-swap="update">
+<div sse-connect="/events/notifications" sse-swap="update">
 </div>
 ```
 

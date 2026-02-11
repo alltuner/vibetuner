@@ -859,7 +859,7 @@ automatically bridged via Redis pub/sub for multi-worker support.
 **HTMX client example:**
 
 ```html
-<div hx-ext="sse" sse-connect="/events/notifications" sse-swap="update">
+<div sse-connect="/events/notifications" sse-swap="update">
     <!-- Updates appear here -->
 </div>
 ```

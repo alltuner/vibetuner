@@ -181,7 +181,7 @@ Vibetuner supports multiple database backends. All are optional - choose what fi
 - Redis pub/sub bridge for multi-worker deployments
 - Render Jinja2 templates directly as SSE payloads
 - Automatic keepalive for long-lived connections
-- Works natively with HTMX `hx-ext="sse"`
+- Works natively with HTMX built-in SSE support (no extension needed in v4)
 
 ### Runtime Configuration
 

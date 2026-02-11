@@ -834,10 +834,10 @@ async def clock_stream(request: Request):
 
 ### HTMX Integration
 
-Connect an SSE endpoint to HTMX with the `sse-connect` extension:
+Connect an SSE endpoint to HTMX using the built-in SSE support:
 
 ```html
-<div hx-ext="sse" sse-connect="/events/notifications">
+<div sse-connect="/events/notifications">
     <div sse-swap="new-post" hx-swap="beforeend">
         <!-- new posts appear here -->
     </div>

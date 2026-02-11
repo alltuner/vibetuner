@@ -365,8 +365,7 @@ async def process_upload(file_id: str, user_id: str) -> dict:
 On the frontend, subscribe with HTMX:
 
 ```html
-<div hx-ext="sse"
-     sse-connect="/events/upload/{{ user.id }}"
+<div sse-connect="/events/upload/{{ user.id }}"
      sse-swap="progress complete">
 </div>
 ```
