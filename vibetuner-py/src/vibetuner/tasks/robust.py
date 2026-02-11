@@ -75,39 +75,45 @@ async def _handle_permanent_failure(
 def _ensure_middleware(worker: Any) -> None:
     """Register the robust task middleware once per worker."""
     global _middleware_registered
+    if worker is None or not hasattr(worker, "middleware"):
+        raise TypeError("worker must be a valid Streaq worker with a middleware attribute")
     with _middleware_lock:
         if _middleware_registered:
             return
         _middleware_registered = True
 
-        from streaq import StreaqRetry
+        try:
+            from streaq import StreaqRetry
 
-        @worker.middleware
-        async def robust_retry_middleware(ctx: Any, next_handler: Any) -> Any:
-            config = _configs.get(ctx.fn_name)
-            if config is None:
-                return await next_handler()
+            @worker.middleware
+            async def robust_retry_middleware(ctx: Any, next_handler: Any) -> Any:
+                config = _configs.get(ctx.fn_name)
+                if config is None:
+                    return await next_handler()
 
-            try:
-                return await next_handler()
-            except StreaqRetry:
-                raise
-            except Exception as exc:
-                if ctx.tries < config.max_retries:
-                    delay = min(config.backoff_base**ctx.tries, config.backoff_max)
-                    logger.warning(
-                        "Task %s[%s] failed (try %d/%d), retrying in %.0fs: %s",
-                        ctx.fn_name,
-                        ctx.task_id,
-                        ctx.tries,
-                        config.max_retries,
-                        delay,
-                        exc,
-                    )
-                    raise StreaqRetry(delay=int(delay)) from exc
+                try:
+                    return await next_handler()
+                except StreaqRetry:
+                    raise
+                except Exception as exc:
+                    if ctx.tries < config.max_retries:
+                        delay = min(config.backoff_base**ctx.tries, config.backoff_max)
+                        logger.warning(
+                            "Task %s[%s] failed (try %d/%d), retrying in %.0fs: %s",
+                            ctx.fn_name,
+                            ctx.task_id,
+                            ctx.tries,
+                            config.max_retries,
+                            delay,
+                            exc,
+                        )
+                        raise StreaqRetry(delay=int(delay)) from exc
 
-                await _handle_permanent_failure(ctx, config, exc)
-                raise
+                    await _handle_permanent_failure(ctx, config, exc)
+                    raise
+        except Exception:
+            _middleware_registered = False
+            raise
 
 
 def robust_task(
