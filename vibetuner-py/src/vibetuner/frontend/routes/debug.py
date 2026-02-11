@@ -92,6 +92,123 @@ def debug_info(request: Request):
     return render_template("debug/info.html.jinja", request, {"cookies": cookies})
 
 
+# Skeleton template block definitions for developer reference.
+# Each entry documents a block from base/skeleton.html.jinja.
+SKELETON_BLOCKS = [
+    {
+        "name": "title",
+        "description": "Sets the page <title> tag content.",
+        "example": "{% block title %}My Page{% endblock title %}",
+        "location": "<head><title>",
+    },
+    {
+        "name": "scripts",
+        "description": (
+            "Loads JavaScript bundles. Override to add or replace "
+            "the default bundle.js script tag."
+        ),
+        "example": (
+            "{% block scripts %}\n"
+            "    <script src=\"{{ url_for('js', path='bundle.js').path }}\"></script>\n"
+            "    <script src=\"{{ url_for('js', path='extra.js').path }}\"></script>\n"
+            "{% endblock scripts %}"
+        ),
+        "location": "<head>",
+    },
+    {
+        "name": "head",
+        "description": (
+            "Injects extra content at the end of <head>. "
+            "Use for additional stylesheets, meta tags, or inline styles."
+        ),
+        "example": (
+            "{% block head %}\n"
+            '    <link rel="stylesheet" href="/static/custom.css" />\n'
+            "{% endblock head %}"
+        ),
+        "location": "<head> (after scripts & favicons)",
+    },
+    {
+        "name": "start_of_body",
+        "description": "Injects content immediately after the opening <body> tag, before the header.",
+        "example": (
+            "{% block start_of_body %}\n"
+            '    <div id="announcement-banner">...</div>\n'
+            "{% endblock start_of_body %}"
+        ),
+        "location": "<body> (first child)",
+    },
+    {
+        "name": "header",
+        "description": (
+            "Renders the page header. By default includes base/header.html.jinja "
+            "unless SKIP_HEADER is set."
+        ),
+        "example": (
+            "{% block header %}\n"
+            "    <header>Custom header</header>\n"
+            "{% endblock header %}"
+        ),
+        "location": "<body>",
+    },
+    {
+        "name": "body",
+        "description": (
+            "Wraps the main page body between header and footer. "
+            "Contains the 'content' block by default."
+        ),
+        "example": (
+            "{% block body %}\n"
+            '    <main class="container">{{ super() }}</main>\n'
+            "{% endblock body %}"
+        ),
+        "location": "<body> (between header and footer)",
+    },
+    {
+        "name": "content",
+        "description": (
+            "The primary content area inside the body block. "
+            "This is the most commonly overridden block for page content."
+        ),
+        "example": (
+            "{% block content %}\n    <h1>Hello World</h1>\n{% endblock content %}"
+        ),
+        "location": "inside {% block body %}",
+    },
+    {
+        "name": "footer",
+        "description": (
+            "Renders the page footer. By default includes base/footer.html.jinja "
+            "unless SKIP_FOOTER is set."
+        ),
+        "example": (
+            "{% block footer %}\n"
+            "    <footer>Custom footer</footer>\n"
+            "{% endblock footer %}"
+        ),
+        "location": "<body> (after body block)",
+    },
+    {
+        "name": "end_of_body",
+        "description": "Injects content just before the closing </body> tag. Use for deferred scripts.",
+        "example": (
+            "{% block end_of_body %}\n"
+            '    <script src="/static/deferred.js" defer></script>\n'
+            "{% endblock end_of_body %}"
+        ),
+        "location": "<body> (last child)",
+    },
+]
+
+
+@router.get("/blocks", response_class=HTMLResponse)
+def debug_blocks(request: Request):
+    """Debug endpoint listing available skeleton template blocks."""
+    return render_template(
+        "debug/blocks.html.jinja", request, {"blocks": SKELETON_BLOCKS}
+    )
+
+
 def _extract_ref_name(ref: str) -> str:
     """Extract type name from JSON schema $ref."""
     return ref.split("/")[-1]
