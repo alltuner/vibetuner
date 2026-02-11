@@ -1,3 +1,5 @@
+import re
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -11,8 +13,10 @@ from fastapi.responses import (
 
 from vibetuner.config import settings
 from vibetuner.context import ctx
+from vibetuner.logging import logger
 from vibetuner.models import UserModel
 from vibetuner.mongo import get_all_models
+from vibetuner.paths import package_templates
 
 from ..deps import MAGIC_COOKIE_NAME
 from ..templates import render_template
@@ -92,17 +96,16 @@ def debug_info(request: Request):
     return render_template("debug/info.html.jinja", request, {"cookies": cookies})
 
 
-# Skeleton template block definitions for developer reference.
-# Each entry documents a block from base/skeleton.html.jinja.
-SKELETON_BLOCKS = [
-    {
-        "name": "title",
+# Skeleton template block metadata for developer reference.
+# Descriptions and examples are maintained here; the actual block list is
+# extracted from the skeleton template at runtime so it never drifts out of sync.
+_BLOCK_METADATA: dict[str, dict[str, str]] = {
+    "title": {
         "description": "Sets the page <title> tag content.",
         "example": "{% block title %}My Page{% endblock title %}",
         "location": "<head><title>",
     },
-    {
-        "name": "scripts",
+    "scripts": {
         "description": (
             "Loads JavaScript bundles. Override to add or replace "
             "the default bundle.js script tag."
@@ -115,8 +118,7 @@ SKELETON_BLOCKS = [
         ),
         "location": "<head>",
     },
-    {
-        "name": "head",
+    "head": {
         "description": (
             "Injects extra content at the end of <head>. "
             "Use for additional stylesheets, meta tags, or inline styles."
@@ -128,8 +130,7 @@ SKELETON_BLOCKS = [
         ),
         "location": "<head> (after scripts & favicons)",
     },
-    {
-        "name": "start_of_body",
+    "start_of_body": {
         "description": "Injects content immediately after the opening <body> tag, before the header.",
         "example": (
             "{% block start_of_body %}\n"
@@ -138,8 +139,7 @@ SKELETON_BLOCKS = [
         ),
         "location": "<body> (first child)",
     },
-    {
-        "name": "header",
+    "header": {
         "description": (
             "Renders the page header. By default includes base/header.html.jinja "
             "unless SKIP_HEADER is set."
@@ -151,8 +151,7 @@ SKELETON_BLOCKS = [
         ),
         "location": "<body>",
     },
-    {
-        "name": "body",
+    "body": {
         "description": (
             "Wraps the main page body between header and footer. "
             "Contains the 'content' block by default."
@@ -164,8 +163,7 @@ SKELETON_BLOCKS = [
         ),
         "location": "<body> (between header and footer)",
     },
-    {
-        "name": "content",
+    "content": {
         "description": (
             "The primary content area inside the body block. "
             "This is the most commonly overridden block for page content."
@@ -175,8 +173,7 @@ SKELETON_BLOCKS = [
         ),
         "location": "inside {% block body %}",
     },
-    {
-        "name": "footer",
+    "footer": {
         "description": (
             "Renders the page footer. By default includes base/footer.html.jinja "
             "unless SKIP_FOOTER is set."
@@ -188,8 +185,7 @@ SKELETON_BLOCKS = [
         ),
         "location": "<body> (after body block)",
     },
-    {
-        "name": "end_of_body",
+    "end_of_body": {
         "description": "Injects content just before the closing </body> tag. Use for deferred scripts.",
         "example": (
             "{% block end_of_body %}\n"
@@ -198,14 +194,61 @@ SKELETON_BLOCKS = [
         ),
         "location": "<body> (last child)",
     },
-]
+}
+
+_BLOCK_RE = re.compile(r"\{%-?\s*block\s+(\w+)")
+
+
+def _get_skeleton_blocks() -> list[dict]:
+    """Extract block names from the skeleton template and merge with metadata.
+
+    Block names are parsed directly from ``base/skeleton.html.jinja`` so that
+    the debug page always reflects the actual template, even when new blocks
+    are added without updating ``_BLOCK_METADATA``.
+    """
+    skeleton_path = package_templates / "frontend" / "base" / "skeleton.html.jinja"
+    try:
+        source = skeleton_path.read_text()
+    except (FileNotFoundError, OSError) as exc:
+        logger.warning(f"Could not read skeleton template: {exc}")
+        return []
+
+    # Preserve declaration order, deduplicate (endblock repeats the name)
+    block_names = list(dict.fromkeys(_BLOCK_RE.findall(source)))
+
+    blocks: list[dict] = []
+    for name in block_names:
+        meta = _BLOCK_METADATA.get(name, {})
+        blocks.append(
+            {
+                "name": name,
+                "description": meta.get("description", ""),
+                "example": meta.get(
+                    "example",
+                    f"{{% block {name} %}}...{{% endblock {name} %}}",
+                ),
+                "location": meta.get("location", ""),
+            }
+        )
+
+    # Warn about stale metadata entries that no longer match the template
+    actual = set(block_names)
+    documented = set(_BLOCK_METADATA)
+    stale = documented - actual
+    if stale:
+        logger.warning(
+            "Skeleton block metadata contains entries not in template: {}",
+            stale,
+        )
+
+    return blocks
 
 
 @router.get("/blocks", response_class=HTMLResponse)
 def debug_blocks(request: Request):
     """Debug endpoint listing available skeleton template blocks."""
     return render_template(
-        "debug/blocks.html.jinja", request, {"blocks": SKELETON_BLOCKS}
+        "debug/blocks.html.jinja", request, {"blocks": _get_skeleton_blocks()}
     )
 
 
