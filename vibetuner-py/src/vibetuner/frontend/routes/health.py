@@ -120,25 +120,36 @@ async def _check_mongodb() -> dict[str, Any]:
         return {"status": "error", "error": str(e)}
 
 
+_redis_client = None
+
+
+def _get_redis_client():
+    """Get or create a reusable Redis client for health checks."""
+    global _redis_client
+    if _redis_client is None:
+        import redis.asyncio as aioredis
+
+        _redis_client = aioredis.from_url(str(settings.redis_url))
+    return _redis_client
+
+
 async def _check_redis() -> dict[str, Any]:
     """Ping Redis and measure latency."""
     try:
-        import redis.asyncio as aioredis
-
-        r = aioredis.from_url(str(settings.redis_url))
-        try:
-            start = time.monotonic()
-            async with asyncio.timeout(HEALTH_CHECK_TIMEOUT_SECONDS):
-                await r.ping()
-            latency_ms = round((time.monotonic() - start) * 1000, 1)
-            return {"status": "connected", "latency_ms": latency_ms}
-        finally:
-            await r.aclose()
+        r = _get_redis_client()
+        start = time.monotonic()
+        async with asyncio.timeout(HEALTH_CHECK_TIMEOUT_SECONDS):
+            await r.ping()
+        latency_ms = round((time.monotonic() - start) * 1000, 1)
+        return {"status": "connected", "latency_ms": latency_ms}
     except TimeoutError:
         logger.warning("Redis health check timed out")
         return {"status": "error", "error": "Health check timed out"}
     except Exception as e:
         logger.warning("Redis health check failed: {}", e)
+        # Reset the client so it's recreated on next check
+        global _redis_client
+        _redis_client = None
         return {"status": "error", "error": str(e)}
 
 
