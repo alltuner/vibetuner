@@ -207,7 +207,11 @@ def _get_skeleton_blocks() -> list[dict]:
     are added without updating ``_BLOCK_METADATA``.
     """
     skeleton_path = package_templates / "frontend" / "base" / "skeleton.html.jinja"
-    source = skeleton_path.read_text()
+    try:
+        source = skeleton_path.read_text()
+    except (FileNotFoundError, OSError) as exc:
+        logger.warning(f"Could not read skeleton template: {exc}")
+        return []
 
     # Preserve declaration order, deduplicate (endblock repeats the name)
     block_names = list(dict.fromkeys(_BLOCK_RE.findall(source)))
