@@ -21,7 +21,9 @@ def _ensure_client() -> None:
     global mongo_client
 
     if settings.mongodb_url is None:
-        logger.warning("MongoDB URL is not configured. Mongo engine disabled.")
+        from vibetuner.services.errors import mongodb_not_configured
+
+        mongodb_not_configured()
         return
 
     if mongo_client is None:

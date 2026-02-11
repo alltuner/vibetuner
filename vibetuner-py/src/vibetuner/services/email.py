@@ -28,10 +28,9 @@ class EmailServiceNotConfiguredError(Exception):
 class EmailService:
     def __init__(self, from_email: EmailAddress | None = None) -> None:
         if not settings.mailjet_api_key or not settings.mailjet_api_secret:
-            raise EmailServiceNotConfiguredError(
-                "Mailjet credentials not configured. "
-                "Set MAILJET_API_KEY and MAILJET_API_SECRET environment variables."
-            )
+            from vibetuner.services.errors import email_not_configured
+
+            raise EmailServiceNotConfiguredError(email_not_configured())
         self.client = Client(
             auth=(
                 settings.mailjet_api_key.get_secret_value(),

@@ -26,9 +26,9 @@ class BlobService:
             or settings.r2_access_key is None
             or settings.r2_secret_key is None
         ):
-            raise ValueError(
-                "R2 bucket endpoint URL, access key, and secret key must be set in settings."
-            )
+            from vibetuner.services.errors import s3_not_configured
+
+            raise ValueError(s3_not_configured())
 
         bucket = default_bucket or settings.r2_default_bucket_name
         if bucket is None:
