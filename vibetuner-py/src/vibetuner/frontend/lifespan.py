@@ -35,7 +35,17 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     if settings.workers_available:
         from vibetuner.tasks.worker import get_worker
 
-        async with get_worker():
+        worker = get_worker()
+
+        # Wire Streaq UI dependency so /debug/tasks can query the worker
+        try:
+            from streaq.ui.deps import get_worker as ui_get_worker
+
+            app.dependency_overrides[ui_get_worker] = lambda: worker
+        except ImportError:
+            pass
+
+        async with worker:
             yield
     else:
         yield

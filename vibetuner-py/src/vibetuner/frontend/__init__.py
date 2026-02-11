@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 import vibetuner.frontend.lifespan as lifespan_module
+from vibetuner.config import settings
 from vibetuner.loader import load_app_config
 from vibetuner.logging import logger
 from vibetuner.paths import paths
@@ -103,4 +104,20 @@ def default_index(request: Request) -> HTMLResponse:
 # Debug and health routes (always last)
 app.include_router(debug.auth_router)
 app.include_router(debug.router)
+
+# Mount Streaq task queue UI at /debug/tasks when workers are configured
+if settings.workers_available:
+    try:
+        from streaq.ui import router as streaq_ui_router
+
+        app.include_router(
+            streaq_ui_router,
+            prefix="/debug/tasks",
+            dependencies=[Depends(debug.check_debug_access)],
+            tags=["debug"],
+        )
+        logger.debug("Streaq task queue UI mounted at /debug/tasks")
+    except ImportError:
+        pass
+
 app.include_router(health.router)
