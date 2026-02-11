@@ -31,6 +31,8 @@
             {% endif %}
         {% endblock header %}
         {% block body %}
+            {% block content %}
+            {% endblock content %}
         {% endblock body %}
         {% block footer %}
             {% if not SKIP_FOOTER %}
