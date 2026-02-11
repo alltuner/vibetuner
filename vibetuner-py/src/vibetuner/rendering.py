@@ -93,8 +93,10 @@ def register_context_provider(func=None):
 
 def _collect_provider_context() -> dict[str, Any]:
     """Run all registered context providers and merge results."""
+    with _context_lock:
+        providers = list(_context_providers)
     result: dict[str, Any] = {}
-    for provider in _context_providers:
+    for provider in providers:
         try:
             ctx = provider()
             if isinstance(ctx, dict):
@@ -396,9 +398,11 @@ def render_template(
     _ensure_custom_filters()
     ctx = ctx or {}
     language = getattr(request.state, "language", data_ctx.default_language)
+    with _context_lock:
+        globals_snapshot = dict(_template_globals)
     merged_ctx = {
         **data_ctx.model_dump(),
-        **_template_globals,
+        **globals_snapshot,
         **_collect_provider_context(),
         "request": request,
         "language": language,
@@ -436,9 +440,11 @@ def render_template_string(
     _ensure_custom_filters()
     ctx = ctx or {}
     language = getattr(request.state, "language", data_ctx.default_language)
+    with _context_lock:
+        globals_snapshot = dict(_template_globals)
     merged_ctx = {
         **data_ctx.model_dump(),
-        **_template_globals,
+        **globals_snapshot,
         **_collect_provider_context(),
         "request": request,
         "language": language,
