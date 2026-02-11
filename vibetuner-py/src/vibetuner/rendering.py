@@ -21,10 +21,86 @@ __all__ = [
     "render_static_template",
     "render_template",
     "render_template_string",
+    "register_globals",
+    "register_context_provider",
     "lang_url_for",
     "url_for_language",
     "hreflang_tags",
 ]
+
+
+# App-level template context: static globals and dynamic providers
+_template_globals: dict[str, Any] = {}
+_context_providers: list[Any] = []
+
+
+def register_globals(globals_dict: dict[str, Any]) -> None:
+    """Register static global variables available in every template.
+
+    Registered globals are merged into the template context on every
+    ``render_template()`` call.  User-provided context in the render call
+    takes precedence over registered globals.
+
+    Can be called multiple times; later calls merge into existing globals.
+
+    Example::
+
+        from vibetuner.rendering import register_globals
+
+        register_globals({
+            "site_title": "My App",
+            "og_image": "/static/og.png",
+        })
+    """
+    _template_globals.update(globals_dict)
+
+
+def register_context_provider(func=None):
+    """Register a function that provides template context.
+
+    The decorated function should return a ``dict[str, Any]``.  It will be
+    called on every ``render_template()`` invocation and its result merged
+    into the context.
+
+    Can be used as a bare decorator or a decorator factory::
+
+        @register_context_provider
+        def site_context() -> dict[str, Any]:
+            return {"site_title": settings.site_title}
+
+        @register_context_provider()
+        def other_context() -> dict[str, Any]:
+            return {"analytics_id": "UA-XXX"}
+    """
+    if func is not None:
+        # Used as @register_context_provider (without parentheses)
+        _context_providers.append(func)
+        return func
+
+    # Used as @register_context_provider()
+    def decorator(fn):
+        _context_providers.append(fn)
+        return fn
+
+    return decorator
+
+
+def _collect_provider_context() -> dict[str, Any]:
+    """Run all registered context providers and merge results."""
+    result: dict[str, Any] = {}
+    for provider in _context_providers:
+        try:
+            ctx = provider()
+            if isinstance(ctx, dict):
+                result.update(ctx)
+            else:
+                logger.error(
+                    f"Context provider '{provider.__name__}' returned "
+                    f"{type(ctx).__name__} instead of dict, skipping"
+                )
+        except Exception as e:
+            logger.error(f"Context provider '{provider.__name__}' failed: {e}")
+    return result
 
 
 def _timeago_verbose(diff: timedelta, dt) -> str:
@@ -292,6 +368,8 @@ def render_template(
     language = getattr(request.state, "language", data_ctx.default_language)
     merged_ctx = {
         **data_ctx.model_dump(),
+        **_template_globals,
+        **_collect_provider_context(),
         "request": request,
         "language": language,
         **ctx,
@@ -330,6 +408,8 @@ def render_template_string(
     language = getattr(request.state, "language", data_ctx.default_language)
     merged_ctx = {
         **data_ctx.model_dump(),
+        **_template_globals,
+        **_collect_provider_context(),
         "request": request,
         "language": language,
         **ctx,
