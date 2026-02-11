@@ -155,8 +155,8 @@ async def _handle_user_account(
     )
 
     if oauth_account:
-        # OAuth account exists, get linked user account
-        account = await UserModel.get_by_email(email)
+        # OAuth account exists, resolve user through the link (survives email changes)
+        account = await UserModel.find_one({"oauth_accounts.$id": oauth_account.id})
         if not account:
             raise OAuthError("No account linked to this OAuth account")
         return account
