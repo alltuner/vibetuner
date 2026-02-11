@@ -28,8 +28,15 @@ def read_pyproject() -> dict:
 
 
 def get_project_name() -> str | None:
-    """Get project name from pyproject.toml."""
-    return read_pyproject().get("project", {}).get("name")
+    """Get project name from pyproject.toml, normalized for use as a Python module name.
+
+    Converts hyphens to underscores per PEP 503 / Python packaging convention
+    (e.g., ``my-cool-app`` -> ``my_cool_app``).
+    """
+    name = read_pyproject().get("project", {}).get("name")
+    if name is not None:
+        return name.replace("-", "_")
+    return None
 
 
 def get_project_version() -> str:
