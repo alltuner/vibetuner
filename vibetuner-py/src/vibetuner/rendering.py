@@ -1,5 +1,7 @@
 # ABOUTME: Jinja2 template rendering for HTML responses.
 # ABOUTME: Lives outside vibetuner.frontend to avoid circular imports with tune.py.
+import inspect
+from collections.abc import Callable
 from datetime import timedelta
 from typing import Any
 
@@ -21,10 +23,128 @@ __all__ = [
     "render_static_template",
     "render_template",
     "render_template_string",
+    "register_globals",
+    "register_context_provider",
     "lang_url_for",
     "url_for_language",
     "hreflang_tags",
 ]
+
+
+# ---------------------------------------------------------------------------
+# App-level template context: static globals and dynamic providers
+# ---------------------------------------------------------------------------
+
+_template_globals: dict[str, Any] = {}
+_context_providers: list[Callable[..., dict[str, Any]]] = []
+
+
+def register_globals(globals_dict: dict[str, Any]) -> None:
+    """Register static global variables available in every template.
+
+    Registered globals are merged into the template context on every
+    ``render_template()`` call.  User-provided context in the render call
+    takes precedence over registered globals.
+
+    Can be called multiple times; later calls merge into existing globals.
+
+    Example::
+
+        from vibetuner.rendering import register_globals
+
+        register_globals({
+            "site_title": "My App",
+            "og_image": "/static/og.png",
+        })
+    """
+    _template_globals.update(globals_dict)
+
+
+def register_context_provider(func=None):
+    """Register a dynamic context provider that runs per-request.
+
+    The decorated function is called during template rendering and its
+    return value (a ``dict``) is merged into the template context.
+
+    Providers run **lazily**: they are only invoked when the template
+    accesses a variable that isn't already in the context.
+
+    If the function signature includes a ``request`` parameter it will
+    receive the current ``Request`` object, enabling per-request logic.
+    Functions without a ``request`` parameter are called with no arguments.
+
+    Can be used as a bare decorator or with parentheses::
+
+        @register_context_provider
+        def site_context() -> dict[str, Any]:
+            return {"site_title": settings.site_title}
+
+        @register_context_provider()
+        def nav_context(request: Request) -> dict[str, Any]:
+            user = getattr(request.state, "user", None)
+            return {"nav_items": get_nav_for(user)}
+    """
+    if func is not None:
+        _context_providers.append(func)
+        return func
+
+    def decorator(fn):
+        _context_providers.append(fn)
+        return fn
+
+    return decorator
+
+
+def _call_provider(provider: Callable, request: Request) -> dict[str, Any]:
+    """Call a context provider, passing request if its signature accepts one."""
+    sig = inspect.signature(provider)
+    if any(p.name == "request" for p in sig.parameters.values()):
+        return provider(request=request)
+    return provider()
+
+
+class _LazyContext(dict):
+    """Dict subclass that lazily resolves context providers on first miss.
+
+    Provider functions are only called when the template accesses a variable
+    that is not already present in the base context.  Once resolved, results
+    are cached so each provider runs at most once per render.
+    """
+
+    def __init__(
+        self,
+        base_context: dict[str, Any],
+        providers: list[Callable[..., dict[str, Any]]],
+        request: Request,
+    ):
+        super().__init__(base_context)
+        self._providers = providers
+        self._request = request
+        self._resolved = False
+
+    def __missing__(self, key: str):
+        if not self._resolved:
+            self._resolved = True
+            self._resolve_all()
+            if key in self:
+                return self[key]
+        raise KeyError(key)
+
+    def _resolve_all(self) -> None:
+        for provider in self._providers:
+            try:
+                result = _call_provider(provider, self._request)
+                if isinstance(result, dict):
+                    for k, v in result.items():
+                        if k not in self:
+                            self[k] = v
+                else:
+                    logger.error(
+                        f"Context provider '{provider.__name__}' returned "
+                        f"{type(result).__name__} instead of dict, skipping"
+                    )
+            except Exception as e:
+                logger.error(f"Context provider '{provider.__name__}' failed: {e}")
 
 
 def _timeago_verbose(diff: timedelta, dt) -> str:
@@ -281,6 +401,32 @@ templates: Jinja2Templates = Jinja2Templates(directory=frontend_templates)
 jinja_env = templates.env
 
 
+def _build_context(
+    request: Request, ctx: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """Build the full template context with globals, providers, and user ctx.
+
+    Merge order (later wins):
+        1. data_ctx (project metadata)
+        2. registered globals
+        3. request + language (auto-injected)
+        4. user-provided ctx
+    Context providers are resolved lazily via ``_LazyContext``.
+    """
+    ctx = ctx or {}
+    language = getattr(request.state, "language", data_ctx.default_language)
+    base = {
+        **data_ctx.model_dump(),
+        **_template_globals,
+        "request": request,
+        "language": language,
+        **ctx,
+    }
+    if _context_providers:
+        return _LazyContext(base, _context_providers, request)
+    return base
+
+
 def render_template(
     template: str,
     request: Request,
@@ -288,15 +434,7 @@ def render_template(
     **kwargs: Any,
 ) -> HTMLResponse:
     _ensure_custom_filters()
-    ctx = ctx or {}
-    language = getattr(request.state, "language", data_ctx.default_language)
-    merged_ctx = {
-        **data_ctx.model_dump(),
-        "request": request,
-        "language": language,
-        **ctx,
-    }
-
+    merged_ctx = _build_context(request, ctx)
     return templates.TemplateResponse(template, merged_ctx, **kwargs)
 
 
@@ -326,15 +464,7 @@ def render_template_string(
         )
     """
     _ensure_custom_filters()
-    ctx = ctx or {}
-    language = getattr(request.state, "language", data_ctx.default_language)
-    merged_ctx = {
-        **data_ctx.model_dump(),
-        "request": request,
-        "language": language,
-        **ctx,
-    }
-
+    merged_ctx = _build_context(request, ctx)
     template_obj = templates.get_template(template)
     return template_obj.render(merged_ctx)
 
