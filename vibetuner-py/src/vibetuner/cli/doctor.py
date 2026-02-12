@@ -14,7 +14,7 @@ from rich.table import Table
 from vibetuner.logging import logger
 
 
-doctor_app = typer.Typer(help="Validate project setup", invoke_without_command=True)
+doctor_app = typer.Typer(help="Validate project setup")
 console = Console()
 
 
@@ -253,8 +253,10 @@ def _check_templates(root: Path | None) -> list[CheckResult]:
     results.append(CheckResult("Templates dir", "ok", "Found"))
 
     # Check for common Jinja2 syntax issues in template files
-    template_files = list(templates_dir.rglob("*.html")) + list(
-        templates_dir.rglob("*.j2")
+    template_files = (
+        list(templates_dir.rglob("*.html"))
+        + list(templates_dir.rglob("*.j2"))
+        + list(templates_dir.rglob("*.jinja"))
     )
     bad_files: list[str] = []
     for tf in template_files:
@@ -309,7 +311,10 @@ def _check_dependencies() -> list[CheckResult]:
 def _check_port_availability() -> list[CheckResult]:
     results: list[CheckResult] = []
 
-    for port, label in [(8000, "Frontend (8000)"), (11111, "Worker UI (11111)")]:
+    for port, label in [
+        (8000, "Frontend default (8000)"),
+        (11111, "Worker UI default (11111)"),
+    ]:
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.settimeout(0.5)
@@ -321,7 +326,7 @@ def _check_port_availability() -> list[CheckResult]:
     return results
 
 
-@doctor_app.callback(invoke_without_command=True)
+@doctor_app.callback()
 def doctor() -> None:
     """Run diagnostic checks on your vibetuner project."""
     from vibetuner.paths import paths
