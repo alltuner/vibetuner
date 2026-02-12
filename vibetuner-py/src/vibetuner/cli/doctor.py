@@ -202,19 +202,40 @@ def _check_service_connectivity() -> list[CheckResult]:
 
 
 def _check_models() -> list[CheckResult]:
+    results: list[CheckResult] = []
+
     try:
         from vibetuner.mongo import get_all_models
 
         models = get_all_models()
-        return [
+        results.append(
             CheckResult(
-                "Registered models",
+                "Beanie models",
                 "ok",
                 f"{len(models)} model(s): {', '.join(m.__name__ for m in models)}",
             )
-        ]
+        )
     except Exception as exc:
-        return [CheckResult("Registered models", "warn", f"Cannot load models: {exc}")]
+        results.append(CheckResult("Beanie models", "warn", f"Cannot load: {exc}"))
+
+    try:
+        from vibetuner.sqlmodel import get_all_sql_models
+
+        sql_models = get_all_sql_models()
+        if sql_models:
+            results.append(
+                CheckResult(
+                    "SQL models",
+                    "ok",
+                    f"{len(sql_models)} model(s): {', '.join(m.__name__ for m in sql_models)}",
+                )
+            )
+        else:
+            results.append(CheckResult("SQL models", "skip", "None registered"))
+    except Exception as exc:
+        results.append(CheckResult("SQL models", "warn", f"Cannot load: {exc}"))
+
+    return results
 
 
 def _check_templates(root: Path | None) -> list[CheckResult]:

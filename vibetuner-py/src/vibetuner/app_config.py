@@ -5,6 +5,7 @@ from typing import Any, Callable
 from beanie import Document, View
 from fastapi import APIRouter
 from pydantic import BaseModel, ConfigDict
+from sqlmodel import SQLModel
 from starlette.middleware import Middleware
 from typer import Typer
 
@@ -33,6 +34,9 @@ class VibetunerApp(BaseModel):
 
     # Models (Beanie documents and views)
     models: list[type[Document] | type[View]] = []
+
+    # SQL Models (SQLModel table models)
+    sql_models: list[type[SQLModel]] = []
 
     # Frontend
     routes: list[APIRouter] = []
