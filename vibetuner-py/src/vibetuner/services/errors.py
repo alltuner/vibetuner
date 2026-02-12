@@ -5,6 +5,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
+
 _console = Console(stderr=True)
 
 DOCS_BASE = "https://vibetuner.alltuner.com/docs"
