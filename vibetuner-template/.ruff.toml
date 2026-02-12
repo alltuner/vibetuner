@@ -12,6 +12,9 @@ extend-select = [
   'W',      # pycodestyle
   'FA100',  # ban `from __future__ import annotations` (breaks FastAPI/Pydantic)
 ]
+ignore = [
+  'B008',   # function call in default argument — intentional for FastAPI Depends() / Query()
+]
 
 [lint.isort]
 combine-as-imports = true
