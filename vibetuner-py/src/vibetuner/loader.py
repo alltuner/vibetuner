@@ -32,23 +32,6 @@ def load_app_config() -> VibetunerApp:
 
     try:
         module = import_module(f"{package_name}.tune")
-        app_config = getattr(module, "app", None)
-
-        if app_config is None:
-            raise ConfigurationError(
-                f"'{package_name}/tune.py' must export an 'app' object. "
-                f"Example: app = VibetunerApp(routes=[...])"
-            )
-
-        if not isinstance(app_config, VibetunerApp):
-            raise ConfigurationError(
-                f"'app' in '{package_name}/tune.py' must be a VibetunerApp instance, "
-                f"got {type(app_config).__name__}"
-            )
-
-        logger.info(f"Loaded app config from {package_name}.tune")
-        return app_config
-
     except ModuleNotFoundError as e:
         # Check if tune.py is missing (ok, use defaults)
         # vs a broken import inside tune.py (re-raise)
@@ -58,3 +41,33 @@ def load_app_config() -> VibetunerApp:
             return VibetunerApp()
         # Broken import inside tune.py - surface the error
         raise
+    except ImportError as e:
+        raise ConfigurationError(
+            f"Failed to import '{package_name}/tune.py': {e}\n"
+            f"Hint: This often happens due to circular imports in your app modules."
+        ) from e
+
+    app_config = getattr(module, "app", None)
+
+    if app_config is None:
+        # Check if module was partially loaded (circular import symptom)
+        hint = ""
+        if hasattr(module, "__file__") and not hasattr(module, "__all__"):
+            hint = (
+                "\nHint: If you're seeing this during startup, it may be caused by "
+                "a circular import. Check that tune.py doesn't import modules that "
+                "import back from tune.py."
+            )
+        raise ConfigurationError(
+            f"'{package_name}/tune.py' must export an 'app' object. "
+            f"Example: app = VibetunerApp(routes=[...]){hint}"
+        )
+
+    if not isinstance(app_config, VibetunerApp):
+        raise ConfigurationError(
+            f"'app' in '{package_name}/tune.py' must be a VibetunerApp instance, "
+            f"got {type(app_config).__name__}"
+        )
+
+    logger.info(f"Loaded app config from {package_name}.tune")
+    return app_config
