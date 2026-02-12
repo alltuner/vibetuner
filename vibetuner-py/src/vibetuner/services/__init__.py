@@ -32,6 +32,8 @@ async def get_email_service() -> AsyncGenerator[EmailService, None]:
 async def get_blob_service() -> AsyncGenerator[BlobService, None]:
     """FastAPI dependency that provides a BlobService instance.
 
+    Raises HTTPException(503) when blob storage is not configured.
+
     Usage:
         @router.post("/upload")
         async def upload(blobs: BlobService = Depends(get_blob_service)):
@@ -39,11 +41,29 @@ async def get_blob_service() -> AsyncGenerator[BlobService, None]:
     """
     try:
         service = BlobService()
-    except ValueError as e:
+    except (ValueError, RuntimeError) as e:
         logger.error("Failed to initialize BlobService: {}", e)
         raise HTTPException(
             status_code=503, detail="Blob storage service is not available"
         ) from e
+    yield service
+
+
+async def get_optional_blob_service() -> AsyncGenerator[BlobService | None, None]:
+    """FastAPI dependency that provides a BlobService or None when not configured.
+
+    Usage:
+        @router.get("/blob-check")
+        async def check(blobs: BlobService | None = Depends(get_optional_blob_service)):
+            if blobs is None:
+                return {"status": "unavailable"}
+            return {"status": "ok"}
+    """
+    try:
+        service = BlobService()
+    except (ValueError, RuntimeError):
+        yield None
+        return
     yield service
 
 
