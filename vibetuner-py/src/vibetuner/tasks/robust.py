@@ -91,7 +91,9 @@ def _ensure_middleware(worker: Any) -> None:
             @worker.middleware
             def robust_retry_middleware(next_fn: Any) -> Any:
                 async def wrapper(*args: Any, **kwargs: Any) -> Any:
-                    ctx = task_context.get()
+                    ctx = task_context.get(None)
+                    if ctx is None:
+                        return await next_fn(*args, **kwargs)
                     config = _configs.get(ctx.fn_name)
                     if config is None:
                         return await next_fn(*args, **kwargs)
