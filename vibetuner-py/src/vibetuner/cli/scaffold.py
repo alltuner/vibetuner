@@ -247,16 +247,7 @@ def new(
         console.print("[dim]Using vibetuner template from GitHub (main branch)[/dim]")
 
     # Parse data overrides
-    data_dict = {}
-    if data:
-        for item in data:
-            if "=" not in item:
-                console.print(
-                    f"[red]Error: Invalid data format '{item}'. Expected key=value[/red]"
-                )
-                raise typer.Exit(code=1)
-            key, value = item.split("=", 1)
-            data_dict[key] = value
+    data_dict = _parse_data_overrides(data)
 
     # When using defaults, provide sensible default values for required fields
     if defaults:
