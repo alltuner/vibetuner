@@ -89,6 +89,13 @@ def _run_frontend(
 
     console.print(f"[green]Starting frontend in {mode} mode on {host}:{port}[/green]")
     console.print(f"[cyan]website reachable at http://localhost:{port}[/cyan]")
+
+    from vibetuner.config import settings
+
+    if settings.localdev_url:
+        https_url = settings.localdev_url.replace("{port}", str(port))
+        console.print(f"[cyan]  https reachable at {https_url}[/cyan]")
+
     if is_dev:
         console.print("[dim]Watching for changes in src/ and templates/[/dim]")
     else:
