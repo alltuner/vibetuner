@@ -29,7 +29,7 @@ def _ensure_engine() -> None:
     global engine, async_session
 
     if settings.database_url is None:
-        logger.warning("database_url is not configured. SQLModel engine is disabled.")
+        logger.debug("DATABASE_URL not configured — skipping SQLModel engine")
         return
 
     if engine is None:
