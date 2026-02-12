@@ -540,7 +540,7 @@ Pydantic Settings with environment variable support:
 class Settings(BaseSettings):
 # Automatic from .env or environment
 DATABASE_URL: str
-SECRET_KEY: str
+SESSION_KEY: str
 DEBUG: bool = False
 # OAuth
 GOOGLE_CLIENT_ID: str | None = None

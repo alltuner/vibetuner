@@ -1211,7 +1211,7 @@ MONGODB_URL=mongodb://localhost:27017/myapp
 DATABASE_URL=postgresql+asyncpg://user:pass@localhost/myapp
 # DATABASE_URL=sqlite+aiosqlite:///./data.db
 
-SECRET_KEY=your-secret-key-here
+SESSION_KEY=your-secret-key-here
 DEBUG=true
 # OAuth (optional)
 GOOGLE_CLIENT_ID=...
@@ -1228,7 +1228,7 @@ MONGODB_URL=mongodb://prod-server:27017/myapp
 # Or SQL database
 DATABASE_URL=postgresql+asyncpg://user:pass@prod-server/myapp
 
-SECRET_KEY=very-secret-key
+SESSION_KEY=very-secret-key
 DEBUG=false
 ```
 
