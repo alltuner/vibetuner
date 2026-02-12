@@ -120,11 +120,10 @@ app.add_typer(scaffold_app, name="scaffold")
 try:
     _app_config = load_app_config()
     if _app_config.cli:
-        # Add user's Typer app as a sub-command group or merge commands
-        for command in _app_config.cli.registered_commands:
-            app.registered_commands.append(command)
-        for group in _app_config.cli.registered_groups:
-            app.registered_groups.append(group)
+        # Register user's Typer app as a named subcommand group.
+        # The user's Typer name attribute is used as the group name
+        # (e.g., typer.Typer(name="linkboard") → `vibetuner linkboard <cmd>`).
+        app.add_typer(_app_config.cli)
         logger.debug("Registered user CLI commands from tune.py")
 except ConfigurationError:
     # Not in a project directory or tune.py misconfigured, skip user CLI
