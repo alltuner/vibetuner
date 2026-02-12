@@ -138,10 +138,23 @@ app.add_typer(scaffold_app, name="scaffold")
 try:
     _app_config = load_app_config()
     if _app_config.cli:
-        # Register user's Typer app as a named subcommand group.
-        # The user's Typer name attribute is used as the group name
-        # (e.g., typer.Typer(name="linkboard") → `vibetuner linkboard <cmd>`).
-        app.add_typer(_app_config.cli)
+        _user_cli = _app_config.cli
+        # Determine the user-provided name, if any
+        _user_name = getattr(getattr(_user_cli, "info", None), "name", None)
+        # Collect core command/group names so we can detect shadowing
+        _core_names = {
+            cmd.name
+            for cmd in app.registered_groups + app.registered_commands
+            if hasattr(cmd, "name") and cmd.name
+        }
+        if _user_name and _user_name in _core_names:
+            logger.warning(
+                f"User CLI group name '{_user_name}' shadows a core vibetuner "
+                f"command. Falling back to namespace 'app'."
+            )
+            _user_name = "app"
+        # Ensure the user CLI is always namespaced to prevent top-level shadowing
+        app.add_typer(_user_cli, name=_user_name or "app")
         logger.debug("Registered user CLI commands from tune.py")
 except ConfigurationError:
     # Not in a project directory or tune.py misconfigured, skip user CLI
