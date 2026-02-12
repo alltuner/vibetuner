@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.1.1](https://github.com/alltuner/vibetuner/compare/v8.1.0...v8.1.1) (2026-02-12)
+
+
+### Bug Fixes
+
+* prevent infinite recursion when user CLI re-exports vibetuner.cli.app ([#1217](https://github.com/alltuner/vibetuner/issues/1217)) ([894f01f](https://github.com/alltuner/vibetuner/commit/894f01f5e17c6d08139fe378063fc9726fd192e1))
+
 ## [8.1.0](https://github.com/alltuner/vibetuner/compare/v8.0.1...v8.1.0) (2026-02-12)
 
 
