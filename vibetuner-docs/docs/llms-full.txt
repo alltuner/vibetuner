@@ -400,6 +400,67 @@ async def signup(email: str):
     return {"message": "Welcome email queued", "task_id": task.id}
 ```
 
+#### Custom Lifespan
+
+For custom startup/shutdown logic, create a lifespan and pass to `tune.py`:
+
+```python
+# src/app/frontend/lifespan.py
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from vibetuner.frontend.lifespan import base_lifespan
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with base_lifespan(app):
+        # Custom startup logic
+        print("App starting with custom logic")
+        yield
+        # Custom shutdown logic
+        print("App shutting down with custom logic")
+```
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.frontend.lifespan import lifespan
+
+app = VibetunerApp(
+    frontend_lifespan=lifespan,
+)
+```
+
+**Worker lifespan** (different signature — takes no arguments, yields context):
+
+```python
+# src/app/tasks/lifespan.py
+from contextlib import asynccontextmanager
+from vibetuner.tasks.lifespan import base_lifespan
+
+@asynccontextmanager
+async def lifespan():
+    async with base_lifespan() as worker_context:
+        # Custom worker startup logic
+        print("Worker starting with custom logic")
+        yield worker_context
+        # Custom worker shutdown logic
+        print("Worker shutting down")
+```
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.tasks.lifespan import lifespan as worker_lifespan
+
+app = VibetunerApp(
+    worker_lifespan=worker_lifespan,
+)
+```
+
+> **Note:** The frontend lifespan receives the `FastAPI` app and yields
+> nothing. The worker lifespan takes no arguments and yields a `Context`
+> object.
+
 #### Working with HTMX
 
 Vibetuner uses HTMX for interactive features without JavaScript:
