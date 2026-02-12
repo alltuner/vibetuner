@@ -507,6 +507,17 @@ app = VibetunerApp(
 
 Use in templates: `{{ post.created_at | ca_date }}` or `{{ post.content | truncate(30) }}`
 
+**Filters returning HTML:** If your filter returns HTML markup, wrap the output
+with `markupsafe.Markup` to prevent Jinja2 auto-escaping:
+
+```python
+from markupsafe import Markup, escape
+
+def tag_badge(value: str) -> Markup:
+    """Render a badge — escape user input, wrap result in Markup."""
+    return Markup('<span class="badge">{}</span>').format(escape(value))
+```
+
 ### Adding Middleware
 
 Create middleware and pass to `tune.py`:
