@@ -89,9 +89,6 @@ def _run_frontend(
 
     console.print(f"[green]Starting frontend in {mode} mode on {host}:{port}[/green]")
     console.print(f"[cyan]website reachable at http://localhost:{port}[/cyan]")
-    console.print(
-        f"[cyan]website reachable at https://{port}.localdev.alltuner.com:12000/[/cyan]"
-    )
     if is_dev:
         console.print("[dim]Watching for changes in src/ and templates/[/dim]")
     else:
