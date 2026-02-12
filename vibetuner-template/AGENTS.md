@@ -598,6 +598,37 @@ app = VibetunerApp(
 )
 ```
 
+**Worker lifespan** (different signature — takes no arguments, yields context):
+
+```python
+# src/app/tasks/lifespan.py
+from contextlib import asynccontextmanager
+from vibetuner.tasks.lifespan import base_lifespan
+
+@asynccontextmanager
+async def lifespan():
+    async with base_lifespan() as worker_context:
+        # Custom worker startup logic
+        print("Worker starting with custom logic")
+        yield worker_context
+        # Custom worker shutdown logic
+        print("Worker shutting down")
+```
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.tasks.lifespan import lifespan as worker_lifespan
+
+app = VibetunerApp(
+    worker_lifespan=worker_lifespan,
+)
+```
+
+> **Note:** The frontend lifespan receives the `FastAPI` app and yields
+> nothing. The worker lifespan takes no arguments and yields a `Context`
+> object.
+
 ### CRUD Factory
 
 Generate full CRUD endpoints for a Beanie model in one call:
