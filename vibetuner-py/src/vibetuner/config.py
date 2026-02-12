@@ -185,6 +185,10 @@ class CoreConfiguration(BaseSettings):
     # SECURITY: Only IPs in this list can set forwarded headers. Use "*" to trust all (NOT recommended for production)
     trusted_proxy_hosts: str = "127.0.0.1"
 
+    # Local HTTPS reverse proxy URL template (e.g., "https://{port}.localdev.localhost:12000")
+    # When set, vibetuner prints this URL on startup with {port} replaced by the actual port.
+    localdev_url: str | None = None
+
     @cached_property
     def trusted_proxy_hosts_list(self) -> list[str]:
         """Parse trusted proxy hosts into a list for Granian's proxy header wrapper."""
