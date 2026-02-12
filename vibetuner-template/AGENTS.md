@@ -678,9 +678,32 @@ This generates GET (list with pagination/filtering/sorting/search), POST (create
 GET `/{id}` (read), PATCH `/{id}` (update), DELETE `/{id}` endpoints.
 
 Use `operations={Operation.LIST, Operation.READ}` to limit which endpoints are
-generated. Add `pre_create`, `post_create`, `pre_update`, `post_update`,
-`pre_delete`, `post_delete` hooks for custom logic. Use `create_schema`,
-`update_schema`, `response_schema` for custom Pydantic models.
+generated. Use `create_schema`, `update_schema`, `response_schema` for custom
+Pydantic models.
+
+**Hook signatures:**
+
+```python
+from fastapi import Request
+
+# Called before insert. Return modified data (or None to keep original).
+async def pre_create(data: CreateSchema, request: Request) -> CreateSchema: ...
+
+# Called after insert.
+async def post_create(doc: MyModel, request: Request) -> None: ...
+
+# Called before update. Return modified data (or None to keep original).
+async def pre_update(doc: MyModel, data: UpdateSchema, request: Request) -> UpdateSchema: ...
+
+# Called after update.
+async def post_update(doc: MyModel, request: Request) -> None: ...
+
+# Called before deletion.
+async def pre_delete(doc: MyModel, request: Request) -> None: ...
+
+# Called after deletion.
+async def post_delete(doc: MyModel, request: Request) -> None: ...
+```
 
 ### SSE (Server-Sent Events)
 

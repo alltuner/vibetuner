@@ -872,6 +872,22 @@ post_routes = create_crud_routes(
 )
 ```
 
+**Hook signatures reference:**
+
+All hooks are async callables with these signatures:
+
+| Hook | Signature | Returns |
+|------|-----------|---------|
+| `pre_create` | `async (data, request)` | Modified data or `None` |
+| `post_create` | `async (doc, request)` | `None` |
+| `pre_update` | `async (doc, data, request)` | Modified data or `None` |
+| `post_update` | `async (doc, request)` | `None` |
+| `pre_delete` | `async (doc, request)` | `None` |
+| `post_delete` | `async (doc, request)` | `None` |
+
+`pre_create` and `pre_update` can return the (modified) data object to override
+input. If they return `None`, the original data is used.
+
 ### Server-Sent Events (SSE)
 
 Vibetuner provides SSE helpers for real-time streaming with HTMX. Import from
