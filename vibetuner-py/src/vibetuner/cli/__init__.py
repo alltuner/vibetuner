@@ -81,8 +81,13 @@ LOG_LEVEL_OPTION = typer.Option(
 
 
 @app.callback()
-def callback(log_level: LogLevel | None = LOG_LEVEL_OPTION) -> None:
+def callback(
+    ctx: typer.Context,
+    log_level: LogLevel | None = LOG_LEVEL_OPTION,
+) -> None:
     """Initialize logging and other global settings."""
+    if ctx.resilient_parsing:
+        return
     setup_logging(level=log_level)
 
 
