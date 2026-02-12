@@ -28,7 +28,7 @@ class BlobService:
         ):
             from vibetuner.services.errors import s3_not_configured
 
-            raise ValueError(s3_not_configured())
+            raise ValueError(s3_not_configured(log=False))
 
         bucket = default_bucket or settings.r2_default_bucket_name
         if bucket is None:

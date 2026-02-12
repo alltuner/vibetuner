@@ -34,5 +34,5 @@ def get_worker() -> Worker:
     if worker is None:
         from vibetuner.services.errors import redis_not_configured
 
-        raise RuntimeError(redis_not_configured())
+        raise RuntimeError(redis_not_configured(log=False))
     return worker

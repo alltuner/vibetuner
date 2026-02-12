@@ -60,9 +60,10 @@ MONGODB_ERROR = _build_message(
 )
 
 
-def mongodb_not_configured() -> str:
-    """Return (and optionally print) the MongoDB configuration error."""
-    _print_rich_error(MONGODB_ERROR, "MongoDB not configured")
+def mongodb_not_configured(*, log: bool = True) -> str:
+    """Return the MongoDB configuration error. Optionally print to stderr."""
+    if log:
+        _print_rich_error(MONGODB_ERROR, "MongoDB not configured")
     return MONGODB_ERROR
 
 
@@ -78,9 +79,10 @@ REDIS_ERROR = _build_message(
 )
 
 
-def redis_not_configured() -> str:
-    """Return (and optionally print) the Redis configuration error."""
-    _print_rich_error(REDIS_ERROR, "Redis not configured")
+def redis_not_configured(*, log: bool = True) -> str:
+    """Return the Redis configuration error. Optionally print to stderr."""
+    if log:
+        _print_rich_error(REDIS_ERROR, "Redis not configured")
     return REDIS_ERROR
 
 
@@ -111,9 +113,10 @@ S3_ERROR = _build_message(
 )
 
 
-def s3_not_configured() -> str:
-    """Return (and optionally print) the S3/R2 configuration error."""
-    _print_rich_error(S3_ERROR, "S3/R2 storage not configured")
+def s3_not_configured(*, log: bool = True) -> str:
+    """Return the S3/R2 configuration error. Optionally print to stderr."""
+    if log:
+        _print_rich_error(S3_ERROR, "S3/R2 storage not configured")
     return S3_ERROR
 
 
@@ -128,7 +131,8 @@ EMAIL_ERROR = _build_message(
 )
 
 
-def email_not_configured() -> str:
-    """Return (and optionally print) the email configuration error."""
-    _print_rich_error(EMAIL_ERROR, "Email service not configured")
+def email_not_configured(*, log: bool = True) -> str:
+    """Return the email configuration error. Optionally print to stderr."""
+    if log:
+        _print_rich_error(EMAIL_ERROR, "Email service not configured")
     return EMAIL_ERROR

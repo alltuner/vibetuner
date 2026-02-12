@@ -30,7 +30,7 @@ class EmailService:
         if not settings.mailjet_api_key or not settings.mailjet_api_secret:
             from vibetuner.services.errors import email_not_configured
 
-            raise EmailServiceNotConfiguredError(email_not_configured())
+            raise EmailServiceNotConfiguredError(email_not_configured(log=False))
         self.client = Client(
             auth=(
                 settings.mailjet_api_key.get_secret_value(),
