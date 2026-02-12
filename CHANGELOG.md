@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.1.2](https://github.com/alltuner/vibetuner/compare/v8.1.1...v8.1.2) (2026-02-12)
+
+
+### Bug Fixes
+
+* add invoke_without_command=True to doctor_app ([#1220](https://github.com/alltuner/vibetuner/issues/1220)) ([99521db](https://github.com/alltuner/vibetuner/commit/99521db8534800f99630aa63110f61f5bf57e21f))
+
 ## [8.1.1](https://github.com/alltuner/vibetuner/compare/v8.1.0...v8.1.1) (2026-02-12)
 
 
