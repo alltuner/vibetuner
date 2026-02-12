@@ -61,6 +61,13 @@ cd my-app
 just dev
 ```
 
+For projects using SQL models (SQLModel/SQLite/PostgreSQL), create tables first:
+
+```bash
+uv run vibetuner db create-schema   # Required once before first run
+just dev
+```
+
 This starts:
 
 - Database (MongoDB or SQL, if configured)
