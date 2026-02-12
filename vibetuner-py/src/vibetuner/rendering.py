@@ -1,5 +1,6 @@
 # ABOUTME: Jinja2 template rendering for HTML responses.
 # ABOUTME: Lives outside vibetuner.frontend to avoid circular imports with tune.py.
+import inspect
 import threading
 from collections.abc import Callable
 from datetime import timedelta
@@ -91,14 +92,22 @@ def register_context_provider(func=None):
     return decorator
 
 
-def _collect_provider_context() -> dict[str, Any]:
-    """Run all registered context providers and merge results."""
+def _collect_provider_context(request: Request | None = None) -> dict[str, Any]:
+    """Run all registered context providers and merge results.
+
+    Providers that accept a ``request`` parameter will receive the current
+    request object.  Providers with no parameters continue to work unchanged.
+    """
     with _context_lock:
         providers = list(_context_providers)
     result: dict[str, Any] = {}
     for provider in providers:
         try:
-            ctx = provider()
+            sig = inspect.signature(provider)
+            if "request" in sig.parameters and request is not None:
+                ctx = provider(request=request)
+            else:
+                ctx = provider()
             if isinstance(ctx, dict):
                 result.update(ctx)
             else:
@@ -403,7 +412,7 @@ def render_template(
     merged_ctx = {
         **data_ctx.model_dump(),
         **globals_snapshot,
-        **_collect_provider_context(),
+        **_collect_provider_context(request=request),
         "request": request,
         "language": language,
         **ctx,
@@ -445,7 +454,7 @@ def render_template_string(
     merged_ctx = {
         **data_ctx.model_dump(),
         **globals_snapshot,
-        **_collect_provider_context(),
+        **_collect_provider_context(request=request),
         "request": request,
         "language": language,
         **ctx,
