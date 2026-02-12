@@ -25,4 +25,4 @@ format-md:
 
 # Format all code
 [group('Code quality: formatting')]
-format: format-py format-toml format-jinja format-md
+format: format-py format-toml format-jinja format-md format-yaml

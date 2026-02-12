@@ -35,4 +35,4 @@ type-check:
 
 # Run all linting checks
 [group('Code quality: linting')]
-lint: lint-md lint-py lint-toml lint-jinja lint-po type-check
+lint: lint-md lint-py lint-toml lint-jinja lint-yaml lint-po type-check
