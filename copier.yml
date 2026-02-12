@@ -3,6 +3,7 @@ _skip_if_exists:
   - .env
   - .release-please-manifest.json
   - "src/{{ project_slug | replace('-', '_') }}/__init__.py"
+  - "locales/*/LC_MESSAGES/messages.po"
 _subdirectory: vibetuner-template
 _templates_suffix: .j2
 
