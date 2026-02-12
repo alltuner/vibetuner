@@ -42,9 +42,9 @@ def _apply_filters(query, request: Request, filterable: list[str]):
     return query
 
 
-def _apply_search(query, request: Request, searchable: list[str]):
+def _apply_search(query, search: str | None, searchable: list[str]):
     """Apply text search across searchable fields."""
-    q = request.query_params.get("q")
+    q = search
     if q and searchable:
         escaped_q = re.escape(q)
         search_filter = {
@@ -115,13 +115,16 @@ def _register_list_route(
         offset: int = Query(0, ge=0),
         limit: int = Query(page_size, ge=1, le=max_page_size),
         sort: str | None = Query(None),
+        search: str | None = Query(
+            None, description="Search across searchable fields"
+        ),
         fields: str | None = Query(
             None, description="Comma-separated field names to include"
         ),
     ):
         query = model.find()
         query = _apply_filters(query, request, filterable)
-        query = _apply_search(query, request, searchable)
+        query = _apply_search(query, search, searchable)
         query = _apply_sort(query, sort, sortable)
 
         total = await query.count()
