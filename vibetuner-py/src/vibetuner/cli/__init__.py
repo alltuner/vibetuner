@@ -51,9 +51,22 @@ def _get_app_help():
     try:
         from vibetuner.config import settings
 
-        return f"{settings.project.project_name.title()} CLI"
+        name = settings.project.project_name
+        if name and name != "default_project":
+            return f"{name.title()} CLI"
     except (RuntimeError, ImportError):
-        return "Vibetuner CLI"
+        pass
+
+    try:
+        from vibetuner.pyproject import get_project_name
+
+        name = get_project_name()
+        if name:
+            return f"{name.replace('_', ' ').title()} CLI"
+    except Exception:
+        pass
+
+    return "Vibetuner CLI"
 
 
 app = AsyncTyper(help=_get_app_help())
