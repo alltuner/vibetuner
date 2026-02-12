@@ -36,6 +36,7 @@ __all__ = [
 _context_lock = threading.RLock()
 _template_globals: dict[str, Any] = {}
 _context_providers: list[Callable[[], dict[str, Any]]] = []
+_provider_accepts_request: dict[Callable, bool] = {}
 
 
 def register_globals(globals_dict: dict[str, Any]) -> None:
@@ -81,12 +82,18 @@ def register_context_provider(func=None):
         # Used as @register_context_provider (without parentheses)
         with _context_lock:
             _context_providers.append(func)
+            _provider_accepts_request[func] = (
+                "request" in inspect.signature(func).parameters
+            )
         return func
 
     # Used as @register_context_provider()
     def decorator(fn):
         with _context_lock:
             _context_providers.append(fn)
+            _provider_accepts_request[fn] = (
+                "request" in inspect.signature(fn).parameters
+            )
         return fn
 
     return decorator
@@ -103,8 +110,8 @@ def _collect_provider_context(request: Request | None = None) -> dict[str, Any]:
     result: dict[str, Any] = {}
     for provider in providers:
         try:
-            sig = inspect.signature(provider)
-            if "request" in sig.parameters and request is not None:
+            accepts_request = _provider_accepts_request.get(provider, False)
+            if accepts_request and request is not None:
                 ctx = provider(request=request)
             else:
                 ctx = provider()

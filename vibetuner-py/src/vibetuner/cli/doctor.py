@@ -13,6 +13,7 @@ from rich.table import Table
 
 from vibetuner.logging import logger
 
+
 doctor_app = typer.Typer(help="Validate project setup", invoke_without_command=True)
 console = Console()
 
