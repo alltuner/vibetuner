@@ -76,7 +76,9 @@ def _ensure_middleware(worker: Any) -> None:
     """Register the robust task middleware once per worker."""
     global _middleware_registered
     if worker is None or not hasattr(worker, "middleware"):
-        raise TypeError("worker must be a valid Streaq worker with a middleware attribute")
+        raise TypeError(
+            "worker must be a valid Streaq worker with a middleware attribute"
+        )
     with _middleware_lock:
         if _middleware_registered:
             return
@@ -150,7 +152,9 @@ def robust_task(
     """
     task_name_arg = task_kwargs.pop("name", None)
     if task_name_arg is not None and not isinstance(task_name_arg, str):
-        raise TypeError(f"task name must be a string, got {type(task_name_arg).__name__}")
+        raise TypeError(
+            f"task name must be a string, got {type(task_name_arg).__name__}"
+        )
 
     from vibetuner.tasks.worker import get_worker
 

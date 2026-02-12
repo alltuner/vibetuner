@@ -417,5 +417,7 @@ class ConfigField:
             is_secret=self.is_secret,
         )
 
-    def __get__(self, obj: Any, objtype: type | None = None) -> Coroutine[Any, Any, Any]:
+    def __get__(
+        self, obj: Any, objtype: type | None = None
+    ) -> Coroutine[Any, Any, Any]:
         return RuntimeConfig.get(self.key, self.default)  # type: ignore[arg-type]
