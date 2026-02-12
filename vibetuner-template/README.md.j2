@@ -1,0 +1,25 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Quick Start
+
+```bash
+just install-deps    # Install dependencies (first time only)
+just local-all       # Start development server with hot reload
+```
+
+Then open [http://localhost:8000](http://localhost:8000).
+
+## Development Commands
+
+```bash
+just local-all               # Dev server + asset pipeline
+just local-all-with-worker   # With background worker (requires Redis)
+just format                  # Format all code
+just lint                    # Lint all code
+```
+
+Run `just` to see all available commands.
+
+## Built with [vibetuner](https://github.com/alltuner/vibetuner)
