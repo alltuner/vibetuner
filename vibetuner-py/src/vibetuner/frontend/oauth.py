@@ -232,14 +232,57 @@ async def _create_new_user_with_oauth(
     return account
 
 
+def _get_relay_cookie_domain(relay_url: str) -> str:
+    """Extract parent domain from relay URL for cookie sharing.
+
+    "https://oauth.localdev.alltuner.com:12000" -> ".localdev.alltuner.com"
+    """
+    from urllib.parse import urlparse
+
+    host = urlparse(relay_url).hostname or ""
+    # Strip the first label (e.g. "oauth") to get parent domain
+    parts = host.split(".", 1)
+    return f".{parts[1]}" if len(parts) > 1 else host
+
+
+def _get_source_port(request: Request) -> str:
+    """Extract the app port from the request host.
+
+    "8001.localdev.alltuner.com:12000" -> "8001"
+    """
+    host = request.url.hostname or ""
+    return host.split(".")[0]
+
+
 def _create_auth_login_handler(provider_name: str):
     async def auth_login(request: Request, next: str | None = None):
-        redirect_uri = request.url_for(f"auth_with_{provider_name}")
+        from vibetuner.config import settings
+
         request.session["next_url"] = next or get_homepage_url(request)
         client = oauth.create_client(provider_name)
         if not client:
             return RedirectResponse(url=get_homepage_url(request))
 
+        if settings.oauth_relay_url:
+            relay_url = settings.oauth_relay_url.rstrip("/")
+            redirect_uri = f"{relay_url}/auth/provider/{provider_name}"
+            response = await client.authorize_redirect(
+                request, redirect_uri, hl=request.state.language
+            )
+            domain = _get_relay_cookie_domain(relay_url)
+            port = _get_source_port(request)
+            response.set_cookie(
+                "_oauth_source_port",
+                port,
+                max_age=300,
+                httponly=True,
+                secure=True,
+                domain=domain,
+                path="/auth/provider/",
+            )
+            return response
+
+        redirect_uri = request.url_for(f"auth_with_{provider_name}")
         return await client.authorize_redirect(
             request, redirect_uri, hl=request.state.language
         )
