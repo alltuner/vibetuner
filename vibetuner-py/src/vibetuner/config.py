@@ -189,6 +189,11 @@ class CoreConfiguration(BaseSettings):
     # When set, vibetuner prints this URL on startup with {port} replaced by the actual port.
     localdev_url: str | None = None
 
+    # OAuth relay URL for shared redirect URI across multiple local apps.
+    # When set, OAuth flows use this stable URL instead of the app's own URL.
+    # Example: "https://oauth.localdev.alltuner.com:12000"
+    oauth_relay_url: str | None = None
+
     @cached_property
     def trusted_proxy_hosts_list(self) -> list[str]:
         """Parse trusted proxy hosts into a list for Granian's proxy header wrapper."""
