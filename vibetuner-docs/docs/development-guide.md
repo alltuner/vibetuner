@@ -172,7 +172,23 @@ class Post(SQLModel, table=True):
     published: bool = Field(default=False)
 ```
 
+Register SQL models explicitly in `tune.py`:
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.models.post import Post
+
+app = VibetunerApp(
+    sql_models=[Post],
+)
+```
+
 For SQL databases, create tables with: `vibetuner db create-schema`
+
+!!! tip "MongoDB is optional"
+    Projects that only use SQLModel/Postgres do not need `MONGODB_URL`.
+    The framework silently skips MongoDB initialization when the URL is not set.
 
 ### Creating Templates
 
@@ -674,7 +690,7 @@ post_routes = create_crud_routes(
 Query examples:
 
 - `GET /posts?status=published` — equality filter
-- `GET /posts?q=python` — text search across searchable fields
+- `GET /posts?search=python` — text search across searchable fields
 - `GET /posts?sort=-created_at,title` — sort descending by date, then title
 - `GET /posts?offset=20&limit=10` — pagination
 - `GET /posts?fields=title,status` — sparse field selection
@@ -778,6 +794,11 @@ router = APIRouter()
 async def notifications_stream(request: Request):
     pass  # channel kwarg handles the subscription
 ```
+
+!!! warning "SSE path is relative to router prefix"
+    The `path` argument is relative to the router's prefix, just like `@router.get()`.
+    If your router has `prefix="/api"`, use `path="/events"` (not `path="/api/events"`)
+    to avoid a doubled path like `/api/api/events`.
 
 Broadcast from any route or background task:
 
