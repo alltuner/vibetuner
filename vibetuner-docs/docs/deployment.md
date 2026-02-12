@@ -31,7 +31,7 @@ Create a `.env` file for production:
 ```bash
 # Application
 APP_NAME=My Application
-SECRET_KEY=your-production-secret-key
+SESSION_KEY=your-production-secret-key
 DEBUG=false
 ENVIRONMENT=production
 # Database (MongoDB)
@@ -40,11 +40,9 @@ MONGODB_URL=mongodb://user:password@mongodb-host:27017/myapp?authSource=admin
 DATABASE_URL=postgresql+asyncpg://user:password@postgres-host:5432/myapp
 # Redis (if background jobs enabled)
 REDIS_URL=redis://redis-host:6379/0
-# Email
-SMTP_HOST=smtp.sendgrid.net
-SMTP_PORT=587
-SMTP_USER=apikey
-SMTP_PASSWORD=your-sendgrid-api-key
+# Email (Mailjet)
+MAILJET_API_KEY=your-mailjet-api-key
+MAILJET_API_SECRET=your-mailjet-api-secret
 FROM_EMAIL=noreply@example.com
 # OAuth
 GOOGLE_CLIENT_ID=your-production-client-id
@@ -64,7 +62,7 @@ AWS_REGION=us-east-1
 
 ### Security Checklist
 
-- [ ] Use strong, unique `SECRET_KEY`
+- [ ] Use strong, unique `SESSION_KEY`
 - [ ] Set `DEBUG=false`
 - [ ] Enable `SESSION_COOKIE_SECURE=true` (HTTPS)
 - [ ] Use environment variables (not `.env` in image)

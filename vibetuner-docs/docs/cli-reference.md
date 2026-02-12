@@ -99,8 +99,10 @@ vibetuner run dev --auto-port
 
 - Sets `DEBUG=1` and enables hot reload.
 - `service` defaults to `frontend`.
-- Frontend watches `src/app/` and `templates/` for changes.
-- Worker runs the Streaq worker with reload enabled (ignores `--workers` > 1).
+- Frontend watches paths from `paths.reload_paths` and
+  `src/<project_slug>/` for changes, dynamically resolved at startup.
+- Worker runs the Streaq worker with reload enabled
+  (ignores `--workers` > 1).
 
 ### `prod`
 
@@ -124,7 +126,8 @@ vibetuner db create-schema
 
 Creates all database tables defined in SQLModel metadata. This command:
 
-1. Imports models from `app.models` to ensure they're registered
+1. Loads SQL models from `VibetunerApp.sql_models` via
+   `load_app_config()` / `get_all_sql_models()`
 2. Creates tables in the database specified by `DATABASE_URL`
 3. Skips if tables already exist (safe to run multiple times)
 
@@ -132,6 +135,8 @@ Creates all database tables defined in SQLModel metadata. This command:
 
 - `DATABASE_URL` environment variable must be set
 - Models must be defined using SQLModel with `table=True`
+- Models must be listed in `VibetunerApp.sql_models` in your
+  `tune.py`
 
 **Example:**
 

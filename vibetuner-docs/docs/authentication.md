@@ -148,10 +148,8 @@ Magic links are enabled by default. Configure email settings:
 
 ```bash
 # .env
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASSWORD=your-app-password
+MAILJET_API_KEY=your-mailjet-api-key
+MAILJET_API_SECRET=your-mailjet-api-secret
 FROM_EMAIL=noreply@example.com
 ```
 
@@ -165,7 +163,7 @@ FROM_EMAIL=noreply@example.com
 
 ### Customizing Email Templates
 
-Edit `templates/emails/magic_link.html.jinja`:
+Edit `templates/email/magic_link.html.jinja`:
 
 ```html
 <!DOCTYPE html>
@@ -185,15 +183,18 @@ The built-in User model supports both OAuth and magic link authentication:
 
 ```python
 # vibetuner.models.user
-class User(Document):
+class UserModel(Document):
     email: str
     name: str | None
-    avatar_url: str | None
-    oauth_accounts: list[OAuthAccount] = []
+    picture: str | None
 
     class Settings:
         name = "users"
 ```
+
+OAuth accounts are stored in a separate `OAuthAccountModel` collection
+and linked to the user via `user_id`. See the
+[Architecture](architecture.md) guide for the full schema.
 
 ### Extending the User Model
 
@@ -201,13 +202,16 @@ Create your own model that extends the base:
 
 ```python
 # src/app/models/user.py
-from vibetuner.models import User as BaseUser
+from vibetuner.models.user import UserModel
 from pydantic import Field
-class User(BaseUser):
-bio: str | None = None
-preferences: dict = Field(default_factory=dict)
-class Settings:
-name = "users"
+
+
+class User(UserModel):
+    bio: str | None = None
+    preferences: dict = Field(default_factory=dict)
+
+    class Settings:
+        name = "users"
 ```
 
 ## Session Management
@@ -218,7 +222,7 @@ Sessions use secure, HTTP-only cookies:
 # Default session configuration
 SESSION_MAX_AGE = 60 * 60 * 24 * 30  # 30 days
 SESSION_COOKIE_NAME = "session"
-SESSION_SECRET_KEY = settings.SECRET_KEY
+SESSION_SECRET_KEY = settings.SESSION_KEY
 ```
 
 ### Custom Session Configuration
@@ -239,13 +243,15 @@ Use the `@require_auth` decorator:
 
 ```python
 from vibetuner.frontend.auth import require_auth
+
+
 @router.get("/dashboard")
 @require_auth
 async def dashboard(request: Request):
-user = request.state.user
-return templates.TemplateResponse("dashboard.html.jinja", {
-"user": user
-})
+    user = request.state.user
+    return templates.TemplateResponse(
+        "dashboard.html.jinja", {"user": user}
+    )
 ```
 
 ### Optional Authentication
@@ -255,10 +261,10 @@ Access user if authenticated, but don't require it:
 ```python
 @router.get("/")
 async def home(request: Request):
-user = getattr(request.state, "user", None)
-return templates.TemplateResponse("home.html.jinja", {
-"user": user
-})
+    user = getattr(request.state, "user", None)
+    return templates.TemplateResponse(
+        "home.html.jinja", {"user": user}
+    )
 ```
 
 ### Template Context
@@ -322,7 +328,7 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 Add to `.env`:
 
 ```bash
-SECRET_KEY=your-generated-secret-key
+SESSION_KEY=your-generated-secret-key
 ```
 
 ### OAuth Callback URLs
@@ -362,7 +368,7 @@ Ensure callback URLs exactly match in:
 
 Check:
 
-1. SMTP settings are correct
+1. Mailjet API credentials are correct
 2. Email is being sent (check logs)
 3. Token hasn't expired (15 minutes default)
 4. Email isn't in spam folder
