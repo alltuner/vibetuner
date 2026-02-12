@@ -344,7 +344,10 @@ def sse_endpoint(
     name dynamically if it returns a string).
 
     Args:
-        path: URL path for the SSE endpoint.
+        path: URL path for the SSE endpoint, **relative to the router prefix**
+            (same as ``@router.get()``). For example, if ``router`` has
+            ``prefix="/live"`` and you pass ``path="/events"``, the final URL
+            will be ``/live/events``.
         channel: Static channel name to subscribe to. If the decorated function
             returns a string, it is used as the channel name instead.
         template: Default template for rendering events on this endpoint.
@@ -399,6 +402,13 @@ def sse_endpoint(
             return EventSourceResponse(_stream_from_channel(ch))
 
         if router is not None:
+            if router.prefix and path.startswith(router.prefix):
+                logger.warning(
+                    f"sse_endpoint path '{path}' starts with router prefix "
+                    f"'{router.prefix}' — this will produce a doubled path "
+                    f"'{router.prefix}{path}'. Use a relative path instead "
+                    f"(e.g., '{path[len(router.prefix):]}')"
+                )
             router.add_api_route(path, endpoint, methods=["GET"], name=name)
 
         return endpoint
