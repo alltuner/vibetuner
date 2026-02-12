@@ -86,33 +86,40 @@ def _ensure_middleware(worker: Any) -> None:
 
         try:
             from streaq import StreaqRetry
+            from streaq.types import task_context
 
             @worker.middleware
-            async def robust_retry_middleware(ctx: Any, next_handler: Any) -> Any:
-                config = _configs.get(ctx.fn_name)
-                if config is None:
-                    return await next_handler()
+            def robust_retry_middleware(next_fn: Any) -> Any:
+                async def wrapper(*args: Any, **kwargs: Any) -> Any:
+                    ctx = task_context.get()
+                    config = _configs.get(ctx.fn_name)
+                    if config is None:
+                        return await next_fn(*args, **kwargs)
 
-                try:
-                    return await next_handler()
-                except StreaqRetry:
-                    raise
-                except Exception as exc:
-                    if ctx.tries < config.max_retries:
-                        delay = min(config.backoff_base**ctx.tries, config.backoff_max)
-                        logger.warning(
-                            "Task %s[%s] failed (try %d/%d), retrying in %.0fs: %s",
-                            ctx.fn_name,
-                            ctx.task_id,
-                            ctx.tries,
-                            config.max_retries,
-                            delay,
-                            exc,
-                        )
-                        raise StreaqRetry(delay=int(delay)) from exc
+                    try:
+                        return await next_fn(*args, **kwargs)
+                    except StreaqRetry:
+                        raise
+                    except Exception as exc:
+                        if ctx.tries < config.max_retries:
+                            delay = min(
+                                config.backoff_base**ctx.tries, config.backoff_max
+                            )
+                            logger.warning(
+                                "Task %s[%s] failed (try %d/%d), retrying in %.0fs: %s",
+                                ctx.fn_name,
+                                ctx.task_id,
+                                ctx.tries,
+                                config.max_retries,
+                                delay,
+                                exc,
+                            )
+                            raise StreaqRetry(delay=int(delay)) from exc
 
-                    await _handle_permanent_failure(ctx, config, exc)
-                    raise
+                        await _handle_permanent_failure(ctx, config, exc)
+                        raise
+
+                return wrapper
         except Exception:
             _middleware_registered = False
             raise
