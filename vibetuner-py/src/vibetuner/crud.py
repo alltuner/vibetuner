@@ -1,4 +1,4 @@
-# ABOUTME: Generic CRUD route factory for Beanie Document and SQLModel classes.
+# ABOUTME: Generic CRUD route factory for Beanie Document classes.
 # ABOUTME: Generates list/create/read/update/delete routes with pagination, filtering, and sorting.
 import re
 from collections.abc import Callable
@@ -82,7 +82,10 @@ def _serialize_items(
         selected = {f.strip() for f in fields.split(",")}
         return [_select_fields(item, selected, response_schema) for item in items]
     if response_schema:
-        return [response_schema.model_validate(item.model_dump(mode="json")) for item in items]
+        return [
+            response_schema.model_validate(item.model_dump(mode="json"))
+            for item in items
+        ]
     return items
 
 
@@ -115,9 +118,7 @@ def _register_list_route(
         offset: int = Query(0, ge=0),
         limit: int = Query(page_size, ge=1, le=max_page_size),
         sort: str | None = Query(None),
-        search: str | None = Query(
-            None, description="Search across searchable fields"
-        ),
+        search: str | None = Query(None, description="Search across searchable fields"),
         fields: str | None = Query(
             None, description="Comma-separated field names to include"
         ),
