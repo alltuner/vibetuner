@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.2](https://github.com/alltuner/vibetuner/compare/v8.2.1...v8.2.2) (2026-02-12)
+
+
+### Miscellaneous Chores
+
+* add missing README.md ([#1228](https://github.com/alltuner/vibetuner/issues/1228)) ([da45e0d](https://github.com/alltuner/vibetuner/commit/da45e0daf5396eb58052f55605d5a6f6f3efcc32))
+
 ## [8.2.1](https://github.com/alltuner/vibetuner/compare/v8.2.0...v8.2.1) (2026-02-12)
 
 

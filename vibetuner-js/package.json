@@ -1,6 +1,6 @@
 {
   "name": "@alltuner/vibetuner",
-  "version": "8.2.1",
+  "version": "8.2.2",
   "description": "Blessed JavaScript/frontend build dependencies for production-ready Vibetuner projects",
   "keywords": [
     "tailwindcss",
