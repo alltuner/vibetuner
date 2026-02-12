@@ -334,6 +334,17 @@ Use in templates:
 <p>Price: {{ product.price | money }}</p>
 ```
 
+**Important:** If a filter returns HTML, wrap the result with `markupsafe.Markup`
+to prevent Jinja2 auto-escaping. Always escape user input inside the markup:
+
+```python
+from markupsafe import Markup, escape
+
+def tag_badge(value: str) -> Markup:
+    """Render a badge — escape user input, wrap result in Markup."""
+    return Markup('<span class="badge">{}</span>').format(escape(value))
+```
+
 #### Adding Background Jobs
 
 If you enabled background jobs, create tasks in `src/app/tasks/`:
