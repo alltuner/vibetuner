@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.1](https://github.com/alltuner/vibetuner/compare/v8.2.0...v8.2.1) (2026-02-12)
+
+
+### Miscellaneous Chores
+
+* remove README template and preserve project locale files ([#1226](https://github.com/alltuner/vibetuner/issues/1226)) ([126d200](https://github.com/alltuner/vibetuner/commit/126d200db202e0c71752aca90933824d4920c8a3))
+
 ## [8.2.0](https://github.com/alltuner/vibetuner/compare/v8.1.2...v8.2.0) (2026-02-12)
 
 
