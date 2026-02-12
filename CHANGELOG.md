@@ -1,5 +1,26 @@
 # Changelog
 
+## [8.0.1](https://github.com/alltuner/vibetuner/compare/v8.0.0...v8.0.1) (2026-02-12)
+
+
+### Bug Fixes
+
+* add get_optional_blob_service and improve error handling ([#1207](https://github.com/alltuner/vibetuner/issues/1207)) ([d00fbab](https://github.com/alltuner/vibetuner/commit/d00fbab5db6d7ffc8b94973c4fe4d263a4d8a0b3))
+* auto-create SQL tables on startup in dev mode ([#1206](https://github.com/alltuner/vibetuner/issues/1206)) ([2ddacf2](https://github.com/alltuner/vibetuner/commit/2ddacf2e87294154714c046d9a3c310e0a4918b5))
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency @alltuner/vibetuner to v8 ([#1199](https://github.com/alltuner/vibetuner/issues/1199)) ([961948a](https://github.com/alltuner/vibetuner/commit/961948afd899080d45dd685a92f959ce624b4793))
+
+
+### Documentation Updates
+
+* document CRUD factory hook signatures ([#1212](https://github.com/alltuner/vibetuner/issues/1212)) ([6d62b35](https://github.com/alltuner/vibetuner/commit/6d62b3562e43c9ca295444674056d62c61903776))
+* document that template filters returning HTML must use Markup ([#1208](https://github.com/alltuner/vibetuner/issues/1208)) ([cae82f9](https://github.com/alltuner/vibetuner/commit/cae82f9c39ad34228c5841574f6a77523ca906df))
+* document worker vs frontend lifespan signature difference ([#1211](https://github.com/alltuner/vibetuner/issues/1211)) ([c9bd59f](https://github.com/alltuner/vibetuner/commit/c9bd59f5d0239e9bcae50e656c8a11472c28acff))
+* mention vibetuner db create-schema in Quick Start ([#1209](https://github.com/alltuner/vibetuner/issues/1209)) ([2e63ac6](https://github.com/alltuner/vibetuner/commit/2e63ac69e03a06dad3385ea9efa27b54553da7be))
+
 ## [8.0.0](https://github.com/alltuner/vibetuner/compare/v7.0.1...v8.0.0) (2026-02-12)
 
 
