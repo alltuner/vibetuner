@@ -101,8 +101,8 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
     - raise HTTPException(500), OR
     - return a dummy object in tests.
     """
+    _ensure_engine()
     if async_session is None:
-        # Fail fast – you can customize this to HTTPException if used only in web context
         raise RuntimeError("database_url is not configured. No DB session available.")
 
     async with async_session() as session:
