@@ -153,9 +153,21 @@ try:
                 f"command. Falling back to namespace 'app'."
             )
             _user_name = "app"
-        # Ensure the user CLI is always namespaced to prevent top-level shadowing
-        app.add_typer(_user_cli, name=_user_name or "app")
-        logger.debug("Registered user CLI commands from tune.py")
+        # Guard against self-referencing cycle: if the user re-exported
+        # vibetuner.cli.app instead of creating their own Typer instance,
+        # adding it as a sub-group of itself causes infinite recursion in
+        # typer >=0.23 (eager group hierarchy resolution).
+        if _user_cli is app:
+            logger.warning(
+                "User CLI is the same object as vibetuner's root app. "
+                "Skipping registration to avoid circular reference. "
+                "Create a separate AsyncTyper() or typer.Typer() instance "
+                "for your CLI commands instead of re-exporting vibetuner.cli.app."
+            )
+        else:
+            # Ensure the user CLI is always namespaced to prevent top-level shadowing
+            app.add_typer(_user_cli, name=_user_name or "app")
+            logger.debug("Registered user CLI commands from tune.py")
 except ConfigurationError:
     # Not in a project directory or tune.py misconfigured, skip user CLI
     pass

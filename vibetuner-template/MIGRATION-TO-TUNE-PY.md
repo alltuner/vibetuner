@@ -208,16 +208,18 @@ app = VibetunerApp(
 
 **Before:** CLI was auto-discovered from `app.cli`.
 
-**After:** Pass Typer app to `tune.py`.
+**After:** Create an `AsyncTyper` instance and pass it to `tune.py`. `AsyncTyper` extends
+`typer.Typer` with native async support — use `async def` directly in your commands without
+`asyncio.run()` wrappers.
 
 ```python
 # src/myapp/cli/__init__.py
-import typer
+from vibetuner import AsyncTyper
 
-cli = typer.Typer()
+cli = AsyncTyper()
 
 @cli.command()
-def my_command():
+async def my_command():
     print("Hello")
 ```
 
@@ -230,6 +232,10 @@ app = VibetunerApp(
     cli=cli,
 )
 ```
+
+> **Important:** Always create your own `AsyncTyper()` instance. Never re-export
+> `vibetuner.cli.app` — that is the framework's root CLI and adding it back causes a
+> circular reference.
 
 ### Step 9: Migrate OAuth Providers (if any)
 
