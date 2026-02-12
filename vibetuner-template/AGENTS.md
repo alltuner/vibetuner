@@ -243,6 +243,12 @@ just local-all               # Runs server + assets with auto-port (recommended)
 just local-all-with-worker   # Includes background worker (requires Redis)
 ```
 
+For projects using SQL models (SQLModel/SQLite/PostgreSQL), create tables first:
+
+```bash
+uv run vibetuner db create-schema   # Required once before first run
+```
+
 ### Development (Docker)
 
 ```bash
