@@ -238,6 +238,64 @@ vibetuner version [--app]
 
 - `--app`, `-a` – Show app settings version even if not in a project directory.
 
+## Custom CLI Commands
+
+You can extend the vibetuner CLI with your own commands using `AsyncTyper`. Commands are
+registered via `tune.py` and namespaced under `vibetuner app` (or a custom name).
+
+### Setup
+
+```python
+# src/myapp/cli/__init__.py
+from vibetuner import AsyncTyper
+
+cli = AsyncTyper(help="My app commands")
+
+@cli.command()
+async def seed(count: int = 10):
+    """Seed the database with sample data."""
+    from myapp.services.seeder import seed_database
+    await seed_database(count)
+```
+
+```python
+# src/myapp/tune.py
+from vibetuner import VibetunerApp
+from myapp.cli import cli
+
+app = VibetunerApp(cli=cli)
+```
+
+### Usage
+
+```bash
+vibetuner app seed --count 50
+```
+
+### AsyncTyper
+
+`AsyncTyper` is vibetuner's extension of `typer.Typer` that supports `async def` command
+handlers natively. Use it instead of plain `typer.Typer()` so your CLI commands can call
+async code (database queries, HTTP requests, etc.) without `asyncio.run()` wrappers.
+
+```python
+from vibetuner import AsyncTyper
+
+cli = AsyncTyper()
+
+@cli.command()
+async def fetch_users():
+    """Fetch and display all users."""
+    from myapp.models import User
+    users = await User.find_all().to_list()
+    for u in users:
+        print(u.email)
+```
+
+> **Important:** Always create your own `AsyncTyper()` (or `typer.Typer()`) instance.
+> Never re-export `vibetuner.cli.app` as your CLI — that is the framework's internal
+> root app and re-registering it causes a circular reference error.
+
 ## Related Commands
 
 Generated projects expose additional helpers in the scaffolded `justfile`:

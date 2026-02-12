@@ -585,6 +585,44 @@ from app.tasks.emails import send_digest_email
 task = await send_digest_email.enqueue(user.id)
 ```
 
+### Adding CLI Commands
+
+Create an `AsyncTyper` instance for your CLI commands. `AsyncTyper` extends `typer.Typer` with
+native async support — use `async def` directly without `asyncio.run()` wrappers:
+
+```python
+# src/app/cli/__init__.py
+from vibetuner import AsyncTyper
+
+cli = AsyncTyper(help="My app CLI commands")
+
+@cli.command()
+async def seed(count: int = 10):
+    """Seed the database with sample data."""
+    from app.services.seeder import seed_database
+    await seed_database(count)
+```
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.cli import cli
+
+app = VibetunerApp(
+    cli=cli,
+)
+```
+
+Commands are namespaced under `vibetuner app` (or your custom name):
+
+```bash
+uv run vibetuner app seed --count 50
+```
+
+> **Important:** Always create your own `AsyncTyper()` instance. Never re-export
+> `vibetuner.cli.app` — that is the framework's root CLI and adding it back causes a
+> circular reference.
+
 ### Custom Lifespan
 
 For custom startup/shutdown logic, create a lifespan and pass to `tune.py`:
