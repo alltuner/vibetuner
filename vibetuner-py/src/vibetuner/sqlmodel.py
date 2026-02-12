@@ -75,6 +75,10 @@ async def init_sqlmodel() -> None:
 
     logger.info("SQLModel engine initialized successfully.")
 
+    if settings.debug:
+        await create_schema()
+        logger.info("SQLModel tables auto-created (DEBUG mode)")
+
 
 async def create_schema() -> None:
     """
