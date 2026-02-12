@@ -1,5 +1,123 @@
 # Changelog
 
+## [8.0.0](https://github.com/alltuner/vibetuner/compare/v7.0.1...v8.0.0) (2026-02-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade htmx from v2.0.8 to v4.0 (alpha) ([#1043](https://github.com/alltuner/vibetuner/issues/1043))
+
+### Features
+
+* add --auto-port support for worker monitoring UI ([#1040](https://github.com/alltuner/vibetuner/issues/1040)) ([e0d61b1](https://github.com/alltuner/vibetuner/commit/e0d61b1bec50d4c3481b554611ecc709a29b561b))
+* add --template and --branch options to scaffold commands ([#1178](https://github.com/alltuner/vibetuner/issues/1178)) ([84d0bc0](https://github.com/alltuner/vibetuner/commit/84d0bc00c90f9de47684f303ee4f9929d160ea65))
+* add decorator-based API for runtime config values ([#988](https://github.com/alltuner/vibetuner/issues/988)) ([de87d31](https://github.com/alltuner/vibetuner/commit/de87d31f76d517aa322e01629edc8fd871de3ca1))
+* add detailed health check reporting status of all connected services ([#984](https://github.com/alltuner/vibetuner/issues/984)) ([83ab37e](https://github.com/alltuner/vibetuner/commit/83ab37e259d0fd4d809af8c3069efc0a1163d5ca))
+* add FastAPI Depends() wrappers for built-in services ([#983](https://github.com/alltuner/vibetuner/issues/983)) ([8e6bf19](https://github.com/alltuner/vibetuner/commit/8e6bf19c9122a7c2874e815c29690f57665eea23))
+* add generic CRUD route factory for Beanie documents ([#996](https://github.com/alltuner/vibetuner/issues/996)) ([b85596e](https://github.com/alltuner/vibetuner/commit/b85596efdeece93c2e58e2ca3ba759b9a0126a06))
+* add register_globals() and register_context_provider() for app-level template context ([#987](https://github.com/alltuner/vibetuner/issues/987)) ([0ad50a0](https://github.com/alltuner/vibetuner/commit/0ad50a086a7e4f602e5b92ba9801dcb6c83f20c9))
+* add robust_task decorator with retries and dead letters ([#992](https://github.com/alltuner/vibetuner/issues/992)) ([f110dad](https://github.com/alltuner/vibetuner/commit/f110dadeffc32b62aa40d087b149d653766c7569))
+* add sql_models field to VibetunerApp for explicit model registration ([#1144](https://github.com/alltuner/vibetuner/issues/1144)) ([88bcacb](https://github.com/alltuner/vibetuner/commit/88bcacb693a4779e7f4023dfbf711d8c2c8110f6))
+* add SSE and real-time streaming helpers for HTMX ([#994](https://github.com/alltuner/vibetuner/issues/994)) ([02745f8](https://github.com/alltuner/vibetuner/commit/02745f854ce1081bf8ab0c51abe6d1b928ad2493))
+* add template blocks reference page to debug panel ([#1041](https://github.com/alltuner/vibetuner/issues/1041)) ([c545f73](https://github.com/alltuner/vibetuner/commit/c545f736d1e7b814afca97b0eeddce0e79082f75))
+* add testing utilities and pytest fixtures for vibetuner apps ([#1022](https://github.com/alltuner/vibetuner/issues/1022)) ([d4ced1d](https://github.com/alltuner/vibetuner/commit/d4ced1dbf6eefa7039d04a77ed55f17cd0e31b96))
+* add vibetuner doctor CLI command ([#991](https://github.com/alltuner/vibetuner/issues/991)) ([64494e6](https://github.com/alltuner/vibetuner/commit/64494e636c4d6f61f223b3a611641b723a699b2a))
+* allow context providers to access the current request ([#1174](https://github.com/alltuner/vibetuner/issues/1174)) ([abfec06](https://github.com/alltuner/vibetuner/commit/abfec06c7424551b5efc761a54d86c0e78f97846))
+* allow custom OAuth providers via tune.py config ([#989](https://github.com/alltuner/vibetuner/issues/989)) ([6518281](https://github.com/alltuner/vibetuner/commit/6518281c2d225abcc9745ed67538d90b03b2919d))
+* allow SQL-only projects without requiring MongoDB ([#1143](https://github.com/alltuner/vibetuner/issues/1143)) ([5e909c4](https://github.com/alltuner/vibetuner/commit/5e909c4b66734ef7e4f6a0268d38c686e3c4c73f))
+* enable OpenAPI docs (/docs, /redoc) in DEBUG mode ([#1028](https://github.com/alltuner/vibetuner/issues/1028)) ([32890f5](https://github.com/alltuner/vibetuner/commit/32890f58c8171fcabcdcfafc7af72fa7be417243))
+* generate project README from template variables ([#1175](https://github.com/alltuner/vibetuner/issues/1175)) ([c10a0d3](https://github.com/alltuner/vibetuner/commit/c10a0d3ee5ccac09321489dce9ec223216847c1b))
+* make default_language configurable via copier.yml ([#985](https://github.com/alltuner/vibetuner/issues/985)) ([9a70897](https://github.com/alltuner/vibetuner/commit/9a70897a513bf293914352c3dbf7bd9ffa2c4457))
+* mount Streaq task queue UI at /debug/tasks ([#993](https://github.com/alltuner/vibetuner/issues/993)) ([88bb81b](https://github.com/alltuner/vibetuner/commit/88bb81b967f1a00e2162fa83c6af66dd0023983a))
+* **sse:** add input validation for SSE channel names ([#1097](https://github.com/alltuner/vibetuner/issues/1097)) ([bf21653](https://github.com/alltuner/vibetuner/commit/bf21653c3c22f9d8320b4f659270aad1e93cd5e1))
+* upgrade htmx from v2.0.8 to v4.0 (alpha) ([#1043](https://github.com/alltuner/vibetuner/issues/1043)) ([88e81c7](https://github.com/alltuner/vibetuner/commit/88e81c79791c91c497929b4e3c906ad6a06017a0))
+
+
+### Bug Fixes
+
+* add content block alias inside body block in skeleton template ([#1016](https://github.com/alltuner/vibetuner/issues/1016)) ([edd728d](https://github.com/alltuner/vibetuner/commit/edd728d96d708a364ae9a26251184c4f135826fc))
+* add defensive check for missing task_context in robust middleware ([#1193](https://github.com/alltuner/vibetuner/issues/1193)) ([c588cd5](https://github.com/alltuner/vibetuner/commit/c588cd5c36a76213c09808eb982611679d7ee1a3))
+* add greenlet dependency required by SQLAlchemy async ([#1133](https://github.com/alltuner/vibetuner/issues/1133)) ([61cbaf0](https://github.com/alltuner/vibetuner/commit/61cbaf058fd27fcc3b6b089fbc3c473457abd660))
+* allow extra fields on worker Context model ([#1176](https://github.com/alltuner/vibetuner/issues/1176)) ([a26efcc](https://github.com/alltuner/vibetuner/commit/a26efcc60601fe97d98c356a52f0bc23de624946))
+* auto-generate partial update schema for PATCH endpoints ([#1034](https://github.com/alltuner/vibetuner/issues/1034)) ([f704175](https://github.com/alltuner/vibetuner/commit/f704175b5f5d8c75fef741c42bbc09d2b613ae2d))
+* call _ensure_engine() lazily in get_session() ([#1134](https://github.com/alltuner/vibetuner/issues/1134)) ([30edd84](https://github.com/alltuner/vibetuner/commit/30edd849e8e8c5bbc404ac9990bf56aee7209e76))
+* clarify create_crud_routes is Beanie-only in docs and comments ([#1190](https://github.com/alltuner/vibetuner/issues/1190)) ([cf1f1bb](https://github.com/alltuner/vibetuner/commit/cf1f1bbd1d46e44c6a54be9824e4f75f917a2fed))
+* **cli:** register user CLI extensions as named subcommand groups ([#1127](https://github.com/alltuner/vibetuner/issues/1127)) ([fb7c10b](https://github.com/alltuner/vibetuner/commit/fb7c10bf640135cd0790cee7988b217b2825b936))
+* convert ObjectId to string in field selection responses ([#1035](https://github.com/alltuner/vibetuner/issues/1035)) ([6939836](https://github.com/alltuner/vibetuner/commit/69398363f6082e5a99e102993b8ecf86d6ce3036))
+* **crud:** add error handling for lifecycle hooks ([#1083](https://github.com/alltuner/vibetuner/issues/1083)) ([03a59f1](https://github.com/alltuner/vibetuner/commit/03a59f1e585758e32d7ec5696685806c566f80b3))
+* **crud:** escape user input in MongoDB regex search query ([#1081](https://github.com/alltuner/vibetuner/issues/1081)) ([bd1eb7c](https://github.com/alltuner/vibetuner/commit/bd1eb7c5ddbe420ff3c770a0fbf2763ed8d88a81))
+* **crud:** use search query parameter for CRUD list filtering ([#1130](https://github.com/alltuner/vibetuner/issues/1130)) ([bf9fee5](https://github.com/alltuner/vibetuner/commit/bf9fee5c93a84e9795444ff247bbe0184e24ecbd))
+* fall back to pyproject.toml name for CLI help title ([#1136](https://github.com/alltuner/vibetuner/issues/1136)) ([abb2e8e](https://github.com/alltuner/vibetuner/commit/abb2e8e6d77a316bb029e2edccf3880204ec9d59))
+* **health:** add asyncio.timeout() to health check operations ([#1084](https://github.com/alltuner/vibetuner/issues/1084)) ([7975209](https://github.com/alltuner/vibetuner/commit/79752094ca4822f46ee995aa90e380bba8d74cc0))
+* **health:** reuse existing Redis connections instead of creating new ones per check ([#1093](https://github.com/alltuner/vibetuner/issues/1093)) ([d9e1b46](https://github.com/alltuner/vibetuner/commit/d9e1b46df2486c4ee10bca66f5c5e703c272488c))
+* **health:** sanitize error messages in health check responses ([#1100](https://github.com/alltuner/vibetuner/issues/1100)) ([3701139](https://github.com/alltuner/vibetuner/commit/3701139a9d78ad24c93e1d2d493f3a181cf105ca))
+* ignore ruff B008 for FastAPI Depends() convention ([#1170](https://github.com/alltuner/vibetuner/issues/1170)) ([469fa7d](https://github.com/alltuner/vibetuner/commit/469fa7d875f5e721dc71e8f5c2aac11c9f15abc6))
+* improve doctor command help, template checks, and port labels ([#1191](https://github.com/alltuner/vibetuner/issues/1191)) ([d771f06](https://github.com/alltuner/vibetuner/commit/d771f06b200e1bc996e21609122386b559949c25))
+* improve error messages when required services are not configured ([#986](https://github.com/alltuner/vibetuner/issues/986)) ([a8417ba](https://github.com/alltuner/vibetuner/commit/a8417ba56e8806ecb035a6b45a35e46c15c42d2c))
+* include dev deps, gitflow recipes, and YAML in scaffold justfiles ([#1192](https://github.com/alltuner/vibetuner/issues/1192)) ([786e849](https://github.com/alltuner/vibetuner/commit/786e849f7e54791438feb34f025c19797ce31256))
+* make service error rich panels opt-in to reduce log noise ([#1187](https://github.com/alltuner/vibetuner/issues/1187)) ([2f28d7d](https://github.com/alltuner/vibetuner/commit/2f28d7d9fc3f06ba215cbdc43a9bc4f493355403))
+* match streaq Middleware type in robust_retry_middleware ([#1173](https://github.com/alltuner/vibetuner/issues/1173)) ([1f4a629](https://github.com/alltuner/vibetuner/commit/1f4a6292e95a10250c70262e3184097afb402a1d))
+* move sse.py out of vibetuner.frontend to avoid circular imports ([#1020](https://github.com/alltuner/vibetuner/issues/1020)) ([f2f0470](https://github.com/alltuner/vibetuner/commit/f2f04704cb15d7273034d051e133b489fcf606f1))
+* normalize hyphens to underscores in project name for module imports ([#1021](https://github.com/alltuner/vibetuner/issues/1021)) ([1280f55](https://github.com/alltuner/vibetuner/commit/1280f55ee6c0616450c0dbdacb065abeb139f34b))
+* **oauth:** add runtime validation for custom OAuth providers ([#1099](https://github.com/alltuner/vibetuner/issues/1099)) ([9f0a741](https://github.com/alltuner/vibetuner/commit/9f0a7415e93eaf46d72c0c3ecc012dc4ad5d8826))
+* remove **kwargs from CRUD list route handler ([#1013](https://github.com/alltuner/vibetuner/issues/1013)) ([3844039](https://github.com/alltuner/vibetuner/commit/38440398e2d99e0027ad8438c9e7e9516382c949))
+* remove `from __future__ import annotations` from CRUD factory ([#1012](https://github.com/alltuner/vibetuner/issues/1012)) ([84031a2](https://github.com/alltuner/vibetuner/commit/84031a26cdff29994988db5f043cc3149f13a22d))
+* remove all from __future__ import annotations and ban via ruff ([#1024](https://github.com/alltuner/vibetuner/issues/1024)) ([7e4d8d9](https://github.com/alltuner/vibetuner/commit/7e4d8d94e9a6e9bae325e888ab3b75a6a43d1601))
+* remove AllTuner-specific localdev URL from run dev output ([#1189](https://github.com/alltuner/vibetuner/issues/1189)) ([b1c18ab](https://github.com/alltuner/vibetuner/commit/b1c18ab9b38f85b2dd4d4dc1525bde1e6d6b7258))
+* remove broken debug_claude link from debug nav ([#1017](https://github.com/alltuner/vibetuner/issues/1017)) ([fff01d8](https://github.com/alltuner/vibetuner/commit/fff01d811eda590c34affa254506757080e11327))
+* **rendering:** add thread safety for global template context registration ([#1087](https://github.com/alltuner/vibetuner/issues/1087)) ([1b7f85b](https://github.com/alltuner/vibetuner/commit/1b7f85bc98290fd818c3e8751ab58d530f1abc2b))
+* **rendering:** improve type safety for context providers ([#1092](https://github.com/alltuner/vibetuner/issues/1092)) ([52a9c1d](https://github.com/alltuner/vibetuner/commit/52a9c1d6920476bf14801441195da5f916a3cfd4))
+* replace deprecated typer-slim[standard] with typer ([#1185](https://github.com/alltuner/vibetuner/issues/1185)) ([d434185](https://github.com/alltuner/vibetuner/commit/d434185d2dab0f59a4aabfd6442dd7f9a5dfecf0))
+* resolve OAuth user through account link instead of email ([#990](https://github.com/alltuner/vibetuner/issues/990)) ([b071903](https://github.com/alltuner/vibetuner/commit/b0719030220f3eee0da842eb65340d11874b3854))
+* **runtime_config:** validate config_value decorated functions take no parameters ([#1090](https://github.com/alltuner/vibetuner/issues/1090)) ([e1e72c5](https://github.com/alltuner/vibetuner/commit/e1e72c532b6a3392e24ee423ee8dc1e637ff3e4c))
+* serialize ObjectId as string in CRUD response schemas ([#1171](https://github.com/alltuner/vibetuner/issues/1171)) ([c14150d](https://github.com/alltuner/vibetuner/commit/c14150da169a4fa6b3cda7a41500ead40c6da7ca))
+* **services:** add error handling for service config failures in Depends() wrappers ([#1080](https://github.com/alltuner/vibetuner/issues/1080)) ([25f7773](https://github.com/alltuner/vibetuner/commit/25f7773db44dbf7e3a15be2a82adf227dacfac98))
+* **services:** fix cache refresh concurrency issue in get_runtime_config() ([#1082](https://github.com/alltuner/vibetuner/issues/1082)) ([8687a50](https://github.com/alltuner/vibetuner/commit/8687a503ced159a9dbdde6f999deede829a91a30))
+* **services:** move cache refresh lock into RuntimeConfig class ([#1115](https://github.com/alltuner/vibetuner/issues/1115)) ([4c412cc](https://github.com/alltuner/vibetuner/commit/4c412cc5ffb54f712d8ab2eb55592e101ce4219b))
+* skip logging during CLI help commands ([#1172](https://github.com/alltuner/vibetuner/issues/1172)) ([0395077](https://github.com/alltuner/vibetuner/commit/03950775b8932ff3f21f1d44bbb6ee8fce0551c3))
+* **sse:** validate Redis pub/sub messages before dispatching ([#1098](https://github.com/alltuner/vibetuner/issues/1098)) ([e826277](https://github.com/alltuner/vibetuner/commit/e8262775d7f0bfcf289d6668143428abf2115160))
+* **sse:** warn when endpoint path duplicates router prefix ([#1128](https://github.com/alltuner/vibetuner/issues/1128)) ([7687fc4](https://github.com/alltuner/vibetuner/commit/7687fc4c6fa786fd60993fc131394cff34936a87))
+* surface original import errors in load_app_config ([#1186](https://github.com/alltuner/vibetuner/issues/1186)) ([eac0081](https://github.com/alltuner/vibetuner/commit/eac0081fd996ed752761e08ebf1f55b0e0a47dcf))
+* **tasks:** add missing exports to tasks/__init__.py ([#1095](https://github.com/alltuner/vibetuner/issues/1095)) ([7e32532](https://github.com/alltuner/vibetuner/commit/7e325320ff587f4a85ad9b7662ef817182642321))
+* **tasks:** add threading lock to robust_task middleware registration ([#1088](https://github.com/alltuner/vibetuner/issues/1088)) ([59b87ae](https://github.com/alltuner/vibetuner/commit/59b87aedb60165f68676c42f4a07d67249c12b7d))
+* **tasks:** handle empty string in robust_task name resolution ([#1091](https://github.com/alltuner/vibetuner/issues/1091)) ([81a3b6c](https://github.com/alltuner/vibetuner/commit/81a3b6cff08c7847a1bb34e806e8b270cbdd3928))
+* use colon notation for streaq worker import path ([#1030](https://github.com/alltuner/vibetuner/issues/1030)) ([2a395f8](https://github.com/alltuner/vibetuner/commit/2a395f83adc73b7fe1eeef2aac016e8e43db2c69))
+* use default import for htmx to expose window.htmx ([#1042](https://github.com/alltuner/vibetuner/issues/1042)) ([a98fb27](https://github.com/alltuner/vibetuner/commit/a98fb27ae0933cff6f70f994df682bb9476b2da5))
+* wrap JS bundle script tag in overridable block ([#1019](https://github.com/alltuner/vibetuner/issues/1019)) ([446cfd8](https://github.com/alltuner/vibetuner/commit/446cfd808799ac3abd0672fb99c4abb2fe9f640a))
+
+
+### Code Refactoring
+
+* deduplicate data parsing in scaffold new command ([#1195](https://github.com/alltuner/vibetuner/issues/1195)) ([7d7f70b](https://github.com/alltuner/vibetuner/commit/7d7f70b45c53ded34f5a65daf5a59330bdfec68f))
+
+
+### Performance Improvements
+
+* cache provider signature checks at registration time ([#1194](https://github.com/alltuner/vibetuner/issues/1194)) ([179c4cc](https://github.com/alltuner/vibetuner/commit/179c4cc5db0efe03db3a3917c815547222bd2ab1))
+* **sse:** reuse cached Redis client for broadcast publishing ([#1096](https://github.com/alltuner/vibetuner/issues/1096)) ([c42a73c](https://github.com/alltuner/vibetuner/commit/c42a73ce757919e50afb3c8026579b85cc43cf48))
+
+
+### Miscellaneous Chores
+
+* update all dependencies to latest versions ([#1198](https://github.com/alltuner/vibetuner/issues/1198)) ([b5a2e87](https://github.com/alltuner/vibetuner/commit/b5a2e87bc1510d5cf6337884ea17731e26d5a761))
+
+
+### Documentation Updates
+
+* add comprehensive background tasks documentation ([#1044](https://github.com/alltuner/vibetuner/issues/1044)) ([2bc10a1](https://github.com/alltuner/vibetuner/commit/2bc10a18a7b55c000775b37cd409ab2efd29d06b))
+* align SECRET_KEY, auth, and CLI reference with implementation ([#1197](https://github.com/alltuner/vibetuner/issues/1197)) ([fff2b43](https://github.com/alltuner/vibetuner/commit/fff2b43bf0215ba8bed33c0e0e6d358219d83fb6))
+* comprehensive documentation update for v7.1 features ([#1031](https://github.com/alltuner/vibetuner/issues/1031)) ([0ed8dfe](https://github.com/alltuner/vibetuner/commit/0ed8dfe756cd0b891a6b3292c4273f077cf8c8b4))
+* create htmx v2-to-v4 migration guide for downstream projects ([#1094](https://github.com/alltuner/vibetuner/issues/1094)) ([9514aa3](https://github.com/alltuner/vibetuner/commit/9514aa33a960bfaefdb56c536a098049a93f6696))
+* document render_template path convention ([#1014](https://github.com/alltuner/vibetuner/issues/1014)) ([b21f532](https://github.com/alltuner/vibetuner/commit/b21f532be7fa2342dc814ae292b5beefba74ee4b))
+* document tune.py import ordering requirements ([#1015](https://github.com/alltuner/vibetuner/issues/1015)) ([c2829ef](https://github.com/alltuner/vibetuner/commit/c2829efd2cd999132f10cac074d784382ff0c67e))
+* update documentation for recent SQLModel, CRUD, and SSE changes ([#1145](https://github.com/alltuner/vibetuner/issues/1145)) ([bf3f8d2](https://github.com/alltuner/vibetuner/commit/bf3f8d2d10978af8171e4c687479357a46c634df))
+* update SSE documentation examples for htmx v4 patterns ([#1089](https://github.com/alltuner/vibetuner/issues/1089)) ([7de9b31](https://github.com/alltuner/vibetuner/commit/7de9b3107df09d150f914eb3bf451d49cf2f09d9))
+
+
+### Styling Changes
+
+* enforce ruff formatting on vibetuner-py source files ([#1125](https://github.com/alltuner/vibetuner/issues/1125)) ([e267b76](https://github.com/alltuner/vibetuner/commit/e267b7687a1b2d135eab47cd72749229f663ba1c))
+
 ## [7.0.1](https://github.com/alltuner/vibetuner/compare/v7.0.0...v7.0.1) (2026-02-11)
 
 
