@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.1.0](https://github.com/alltuner/vibetuner/compare/v8.0.1...v8.1.0) (2026-02-12)
+
+
+### Features
+
+* print HTTPS localdev URL on startup when LOCALDEV_URL is configured ([#1214](https://github.com/alltuner/vibetuner/issues/1214)) ([fc6aeb7](https://github.com/alltuner/vibetuner/commit/fc6aeb717c1549d1ecf5e803f8fce663e534c5d0))
+
 ## [8.0.1](https://github.com/alltuner/vibetuner/compare/v8.0.0...v8.0.1) (2026-02-12)
 
 
