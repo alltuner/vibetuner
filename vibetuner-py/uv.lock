@@ -2943,7 +2943,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "7.0.0"
+version = "7.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "aioboto3" },
@@ -2958,6 +2958,7 @@ dependencies = [
     { name = "fastapi", extra = ["standard-no-fastapi-cloud-cli"] },
     { name = "gitpython" },
     { name = "granian", extra = ["pname"] },
+    { name = "greenlet" },
     { name = "httpx", extra = ["http2"] },
     { name = "itsdangerous" },
     { name = "loguru" },
@@ -3012,6 +3013,7 @@ requires-dist = [
     { name = "gitpython", specifier = ">=3.1.46" },
     { name = "granian", extras = ["pname"], specifier = ">=2.7.1" },
     { name = "granian", extras = ["pname", "reload"], marker = "extra == 'dev'", specifier = ">=2.7.1" },
+    { name = "greenlet", specifier = ">=3.0.0" },
     { name = "httpx", extras = ["http2"], specifier = ">=0.28.1" },
     { name = "itsdangerous", specifier = ">=2.2.0" },
     { name = "loguru", specifier = ">=0.7.3" },
