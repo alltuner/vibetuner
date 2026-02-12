@@ -748,7 +748,7 @@ app = VibetunerApp(routes=[post_routes])
 
 - `offset` / `limit` — Pagination (default page size: 25)
 - `sort` — Comma-separated fields, prefix with `-` for descending (e.g., `?sort=-created_at`)
-- `q` — Text search across searchable fields (case-insensitive regex)
+- `search` — Text search across searchable fields (case-insensitive regex)
 - `fields` — Comma-separated field names to include in response
 - Any filterable field as a query param (e.g., `?status=published`)
 
@@ -1116,7 +1116,8 @@ from app.models import Post, Comment          # then your app
 from app.frontend.routes import app_router
 
 app = VibetunerApp(
-    models=[Post, Comment],
+    models=[Post, Comment],          # Beanie (MongoDB) models
+    sql_models=[SqlPost],            # SQLModel (SQL) models
     routes=[app_router],
 )
 ```
