@@ -46,7 +46,9 @@ async def init_mongodb() -> None:
     Silently skips if mongodb_url is not configured, allowing SQL-only projects.
     """
     if settings.mongodb_url is None:
-        logger.debug("MongoDB not configured (no MONGODB_URL) — skipping initialization")
+        logger.debug(
+            "MongoDB not configured (no MONGODB_URL) — skipping initialization"
+        )
         return
 
     _ensure_client()

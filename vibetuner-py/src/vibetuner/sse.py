@@ -407,7 +407,7 @@ def sse_endpoint(
                     f"sse_endpoint path '{path}' starts with router prefix "
                     f"'{router.prefix}' — this will produce a doubled path "
                     f"'{router.prefix}{path}'. Use a relative path instead "
-                    f"(e.g., '{path[len(router.prefix):]}')"
+                    f"(e.g., '{path[len(router.prefix) :]}')"
                 )
             router.add_api_route(path, endpoint, methods=["GET"], name=name)
 
