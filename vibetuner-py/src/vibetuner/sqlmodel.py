@@ -44,6 +44,13 @@ def _ensure_engine() -> None:
         )
 
 
+def get_all_sql_models() -> list[type[SQLModel]]:
+    """Get all registered SQL models from tune.py."""
+    from vibetuner.loader import load_app_config
+
+    return list(load_app_config().sql_models)
+
+
 async def init_sqlmodel() -> None:
     """
     Called from lifespan/startup.
@@ -57,6 +64,14 @@ async def init_sqlmodel() -> None:
     if engine is None:
         # Nothing to do, DB not configured
         return
+
+    sql_models = get_all_sql_models()
+    if sql_models:
+        logger.debug(
+            "Registered {} SQL model(s): {}",
+            len(sql_models),
+            ", ".join(m.__name__ for m in sql_models),
+        )
 
     logger.info("SQLModel engine initialized successfully.")
 
