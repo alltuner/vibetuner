@@ -2,7 +2,7 @@
 # ABOUTME: Uses Copier to generate FastAPI+MongoDB+HTMX projects with interactive prompts
 import tomllib
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import copier
 import typer
@@ -209,6 +209,14 @@ def new(
             help="Use specific branch/tag from the vibetuner template repository",
         ),
     ] = None,
+    template: Annotated[
+        str,
+        typer.Option(
+            "--template",
+            "-t",
+            help="Template source (default: official vibetuner template from GitHub)",
+        ),
+    ] = "gh:alltuner/vibetuner",
 ) -> None:
     """Create a new project from the vibetuner template.
 
@@ -226,11 +234,12 @@ def new(
         # Use specific branch for testing
         vibetuner scaffold new my-project --branch fix/scaffold-command
     """
-    # Use the official vibetuner template from GitHub
-    template_src = "gh:alltuner/vibetuner"
+    template_src = template
     vcs_ref = branch or "main"  # Use specified branch or default to main
 
-    if branch:
+    if template != "gh:alltuner/vibetuner":
+        console.print(f"[dim]Using custom template: {template}[/dim]")
+    elif branch:
         console.print(
             f"[dim]Using vibetuner template from GitHub ({branch} branch)[/dim]"
         )
@@ -300,6 +309,14 @@ def update(
             help="Skip questions that have already been answered",
         ),
     ] = True,
+    branch: Annotated[
+        str | None,
+        typer.Option(
+            "--branch",
+            "-b",
+            help="Update to a specific branch/tag of the template repository",
+        ),
+    ] = None,
 ) -> None:
     """Update an existing project to the latest template version.
 
@@ -316,6 +333,9 @@ def update(
 
         # Re-prompt for all questions
         vibetuner scaffold update --no-skip-answered
+
+        # Update to a specific branch
+        vibetuner scaffold update --branch feat/new-feature
     """
     if path is None:
         path = Path.cwd()
@@ -334,13 +354,23 @@ def update(
         raise typer.Exit(code=1)
 
     try:
-        console.print(f"\n[green]Updating project: {path}[/green]\n")
+        if branch:
+            console.print(
+                f"\n[green]Updating project: {path}[/green] "
+                f"[dim](branch: {branch})[/dim]\n"
+            )
+        else:
+            console.print(f"\n[green]Updating project: {path}[/green]\n")
 
-        copier.run_update(
-            dst_path=path,
-            skip_answered=skip_answered,
-            unsafe=True,  # Allow running post-generation tasks
-        )
+        update_kwargs: dict[str, Any] = {
+            "dst_path": path,
+            "skip_answered": skip_answered,
+            "unsafe": True,
+        }
+        if branch:
+            update_kwargs["vcs_ref"] = branch
+
+        copier.run_update(**update_kwargs)
 
         console.print("\n[green]✓ Project updated successfully![/green]")
 
