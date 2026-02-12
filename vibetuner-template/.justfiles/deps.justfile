@@ -66,4 +66,4 @@ deps-scaffolding-pr:
 [group('Dependencies')]
 install-deps:
     @bun install
-    @uv sync --all-extras
+    @uv sync --all-extras --all-groups
