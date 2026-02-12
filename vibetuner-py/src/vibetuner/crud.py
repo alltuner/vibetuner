@@ -82,14 +82,14 @@ def _serialize_items(
         selected = {f.strip() for f in fields.split(",")}
         return [_select_fields(item, selected, response_schema) for item in items]
     if response_schema:
-        return [response_schema.model_validate(item.model_dump()) for item in items]
+        return [response_schema.model_validate(item.model_dump(mode="json")) for item in items]
     return items
 
 
 def _serialize_one(doc: Document, response_schema: type[BaseModel] | None):
     """Serialize a single document with optional response schema."""
     if response_schema:
-        return response_schema.model_validate(doc.model_dump())
+        return response_schema.model_validate(doc.model_dump(mode="json"))
     return doc
 
 
