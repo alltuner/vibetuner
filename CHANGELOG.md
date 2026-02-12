@@ -1,5 +1,17 @@
 # Changelog
 
+## [8.2.0](https://github.com/alltuner/vibetuner/compare/v8.1.2...v8.2.0) (2026-02-12)
+
+
+### Features
+
+* add OAuth relay for multi-app local development ([#1225](https://github.com/alltuner/vibetuner/issues/1225)) ([ccfa5f5](https://github.com/alltuner/vibetuner/commit/ccfa5f58d81109aa3b3574072856fbea89248d4c))
+
+
+### Bug Fixes
+
+* quote command substitution in setup-tw-sources script ([#1223](https://github.com/alltuner/vibetuner/issues/1223)) ([0aa9fd6](https://github.com/alltuner/vibetuner/commit/0aa9fd6f9ec170f0b0a596056cf2625a295d2a2f))
+
 ## [8.1.2](https://github.com/alltuner/vibetuner/compare/v8.1.1...v8.1.2) (2026-02-12)
 
 
