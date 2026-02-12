@@ -41,7 +41,14 @@ def get_all_models() -> list[type]:
 
 
 async def init_mongodb() -> None:
-    """Initialize MongoDB and register Beanie models."""
+    """Initialize MongoDB and register Beanie models.
+
+    Silently skips if mongodb_url is not configured, allowing SQL-only projects.
+    """
+    if settings.mongodb_url is None:
+        logger.debug("MongoDB not configured (no MONGODB_URL) — skipping initialization")
+        return
+
     _ensure_client()
 
     if mongo_client is None:
