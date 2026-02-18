@@ -263,7 +263,7 @@ def _create_auth_login_handler(provider_name: str):
         if not client:
             return RedirectResponse(url=get_homepage_url(request))
 
-        if settings.oauth_relay_url:
+        if settings.oauth_relay_url and settings.environment == "dev":
             relay_url = settings.oauth_relay_url.rstrip("/")
             redirect_uri = f"{relay_url}/auth/provider/{provider_name}"
             response = await client.authorize_redirect(
