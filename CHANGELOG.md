@@ -1,5 +1,22 @@
 # Changelog
 
+## [8.2.3](https://github.com/alltuner/vibetuner/compare/v8.2.2...v8.2.3) (2026-02-18)
+
+
+### Bug Fixes
+
+* skip OAuth relay URL in production environment ([#1237](https://github.com/alltuner/vibetuner/issues/1237)) ([d171564](https://github.com/alltuner/vibetuner/commit/d171564e3847c7c4dc6762fcab98ba9937465a1e))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump authlib from 1.6.7 to 1.6.8 in /vibetuner-py ([#1233](https://github.com/alltuner/vibetuner/issues/1233)) ([ddcf27c](https://github.com/alltuner/vibetuner/commit/ddcf27c1df4de531655b21d3ccba1f696e5427e5))
+* **deps:** bump htmx.org from 4.0.0-alpha6 to 4.0.0-alpha7 in /vibetuner-js ([#1236](https://github.com/alltuner/vibetuner/issues/1236)) ([3546c1b](https://github.com/alltuner/vibetuner/commit/3546c1b8aac3cca7f14b9be8f33c6e232771b0b2))
+* **deps:** bump pydantic-settings from 2.12.0 to 2.13.0 in /vibetuner-py ([#1234](https://github.com/alltuner/vibetuner/issues/1234)) ([3449f2e](https://github.com/alltuner/vibetuner/commit/3449f2e1ebd79914df0610ba80c628c79b198d89))
+* **deps:** bump rumdl from 0.1.18 to 0.1.22 in /vibetuner-py ([#1235](https://github.com/alltuner/vibetuner/issues/1235)) ([10d53de](https://github.com/alltuner/vibetuner/commit/10d53de45125595e7e893e7f8affa582b4160eb7))
+* **deps:** bump sqlmodel from 0.0.33 to 0.0.34 in /vibetuner-py ([#1232](https://github.com/alltuner/vibetuner/issues/1232)) ([f2efd71](https://github.com/alltuner/vibetuner/commit/f2efd718b2efa0becce19f4f3385c3c4c1f8c3d8))
+* **deps:** bump types-authlib from 1.6.7.20260208 to 1.6.8.20260215 in /vibetuner-py ([#1231](https://github.com/alltuner/vibetuner/issues/1231)) ([cc98884](https://github.com/alltuner/vibetuner/commit/cc98884a58c9a7f9069d2110b0226dc39fc9cad7))
+
 ## [8.2.2](https://github.com/alltuner/vibetuner/compare/v8.2.1...v8.2.2) (2026-02-12)
 
 
