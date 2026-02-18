@@ -2792,14 +2792,14 @@ wheels = [
 
 [[package]]
 name = "types-authlib"
-version = "1.6.7.20260208"
+version = "1.6.8.20260215"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ef/d4/497f42303385a752a6af13f249c462f22614a349171690514f50e7ec6652/types_authlib-1.6.7.20260208.tar.gz", hash = "sha256:b02c24202e6404270287e36a61178186e39cbde597a209612ae66d1ef3d64c3d", size = 46532, upload-time = "2026-02-08T04:23:53.12Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4e/bc/e5921b705c67b651ceda575de2496b56dd66e9efd74f11395fb0dac7cc69/types_authlib-1.6.8.20260215.tar.gz", hash = "sha256:06d81c64b11949a052b0621124b21e14881f8adbfebf8319ed8f05db913f20e5", size = 46722, upload-time = "2026-02-15T04:10:42.395Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/11/b5f5d432def3cdd1bb1edade02480f77b70e35f6153e3cdff3328db3c3bf/types_authlib-1.6.7.20260208-py3-none-any.whl", hash = "sha256:174b95bb607c782cef23ea3b5f3b398906b9bd76ddca3382202938cf2db1bf7c", size = 103892, upload-time = "2026-02-08T04:23:52.125Z" },
+    { url = "https://files.pythonhosted.org/packages/88/8e/eb81b3e5020615c1edb24777a4c5aa1119d4a8610a506bf9c7e53a470dc7/types_authlib-1.6.8.20260215-py3-none-any.whl", hash = "sha256:644e8dbb6d59a5abd9917370c79125d630d1eefaf4a314cdf20f1b3ea982787f", size = 103891, upload-time = "2026-02-15T04:10:41.419Z" },
 ]
 
 [[package]]
