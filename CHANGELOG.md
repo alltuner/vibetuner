@@ -1,5 +1,17 @@
 # Changelog
 
+## [8.2.4](https://github.com/alltuner/vibetuner/compare/v8.2.3...v8.2.4) (2026-02-23)
+
+
+### Bug Fixes
+
+* prevent cp -r .core-templates failure from being masked by || true ([#1242](https://github.com/alltuner/vibetuner/issues/1242)) ([f2b74fb](https://github.com/alltuner/vibetuner/commit/f2b74fb0a74cce52389bf3a380714ff008a18c73))
+
+
+### Miscellaneous Chores
+
+* update dependencies and pre-commit hooks ([#1239](https://github.com/alltuner/vibetuner/issues/1239)) ([54c28eb](https://github.com/alltuner/vibetuner/commit/54c28ebe91adf31dddd9a7a74ae4c48350dfb2d2))
+
 ## [8.2.3](https://github.com/alltuner/vibetuner/compare/v8.2.2...v8.2.3) (2026-02-18)
 
 
