@@ -43,14 +43,16 @@ FROM python-deps AS python-app
 # Copy application source code
 COPY src/ src/
 
-# Install project in editable mode, copy vibetuner templates, and clean up test/doc files
+# Install project in editable mode and copy vibetuner templates
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
     uv sync --frozen --no-group dev && \
-    cp -r $(.venv/bin/python -c "import vibetuner; print(vibetuner.__path__[0])")/templates/frontend .core-templates && \
-    find .venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null || true && \
+    cp -r $(.venv/bin/python -c "import vibetuner; print(vibetuner.__path__[0])")/templates/frontend .core-templates
+
+# Clean up test and documentation files from dependencies (failures are non-fatal)
+RUN find .venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null || true && \
     find .venv -type f \( -name '*.md' -o -name '*.rst' -o -name '*.txt' \) ! -path '*/METADATA' -delete 2>/dev/null || true
 
 # ────────────────────────────────────────────────────────────────────────────────
