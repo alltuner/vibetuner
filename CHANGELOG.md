@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.4.0](https://github.com/alltuner/vibetuner/compare/v8.3.0...v8.4.0) (2026-02-24)
+
+
+### Features
+
+* auto-calculate dev ports from project path via config ([#1256](https://github.com/alltuner/vibetuner/issues/1256)) ([342b250](https://github.com/alltuner/vibetuner/commit/342b250624edd90a2fdc2b08e9813cdff3716bed))
+
 ## [8.3.0](https://github.com/alltuner/vibetuner/compare/v8.2.6...v8.3.0) (2026-02-24)
 
 
