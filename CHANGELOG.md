@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.6](https://github.com/alltuner/vibetuner/compare/v8.2.5...v8.2.6) (2026-02-24)
+
+
+### Bug Fixes
+
+* use frozen lockfiles, enable bytecode compilation, remove git from Dockerfile ([#1248](https://github.com/alltuner/vibetuner/issues/1248)) ([2634084](https://github.com/alltuner/vibetuner/commit/26340841aaf97a59106e12a43181d8b59b7d521b))
+
 ## [8.2.5](https://github.com/alltuner/vibetuner/compare/v8.2.4...v8.2.5) (2026-02-24)
 
 
