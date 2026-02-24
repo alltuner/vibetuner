@@ -1,5 +1,17 @@
 # Changelog
 
+## [8.4.2](https://github.com/alltuner/vibetuner/compare/v8.4.1...v8.4.2) (2026-02-24)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump rumdl from 0.1.26 to 0.1.28 in /vibetuner-py ([#1264](https://github.com/alltuner/vibetuner/issues/1264)) ([ddfa045](https://github.com/alltuner/vibetuner/commit/ddfa045277d701fe3b8f9af95c392adebdd8c515))
+
+
+### Documentation Updates
+
+* update localdev port references from 12000 to 28000 ([#1262](https://github.com/alltuner/vibetuner/issues/1262)) ([ed79b8a](https://github.com/alltuner/vibetuner/commit/ed79b8a3a89a6ddb637ed25b6b981763827a4314))
+
 ## [8.4.1](https://github.com/alltuner/vibetuner/compare/v8.4.0...v8.4.1) (2026-02-24)
 
 
