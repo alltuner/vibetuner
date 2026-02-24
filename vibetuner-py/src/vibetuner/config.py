@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import os
 from datetime import datetime
 from functools import cached_property
 from typing import Annotated, Literal
@@ -197,6 +198,36 @@ class CoreConfiguration(BaseSettings):
     github_client_secret: SecretStr | None = None
 
     worker_concurrency: int = 16
+
+    # Port configuration (read from DEV_PORT / WORKER_PORT env or .env.local)
+    dev_port: int | None = None
+    worker_port: int | None = None
+
+    @staticmethod
+    def _compute_auto_port(path: str | None = None) -> int:
+        """Deterministic port from directory path. Range: 10000-13999."""
+        target_path = path or os.getcwd()
+        hash_bytes = hashlib.sha256(target_path.encode()).digest()
+        hash_int = int.from_bytes(hash_bytes[:4], "big")
+        return 10000 + (hash_int % 4000)
+
+    @computed_field
+    @cached_property
+    def resolved_port(self) -> int:
+        """Frontend port: DEV_PORT if set, auto-calculated in dev, 8000 in prod."""
+        if self.dev_port is not None:
+            return self.dev_port
+        if self.environment == "prod":
+            return 8000
+        return self._compute_auto_port()
+
+    @computed_field
+    @cached_property
+    def resolved_worker_port(self) -> int:
+        """Worker port: WORKER_PORT if set, otherwise 10000 + resolved_port."""
+        if self.worker_port is not None:
+            return self.worker_port
+        return 10000 + self.resolved_port
 
     # Locale detection settings
     locale_detection: LocaleDetectionSettings = Field(

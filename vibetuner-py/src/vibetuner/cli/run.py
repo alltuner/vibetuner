@@ -6,7 +6,6 @@ import typer
 from rich.console import Console
 
 from vibetuner.paths import paths
-from vibetuner.utils import compute_auto_port
 
 
 console = Console()
@@ -14,14 +13,6 @@ console = Console()
 run_app = typer.Typer(
     help="Run the application in different modes", no_args_is_help=True
 )
-
-DEFAULT_FRONTEND_PORT = 8000
-DEFAULT_WORKER_PORT = 11111
-
-AUTO_PORT_FRONTEND_MIN = 8001
-AUTO_PORT_FRONTEND_MAX = 8999
-AUTO_PORT_WORKER_MIN = 11112
-AUTO_PORT_WORKER_MAX = 11999
 
 
 def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
@@ -129,10 +120,12 @@ def _run_service(
     workers: int,
 ) -> None:
     """Dispatch to the appropriate service runner."""
+    from vibetuner.config import settings
+
     if service == "worker":
-        _run_worker(mode, port or DEFAULT_WORKER_PORT, workers)
+        _run_worker(mode, port or settings.resolved_worker_port, workers)
     elif service == "frontend":
-        _run_frontend(mode, host, port or DEFAULT_FRONTEND_PORT, workers)
+        _run_frontend(mode, host, port or settings.resolved_port, workers)
     else:
         console.print(f"[red]Error: Unknown service '{service}'[/red]")
         console.print("[yellow]Valid services: 'frontend' or 'worker'[/yellow]")
@@ -145,12 +138,7 @@ def dev(
         str, typer.Argument(help="Service to run: 'frontend' or 'worker'")
     ] = "frontend",
     port: int | None = typer.Option(
-        None, help="Port to run on (8000 for frontend, 11111 for worker)"
-    ),
-    auto_port: bool = typer.Option(
-        False,
-        "--auto-port",
-        help="Use deterministic port based on project path (frontend: 8001-8999, worker: 11112-11999)",
+        None, help="Port to run on (auto-calculated if not specified)"
     ),
     host: str = typer.Option("0.0.0.0", help="Host to bind to (frontend only)"),  # noqa: S104
     workers_count: int = typer.Option(
@@ -158,18 +146,6 @@ def dev(
     ),
 ) -> None:
     """Run in development mode with hot reload (frontend or worker)."""
-    if port is not None and auto_port:
-        console.print("[red]Error: --port and --auto-port are mutually exclusive[/red]")
-        raise typer.Exit(code=1)
-
-    if auto_port:
-        if service == "worker":
-            port = compute_auto_port(
-                port_min=AUTO_PORT_WORKER_MIN, port_max=AUTO_PORT_WORKER_MAX
-            )
-        else:
-            port = compute_auto_port()
-
     _run_service("dev", service, host, port, workers_count)
 
 
@@ -179,12 +155,7 @@ def prod(
         str, typer.Argument(help="Service to run: 'frontend' or 'worker'")
     ] = "frontend",
     port: int = typer.Option(
-        None, help="Port to run on (8000 for frontend, 11111 for worker)"
-    ),
-    auto_port: bool = typer.Option(
-        False,
-        "--auto-port",
-        help="Use deterministic port based on project path (frontend: 8001-8999, worker: 11112-11999)",
+        None, help="Port to run on (8000 if not specified)"
     ),
     host: str = typer.Option("0.0.0.0", help="Host to bind to (frontend only)"),  # noqa: S104
     workers_count: int = typer.Option(
@@ -192,16 +163,4 @@ def prod(
     ),
 ) -> None:
     """Run in production mode (frontend or worker)."""
-    if port is not None and auto_port:
-        console.print("[red]Error: --port and --auto-port are mutually exclusive[/red]")
-        raise typer.Exit(code=1)
-
-    if auto_port:
-        if service == "worker":
-            port = compute_auto_port(
-                port_min=AUTO_PORT_WORKER_MIN, port_max=AUTO_PORT_WORKER_MAX
-            )
-        else:
-            port = compute_auto_port()
-
     _run_service("prod", service, host, port, workers_count)

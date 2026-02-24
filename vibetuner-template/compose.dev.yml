@@ -53,6 +53,7 @@ services:
       - "8000:8000"
     environment:
       - DEBUG=true
+      - DEV_PORT=8000
       - MONGODB_URL=mongodb://mongo:27017
       - REDIS_URL=redis://redis:6379
     develop:
