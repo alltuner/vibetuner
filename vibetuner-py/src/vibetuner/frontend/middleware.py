@@ -1,3 +1,5 @@
+import secrets
+
 from fastapi import Request, Response
 from fastapi.middleware import Middleware
 from fastapi.requests import HTTPConnection
@@ -75,6 +77,74 @@ shared_translator = get_translator()
 if locales_path is not None and locales_path.exists() and locales_path.is_dir():
     # Load translations from the locales directory
     shared_translator.load_from_directories([locales_path])
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Adds security headers (CSP with nonce, X-Content-Type-Options, etc.) to responses."""
+
+    BYPASS_PREFIXES = ("/static/", "/health/")
+
+    async def dispatch(self, request: Request, call_next):
+        path = request.url.path
+        if any(path.startswith(p) for p in self.BYPASS_PREFIXES):
+            return await call_next(request)
+
+        nonce = secrets.token_urlsafe(16)
+        request.state.csp_nonce = nonce
+
+        response: Response = await call_next(request)
+
+        config = settings.security_headers
+
+        # Build CSP directives
+        script_src = f"'nonce-{nonce}' 'strict-dynamic'"
+        if config.extra_script_src:
+            script_src += f" {config.extra_script_src}"
+
+        style_src = "'self' 'unsafe-inline'"
+        if config.extra_style_src:
+            style_src += f" {config.extra_style_src}"
+
+        img_src = "'self' data:"
+        if config.extra_img_src:
+            img_src += f" {config.extra_img_src}"
+
+        directives = [
+            "default-src 'self'",
+            f"script-src {script_src}",
+            f"style-src {style_src}",
+            f"img-src {img_src}",
+            f"frame-ancestors {config.frame_ancestors}",
+        ]
+
+        if config.extra_font_src:
+            directives.append(f"font-src 'self' {config.extra_font_src}")
+
+        if config.extra_connect_src:
+            directives.append(f"connect-src 'self' {config.extra_connect_src}")
+
+        csp_value = "; ".join(directives)
+        csp_header = (
+            "Content-Security-Policy-Report-Only"
+            if settings.debug
+            else "Content-Security-Policy"
+        )
+        response.headers[csp_header] = csp_value
+
+        # Non-CSP security headers
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["X-XSS-Protection"] = "0"
+        response.headers["Permissions-Policy"] = (
+            "camera=(), microphone=(), geolocation=(), payment=()"
+        )
+
+        # Remove server identity header
+        if "server" in response.headers:
+            del response.headers["server"]
+
+        return response
 
 
 class AdjustLangCookieMiddleware(BaseHTTPMiddleware):
@@ -214,7 +284,12 @@ def _build_locale_selectors() -> list:
     return selectors
 
 
-middlewares: list[Middleware] = [
+middlewares: list[Middleware] = []
+
+if settings.security_headers.enabled:
+    middlewares.append(Middleware(SecurityHeadersMiddleware))
+
+middlewares += [
     Middleware(TrustedHostMiddleware),
     Middleware(HtmxMiddleware),
     Middleware(

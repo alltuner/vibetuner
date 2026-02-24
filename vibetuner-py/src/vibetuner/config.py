@@ -49,6 +49,29 @@ class SQLiteDsn(AnyUrl):
 current_year: int = datetime.now().year
 
 
+class SecurityHeadersSettings(BaseSettings):
+    """Settings for built-in security headers middleware.
+
+    All CSP extra_* fields accept space-separated source expressions that are
+    appended to the corresponding CSP directive.
+    """
+
+    enabled: bool = True
+    extra_script_src: str = ""
+    extra_style_src: str = ""
+    extra_font_src: str = ""
+    extra_connect_src: str = ""
+    extra_img_src: str = ""
+    frame_ancestors: str = "'self'"
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        extra="ignore",
+        env_prefix="CSP_",
+        env_file=(".env", ".env.local"),
+    )
+
+
 class LocaleDetectionSettings(BaseSettings):
     """Settings for locale detection selectors.
 
@@ -178,6 +201,11 @@ class CoreConfiguration(BaseSettings):
     # Locale detection settings
     locale_detection: LocaleDetectionSettings = Field(
         default_factory=LocaleDetectionSettings
+    )
+
+    # Security headers settings
+    security_headers: SecurityHeadersSettings = Field(
+        default_factory=SecurityHeadersSettings
     )
 
     # Proxy configuration for X-Forwarded-For/Proto headers

@@ -12,10 +12,10 @@
         </title>
         <link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
         {% block scripts %}
-            <script src="{{ url_for('js', path='bundle.js').path }}"></script>
+            <script nonce="{{ request.state.csp_nonce | default('') }}" src="{{ url_for('js', path='bundle.js').path }}"></script>
         {% endblock scripts %}
         {% if umami_website_id and not DEBUG %}
-            <script defer src="/meta.js" data-website-id="{{ umami_website_id }}"></script>
+            <script nonce="{{ request.state.csp_nonce | default('') }}" defer src="/meta.js" data-website-id="{{ umami_website_id }}"></script>
         {% endif %}
         {% include "base/favicons.html.jinja" %}
         {% include "base/opengraph.html.jinja" %}
