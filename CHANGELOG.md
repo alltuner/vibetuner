@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.4.1](https://github.com/alltuner/vibetuner/compare/v8.4.0...v8.4.1) (2026-02-24)
+
+
+### Bug Fixes
+
+* stage .pre-commit-config.yaml in update-and-commit-repo-deps ([#1259](https://github.com/alltuner/vibetuner/issues/1259)) ([dbcb2db](https://github.com/alltuner/vibetuner/commit/dbcb2db13b7b7b67a0aa816c0b109b1f116b5913))
+
 ## [8.4.0](https://github.com/alltuner/vibetuner/compare/v8.3.0...v8.4.0) (2026-02-24)
 
 
