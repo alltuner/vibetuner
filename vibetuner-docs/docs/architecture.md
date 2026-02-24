@@ -546,7 +546,7 @@ DEBUG: bool = False
 GOOGLE_CLIENT_ID: str | None = None
 GOOGLE_CLIENT_SECRET: str | None = None
 class Config:
-env_file = ".env"
+env_file = (".env", ".env.local")
 settings = Settings()
 ```
 
