@@ -466,7 +466,7 @@ just local-all-with-worker
 uv run vibetuner run dev worker
 
 # Custom port for the monitoring UI
-uv run vibetuner run dev worker --port 12000
+uv run vibetuner run dev worker --port 20500
 ```
 
 In development mode, the worker runs with hot reload enabled. Code changes

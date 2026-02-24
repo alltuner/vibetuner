@@ -235,7 +235,7 @@ async def _create_new_user_with_oauth(
 def _get_relay_cookie_domain(relay_url: str) -> str:
     """Extract parent domain from relay URL for cookie sharing.
 
-    "https://oauth.localdev.alltuner.com:12000" -> ".localdev.alltuner.com"
+    "https://oauth.localdev.alltuner.com:28000" -> ".localdev.alltuner.com"
     """
     from urllib.parse import urlparse
 
@@ -248,7 +248,7 @@ def _get_relay_cookie_domain(relay_url: str) -> str:
 def _get_source_port(request: Request) -> str:
     """Extract the app port from the request host.
 
-    "8001.localdev.alltuner.com:12000" -> "8001"
+    "8001.localdev.alltuner.com:28000" -> "8001"
     """
     host = request.url.hostname or ""
     return host.split(".")[0]
