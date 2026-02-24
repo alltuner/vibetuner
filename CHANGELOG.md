@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.3.0](https://github.com/alltuner/vibetuner/compare/v8.2.6...v8.3.0) (2026-02-24)
+
+
+### Features
+
+* add built-in security headers middleware with CSP nonce support ([#1254](https://github.com/alltuner/vibetuner/issues/1254)) ([839cccd](https://github.com/alltuner/vibetuner/commit/839cccd80af713147de9669692cb82e5da63315c))
+
 ## [8.2.6](https://github.com/alltuner/vibetuner/compare/v8.2.5...v8.2.6) (2026-02-24)
 
 
