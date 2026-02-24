@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.5](https://github.com/alltuner/vibetuner/compare/v8.2.4...v8.2.5) (2026-02-24)
+
+
+### Bug Fixes
+
+* load .env and .env.local instead of ../.env ([#1243](https://github.com/alltuner/vibetuner/issues/1243)) ([79ab1e2](https://github.com/alltuner/vibetuner/commit/79ab1e27abcb5d65938d59d34cb29b08d7e651c9))
+
 ## [8.2.4](https://github.com/alltuner/vibetuner/compare/v8.2.3...v8.2.4) (2026-02-23)
 
 
