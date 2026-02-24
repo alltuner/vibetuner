@@ -9,9 +9,9 @@ update-repo-deps:
 # Update all dependencies and commit changes
 [group('Dependencies')]
 update-and-commit-repo-deps: update-repo-deps
-    @git add pyproject.toml uv.lock bun.lock package.json
+    @git add pyproject.toml uv.lock bun.lock package.json .pre-commit-config.yaml
     @git commit -m "chore: update dependencies" \
-        pyproject.toml uv.lock bun.lock package.json \
+        pyproject.toml uv.lock bun.lock package.json .pre-commit-config.yaml \
         || echo "No changes to commit"
 
 # Create PR with updated dependencies and scaffolding
