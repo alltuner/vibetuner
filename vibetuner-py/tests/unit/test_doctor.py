@@ -156,8 +156,8 @@ class TestCheckPortAvailability:
     def test_returns_results_for_both_ports(self):
         results = _check_port_availability()
         labels = {r.name for r in results}
-        assert "Frontend (8000)" in labels
-        assert "Worker UI (11111)" in labels
+        assert "Frontend default (8000)" in labels
+        assert "Worker UI default (11111)" in labels
 
 
 class TestCheckResult:
