@@ -7,18 +7,15 @@ ARG PYTHON_VERSION=3.14
 # ────────────────────────────────────────────────────────────────────────────────
 FROM python:${PYTHON_VERSION}-slim AS python-base
 
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    rm -f /etc/apt/apt.conf.d/docker-clean && \
-    apt-get update && apt-get install -y --no-install-recommends git
-
 # Install UV package manager from official image
 COPY --from=ghcr.io/astral-sh/uv:0.10 /uv /uvx /bin/
 
-# Configure UV for optimal performance and behavior
-ENV UV_COMPILE_BYTECODE=0 \
+# Configure UV: pre-compile bytecode at build time for faster worker cold starts
+# ENVIRONMENT=prod ensures vibetuner skips dev-only git branch detection (no git binary needed)
+ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
-    UV_PYTHON_DOWNLOADS=0
+    UV_PYTHON_DOWNLOADS=0 \
+    ENVIRONMENT=prod
 
 WORKDIR /app
 

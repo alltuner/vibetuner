@@ -25,8 +25,8 @@ worker-dev:
     @DEBUG=true uv run --frozen vibetuner run dev worker
 
 _ensure-deps:
-    @[ -d node_modules ] || bun install
-    @[ -d .venv ] || uv sync --all-extras
+    @[ -d node_modules ] || bun install --frozen-lockfile
+    @[ -d .venv ] || uv sync --all-extras --frozen
 
 # Runs local dev server and assets in parallel (auto-port)
 [group('Local Development')]
