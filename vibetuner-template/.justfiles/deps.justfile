@@ -65,5 +65,5 @@ deps-scaffolding-pr:
 # Install dependencies from lockfiles
 [group('Dependencies')]
 install-deps:
-    @bun install
-    @uv sync --all-extras --all-groups
+    @bun install --frozen-lockfile
+    @uv sync --all-extras --all-groups --frozen

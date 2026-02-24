@@ -41,8 +41,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Install UV package manager from official image
 COPY --from=ghcr.io/astral-sh/uv:0.10 /uv /uvx /bin/
 
-# Configure UV for optimal performance and behavior
-ENV UV_COMPILE_BYTECODE=0 \
+# Configure UV: pre-compile bytecode at build time for faster worker cold starts
+ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=0
 
