@@ -11,13 +11,8 @@ dev:
 
 # Runs the dev environment locally without Docker
 [group('Local Development')]
-local-dev PORT="8000":
-    @DEBUG=true uv run --frozen vibetuner run dev --port {{ PORT }}
-
-# Runs local dev with auto-assigned port (deterministic per project path)
-[group('Local Development')]
-local-dev-auto:
-    @DEBUG=true uv run --frozen vibetuner run dev --auto-port
+local-dev:
+    @DEBUG=true uv run --frozen vibetuner run dev
 
 # Runs the task worker locally without Docker
 [group('Local Development')]
@@ -28,13 +23,13 @@ _ensure-deps:
     @[ -d node_modules ] || bun install --frozen-lockfile
     @[ -d .venv ] || uv sync --all-extras --frozen
 
-# Runs local dev server and assets in parallel (auto-port)
+# Runs local dev server and assets in parallel
 [group('Local Development')]
 local-all: _ensure-deps
     bunx concurrently --kill-others \
         --names "web,assets" \
         --prefix-colors "blue,green" \
-        "just local-dev-auto" \
+        "just local-dev" \
         "bun dev"
 
 # Runs local dev server, assets, and worker in parallel (requires Redis)
@@ -43,6 +38,6 @@ local-all-with-worker: _ensure-deps
     bunx concurrently --kill-others \
         --names "web,assets,worker" \
         --prefix-colors "blue,green,yellow" \
-        "just local-dev-auto" \
+        "just local-dev" \
         "bun dev" \
         "just worker-dev"
