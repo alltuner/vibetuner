@@ -960,6 +960,45 @@ project_settings.supported_languages
 
 For app-specific settings, create `src/app/config.py` with your own Pydantic Settings class.
 
+### Security Headers
+
+Vibetuner includes built-in security headers middleware (enabled by default). It sets a
+`Content-Security-Policy` with nonce-based script loading, plus standard hardening headers.
+
+**Nonce usage in custom templates:**
+
+Every request gets a unique CSP nonce stored in `request.state.csp_nonce`. Use it on any
+`<script>` tag you add:
+
+```html
+<script nonce="{{ request.state.csp_nonce | default('') }}" src="/my-script.js"></script>
+```
+
+The `| default('')` filter ensures templates render safely even when the middleware is
+disabled.
+
+**Environment variables:**
+
+| Variable | Default | Description |
+|---|---|---|
+| `CSP_ENABLED` | `true` | Enable/disable the security headers middleware |
+| `CSP_EXTRA_SCRIPT_SRC` | `""` | Additional CSP script-src sources |
+| `CSP_EXTRA_STYLE_SRC` | `""` | Additional CSP style-src sources |
+| `CSP_EXTRA_FONT_SRC` | `""` | Additional CSP font-src sources |
+| `CSP_EXTRA_CONNECT_SRC` | `""` | Additional CSP connect-src sources |
+| `CSP_EXTRA_IMG_SRC` | `""` | Additional CSP img-src sources |
+| `CSP_FRAME_ANCESTORS` | `'self'` | CSP frame-ancestors directive |
+
+**Debug vs production:**
+
+- **`DEBUG=true`**: Uses `Content-Security-Policy-Report-Only` so violations are logged
+  in the browser console without blocking resources. This avoids breaking the dev
+  hot-reload script.
+- **`DEBUG=false`**: Uses the enforced `Content-Security-Policy` header.
+
+**Important:** Avoid inline event handlers (`onclick`, `onload`, etc.) in your templates.
+CSP with `strict-dynamic` blocks them. Use `addEventListener` or HTMX attributes instead.
+
 ## Localization
 
 ```bash

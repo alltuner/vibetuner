@@ -5,7 +5,7 @@ import 'deps.justfile'
 update-scaffolding:
     @echo "Updating project scaffolding..."
     @uvx copier update -A --trust
-    
+
     # Check package.json and conditionally install
     @if [ -f package.json ]; then \
         if grep -q "<<<<<<<\|=======\|>>>>>>>" package.json; then \
@@ -16,7 +16,7 @@ update-scaffolding:
             bun install; \
         fi \
     fi
-    
+
     # Check pyproject.toml and conditionally sync
     @if [ -f pyproject.toml ]; then \
         if grep -q "<<<<<<<\|=======\|>>>>>>>" pyproject.toml; then \
@@ -27,7 +27,7 @@ update-scaffolding:
             uv sync --all-extras; \
         fi \
     fi
-    
+
     @echo "Project scaffolding update completed."
     @echo "Please review the changes and resolve any conflicts before committing."
 
