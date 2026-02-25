@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.5.1](https://github.com/alltuner/vibetuner/compare/v8.5.0...v8.5.1) (2026-02-25)
+
+
+### Bug Fixes
+
+* bind to localhost only in dev-exposed to avoid port conflict ([#1279](https://github.com/alltuner/vibetuner/issues/1279)) ([745c526](https://github.com/alltuner/vibetuner/commit/745c52635176436f0bd5caf225b5aa707fc8428f))
+
 ## [8.5.0](https://github.com/alltuner/vibetuner/compare/v8.4.2...v8.5.0) (2026-02-25)
 
 
