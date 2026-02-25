@@ -21,5 +21,5 @@ dev-exposed: _ensure-deps
     # Ensure we clean up on exit
     trap "tailscale serve --https=$PORT off; echo ''; echo 'Tailscale serve stopped.'" EXIT
 
-    # Run local-all (server + assets)
-    just local-all
+    # Run local-all bound to localhost only (tailscale handles the tailnet interface)
+    just local-all 127.0.0.1
