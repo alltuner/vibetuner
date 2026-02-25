@@ -232,26 +232,21 @@ async def _create_new_user_with_oauth(
     return account
 
 
-def _get_relay_cookie_domain(relay_url: str) -> str:
-    """Extract parent domain from relay URL for cookie sharing.
+def _get_expose_target() -> str | None:
+    """Get the tailnet target (host:port) from EXPOSE_URL env var.
 
-    "https://oauth.localdev.alltuner.com:28000" -> ".localdev.alltuner.com"
+    "https://lemon.long-python.ts.net:12241" -> "lemon.long-python.ts.net:12241"
     """
+    import os
     from urllib.parse import urlparse
 
-    host = urlparse(relay_url).hostname or ""
-    # Strip the first label (e.g. "oauth") to get parent domain
-    parts = host.split(".", 1)
-    return f".{parts[1]}" if len(parts) > 1 else host
-
-
-def _get_source_port(request: Request) -> str:
-    """Extract the app port from the request host.
-
-    "8001.localdev.alltuner.com:28000" -> "8001"
-    """
-    host = request.url.hostname or ""
-    return host.split(".")[0]
+    expose_url = os.environ.get("EXPOSE_URL")
+    if not expose_url:
+        return None
+    parsed = urlparse(expose_url)
+    host = parsed.hostname or ""
+    port = parsed.port
+    return f"{host}:{port}" if port else host
 
 
 def _create_auth_login_handler(provider_name: str):
@@ -263,23 +258,26 @@ def _create_auth_login_handler(provider_name: str):
         if not client:
             return RedirectResponse(url=get_homepage_url(request))
 
-        if settings.oauth_relay_url and settings.environment == "dev":
+        expose_target = _get_expose_target()
+        if settings.oauth_relay_url and settings.environment == "dev" and expose_target:
             relay_url = settings.oauth_relay_url.rstrip("/")
             redirect_uri = f"{relay_url}/auth/provider/{provider_name}"
             response = await client.authorize_redirect(
                 request, redirect_uri, hl=request.state.language
             )
-            domain = _get_relay_cookie_domain(relay_url)
-            port = _get_source_port(request)
-            response.set_cookie(
-                "_oauth_source_port",
-                port,
-                max_age=300,
-                httponly=True,
-                secure=True,
-                domain=domain,
-                path="/auth/provider/",
-            )
+            # Wrap the state param with the tailnet target so the relay
+            # can redirect back to this app: {host}:{port}|{original_state}
+            from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
+
+            location = response.headers.get("location", "")
+            parsed = urlparse(location)
+            params = parse_qs(parsed.query, keep_blank_values=True)
+            if "state" in params:
+                original_state = params["state"][0]
+                params["state"] = [f"{expose_target}|{original_state}"]
+                new_query = urlencode(params, doseq=True)
+                new_location = urlunparse(parsed._replace(query=new_query))
+                response.headers["location"] = new_location
             return response
 
         redirect_uri = request.url_for(f"auth_with_{provider_name}")

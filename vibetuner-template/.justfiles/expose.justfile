@@ -21,5 +21,8 @@ dev-exposed: _ensure-deps
     # Ensure we clean up on exit
     trap "tailscale serve --https=$PORT off; echo ''; echo 'Tailscale serve stopped.'" EXIT
 
+    # Export expose URL so vibetuner can encode it in OAuth state params
+    export EXPOSE_URL
+
     # Run local-all bound to localhost only (tailscale handles the tailnet interface)
     just local-all 127.0.0.1
