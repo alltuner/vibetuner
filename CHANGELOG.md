@@ -1,5 +1,17 @@
 # Changelog
 
+## [8.5.0](https://github.com/alltuner/vibetuner/compare/v8.4.2...v8.5.0) (2026-02-25)
+
+
+### Features
+
+* replace localdev_url with tailscale expose recipes ([#1278](https://github.com/alltuner/vibetuner/issues/1278)) ([2f45879](https://github.com/alltuner/vibetuner/commit/2f4587973bbe6dc0c9700e42d4d2f52b6bafed77))
+
+
+### Bug Fixes
+
+* remove invalid --optional-scopes and fix arg ordering in conventional-pre-commit hook ([#1274](https://github.com/alltuner/vibetuner/issues/1274)) ([de63632](https://github.com/alltuner/vibetuner/commit/de636320397f462df4bdd2889e06a1fd631a00e9))
+
 ## [8.4.2](https://github.com/alltuner/vibetuner/compare/v8.4.1...v8.4.2) (2026-02-24)
 
 
