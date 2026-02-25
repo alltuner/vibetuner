@@ -42,6 +42,7 @@ repos:
         stages: [commit-msg]
         args:
           [
+            --strict,
             feat,
             fix,
             docs,
@@ -52,8 +53,6 @@ repos:
             build,
             ci,
             chore,
-            --optional-scopes,
-            --strict,
           ]
   - repo: local
     hooks:
