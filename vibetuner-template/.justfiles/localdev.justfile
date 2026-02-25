@@ -11,8 +11,8 @@ dev:
 
 # Runs the dev environment locally without Docker
 [group('Local Development')]
-local-dev:
-    @DEBUG=true uv run --frozen vibetuner run dev
+local-dev host="0.0.0.0":
+    @DEBUG=true uv run --frozen vibetuner run dev --host {{ host }}
 
 # Runs the task worker locally without Docker
 [group('Local Development')]
@@ -25,11 +25,11 @@ _ensure-deps:
 
 # Runs local dev server and assets in parallel
 [group('Local Development')]
-local-all: _ensure-deps
+local-all host="0.0.0.0": _ensure-deps
     bunx concurrently --kill-others \
         --names "web,assets" \
         --prefix-colors "blue,green" \
-        "just local-dev" \
+        "just local-dev {{ host }}" \
         "bun dev"
 
 # Runs local dev server, assets, and worker in parallel (requires Redis)
