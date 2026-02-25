@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.6.0](https://github.com/alltuner/vibetuner/compare/v8.5.1...v8.6.0) (2026-02-25)
+
+
+### Features
+
+* encode tailnet target in OAuth state for relay redirect ([#1281](https://github.com/alltuner/vibetuner/issues/1281)) ([ec69b60](https://github.com/alltuner/vibetuner/commit/ec69b60b6c1497f080d12154286da299a5ece9be))
+
 ## [8.5.1](https://github.com/alltuner/vibetuner/compare/v8.5.0...v8.5.1) (2026-02-25)
 
 
