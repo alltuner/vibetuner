@@ -931,19 +931,6 @@ DATABASE_URL=mongodb://localhost:27017/[dbname]
 REDIS_URL=redis://localhost:6379  # If background jobs enabled
 SECRET_KEY=your-secret-key
 DEBUG=true  # Development only
-LOCALDEV_URL=https://{port}.localdev.localhost:28000  # Optional: HTTPS reverse proxy
-```
-
-#### LOCALDEV_URL
-
-When set, vibetuner prints an additional HTTPS URL on startup with `{port}` replaced by
-the actual port. Use this with a local HTTPS reverse proxy (Caddy, nginx, mkcert) to get
-clickable HTTPS URLs without manual port mapping:
-
-```text
-Starting frontend in dev mode on 0.0.0.0:8124
-website reachable at http://localhost:8124
-  https reachable at https://8124.localdev.localhost:28000
 ```
 
 ### Pydantic Settings

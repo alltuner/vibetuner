@@ -244,10 +244,6 @@ class CoreConfiguration(BaseSettings):
     # SECURITY: Only IPs in this list can set forwarded headers. Use "*" to trust all (NOT recommended for production)
     trusted_proxy_hosts: str = "127.0.0.1"
 
-    # Local HTTPS reverse proxy URL template (e.g., "https://{port}.localdev.localhost:28000")
-    # When set, vibetuner prints this URL on startup with {port} replaced by the actual port.
-    localdev_url: str | None = None
-
     # OAuth relay URL for shared redirect URI across multiple local apps.
     # When set, OAuth flows use this stable URL instead of the app's own URL.
     # Example: "https://oauth.localdev.alltuner.com:28000"

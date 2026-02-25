@@ -201,22 +201,10 @@ just local-dev
 
 A database (MongoDB or SQL) is required if using database features. Redis is only required if background jobs are enabled.
 
-**HTTPS via Local Reverse Proxy**
+**HTTPS via Tailscale Expose**
 
-Set `LOCALDEV_URL` in your `.env` to have vibetuner print an HTTPS URL on startup:
-
-```bash
-LOCALDEV_URL=https://{port}.localdev.localhost:28000
-```
-
-The `{port}` placeholder is replaced with the actual port. Output on startup:
-
-```
-website reachable at http://localhost:8124
-  https reachable at https://8124.localdev.localhost:28000
-```
-
-Use this with any local HTTPS reverse proxy (Caddy with wildcard certs, mkcert, etc.).
+Use `just dev-exposed` to run the dev server with HTTPS via Tailscale Serve.
+This wraps `just local-all` with automatic tailscale serve setup/teardown.
 
 #### Adding New Routes
 
