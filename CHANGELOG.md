@@ -1,5 +1,17 @@
 # Changelog
 
+## [8.6.1](https://github.com/alltuner/vibetuner/compare/v8.6.0...v8.6.1) (2026-02-26)
+
+
+### Bug Fixes
+
+* OAuth relay works in dev without EXPOSE_URL ([#1288](https://github.com/alltuner/vibetuner/issues/1288)) ([67e4812](https://github.com/alltuner/vibetuner/commit/67e4812b4bd23965804305d369e10ec6a7b2fc1c))
+
+
+### Documentation Updates
+
+* fix broken llms.txt URLs and add missing documentation pages ([#1284](https://github.com/alltuner/vibetuner/issues/1284)) ([fec5d3d](https://github.com/alltuner/vibetuner/commit/fec5d3d15a0f89beb0a9d0fdd8462006dd23f998))
+
 ## [8.6.0](https://github.com/alltuner/vibetuner/compare/v8.5.1...v8.6.0) (2026-02-25)
 
 
