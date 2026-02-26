@@ -6,7 +6,7 @@ lint-md:
 # Lint Python files with ruff
 [group('Code quality: linting')]
 lint-py:
-    @uv run --frozen ruff check .
+    @uvx ruff check .
 
 # Lint TOML files with taplo (check only)
 [group('Code quality: linting')]
@@ -31,7 +31,7 @@ lint-po:
 # Type check Python files with ty
 [group('Code quality: linting')]
 type-check:
-    @uv run --frozen ty check .
+    @uvx ty check .
 
 # Run all linting checks
 [group('Code quality: linting')]
