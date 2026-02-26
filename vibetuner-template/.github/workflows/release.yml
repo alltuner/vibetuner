@@ -13,7 +13,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run Release Please
+        id: release
         uses: googleapis/release-please-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           config-file: .release-please-config.json
+
+      - name: Checkout release PR branch
+        if: steps.release.outputs.prs_created == 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install uv
+        if: steps.release.outputs.prs_created == 'true'
+        uses: astral-sh/setup-uv@v7
+
+      - name: Regenerate uv.lock on release PR
+        if: steps.release.outputs.prs_created == 'true'
+        run: |
+          uv lock
+          if git diff --quiet uv.lock; then
+            echo "Lock file already up to date"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add uv.lock
+          git commit -m "chore: regenerate uv.lock"
+          git push
