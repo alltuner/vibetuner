@@ -232,23 +232,6 @@ async def _create_new_user_with_oauth(
     return account
 
 
-def _get_expose_target() -> str | None:
-    """Get the tailnet target (host:port) from EXPOSE_URL env var.
-
-    "https://lemon.long-python.ts.net:12241" -> "lemon.long-python.ts.net:12241"
-    """
-    import os
-    from urllib.parse import urlparse
-
-    expose_url = os.environ.get("EXPOSE_URL")
-    if not expose_url:
-        return None
-    parsed = urlparse(expose_url)
-    host = parsed.hostname or ""
-    port = parsed.port
-    return f"{host}:{port}" if port else host
-
-
 def _create_auth_login_handler(provider_name: str):
     async def auth_login(request: Request, next: str | None = None):
         from vibetuner.config import settings
@@ -258,15 +241,14 @@ def _create_auth_login_handler(provider_name: str):
         if not client:
             return RedirectResponse(url=get_homepage_url(request))
 
-        expose_target = _get_expose_target()
-        if settings.oauth_relay_url and settings.environment == "dev" and expose_target:
-            relay_url = settings.oauth_relay_url.rstrip("/")
+        if settings.oauth_relay_url and settings.environment == "dev":
+            relay_url = str(settings.oauth_relay_url).rstrip("/")
             redirect_uri = f"{relay_url}/auth/provider/{provider_name}"
             response = await client.authorize_redirect(
                 request, redirect_uri, hl=request.state.language
             )
-            # Wrap the state param with the tailnet target so the relay
-            # can redirect back to this app: {host}:{port}|{original_state}
+            # Wrap the state param with the app URL so the relay
+            # can redirect back: {scheme}://{host}:{port}|{original_state}
             from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
             location = response.headers.get("location", "")
@@ -274,7 +256,7 @@ def _create_auth_login_handler(provider_name: str):
             params = parse_qs(parsed.query, keep_blank_values=True)
             if "state" in params:
                 original_state = params["state"][0]
-                params["state"] = [f"{expose_target}|{original_state}"]
+                params["state"] = [f"{settings.expose_url}|{original_state}"]
                 new_query = urlencode(params, doseq=True)
                 new_location = urlunparse(parsed._replace(query=new_query))
                 response.headers["location"] = new_location
