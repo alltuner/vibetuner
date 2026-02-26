@@ -1,9 +1,9 @@
 import 'helpers.justfile'
 
-# Adds and commits all changes with a message
+# Stage tracked file changes and commit with a message
 [group('gitflow')]
 commit MESSAGE:
-    git add .
+    git add -u
     git commit -m "{{ MESSAGE }}"
 
 # Pushes all tags to the remote repository
