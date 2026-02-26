@@ -3,10 +3,13 @@ import 'deps.justfile'
 # Runs the dev environment with watch mode and cleans up orphans
 [group('Local Development')]
 dev:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    eval "$(just _project-vars)"
     ENVIRONMENT=development \
     COMPOSE_BAKE=true \
-    PYTHON_VERSION={{ PYTHON_VERSION }} \
-    COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
+    PYTHON_VERSION=$PYTHON_VERSION \
+    COMPOSE_PROJECT_NAME=$COMPOSE_PROJECT_NAME \
     docker compose -f compose.dev.yml up --watch --remove-orphans
 
 # Runs the dev environment locally without Docker
