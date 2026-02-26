@@ -13,16 +13,19 @@ Important notes:
 
 ## Quick Start
 
-- [Quick Start Guide](https://vibetuner.alltuner.com/quick-start.html.md): Get started with Vibetuner in 5 minutes
-- [Installation](https://vibetuner.alltuner.com/installation.html.md): Prerequisites and installation options
-- [Your First Project](https://vibetuner.alltuner.com/quick-start.html.md#create-your-first-project): Interactive project setup with `uvx vibetuner scaffold new`
+- [Quick Start Guide](https://vibetuner.alltuner.com/quick-start/): Get started with Vibetuner in 5 minutes
+- [Installation](https://vibetuner.alltuner.com/installation/): Prerequisites and installation options
+- [Your First Project](https://vibetuner.alltuner.com/quick-start/#create-your-first-project): Interactive project setup with `uvx vibetuner scaffold new`
 
 ## Core Documentation
 
-- [Development Guide](https://vibetuner.alltuner.com/development-guide.html.md): Daily development workflow, adding routes, models, templates, and background jobs
-- [Architecture](https://vibetuner.alltuner.com/architecture.html.md): System design, three-package architecture, request flow, and core components
-- [Tech Stack](https://vibetuner.alltuner.com/tech-stack.html.md): Detailed information about all technologies used and why they were chosen
-- [Authentication](https://vibetuner.alltuner.com/authentication.html.md): OAuth and magic link authentication setup and configuration
+- [Development Guide](https://vibetuner.alltuner.com/development-guide/): Daily development workflow, adding routes, models, templates, and background jobs
+- [Architecture](https://vibetuner.alltuner.com/architecture/): System design, three-package architecture, request flow, and core components
+- [Tech Stack](https://vibetuner.alltuner.com/tech-stack/): Detailed information about all technologies used and why they were chosen
+- [Authentication](https://vibetuner.alltuner.com/authentication/): OAuth and magic link authentication setup and configuration
+- [Background Tasks](https://vibetuner.alltuner.com/background-tasks/): Background task system powered by Streaq and Redis with retries, cron scheduling, and SSE integration
+- [Runtime Configuration](https://vibetuner.alltuner.com/runtime-config/): Layered configuration system with MongoDB persistence, debug UI, and feature flags
+- [HTMX v2 to v4 Migration](https://vibetuner.alltuner.com/htmx-migration/): Breaking changes and migration guide for upgrading from HTMX v2 to v4
 
 ## Features
 
@@ -49,18 +52,18 @@ Important notes:
 
 ## Reference
 
-- [CLI Reference](https://vibetuner.alltuner.com/cli-reference.html.md):
+- [CLI Reference](https://vibetuner.alltuner.com/cli-reference/):
   Commands for `vibetuner scaffold`, `vibetuner run`, `vibetuner db`, and `vibetuner doctor`
-- [Scaffolding Reference](https://vibetuner.alltuner.com/scaffolding.html.md):
+- [Scaffolding Reference](https://vibetuner.alltuner.com/scaffolding/):
   Template prompts, post-generation tasks, and updating existing projects
-- [Deployment](https://vibetuner.alltuner.com/deployment.html.md):
+- [Deployment](https://vibetuner.alltuner.com/deployment/):
   Docker production builds, environment configuration, and deployment options
 
 ## Development
 
-- [Contributing Guidelines](https://vibetuner.alltuner.com/contributing.html.md): How to contribute, code style, and PR title format (uses conventional commits)
-- [Development Workflow](https://vibetuner.alltuner.com/development.html.md): Setting up the development environment for contributing to Vibetuner itself
-- [Changelog](https://vibetuner.alltuner.com/changelog.html.md): Version history and release notes
+- [Contributing Guidelines](https://vibetuner.alltuner.com/contributing/): How to contribute, code style, and PR title format (uses conventional commits)
+- [Development Workflow](https://vibetuner.alltuner.com/development/): Setting up the development environment for contributing to Vibetuner itself
+- [Changelog](https://vibetuner.alltuner.com/changelog/): Version history and release notes
 
 ## Packages
 

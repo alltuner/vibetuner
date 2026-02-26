@@ -1201,6 +1201,352 @@ actionable error messages with:
 
 These errors are displayed as rich console panels via `vibetuner.services.errors`.
 
+### Background Tasks
+
+Run long-running or scheduled work outside the request cycle using Vibetuner's
+background task system, powered by Streaq and Redis.
+
+**Note:** In all examples, `app` refers to your project's Python package (the directory
+under `src/`). The actual name depends on your project slug.
+
+#### Prerequisites
+
+Background tasks require Redis. Set `REDIS_URL` in your `.env`:
+
+```bash
+REDIS_URL=redis://localhost:6379
+```
+
+When using Docker development (`just dev`), Redis is started automatically.
+
+#### Quick Start
+
+1. Create a task in `src/app/tasks/`:
+
+```python
+# src/app/tasks/emails.py
+from vibetuner.tasks.worker import get_worker
+
+worker = get_worker()
+
+@worker.task()
+async def send_welcome_email(user_id: str) -> dict[str, str]:
+    from vibetuner.models import UserModel
+    from vibetuner.services.email import send_email
+
+    user = await UserModel.get(user_id)
+    if user:
+        await send_email(to_email=user.email, subject="Welcome!", html_content="<h1>Welcome!</h1>")
+        return {"status": "sent", "email": user.email}
+    return {"status": "skipped"}
+```
+
+2. Register in `tune.py`:
+
+```python
+from vibetuner import VibetunerApp
+from app.tasks.emails import send_welcome_email
+
+app = VibetunerApp(tasks=[send_welcome_email])
+```
+
+3. Enqueue from a route:
+
+```python
+task = await send_welcome_email.enqueue(str(user.id))
+```
+
+4. Start the worker:
+
+```bash
+just worker-dev
+# Or: uv run vibetuner run dev worker
+```
+
+#### Worker Dependency Injection
+
+Use `WorkerDepends()` from Streaq to inject the worker context:
+
+```python
+from streaq import WorkerDepends
+
+@worker.task()
+async def fetch_external_data(url: str, ctx=WorkerDepends()) -> dict:
+    response = await ctx.http_client.get(url)
+    return {"status": response.status_code, "data": response.text[:100]}
+```
+
+#### The `@robust_task()` Decorator
+
+For tasks needing automatic retries and dead letter tracking:
+
+```python
+from vibetuner.tasks.robust import robust_task
+
+@robust_task(max_retries=5, backoff_max=600)
+async def send_webhook(payload: dict) -> dict:
+    import httpx
+    async with httpx.AsyncClient() as client:
+        resp = await client.post("https://example.com/hook", json=payload)
+        resp.raise_for_status()
+    return {"status": "delivered"}
+```
+
+Parameters: `max_retries` (default 3), `backoff_base` (default 2.0),
+`backoff_max` (default 300.0), `timeout`, `on_failure` callback.
+
+Failed tasks are stored in the `dead_letters` MongoDB collection.
+
+#### Scheduled Tasks (Cron)
+
+```python
+@worker.cron("0 9 * * *")  # Every day at 9:00 AM UTC
+async def daily_digest():
+    ...
+
+@worker.cron("*/15 * * * *")  # Every 15 minutes
+async def check_expired_sessions():
+    ...
+```
+
+Cron tasks only execute inside the worker process.
+
+#### SSE Integration
+
+Broadcast real-time updates from background tasks to connected clients:
+
+```python
+from vibetuner.sse import broadcast
+
+@worker.task()
+async def process_upload(file_id: str, user_id: str) -> dict:
+    await broadcast(f"upload:{user_id}", "progress", data="Processing...")
+    # ... do work ...
+    await broadcast(f"upload:{user_id}", "complete", data="Done!")
+    return {"status": "complete"}
+```
+
+Broadcasting from tasks requires Redis for pub/sub across processes.
+
+#### Custom Worker Lifespan
+
+```python
+from contextlib import asynccontextmanager
+from vibetuner.context import Context
+from vibetuner.tasks.lifespan import base_lifespan
+
+@asynccontextmanager
+async def worker_lifespan():
+    async with base_lifespan() as context:
+        print("Worker starting with custom setup")
+        yield context
+        print("Worker shutting down")
+```
+
+#### Running Workers
+
+```bash
+# Development
+just worker-dev
+just local-all-with-worker
+
+# Production
+docker compose -f compose.prod.yml up
+vibetuner run prod worker --workers 4
+```
+
+Configuration: `REDIS_URL` (required), `WORKER_CONCURRENCY` (default 16),
+`--port` flag (default 11111 for monitoring UI).
+
+#### Testing Tasks
+
+Use the `mock_tasks` fixture:
+
+```python
+async def test_signup_queues_email(vibetuner_client, mock_tasks):
+    with patch("app.tasks.emails.send_welcome_email", mock_tasks.send_welcome_email):
+        resp = await vibetuner_client.post("/signup", data={"email": "a@b.com"})
+    assert mock_tasks.send_welcome_email.enqueue.called
+```
+
+### Runtime Configuration
+
+A layered configuration system for managing application settings that can be changed
+at runtime and optionally persisted to MongoDB.
+
+#### Overview
+
+Runtime configuration provides settings that:
+
+- Can be changed without redeploying the application
+- Persist across server restarts (when MongoDB is available)
+- Support in-memory overrides for debugging and testing
+- Integrate with a debug UI at `/debug/config`
+
+This is separate from `CoreConfiguration` (`.env` settings) which handles
+framework-level settings loaded at startup.
+
+#### Register Configuration Values
+
+Register config values at module load time, typically in `src/app/config.py`:
+
+```python
+from vibetuner.runtime_config import register_config_value
+
+register_config_value(
+    key="features.dark_mode",
+    default=False,
+    value_type="bool",
+    category="features",
+    description="Enable dark mode for users",
+)
+
+register_config_value(
+    key="limits.max_uploads",
+    default=10,
+    value_type="int",
+    category="limits",
+    description="Maximum uploads per user per day",
+)
+```
+
+Secret values (`is_secret=True`) are masked in the debug UI and cannot be edited.
+
+#### Access Configuration Values
+
+```python
+from vibetuner.runtime_config import get_config
+
+async def some_handler():
+    dark_mode = await get_config("features.dark_mode")
+    max_items = await get_config("unknown.key", default=50)
+```
+
+#### Layered Resolution
+
+Values are resolved with this priority (highest to lowest):
+
+1. **Runtime overrides** — In-memory overrides set programmatically or via debug UI
+2. **MongoDB values** — Persisted values that survive restarts
+3. **Registered defaults** — Default values defined in code
+
+#### Value Types
+
+Supported types: `bool`, `int`, `float`, `str`, `json`. Values are automatically
+validated and converted when set.
+
+#### `@config_value` Decorator
+
+```python
+from vibetuner.runtime_config import config_value
+
+@config_value("features.dark_mode", value_type="bool", category="features")
+def dark_mode() -> bool:
+    """Enable dark mode for users."""
+    return False
+
+enabled = await dark_mode()
+```
+
+#### `ConfigGroup` Class
+
+Group related config values into a typed class:
+
+```python
+from vibetuner.runtime_config import ConfigGroup, ConfigField
+
+class FeatureFlags(ConfigGroup, category="features"):
+    dark_mode = ConfigField(default=False, value_type="bool", description="Enable dark mode")
+    max_items = ConfigField(default=50, value_type="int", description="Max items per page")
+
+enabled = await FeatureFlags.dark_mode
+limit = await FeatureFlags.max_items
+```
+
+Each field is registered under `"{category}.{field_name}"`.
+
+#### When to Use Each API
+
+| API | Best for |
+|-----|----------|
+| `register_config_value()` | Imperative registration at module level |
+| `@config_value()` | Single standalone config values with defaults |
+| `ConfigGroup` | Groups of related settings (feature flags, limits) |
+
+#### MongoDB Persistence and Caching
+
+When MongoDB is configured, values can be persisted and survive restarts. Config
+values from MongoDB are cached for 60 seconds. Use `RuntimeConfig.refresh_cache()`
+or the debug UI refresh button to force refresh.
+
+### HTMX v2 to v4 Migration
+
+Breaking changes when upgrading from htmx v2 to v4 in Vibetuner projects.
+
+#### SSE: Native Support Replaces Extension
+
+htmx v4 includes SSE in core. Remove `hx-ext="sse"`:
+
+```html
+<!-- Before (v2) -->
+<div hx-ext="sse" sse-connect="/events/notifications" sse-swap="update">
+
+<!-- After (v4) -->
+<div sse-connect="/events/notifications" sse-swap="update">
+```
+
+#### Extension Auto-Registration
+
+Extensions auto-register when imported — no `hx-ext` attribute needed.
+
+#### `hx-vars` Replaced by `hx-vals` with `js:` Prefix
+
+```html
+<!-- Before: hx-vars="token:getToken()" -->
+hx-vals='js:{"token": getToken()}'
+```
+
+#### `hx-disable` Renamed to `hx-ignore`
+
+```html
+<!-- Before: <div hx-disable> -->
+<div hx-ignore>
+```
+
+#### Attribute Inheritance Requires `:inherited`
+
+In v4, inheritance must be explicitly opted into:
+
+```html
+<!-- Before: <div hx-target="#results"> -->
+<div hx-target:inherited="#results">
+```
+
+#### JavaScript Import Changes
+
+```javascript
+// Before (v2): import "htmx.org";
+// After (v4):
+import htmx from "htmx.org";
+window.htmx = htmx;
+
+// Preload extension:
+// Before: import "htmx-ext-preload";
+// After:
+import "htmx.org/dist/ext/hx-preload.js";
+```
+
+#### Migration Checklist
+
+- Remove all `hx-ext="sse"` attributes from SSE elements
+- Remove all other `hx-ext="..."` attributes (extensions auto-register)
+- Replace `hx-vars` with `hx-vals` using `js:` prefix
+- Replace `hx-disable` with `hx-ignore`
+- Add `:inherited` modifier to attributes that rely on inheritance
+- Update JS imports to use default import and `window.htmx = htmx`
+- Update preload extension import path
+- Remove `htmx-ext-sse` and `htmx-ext-preload` from `package.json`
+
 ### Import Ordering in tune.py
 
 When configuring `tune.py`, import order matters. Vibetuner framework imports
