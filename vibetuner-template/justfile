@@ -2,6 +2,7 @@ _default:
     @just --list
 
 import '.justfiles/helpers.justfile'
+import '.justfiles/deps.justfile'
 import '.justfiles/localdev.justfile'
 import '.justfiles/expose.justfile'
 import '.justfiles/cicd.justfile'

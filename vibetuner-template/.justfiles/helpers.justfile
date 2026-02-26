@@ -19,3 +19,19 @@ _check-last-commit-tagged:
         echo "   Please checkout a clean tag before building production."; \
         exit 1; \
     fi
+
+# Compute project variables from pyproject.toml and .copier-answers.yml.
+# Runs a single Python process instead of 4 separate ones.
+# Usage in recipes: eval "$(just _project-vars)"
+[private]
+_project-vars:
+    #!/usr/bin/env bash
+    uv run --frozen python << 'PYEOF'
+    import tomllib, yaml, os
+    answers = yaml.safe_load(open('.copier-answers.yml')) if os.path.exists('.copier-answers.yml') else {}
+    print(f"export VERSION={tomllib.load(open('pyproject.toml', 'rb'))['project']['version']}")
+    print(f"export PYTHON_VERSION={open('.python-version').read().strip()}")
+    print(f"export COMPOSE_PROJECT_NAME={answers.get('project_slug', 'scaffolding').strip()}")
+    print(f"export FQDN={answers.get('fqdn', '').strip()}")
+    print(f"export ENABLE_WATCHTOWER={str(answers.get('enable_watchtower', False)).lower()}")
+    PYEOF

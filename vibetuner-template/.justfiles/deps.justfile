@@ -24,7 +24,7 @@ deps-scaffolding-pr:
     WORKTREE_DIR=$(mktemp -d)
 
     cleanup() { git worktree remove --force "$WORKTREE_DIR" 2>/dev/null; git branch -D "$BRANCH" 2>/dev/null; }
-    trap cleanup ERR
+    trap cleanup ERR INT TERM
 
     git fetch origin main
     git worktree add -b "$BRANCH" "$WORKTREE_DIR" origin/main

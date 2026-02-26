@@ -3,10 +3,10 @@ import 'deps.justfile'
 # Runs the dev environment with watch mode and cleans up orphans
 [group('Local Development')]
 dev:
-    ENVIRONMENT=development \
-    COMPOSE_BAKE=true \
-    PYTHON_VERSION={{ PYTHON_VERSION }} \
-    COMPOSE_PROJECT_NAME={{ PROJECT_SLUG }} \
+    #!/usr/bin/env bash
+    set -euo pipefail
+    eval "$(just _project-vars)"
+    ENVIRONMENT=development COMPOSE_BAKE=true \
     docker compose -f compose.dev.yml up --watch --remove-orphans
 
 # Runs the dev environment locally without Docker
@@ -19,13 +19,9 @@ local-dev host="0.0.0.0":
 worker-dev:
     @DEBUG=true uv run --frozen vibetuner run dev worker
 
-_ensure-deps:
-    @[ -d node_modules ] || bun install --frozen-lockfile
-    @[ -d .venv ] || uv sync --all-extras --frozen
-
 # Runs local dev server and assets in parallel
 [group('Local Development')]
-local-all host="0.0.0.0": _ensure-deps
+local-all host="0.0.0.0": install-deps
     bunx concurrently --kill-others \
         --names "web,assets" \
         --prefix-colors "blue,green" \
@@ -34,7 +30,7 @@ local-all host="0.0.0.0": _ensure-deps
 
 # Runs local dev server, assets, and worker in parallel (requires Redis)
 [group('Local Development')]
-local-all-with-worker: _ensure-deps
+local-all-with-worker: install-deps
     bunx concurrently --kill-others \
         --names "web,assets,worker" \
         --prefix-colors "blue,green,yellow" \
