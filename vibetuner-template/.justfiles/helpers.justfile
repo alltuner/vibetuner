@@ -29,9 +29,9 @@ _project-vars:
     uv run --frozen python << 'PYEOF'
     import tomllib, yaml, os
     answers = yaml.safe_load(open('.copier-answers.yml')) if os.path.exists('.copier-answers.yml') else {}
-    print(f"VERSION={tomllib.load(open('pyproject.toml', 'rb'))['project']['version']}")
-    print(f"PYTHON_VERSION={open('.python-version').read().strip()}")
-    print(f"COMPOSE_PROJECT_NAME={answers.get('project_slug', 'scaffolding').strip()}")
-    print(f"FQDN={answers.get('fqdn', '').strip()}")
-    print(f"ENABLE_WATCHTOWER={str(answers.get('enable_watchtower', False)).lower()}")
+    print(f"export VERSION={tomllib.load(open('pyproject.toml', 'rb'))['project']['version']}")
+    print(f"export PYTHON_VERSION={open('.python-version').read().strip()}")
+    print(f"export COMPOSE_PROJECT_NAME={answers.get('project_slug', 'scaffolding').strip()}")
+    print(f"export FQDN={answers.get('fqdn', '').strip()}")
+    print(f"export ENABLE_WATCHTOWER={str(answers.get('enable_watchtower', False)).lower()}")
     PYEOF

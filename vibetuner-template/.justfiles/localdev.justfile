@@ -6,10 +6,7 @@ dev:
     #!/usr/bin/env bash
     set -euo pipefail
     eval "$(just _project-vars)"
-    ENVIRONMENT=development \
-    COMPOSE_BAKE=true \
-    PYTHON_VERSION=$PYTHON_VERSION \
-    COMPOSE_PROJECT_NAME=$COMPOSE_PROJECT_NAME \
+    ENVIRONMENT=development COMPOSE_BAKE=true \
     docker compose -f compose.dev.yml up --watch --remove-orphans
 
 # Runs the dev environment locally without Docker
