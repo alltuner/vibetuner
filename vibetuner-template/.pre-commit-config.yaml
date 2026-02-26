@@ -58,6 +58,6 @@ repos:
     hooks:
       - id: lint-po
         name: lint-po
-        entry: uvx lint-po
+        entry: uvx --from "git+https://github.com/davidpoblador/lint-po@support-gettext-plural-forms" lint-po
         language: system
         files: \.po$
