@@ -1,6 +1,6 @@
 # Runs local-all with HTTPS exposed via Tailscale Serve
 [group('Local Development')]
-dev-exposed: _ensure-deps
+dev-exposed: install-deps
     #!/usr/bin/env bash
     set -euo pipefail
 

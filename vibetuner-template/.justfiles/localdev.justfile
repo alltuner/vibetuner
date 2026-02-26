@@ -19,13 +19,9 @@ local-dev host="0.0.0.0":
 worker-dev:
     @DEBUG=true uv run --frozen vibetuner run dev worker
 
-_ensure-deps:
-    @[ -d node_modules ] || bun install --frozen-lockfile
-    @[ -d .venv ] || uv sync --all-extras --frozen
-
 # Runs local dev server and assets in parallel
 [group('Local Development')]
-local-all host="0.0.0.0": _ensure-deps
+local-all host="0.0.0.0": install-deps
     bunx concurrently --kill-others \
         --names "web,assets" \
         --prefix-colors "blue,green" \
@@ -34,7 +30,7 @@ local-all host="0.0.0.0": _ensure-deps
 
 # Runs local dev server, assets, and worker in parallel (requires Redis)
 [group('Local Development')]
-local-all-with-worker: _ensure-deps
+local-all-with-worker: install-deps
     bunx concurrently --kill-others \
         --names "web,assets,worker" \
         --prefix-colors "blue,green,yellow" \
