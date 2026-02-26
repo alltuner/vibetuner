@@ -11,15 +11,13 @@ commit MESSAGE:
 push-tags:
     git push --tags
 
-# Create PR for current branch
+# Create PR for current branch (title must be conventional commit format, e.g. "feat: add login")
 [group('gitflow')]
-pr:
+pr TITLE:
     @git push
-
-    @branch=$(git rev-parse --abbrev-ref HEAD) && \
-    gh pr create \
+    @gh pr create \
       --base main \
-      --title "$branch" \
+      --title "{{ TITLE }}" \
       --body "$(git log origin/main..HEAD --pretty=format:'- %s')"
 
 # Merge PR using squash
