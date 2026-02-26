@@ -1,5 +1,23 @@
 # Changelog
 
+## [8.6.4](https://github.com/alltuner/vibetuner/compare/v8.6.3...v8.6.4) (2026-02-26)
+
+
+### Bug Fixes
+
+* use --watch=always to prevent tailwindcss watcher from dying silently ([#1315](https://github.com/alltuner/vibetuner/issues/1315)) ([3c65ce7](https://github.com/alltuner/vibetuner/commit/3c65ce7d2d3b3ad55f355d3e09e2ba69004fdb4d))
+* use lint-po fork with gettext plural form support ([#1314](https://github.com/alltuner/vibetuner/issues/1314)) ([10487a4](https://github.com/alltuner/vibetuner/commit/10487a4d22ebde3d31514a78d9a31245d4f4a729)), closes [#1312](https://github.com/alltuner/vibetuner/issues/1312)
+
+
+### Miscellaneous Chores
+
+* **deps:** update github artifact actions (major) ([#1316](https://github.com/alltuner/vibetuner/issues/1316)) ([e4b2922](https://github.com/alltuner/vibetuner/commit/e4b2922bcb1f58bb8f7de1ef5838db6eeff5186e))
+
+
+### Documentation Updates
+
+* add ad-hoc database operations guide for AI agents ([#1310](https://github.com/alltuner/vibetuner/issues/1310)) ([6cbaff5](https://github.com/alltuner/vibetuner/commit/6cbaff56ed1a4186002a9629873cc2a3ff488adc))
+
 ## [8.6.3](https://github.com/alltuner/vibetuner/compare/v8.6.2...v8.6.3) (2026-02-26)
 
 
