@@ -1,5 +1,22 @@
 # Changelog
 
+## [8.6.2](https://github.com/alltuner/vibetuner/compare/v8.6.1...v8.6.2) (2026-02-26)
+
+
+### Bug Fixes
+
+* justfile simplification and improvements ([#1300](https://github.com/alltuner/vibetuner/issues/1300)) ([8811465](https://github.com/alltuner/vibetuner/commit/881146558b2eec0a9ba7c88d9bac2cb18bbc1d73))
+
+
+### Code Refactoring
+
+* constrain dev_port and worker_port to unprivileged port range ([#1298](https://github.com/alltuner/vibetuner/issues/1298)) ([12fed20](https://github.com/alltuner/vibetuner/commit/12fed20fe0b90ba497150393e6ea9123f1241a8f))
+
+
+### CI/CD Changes
+
+* regenerate uv.lock after Release Please bumps and upgrade Claude workflows ([#1303](https://github.com/alltuner/vibetuner/issues/1303)) ([4c68c51](https://github.com/alltuner/vibetuner/commit/4c68c516c2406e3f0c495447323bb8ae76272a83))
+
 ## [8.6.1](https://github.com/alltuner/vibetuner/compare/v8.6.0...v8.6.1) (2026-02-26)
 
 
