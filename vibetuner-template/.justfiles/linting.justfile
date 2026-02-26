@@ -26,7 +26,7 @@ lint-yaml:
 # Lint PO translation files with lint-po
 [group('Code quality: linting')]
 lint-po:
-    @bash -c 'shopt -s nullglob; files=(locales/*/LC_MESSAGES/*.po); if (( ${#files[@]} )); then uvx lint-po "${files[@]}"; else echo "No .po files to lint"; fi'
+    @bash -c 'shopt -s nullglob; files=(locales/*/LC_MESSAGES/*.po); if (( ${#files[@]} )); then uvx --from "git+https://github.com/davidpoblador/lint-po@support-gettext-plural-forms" lint-po "${files[@]}"; else echo "No .po files to lint"; fi'
 
 # Type check Python files with ty
 [group('Code quality: linting')]
