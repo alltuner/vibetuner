@@ -1,5 +1,13 @@
 # Changelog
 
+## [8.6.3](https://github.com/alltuner/vibetuner/compare/v8.6.2...v8.6.3) (2026-02-26)
+
+
+### Bug Fixes
+
+* add --frozen flag to uv run in setup-tw-sources script ([#1306](https://github.com/alltuner/vibetuner/issues/1306)) ([2a18ee6](https://github.com/alltuner/vibetuner/commit/2a18ee65705c8a903e36cba9c7beefd54ffbf9cd))
+* add missing trailing newlines and VSCode newline settings ([#1307](https://github.com/alltuner/vibetuner/issues/1307)) ([402a4db](https://github.com/alltuner/vibetuner/commit/402a4dbf7a3e72ab7bdcb83abf21ec2ec9b0f15e))
+
 ## [8.6.2](https://github.com/alltuner/vibetuner/compare/v8.6.1...v8.6.2) (2026-02-26)
 
 
