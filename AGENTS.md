@@ -163,6 +163,35 @@ uv run python -m pytest tests/unit/     # run unit tests only
 just update-frontend-templates  # Sync frontend templates and commit changes
 ```
 
+## Ad-hoc Database Operations
+
+For one-off database scripts (backfills, migrations, data fixes):
+
+```python
+import asyncio
+from beanie import init_beanie
+from pymongo import AsyncMongoClient
+from vibetuner.config import settings
+
+async def run():
+    client = AsyncMongoClient(str(settings.mongodb_url))
+    db = client[settings.project.project_slug]
+    await init_beanie(database=db, document_models=[YourModel])
+
+    # Use Beanie queries or raw pymongo:
+    col = YourModel.get_pymongo_collection()
+    result = await col.update_many(filter, update)
+
+asyncio.run(run())
+```
+
+**Important**: This project uses `pymongo` (not `motor`). Use `AsyncMongoClient`
+from `pymongo`, and `get_pymongo_collection()` on Beanie documents.
+
+**Gotcha**: Existing documents may have `None` for fields that have defaults in
+Pydantic models. When querying by such fields, include `None` in your filter
+(e.g., `{"status": {"$in": [None, "draft"]}}`).
+
 ## Markdown Line Length
 
 This project enforces a **120 character line limit** for markdown files using `rumdl`.
