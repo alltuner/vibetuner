@@ -5,6 +5,9 @@
 import os
 from unittest.mock import patch
 
+import pytest
+from pydantic import ValidationError
+
 
 class TestComputeAutoPort:
     """Test CoreConfiguration._compute_auto_port static method."""
@@ -123,3 +126,42 @@ class TestResolvedWorkerPort:
             _env_file=None,
         )
         assert config.resolved_worker_port == 18000
+
+
+class TestPortValidation:
+    """Test that dev_port and worker_port reject invalid port numbers."""
+
+    @pytest.mark.parametrize("field", ["dev_port", "worker_port"])
+    def test_rejects_privileged_port(self, field):
+        """Ports below 1024 are rejected."""
+        from vibetuner.config import CoreConfiguration
+
+        with pytest.raises(ValidationError):
+            CoreConfiguration(**{field: 80}, _env_file=None)
+
+    @pytest.mark.parametrize("field", ["dev_port", "worker_port"])
+    def test_rejects_port_above_max(self, field):
+        """Ports above 65535 are rejected."""
+        from vibetuner.config import CoreConfiguration
+
+        with pytest.raises(ValidationError):
+            CoreConfiguration(**{field: 99999}, _env_file=None)
+
+    @pytest.mark.parametrize("field", ["dev_port", "worker_port"])
+    def test_accepts_unprivileged_port(self, field):
+        """Valid unprivileged ports (1024-65535) are accepted."""
+        from vibetuner.config import CoreConfiguration
+
+        config = CoreConfiguration(**{field: 8080}, _env_file=None)
+        assert getattr(config, field) == 8080
+
+    @pytest.mark.parametrize("field", ["dev_port", "worker_port"])
+    def test_accepts_boundary_ports(self, field):
+        """Boundary values 1024 and 65535 are accepted."""
+        from vibetuner.config import CoreConfiguration
+
+        low = CoreConfiguration(**{field: 1024}, _env_file=None)
+        assert getattr(low, field) == 1024
+
+        high = CoreConfiguration(**{field: 65535}, _env_file=None)
+        assert getattr(high, field) == 65535

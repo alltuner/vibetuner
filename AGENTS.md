@@ -145,6 +145,18 @@ just lint-yaml               # Lint YAML with dprint
 just type-check              # Type check Python with ty
 ```
 
+### Testing (vibetuner-py)
+
+Dev dependencies (pytest, pytest-asyncio) are declared as an optional extra in
+`vibetuner-py/pyproject.toml`. You must install them before running tests:
+
+```bash
+cd vibetuner-py
+uv sync --extra dev
+uv run python -m pytest tests/          # run all tests
+uv run python -m pytest tests/unit/     # run unit tests only
+```
+
 ### Template Management
 
 ```bash

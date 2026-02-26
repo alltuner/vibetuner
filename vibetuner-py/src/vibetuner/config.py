@@ -50,6 +50,8 @@ class SQLiteDsn(AnyUrl):
 
 current_year: int = datetime.now().year
 
+UnprivilegedPort = Annotated[int, Field(ge=1024, le=65535)]
+
 
 class SecurityHeadersSettings(BaseSettings):
     """Settings for built-in security headers middleware.
@@ -201,8 +203,8 @@ class CoreConfiguration(BaseSettings):
     worker_concurrency: int = 16
 
     # Port configuration (read from DEV_PORT / WORKER_PORT env or .env.local)
-    dev_port: int | None = None
-    worker_port: int | None = None
+    dev_port: UnprivilegedPort | None = None
+    worker_port: UnprivilegedPort | None = None
 
     @staticmethod
     def _compute_auto_port(path: str | None = None) -> int:
