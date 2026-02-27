@@ -53,6 +53,31 @@ or ergonomic improvements:
 
 ---
 
+## Project Learnings (`LEARNINGS.md`)
+
+If a `LEARNINGS.md` file exists in the project root, **read it before starting work**.
+It contains hard-won lessons from previous sessions — workarounds, gotchas, patterns
+that work well in this specific project. Following it avoids re-discovering things the
+hard way.
+
+**Contributing learnings**: When you discover something non-obvious through trial and
+error — a quirk of this codebase, a pattern that works better than the obvious approach,
+a subtle bug you debugged — add it to `LEARNINGS.md`. This saves future agents (and
+developers) from repeating the same investigation.
+
+**Format guidelines**:
+
+- Keep entries as short bullet points — one or two lines each
+- Add a date to each entry so stale learnings can be identified (e.g.,
+  `- 2026-02-27: Beanie indexes must be ...`)
+- Group related learnings under simple headings if the file grows
+- **Proactively remove learnings that have aged poorly** — if a workaround is no longer
+  needed or a pattern has changed, delete it rather than letting the file accumulate
+  outdated advice
+- This is not a changelog — only record things that would save someone time
+
+---
+
 ## Python Tooling
 
 **IMPORTANT**: `uv` is the sole Python tool for this project. Never use `python`, `python3`, `pip`,
