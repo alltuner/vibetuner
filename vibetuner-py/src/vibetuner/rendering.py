@@ -6,9 +6,9 @@ from collections.abc import Callable
 from datetime import timedelta
 from typing import Any
 
-from fastapi import Request
-from fastapi.templating import Jinja2Templates
+from starlette.requests import Request
 from starlette.responses import HTMLResponse
+from starlette.templating import Jinja2Templates
 
 from vibetuner.context import ctx as data_ctx
 from vibetuner.loader import load_app_config

@@ -3,10 +3,7 @@
 from typing import Any, Callable
 
 from beanie import Document, View
-from fastapi import APIRouter
 from pydantic import BaseModel, ConfigDict
-from starlette.middleware import Middleware
-from typer import Typer
 
 from vibetuner.models.oauth import OauthProviderModel
 
@@ -38,8 +35,8 @@ class VibetunerApp(BaseModel):
     sql_models: list[type] = []
 
     # Frontend
-    routes: list[APIRouter] = []
-    middleware: list[Middleware] = []
+    routes: list[Any] = []
+    middleware: list[Any] = []
     template_filters: dict[str, Callable[..., Any]] = {}
     frontend_lifespan: Callable[..., Any] | None = None
 
@@ -54,4 +51,4 @@ class VibetunerApp(BaseModel):
     worker_lifespan: Callable[..., Any] | None = None
 
     # CLI extensions
-    cli: Typer | None = None
+    cli: Any = None
