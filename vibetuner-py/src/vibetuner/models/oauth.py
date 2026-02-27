@@ -2,16 +2,10 @@ from typing import Self
 
 from beanie import Document
 from beanie.operators import Eq
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from .mixins import TimeStampMixin
-
-
-class OauthProviderModel(BaseModel):
-    identifier: str
-    params: dict[str, str] = {}
-    client_kwargs: dict[str, str]
-    config: dict[str, str]
+from .provider import OauthProviderModel as OauthProviderModel  # re-export
 
 
 class OAuthAccountModel(Document, TimeStampMixin):

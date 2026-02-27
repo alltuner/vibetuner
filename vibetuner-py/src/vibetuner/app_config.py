@@ -5,7 +5,7 @@ from typing import Any, Callable
 from beanie import Document, View
 from pydantic import BaseModel, ConfigDict
 
-from vibetuner.models.oauth import OauthProviderModel
+from vibetuner.models.provider import OauthProviderModel
 
 
 class VibetunerApp(BaseModel):
