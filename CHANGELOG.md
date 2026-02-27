@@ -1,5 +1,17 @@
 # Changelog
 
+## [8.6.5](https://github.com/alltuner/vibetuner/compare/v8.6.4...v8.6.5) (2026-02-27)
+
+
+### Performance Improvements
+
+* reduce local-all startup time from ~2.5s to sub-second ([#1330](https://github.com/alltuner/vibetuner/issues/1330)) ([f7a256f](https://github.com/alltuner/vibetuner/commit/f7a256f693c344dfc0bd51a99e5654fc6e631ada))
+
+
+### Documentation Updates
+
+* fix settings import and improve configuration documentation ([#1319](https://github.com/alltuner/vibetuner/issues/1319)) ([22c8e6b](https://github.com/alltuner/vibetuner/commit/22c8e6bc1b7346e6b004c8b73efb30454ae784cf))
+
 ## [8.6.4](https://github.com/alltuner/vibetuner/compare/v8.6.3...v8.6.4) (2026-02-26)
 
 
