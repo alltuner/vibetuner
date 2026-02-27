@@ -4,7 +4,6 @@ import tomllib
 from pathlib import Path
 from typing import Annotated, Any
 
-import copier
 import typer
 from rich.console import Console
 
@@ -262,6 +261,8 @@ def new(
 
     # Run copier
     try:
+        import copier
+
         console.print(f"\n[green]Creating new project in: {destination}[/green]\n")
 
         copier.run_copy(
@@ -352,6 +353,8 @@ def update(
             )
         else:
             console.print(f"\n[green]Updating project: {path}[/green]\n")
+
+        import copier
 
         update_kwargs: dict[str, Any] = {
             "dst_path": path,
@@ -462,6 +465,8 @@ def adopt(
 
     # Run copier
     try:
+        import copier
+
         console.print(f"\n[green]Adopting scaffolding in: {path}[/green]\n")
         console.print(
             "[yellow]Copier will prompt for conflict resolution on existing files.[/yellow]\n"
