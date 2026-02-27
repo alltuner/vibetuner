@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
+from pydantic_extra_types.language_code import LanguageAlpha2
 from starlette.authentication import requires
 
 from vibetuner.context import ctx
@@ -67,8 +68,6 @@ async def user_edit_submit(
     # Update language preference if provided
     if language and language in ctx.supported_languages:
         try:
-            from pydantic_extra_types.language_code import LanguageAlpha2
-
             user.user_settings.language = LanguageAlpha2(language)
         except ValueError:
             pass  # Invalid language code, skip update

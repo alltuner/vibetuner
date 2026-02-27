@@ -21,6 +21,7 @@ from pydantic import (
     computed_field,
     model_validator,
 )
+from pydantic_extra_types.language_code import LanguageAlpha2
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from vibetuner.logging import logger
@@ -124,8 +125,8 @@ class ProjectConfiguration(BaseSettings):
     project_description: str = "A default project description."
 
     # Language Related Settings
-    supported_languages: set[str] | None = None
-    default_language: str = "en"
+    supported_languages: set[LanguageAlpha2] | None = None
+    default_language: LanguageAlpha2 = LanguageAlpha2("en")
 
     # AWS Parameters
     aws_default_region: str = "eu-central-1"
