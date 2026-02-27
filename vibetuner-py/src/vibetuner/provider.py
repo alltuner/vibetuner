@@ -1,5 +1,5 @@
 # ABOUTME: OAuth provider configuration model (beanie-free).
-# ABOUTME: Separated from oauth.py to avoid pulling in beanie at config load time.
+# ABOUTME: Lives outside models/ to avoid triggering models/__init__.py import chain.
 from pydantic import BaseModel
 
 

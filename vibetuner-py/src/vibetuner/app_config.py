@@ -2,10 +2,9 @@
 # ABOUTME: Users create tune.py with an `app = VibetunerApp(...)` to configure their app.
 from typing import Any, Callable
 
-from beanie import Document, View
 from pydantic import BaseModel, ConfigDict
 
-from vibetuner.models.provider import OauthProviderModel
+from vibetuner.provider import OauthProviderModel
 
 
 class VibetunerApp(BaseModel):
@@ -29,7 +28,7 @@ class VibetunerApp(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     # Models (Beanie documents and views)
-    models: list[type[Document] | type[View]] = []
+    models: list[type] = []
 
     # SQL Models (SQLModel table models)
     sql_models: list[type] = []

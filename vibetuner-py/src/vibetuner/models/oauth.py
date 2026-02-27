@@ -4,8 +4,9 @@ from beanie import Document
 from beanie.operators import Eq
 from pydantic import Field
 
+from vibetuner.provider import OauthProviderModel as OauthProviderModel  # re-export
+
 from .mixins import TimeStampMixin
-from .provider import OauthProviderModel as OauthProviderModel  # re-export
 
 
 class OAuthAccountModel(Document, TimeStampMixin):
