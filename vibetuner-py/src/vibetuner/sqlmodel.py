@@ -1,23 +1,14 @@
 # ABOUTME: SQLModel/SQLAlchemy async engine setup and session management.
 # ABOUTME: Provides database initialization, teardown, and FastAPI dependency injection.
 
-from typing import AsyncGenerator, Optional
+from typing import Any, AsyncGenerator
 
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    async_sessionmaker,
-    create_async_engine,
-)
-from sqlmodel import SQLModel
-from sqlmodel.ext.asyncio.session import AsyncSession
-
-from vibetuner.config import settings
 from vibetuner.logging import logger
 
 
 # These will be filled lazily if/when database_url is set
-engine: Optional[AsyncEngine] = None
-async_session: Optional[async_sessionmaker[AsyncSession]] = None
+engine: Any = None
+async_session: Any = None
 
 
 def _ensure_engine() -> None:
@@ -28,11 +19,16 @@ def _ensure_engine() -> None:
     """
     global engine, async_session
 
+    from vibetuner.config import settings
+
     if settings.database_url is None:
         logger.debug("DATABASE_URL not configured — skipping SQLModel engine")
         return
 
     if engine is None:
+        from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+        from sqlmodel.ext.asyncio.session import AsyncSession
+
         engine = create_async_engine(
             str(settings.database_url),
             echo=settings.debug,
@@ -44,7 +40,7 @@ def _ensure_engine() -> None:
         )
 
 
-def get_all_sql_models() -> list[type[SQLModel]]:
+def get_all_sql_models() -> list[type]:
     """Get all registered SQL models from tune.py."""
     from vibetuner.loader import load_app_config
 
@@ -75,6 +71,8 @@ async def init_sqlmodel() -> None:
 
     logger.info("SQLModel engine initialized successfully.")
 
+    from vibetuner.config import settings
+
     if settings.debug:
         await create_schema()
         logger.info("SQLModel tables auto-created (DEBUG mode)")
@@ -91,6 +89,8 @@ async def create_schema() -> None:
 
     if engine is None:
         raise RuntimeError("database_url is not configured. Cannot create schema.")
+
+    from sqlmodel import SQLModel
 
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
@@ -111,7 +111,7 @@ async def teardown_sqlmodel() -> None:
     logger.info("SQLModel engine disposed.")
 
 
-async def get_session() -> AsyncGenerator[AsyncSession, None]:
+async def get_session() -> AsyncGenerator[Any, None]:
     """
     FastAPI dependency.
 
