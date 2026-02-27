@@ -9,8 +9,6 @@ from typing import Any
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
 from starlette.responses import HTMLResponse
-from starlette_babel import gettext_lazy as _, gettext_lazy as ngettext
-from starlette_babel.contrib.jinja import configure_jinja_env
 
 from vibetuner.context import ctx as data_ctx
 from vibetuner.loader import load_app_config
@@ -129,6 +127,9 @@ def _collect_provider_context(request: Request | None = None) -> dict[str, Any]:
 
 def _timeago_verbose(diff: timedelta, dt) -> str:
     """Format timedelta as verbose relative time string."""
+    from starlette_babel import gettext_lazy as _
+
+    ngettext = _
     if diff < timedelta(seconds=60):
         seconds = diff.seconds
         return ngettext(
@@ -170,6 +171,9 @@ def _timeago_verbose(diff: timedelta, dt) -> str:
 
 def _timeago_short(diff: timedelta, dt) -> str:
     """Format timedelta as compact relative time string."""
+    from starlette_babel import gettext_lazy as _
+
+    ngettext = _
     if diff < timedelta(seconds=60):
         return ngettext("just now", "just now", 1)
     if diff < timedelta(minutes=60):
@@ -488,10 +492,7 @@ jinja_env.filters["format_datetime"] = format_datetime
 jinja_env.filters["format_duration"] = format_duration
 jinja_env.filters["duration"] = format_duration
 
-# Configure Jinja environment with built-in filters
-configure_jinja_env(jinja_env)
-
-# Lazy registration of user-defined filters and hotreload global
+# Lazy registration of i18n filters, user-defined filters, and hotreload global
 _custom_filters_registered = False
 
 
@@ -501,6 +502,11 @@ def _ensure_custom_filters() -> None:
     if _custom_filters_registered:
         return
     _custom_filters_registered = True
+
+    # Configure Jinja environment with starlette-babel i18n filters (deferred)
+    from starlette_babel.contrib.jinja import configure_jinja_env
+
+    configure_jinja_env(jinja_env)
 
     # Hotreload is imported lazily to avoid pulling in vibetuner.frontend
     from vibetuner.frontend.hotreload import hotreload
