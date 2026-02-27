@@ -22,7 +22,7 @@ worker-dev:
 # Runs local dev server and assets in parallel
 [group('Local Development')]
 local-all host="0.0.0.0": install-deps
-    bunx concurrently --kill-others \
+    bun run concurrently --kill-others \
         --names "web,assets" \
         --prefix-colors "blue,green" \
         "just local-dev {{ host }}" \
@@ -31,7 +31,7 @@ local-all host="0.0.0.0": install-deps
 # Runs local dev server, assets, and worker in parallel (requires Redis)
 [group('Local Development')]
 local-all-with-worker: install-deps
-    bunx concurrently --kill-others \
+    bun run concurrently --kill-others \
         --names "web,assets,worker" \
         --prefix-colors "blue,green,yellow" \
         "just local-dev" \
