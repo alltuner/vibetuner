@@ -6,8 +6,6 @@ from functools import partial, wraps
 
 import asyncer
 import typer
-from rich.console import Console
-from rich.table import Table
 
 from vibetuner.cli.db import db_app
 from vibetuner.cli.doctor import doctor_app
@@ -15,9 +13,6 @@ from vibetuner.cli.run import run_app
 from vibetuner.cli.scaffold import scaffold_app
 from vibetuner.loader import ConfigurationError, load_app_config
 from vibetuner.logging import LogLevel, logger, setup_logging
-
-
-console = Console()
 
 
 class AsyncTyper(typer.Typer):
@@ -63,7 +58,7 @@ def _get_app_help():
         name = get_project_name()
         if name:
             return f"{name.replace('_', ' ').title()} CLI"
-    except Exception:
+    except Exception:  # noqa: S110
         pass
 
     return "Vibetuner CLI"
@@ -101,6 +96,11 @@ def version(
     ),
 ) -> None:
     """Show version information."""
+    from rich.console import Console
+    from rich.table import Table
+
+    console = Console()
+
     try:
         # Get vibetuner package version
         vibetuner_version = importlib.metadata.version("vibetuner")
