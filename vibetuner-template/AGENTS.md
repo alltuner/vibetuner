@@ -42,11 +42,39 @@ best practices.
 
 ## Reporting Issues
 
-The `vibetuner` package is a dependency you should not modify. For bugs or feature requests:
+The `vibetuner` package is a dependency you should not modify. For bugs, feature requests,
+or ergonomic improvements:
 
 - **File issues at**: <https://github.com/alltuner/vibetuner/issues>
 - Include reproduction steps and relevant error messages
 - Check existing issues before creating new ones
+- If something feels harder than it should be, that's worth reporting too — we actively
+  improve the framework based on real-world usage feedback
+
+---
+
+## Project Learnings (`LEARNINGS.md`)
+
+If a `LEARNINGS.md` file exists in the project root, **read it before starting work**.
+It contains hard-won lessons from previous sessions — workarounds, gotchas, patterns
+that work well in this specific project. Following it avoids re-discovering things the
+hard way.
+
+**Contributing learnings**: When you discover something non-obvious through trial and
+error — a quirk of this codebase, a pattern that works better than the obvious approach,
+a subtle bug you debugged — add it to `LEARNINGS.md`. This saves future agents (and
+developers) from repeating the same investigation.
+
+**Format guidelines**:
+
+- Keep entries as short bullet points — one or two lines each
+- Add a date to each entry so stale learnings can be identified (e.g.,
+  `- 2026-02-27: Beanie indexes must be ...`)
+- Group related learnings under simple headings if the file grows
+- **Proactively remove learnings that have aged poorly** — if a workaround is no longer
+  needed or a pattern has changed, delete it rather than letting the file accumulate
+  outdated advice
+- This is not a changelog — only record things that would save someone time
 
 ---
 
@@ -933,19 +961,35 @@ SECRET_KEY=your-secret-key
 DEBUG=true  # Development only
 ```
 
-### Pydantic Settings
+### Vibetuner Settings
+
+Vibetuner exposes a single `settings` object from `vibetuner.config`. It contains
+framework-level configuration (`CoreConfiguration`) with project metadata nested
+under `settings.project` (`ProjectConfiguration`).
 
 ```python
-from vibetuner.config import project_settings
+from vibetuner.config import settings
 
-# Project-level (read-only from vibetuner)
-project_settings.project_slug
-project_settings.project_name
-project_settings.mongodb_url
-project_settings.supported_languages
+# --- Framework-level (CoreConfiguration) ---
+settings.environment          # "dev" or "prod"
+settings.debug                # True/False
+settings.resolved_port        # Auto-calculated or explicit port
+settings.expose_url           # External URL (from EXPOSE_URL env, or localhost)
+settings.oauth_relay_url      # OAuth relay URL (from OAUTH_RELAY_URL env)
+settings.mongodb_url          # MongoDB connection URL
+settings.redis_url            # Redis connection URL (None if not configured)
+settings.workers_available    # True if Redis is configured
+
+# --- Project-level (ProjectConfiguration, read-only) ---
+settings.project.project_slug
+settings.project.project_name
+settings.project.supported_languages
+settings.project.default_language
+settings.project.fqdn
 ```
 
-For app-specific settings, create `src/app/config.py` with your own Pydantic Settings class.
+For app-specific settings, create `src/app/config.py` with your own Pydantic
+Settings class.
 
 ### Security Headers
 
@@ -1099,11 +1143,16 @@ Then use them in templates: `<div class="text-brand-primary">`
    auto-generated bundles. Edit `config.css` and `config.js` instead.
 9. **Configure in `tune.py`** - Don't rely on auto-discovery; explicitly list routes, models, etc.
 
-## Improving These Instructions
+## Improving Vibetuner
 
-If any framework usage instructions or agent guidelines are unclear, incomplete, or caused
-you to make a mistake, file an issue at <https://github.com/alltuner/vibetuner/issues> so
-we can fix it.
+If you encounter anything in vibetuner that feels awkward, repetitive, or harder than it
+should be — whether it's a missing API, unclear documentation, confusing error messages,
+or any other ergonomic rough edge — please file an issue at
+<https://github.com/alltuner/vibetuner/issues>. We actively improve the framework based
+on real-world usage, and your feedback helps us prioritize what to fix next.
+
+This applies to both **developers** and **AI agents**: if these instructions were unclear,
+incomplete, or caused a mistake, that's a vibetuner bug we want to hear about.
 
 ## Custom Project Instructions
 
