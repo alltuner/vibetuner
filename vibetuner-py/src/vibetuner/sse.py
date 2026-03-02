@@ -3,6 +3,7 @@
 import asyncio
 import json
 import re
+from collections import deque
 from collections.abc import AsyncGenerator, Callable
 from contextlib import suppress
 from functools import wraps
@@ -43,6 +44,36 @@ def _validate_channel_name(channel: str) -> None:
             "Channel name contains invalid characters. "
             "Allowed: alphanumeric, hyphens, colons, underscores, dots"
         )
+
+
+# ────────────────────────────────────────────────────────────────
+#  Event buffer for Last-Event-ID resumption
+# ────────────────────────────────────────────────────────────────
+
+
+class _EventBuffer:
+    """Per-channel ring buffer that stores recent events with monotonic IDs.
+
+    Used for Last-Event-ID resumption: when a client reconnects, events
+    after the last seen ID are replayed before switching to live streaming.
+    """
+
+    __slots__ = ("_buf", "_next_id")
+
+    def __init__(self, maxlen: int = 100) -> None:
+        self._buf: deque[tuple[int, dict[str, str]]] = deque(maxlen=maxlen)
+        self._next_id = 1
+
+    def append(self, payload: dict[str, str]) -> int:
+        """Store an event and return its assigned ID."""
+        event_id = self._next_id
+        self._next_id += 1
+        self._buf.append((event_id, payload))
+        return event_id
+
+    def events_after(self, last_id: int) -> list[tuple[int, dict[str, str]]]:
+        """Return all buffered events with ID > last_id."""
+        return [(eid, p) for eid, p in self._buf if eid > last_id]
 
 
 # ────────────────────────────────────────────────────────────────
