@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.8.0](https://github.com/alltuner/vibetuner/compare/v8.7.1...v8.8.0) (2026-03-02)
+
+
+### Features
+
+* ship AllTuner-branded favicon set with modern browser support ([#1344](https://github.com/alltuner/vibetuner/issues/1344)) ([add5139](https://github.com/alltuner/vibetuner/commit/add513995fe68405fc57ded7173aa6f48b6b58e4))
+
 ## [8.7.1](https://github.com/alltuner/vibetuner/compare/v8.7.0...v8.7.1) (2026-03-02)
 
 
