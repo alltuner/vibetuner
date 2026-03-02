@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.7.1](https://github.com/alltuner/vibetuner/compare/v8.7.0...v8.7.1) (2026-03-02)
+
+
+### Miscellaneous Chores
+
+* update dependencies ([#1342](https://github.com/alltuner/vibetuner/issues/1342)) ([31386b6](https://github.com/alltuner/vibetuner/commit/31386b6166767929504a46c638b13fc36586dc08))
+
 ## [8.7.0](https://github.com/alltuner/vibetuner/compare/v8.6.5...v8.7.0) (2026-03-02)
 
 
