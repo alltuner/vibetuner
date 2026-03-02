@@ -101,6 +101,7 @@ def _format_event(
 # ────────────────────────────────────────────────────────────────
 
 _channels: dict[str, set[asyncio.Queue]] = {}
+_channel_buffers: dict[str, _EventBuffer] = {}
 
 
 def _subscribe(channel: str) -> asyncio.Queue:
@@ -118,13 +119,21 @@ def _unsubscribe(channel: str, queue: asyncio.Queue) -> None:
             del _channels[channel]
 
 
-def _dispatch_local(channel: str, payload: dict[str, str]) -> None:
-    """Dispatch a payload to all local subscribers of a channel."""
-    if channel not in _channels:
-        return
-    for q in list(_channels[channel]):
-        with suppress(asyncio.QueueFull):
-            q.put_nowait(payload)
+def _dispatch_local(channel: str, payload: dict[str, str]) -> int | None:
+    """Dispatch a payload to all local subscribers of a channel.
+
+    Returns the event ID if the channel has a buffer, else None.
+    """
+    event_id: int | None = None
+    if channel in _channel_buffers:
+        event_id = _channel_buffers[channel].append(payload)
+
+    if channel in _channels:
+        for q in list(_channels[channel]):
+            with suppress(asyncio.QueueFull):
+                q.put_nowait((event_id, payload))
+
+    return event_id
 
 
 # ────────────────────────────────────────────────────────────────
@@ -348,14 +357,30 @@ async def _stream_from_generator(
             yield _format_event({"data": str(event)})
 
 
-async def _stream_from_channel(ch: str) -> AsyncGenerator[bytes, None]:
-    """Subscribe to a channel and yield SSE wire-format bytes with keepalive."""
+async def _stream_from_channel(
+    ch: str, *, last_event_id: int | None = None
+) -> AsyncGenerator[bytes, None]:
+    """Subscribe to a channel and yield SSE wire-format bytes with keepalive.
+
+    If last_event_id is set and the channel has a buffer, replays missed
+    events before switching to live streaming.
+    """
+    # Replay buffered events if resuming
+    if last_event_id is not None and ch in _channel_buffers:
+        for eid, payload in _channel_buffers[ch].events_after(last_event_id):
+            yield _format_event(payload, event_id=str(eid))
+
     queue = _subscribe(ch)
     try:
         while True:
             try:
-                payload = await asyncio.wait_for(queue.get(), timeout=30)
-                yield _format_event(payload)
+                event_id, payload = await asyncio.wait_for(
+                    queue.get(), timeout=30
+                )
+                yield _format_event(
+                    payload,
+                    event_id=str(event_id) if event_id is not None else None,
+                )
             except asyncio.TimeoutError:
                 yield _format_event({"comment": "keepalive"})
     except asyncio.CancelledError:

@@ -1,8 +1,17 @@
 # ABOUTME: Unit tests for SSE event buffer and transport layer
-# ABOUTME: Tests ring buffer, event ID assignment, and replay logic
+# ABOUTME: Tests ring buffer, event ID assignment, replay logic, and channel streaming resumption
 # ruff: noqa: S101
 
-from vibetuner.sse import _EventBuffer, _format_event
+import asyncio
+
+import pytest
+from vibetuner.sse import (
+    _channel_buffers,
+    _dispatch_local,
+    _EventBuffer,
+    _format_event,
+    _stream_from_channel,
+)
 
 
 class TestEventBuffer:
@@ -76,3 +85,67 @@ class TestFormatEvent:
         result = _format_event({"event": "msg", "data": "line1\nline2"})
         assert b"data: line1\n" in result
         assert b"data: line2\n" in result
+
+
+class TestStreamFromChannelResumption:
+    @staticmethod
+    async def _collect_n(gen, n: int, timeout: float = 1.0) -> list[bytes]:
+        """Collect n items from an async generator with timeout."""
+        items = []
+        async for item in gen:
+            items.append(item)
+            if len(items) >= n:
+                break
+        return items
+
+    @pytest.mark.asyncio
+    async def test_stream_replays_buffered_events(self):
+        """When buffer exists and last_event_id is set, replay missed events."""
+        ch = "test-replay"
+        buf = _EventBuffer(maxlen=10)
+        _channel_buffers[ch] = buf
+
+        buf.append({"event": "msg", "data": "a"})
+        buf.append({"event": "msg", "data": "b"})
+        buf.append({"event": "msg", "data": "c"})
+
+        try:
+            gen = _stream_from_channel(ch, last_event_id=1)
+            items = await asyncio.wait_for(
+                self._collect_n(gen, 2), timeout=2.0
+            )
+            assert len(items) == 2
+            assert b"data: b\n" in items[0]
+            assert b"id: 2\n" in items[0]
+            assert b"data: c\n" in items[1]
+            assert b"id: 3\n" in items[1]
+        finally:
+            _channel_buffers.pop(ch, None)
+
+    @pytest.mark.asyncio
+    async def test_stream_without_resumption_has_no_replay(self):
+        """When no last_event_id, stream starts from live events only."""
+        ch = "test-no-replay"
+        buf = _EventBuffer(maxlen=10)
+        _channel_buffers[ch] = buf
+        buf.append({"event": "msg", "data": "old"})
+
+        try:
+            gen = _stream_from_channel(ch)
+
+            # Start the generator in a task so it subscribes to the channel
+            async def collect():
+                return await self._collect_n(gen, 1)
+
+            task = asyncio.create_task(collect())
+            # Yield control so the generator can reach its first await (_subscribe)
+            await asyncio.sleep(0.05)
+
+            # Push a live event after the generator is subscribed
+            _dispatch_local(ch, {"event": "msg", "data": "live"})
+            items = await asyncio.wait_for(task, timeout=2.0)
+            assert b"data: live\n" in items[0]
+            # Should NOT contain the old buffered event
+            assert b"data: old\n" not in items[0]
+        finally:
+            _channel_buffers.pop(ch, None)
