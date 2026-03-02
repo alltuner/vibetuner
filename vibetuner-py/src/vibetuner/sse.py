@@ -3,13 +3,14 @@
 import asyncio
 import json
 import re
+from collections import deque
 from collections.abc import AsyncGenerator, Callable
 from contextlib import suppress
 from functools import wraps
 from typing import Any
 
 from fastapi import APIRouter, Request
-from sse_starlette.sse import EventSourceResponse
+from fastapi.sse import EventSourceResponse, format_sse_event
 
 from vibetuner.logging import logger
 from vibetuner.rendering import render_template_string
@@ -46,10 +47,61 @@ def _validate_channel_name(channel: str) -> None:
 
 
 # ────────────────────────────────────────────────────────────────
+#  Event buffer for Last-Event-ID resumption
+# ────────────────────────────────────────────────────────────────
+
+
+class _EventBuffer:
+    """Per-channel ring buffer that stores recent events with monotonic IDs.
+
+    Used for Last-Event-ID resumption: when a client reconnects, events
+    after the last seen ID are replayed before switching to live streaming.
+    """
+
+    __slots__ = ("_buf", "_next_id")
+
+    def __init__(self, maxlen: int = 100) -> None:
+        self._buf: deque[tuple[int, dict[str, str]]] = deque(maxlen=maxlen)
+        self._next_id = 1
+
+    def append(self, payload: dict[str, str]) -> int:
+        """Store an event and return its assigned ID."""
+        event_id = self._next_id
+        self._next_id += 1
+        self._buf.append((event_id, payload))
+        return event_id
+
+    def events_after(self, last_id: int) -> list[tuple[int, dict[str, str]]]:
+        """Return all buffered events with ID > last_id."""
+        return [(eid, p) for eid, p in self._buf if eid > last_id]
+
+
+# ────────────────────────────────────────────────────────────────
+#  Wire-format encoding
+# ────────────────────────────────────────────────────────────────
+
+
+def _format_event(
+    payload: dict[str, str], *, event_id: str | None = None
+) -> bytes:
+    """Encode an SSE payload dict into wire-format bytes.
+
+    Wraps fastapi.sse.format_sse_event for internal use.
+    """
+    return format_sse_event(
+        data_str=payload.get("data"),
+        event=payload.get("event"),
+        id=event_id,
+        comment=payload.get("comment"),
+    )
+
+
+# ────────────────────────────────────────────────────────────────
 #  In-process connection registry
 # ────────────────────────────────────────────────────────────────
 
 _channels: dict[str, set[asyncio.Queue]] = {}
+_channel_buffers: dict[str, _EventBuffer] = {}
 
 
 def _subscribe(channel: str) -> asyncio.Queue:
@@ -67,13 +119,21 @@ def _unsubscribe(channel: str, queue: asyncio.Queue) -> None:
             del _channels[channel]
 
 
-def _dispatch_local(channel: str, payload: dict[str, str]) -> None:
-    """Dispatch a payload to all local subscribers of a channel."""
-    if channel not in _channels:
-        return
-    for q in list(_channels[channel]):
-        with suppress(asyncio.QueueFull):
-            q.put_nowait(payload)
+def _dispatch_local(channel: str, payload: dict[str, str]) -> int | None:
+    """Dispatch a payload to all local subscribers of a channel.
+
+    Returns the event ID if the channel has a buffer, else None.
+    """
+    event_id: int | None = None
+    if channel in _channel_buffers:
+        event_id = _channel_buffers[channel].append(payload)
+
+    if channel in _channels:
+        for q in list(_channels[channel]):
+            with suppress(asyncio.QueueFull):
+                q.put_nowait((event_id, payload))
+
+    return event_id
 
 
 # ────────────────────────────────────────────────────────────────
@@ -284,29 +344,45 @@ async def broadcast(
 
 async def _stream_from_generator(
     result: AsyncGenerator, template: str | None, request: Request
-) -> AsyncGenerator[dict[str, str], None]:
-    """Yield SSE events from a user-provided async generator."""
+) -> AsyncGenerator[bytes, None]:
+    """Yield SSE wire-format bytes from a user-provided async generator."""
     async for event in result:
         if isinstance(event, dict):
             data = event.get("data", "")
             if template and not data:
                 data = render_template_string(template, request, event.get("ctx"))
                 event = {**event, "data": data}
-            yield event
+            yield _format_event(event)
         else:
-            yield {"data": str(event)}
+            yield _format_event({"data": str(event)})
 
 
-async def _stream_from_channel(ch: str) -> AsyncGenerator[dict[str, str], None]:
-    """Subscribe to a channel and yield SSE events with keepalive."""
+async def _stream_from_channel(
+    ch: str, *, last_event_id: int | None = None
+) -> AsyncGenerator[bytes, None]:
+    """Subscribe to a channel and yield SSE wire-format bytes with keepalive.
+
+    If last_event_id is set and the channel has a buffer, replays missed
+    events before switching to live streaming.
+    """
+    # Replay buffered events if resuming
+    if last_event_id is not None and ch in _channel_buffers:
+        for eid, payload in _channel_buffers[ch].events_after(last_event_id):
+            yield _format_event(payload, event_id=str(eid))
+
     queue = _subscribe(ch)
     try:
         while True:
             try:
-                payload = await asyncio.wait_for(queue.get(), timeout=30)
-                yield payload
+                event_id, payload = await asyncio.wait_for(
+                    queue.get(), timeout=30
+                )
+                yield _format_event(
+                    payload,
+                    event_id=str(event_id) if event_id is not None else None,
+                )
             except asyncio.TimeoutError:
-                yield {"comment": "keepalive"}
+                yield _format_event({"comment": "keepalive"})
     except asyncio.CancelledError:
         pass
     finally:
@@ -328,6 +404,21 @@ async def _resolve_channel_or_generator(
     return static_channel, None
 
 
+def _parse_last_event_id(request: Request) -> int | None:
+    """Extract and parse the Last-Event-ID header from a request.
+
+    Returns the integer event ID, or None if the header is absent or not a
+    valid integer.
+    """
+    raw = request.headers.get("last-event-id")
+    if raw is not None:
+        try:
+            return int(raw)
+        except (ValueError, TypeError):
+            pass
+    return None
+
+
 def sse_endpoint(
     path: str,
     *,
@@ -335,6 +426,7 @@ def sse_endpoint(
     template: str | None = None,
     router: APIRouter | None = None,
     name: str | None = None,
+    buffer_size: int | None = None,
 ) -> Callable:
     """Decorator that creates an SSE endpoint with automatic connection management.
 
@@ -353,6 +445,9 @@ def sse_endpoint(
         template: Default template for rendering events on this endpoint.
         router: APIRouter to register the route on. If None, a new one is created.
         name: Optional route name.
+        buffer_size: If set, enables a ring buffer of this size for the channel.
+            When a client reconnects with a ``Last-Event-ID`` header, missed
+            events are replayed before switching to live streaming.
 
     Returns:
         Decorator that wraps a function into an SSE endpoint.
@@ -379,6 +474,10 @@ def sse_endpoint(
     """
 
     def decorator(func: Callable) -> Callable:
+        # Register buffer for static channels at decoration time
+        if buffer_size is not None and channel is not None:
+            _channel_buffers[channel] = _EventBuffer(maxlen=buffer_size)
+
         @wraps(func)
         async def endpoint(**kwargs):
             request: Request = kwargs["request"]
@@ -399,7 +498,16 @@ def sse_endpoint(
                 )
 
             _validate_channel_name(ch)
-            return EventSourceResponse(_stream_from_channel(ch))
+
+            # Register buffer for dynamic channels on first connection
+            if buffer_size is not None and ch not in _channel_buffers:
+                _channel_buffers[ch] = _EventBuffer(maxlen=buffer_size)
+
+            return EventSourceResponse(
+                _stream_from_channel(
+                    ch, last_event_id=_parse_last_event_id(request)
+                )
+            )
 
         if router is not None:
             if router.prefix and path.startswith(router.prefix):
