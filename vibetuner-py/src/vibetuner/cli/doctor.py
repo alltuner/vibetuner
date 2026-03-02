@@ -8,14 +8,11 @@ from typing import Literal
 from urllib.parse import urlparse
 
 import typer
-from rich.console import Console
-from rich.table import Table
 
 from vibetuner.logging import logger
 
 
 doctor_app = typer.Typer(help="Validate project setup", invoke_without_command=True)
-console = Console()
 
 
 CheckStatus = Literal["ok", "warn", "error", "skip"]
@@ -329,7 +326,12 @@ def _check_port_availability() -> list[CheckResult]:
 @doctor_app.callback()
 def doctor() -> None:
     """Run diagnostic checks on your vibetuner project."""
+    from rich.console import Console
+    from rich.table import Table
+
     from vibetuner.paths import paths
+
+    console = Console()
 
     root = paths.root
 

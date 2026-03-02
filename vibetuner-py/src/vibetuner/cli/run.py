@@ -3,16 +3,19 @@
 from typing import Annotated, Literal
 
 import typer
-from rich.console import Console
 
 from vibetuner.paths import paths
 
 
-console = Console()
-
 run_app = typer.Typer(
     help="Run the application in different modes", no_args_is_help=True
 )
+
+
+def _console():
+    from rich.console import Console
+
+    return Console()
 
 
 def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
@@ -33,16 +36,16 @@ def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
     is_dev = mode == "dev"
 
     if is_dev and workers > 1:
-        console.print(
+        _console().print(
             "[yellow]Warning: Multiple workers not supported in dev mode, using 1[/yellow]"
         )
         workers = 1
 
-    console.print(f"[green]Starting worker in {mode} mode on port {port}[/green]")
+    _console().print(f"[green]Starting worker in {mode} mode on port {port}[/green]")
     if is_dev:
-        console.print("[dim]Hot reload enabled[/dim]")
+        _console().print("[dim]Hot reload enabled[/dim]")
     else:
-        console.print(f"[dim]Workers: {workers}[/dim]")
+        _console().print(f"[dim]Workers: {workers}[/dim]")
 
     worker_path = "vibetuner.tasks.worker:worker"
     verbose = True if is_dev else settings.debug
@@ -78,17 +81,19 @@ def _run_frontend(
 
     is_dev = mode == "dev"
 
-    console.print(f"[green]Starting frontend in {mode} mode on {host}:{port}[/green]")
-    console.print(f"[cyan]website reachable at http://localhost:{port}[/cyan]")
+    _console().print(
+        f"[green]Starting frontend in {mode} mode on {host}:{port}[/green]"
+    )
+    _console().print(f"[cyan]website reachable at http://localhost:{port}[/cyan]")
 
     if is_dev:
-        console.print("[dim]Watching for changes in src/ and templates/[/dim]")
+        _console().print("[dim]Watching for changes in src/ and templates/[/dim]")
     else:
-        console.print(f"[dim]Workers: {workers}[/dim]")
+        _console().print(f"[dim]Workers: {workers}[/dim]")
 
-    console.print("Registered reload paths:")
+    _console().print("Registered reload paths:")
     for path in paths.reload_paths:
-        console.print(f"  - {path}")
+        _console().print(f"  - {path}")
 
     server = Granian(
         target="vibetuner.frontend.proxy:app",
@@ -121,8 +126,8 @@ def _run_service(
     elif service == "frontend":
         _run_frontend(mode, host, port or settings.resolved_port, workers)
     else:
-        console.print(f"[red]Error: Unknown service '{service}'[/red]")
-        console.print("[yellow]Valid services: 'frontend' or 'worker'[/yellow]")
+        _console().print(f"[red]Error: Unknown service '{service}'[/red]")
+        _console().print("[yellow]Valid services: 'frontend' or 'worker'[/yellow]")
         raise typer.Exit(code=1)
 
 
@@ -148,9 +153,7 @@ def prod(
     service: Annotated[
         str, typer.Argument(help="Service to run: 'frontend' or 'worker'")
     ] = "frontend",
-    port: int = typer.Option(
-        None, help="Port to run on (8000 if not specified)"
-    ),
+    port: int = typer.Option(None, help="Port to run on (8000 if not specified)"),
     host: str = typer.Option("0.0.0.0", help="Host to bind to (frontend only)"),  # noqa: S104
     workers_count: int = typer.Option(
         4, "--workers", help="Number of worker processes"
