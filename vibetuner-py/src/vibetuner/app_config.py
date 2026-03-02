@@ -2,7 +2,10 @@
 # ABOUTME: Users create tune.py with an `app = VibetunerApp(...)` to configure their app.
 from typing import Any, Callable
 
+from fastapi import APIRouter
 from pydantic import BaseModel, ConfigDict
+from starlette.middleware import Middleware
+from typer import Typer
 
 from vibetuner.provider import OauthProviderModel
 
@@ -34,8 +37,8 @@ class VibetunerApp(BaseModel):
     sql_models: list[type] = []
 
     # Frontend
-    routes: list[Any] = []
-    middleware: list[Any] = []
+    routes: list[APIRouter] = []
+    middleware: list[Middleware] = []
     template_filters: dict[str, Callable[..., Any]] = {}
     frontend_lifespan: Callable[..., Any] | None = None
 
@@ -50,4 +53,4 @@ class VibetunerApp(BaseModel):
     worker_lifespan: Callable[..., Any] | None = None
 
     # CLI extensions
-    cli: Any = None
+    cli: Typer | None = None
