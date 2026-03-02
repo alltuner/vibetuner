@@ -27,7 +27,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from vibetuner.logging import logger
 
 from .paths import config_vars as config_vars_path
-from .versioning import version
 
 
 class SQLiteDsn(AnyUrl):
@@ -176,7 +175,6 @@ class CoreConfiguration(BaseSettings):
 
     debug: bool = False
     environment: Literal["dev", "prod"] = "dev"
-    version: str = version
     session_key: SecretStr = SecretStr("ct-!secret-must-change-me")
     debug_access_token: str | None = None
 
@@ -231,6 +229,14 @@ class CoreConfiguration(BaseSettings):
         if self.worker_port is not None:
             return self.worker_port
         return 10000 + self.resolved_port
+
+    @computed_field
+    @cached_property
+    def version(self) -> str:
+        """Project version computed lazily from git or package metadata."""
+        from vibetuner.versioning import get_version
+
+        return get_version()
 
     # Locale detection settings
     locale_detection: LocaleDetectionSettings = Field(

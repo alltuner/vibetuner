@@ -1,12 +1,6 @@
 # ABOUTME: Centralized, actionable error messages for unconfigured services.
 # ABOUTME: Provides rich console output with example values, setup commands, and doc links.
 
-from rich.console import Console
-from rich.panel import Panel
-from rich.text import Text
-
-
-_console = Console(stderr=True)
 
 DOCS_BASE = "https://vibetuner.alltuner.com/docs"
 
@@ -45,8 +39,13 @@ def _build_message(
 
 def _print_rich_error(message: str, title: str) -> None:
     """Print error as a rich panel to stderr."""
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.text import Text
+
+    console = Console(stderr=True)
     text = Text(message)
-    _console.print(Panel(text, title=f"[red]{title}[/red]", border_style="red"))
+    console.print(Panel(text, title=f"[red]{title}[/red]", border_style="red"))
 
 
 # ── MongoDB ──────────────────────────────────────────────────────────

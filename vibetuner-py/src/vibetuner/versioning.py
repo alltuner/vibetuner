@@ -51,6 +51,12 @@ def get_version() -> str:
     return f"{base}{suffix}"
 
 
-# Module-level exports
-version = get_version()
-__version__ = version
+# Lazy module-level exports — computed on first access to avoid
+# importing GitPython (~33ms) at import time.
+def __getattr__(name: str) -> str:
+    if name in ("version", "__version__"):
+        v = get_version()
+        globals()["version"] = v
+        globals()["__version__"] = v
+        return v
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

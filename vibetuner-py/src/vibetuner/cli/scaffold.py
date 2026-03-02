@@ -5,10 +5,12 @@ from pathlib import Path
 from typing import Annotated, Any
 
 import typer
-from rich.console import Console
 
 
-console = Console()
+def _console():
+    from rich.console import Console
+
+    return Console()
 
 
 def _get_git_config(key: str, cwd: Path) -> str | None:
@@ -117,37 +119,37 @@ def _has_vibetuner_dependency(path: Path) -> bool:
 def _validate_adopt_path(path: Path) -> None:
     """Validate path for adopt command, raising typer.Exit on errors."""
     if not path.exists():
-        console.print(f"[red]Error: Directory does not exist: {path}[/red]")
+        _console().print(f"[red]Error: Directory does not exist: {path}[/red]")
         raise typer.Exit(code=1)
 
     if not path.is_dir():
-        console.print(f"[red]Error: Path is not a directory: {path}[/red]")
+        _console().print(f"[red]Error: Path is not a directory: {path}[/red]")
         raise typer.Exit(code=1)
 
     pyproject_path = path / "pyproject.toml"
     if not pyproject_path.exists():
-        console.print(f"[red]Error: pyproject.toml not found in {path}[/red]")
-        console.print(
+        _console().print(f"[red]Error: pyproject.toml not found in {path}[/red]")
+        _console().print(
             "[yellow]The adopt command requires an existing Python project "
             "with pyproject.toml[/yellow]"
         )
         raise typer.Exit(code=1)
 
     if not _has_vibetuner_dependency(path):
-        console.print(
+        _console().print(
             "[red]Error: vibetuner is not listed as a dependency in pyproject.toml[/red]"
         )
-        console.print(
+        _console().print(
             "[yellow]Add vibetuner to your dependencies first: uv add vibetuner[/yellow]"
         )
         raise typer.Exit(code=1)
 
     answers_file = path / ".copier-answers.yml"
     if answers_file.exists():
-        console.print(
+        _console().print(
             "[red]Error: Project is already scaffolded (.copier-answers.yml exists)[/red]"
         )
-        console.print(
+        _console().print(
             "[yellow]Use 'vibetuner scaffold update' to update an existing "
             "scaffolded project[/yellow]"
         )
@@ -162,7 +164,7 @@ def _parse_data_overrides(data: list[str] | None) -> dict[str, str]:
     result: dict[str, str] = {}
     for item in data:
         if "=" not in item:
-            console.print(
+            _console().print(
                 f"[red]Error: Invalid data format '{item}'. Expected key=value[/red]"
             )
             raise typer.Exit(code=1)
@@ -237,13 +239,15 @@ def new(
     vcs_ref = branch or "main"  # Use specified branch or default to main
 
     if template != "gh:alltuner/vibetuner":
-        console.print(f"[dim]Using custom template: {template}[/dim]")
+        _console().print(f"[dim]Using custom template: {template}[/dim]")
     elif branch:
-        console.print(
+        _console().print(
             f"[dim]Using vibetuner template from GitHub ({branch} branch)[/dim]"
         )
     else:
-        console.print("[dim]Using vibetuner template from GitHub (main branch)[/dim]")
+        _console().print(
+            "[dim]Using vibetuner template from GitHub (main branch)[/dim]"
+        )
 
     # Parse data overrides
     data_dict = _parse_data_overrides(data)
@@ -263,7 +267,7 @@ def new(
     try:
         import copier
 
-        console.print(f"\n[green]Creating new project in: {destination}[/green]\n")
+        _console().print(f"\n[green]Creating new project in: {destination}[/green]\n")
 
         copier.run_copy(
             src_path=str(template_src),
@@ -275,13 +279,13 @@ def new(
             vcs_ref=vcs_ref,  # Use the specified branch or default to main
         )
 
-        console.print("\n[green]✓ Project created successfully![/green]")
-        console.print("\nNext steps:")
-        console.print(f"  cd {destination}")
-        console.print("  just dev")
+        _console().print("\n[green]✓ Project created successfully![/green]")
+        _console().print("\nNext steps:")
+        _console().print(f"  cd {destination}")
+        _console().print("  just dev")
 
     except Exception as e:
-        console.print(f"[red]Error creating project: {e}[/red]")
+        _console().print(f"[red]Error creating project: {e}[/red]")
         raise typer.Exit(code=1) from None
 
 
@@ -333,26 +337,26 @@ def update(
         path = Path.cwd()
 
     if not path.exists():
-        console.print(f"[red]Error: Directory does not exist: {path}[/red]")
+        _console().print(f"[red]Error: Directory does not exist: {path}[/red]")
         raise typer.Exit(code=1)
 
     # Check if it's a copier project
     answers_file = path / ".copier-answers.yml"
     if not answers_file.exists():
-        console.print(
+        _console().print(
             "[red]Error: Not a copier project (missing .copier-answers.yml)[/red]"
         )
-        console.print(f"[yellow]Directory: {path}[/yellow]")
+        _console().print(f"[yellow]Directory: {path}[/yellow]")
         raise typer.Exit(code=1)
 
     try:
         if branch:
-            console.print(
+            _console().print(
                 f"\n[green]Updating project: {path}[/green] "
                 f"[dim](branch: {branch})[/dim]\n"
             )
         else:
-            console.print(f"\n[green]Updating project: {path}[/green]\n")
+            _console().print(f"\n[green]Updating project: {path}[/green]\n")
 
         import copier
 
@@ -366,17 +370,17 @@ def update(
 
         copier.run_update(**update_kwargs)
 
-        console.print("\n[green]✓ Project updated successfully![/green]")
+        _console().print("\n[green]✓ Project updated successfully![/green]")
 
     except Exception as e:
-        console.print(f"[red]Error updating project: {e}[/red]")
+        _console().print(f"[red]Error updating project: {e}[/red]")
         raise typer.Exit(code=1) from None
 
 
 @scaffold_app.command(name="copy-core-templates", hidden=True)
 def copy_core_templates() -> None:
     """Deprecated: This command is a no-op kept for backwards compatibility."""
-    console.print("[dim]This command is deprecated and does nothing.[/dim]")
+    _console().print("[dim]This command is deprecated and does nothing.[/dim]")
 
 
 @scaffold_app.command(name="adopt")
@@ -445,17 +449,19 @@ def adopt(
     vcs_ref = branch or "main"
 
     if branch:
-        console.print(
+        _console().print(
             f"[dim]Using vibetuner template from GitHub ({branch} branch)[/dim]"
         )
     else:
-        console.print("[dim]Using vibetuner template from GitHub (main branch)[/dim]")
+        _console().print(
+            "[dim]Using vibetuner template from GitHub (main branch)[/dim]"
+        )
 
     inferred_data = _infer_project_data(path)
     if inferred_data:
-        console.print("\n[dim]Inferred values from existing project:[/dim]")
+        _console().print("\n[dim]Inferred values from existing project:[/dim]")
         for key, value in inferred_data.items():
-            console.print(f"  [dim]{key}: {value}[/dim]")
+            _console().print(f"  [dim]{key}: {value}[/dim]")
 
     user_overrides = _parse_data_overrides(data)
     default_values = {"company_name": "Acme Corp", "supported_languages": []}
@@ -467,8 +473,8 @@ def adopt(
     try:
         import copier
 
-        console.print(f"\n[green]Adopting scaffolding in: {path}[/green]\n")
-        console.print(
+        _console().print(f"\n[green]Adopting scaffolding in: {path}[/green]\n")
+        _console().print(
             "[yellow]Copier will prompt for conflict resolution on existing files.[/yellow]\n"
         )
 
@@ -482,16 +488,16 @@ def adopt(
             vcs_ref=vcs_ref,
         )
 
-        console.print("\n[green]✓ Scaffolding adopted successfully![/green]")
-        console.print("\nNext steps:")
-        console.print("  1. Review changes: git diff")
-        console.print("  2. Resolve any conflicts in pyproject.toml")
-        console.print("  3. Sync dependencies: uv sync")
-        console.print("  4. Start development: just dev")
-        console.print(
+        _console().print("\n[green]✓ Scaffolding adopted successfully![/green]")
+        _console().print("\nNext steps:")
+        _console().print("  1. Review changes: git diff")
+        _console().print("  2. Resolve any conflicts in pyproject.toml")
+        _console().print("  3. Sync dependencies: uv sync")
+        _console().print("  4. Start development: just dev")
+        _console().print(
             "\nYou can now use 'vibetuner scaffold update' to update to future template versions."
         )
 
     except Exception as e:
-        console.print(f"[red]Error adopting scaffolding: {e}[/red]")
+        _console().print(f"[red]Error adopting scaffolding: {e}[/red]")
         raise typer.Exit(code=1) from None
