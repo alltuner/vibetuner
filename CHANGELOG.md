@@ -1,5 +1,17 @@
 # Changelog
 
+## [8.7.0](https://github.com/alltuner/vibetuner/compare/v8.6.5...v8.7.0) (2026-03-02)
+
+
+### Features
+
+* **sse:** migrate to native FastAPI SSE with Last-Event-ID resumption ([#1341](https://github.com/alltuner/vibetuner/issues/1341)) ([ba5240a](https://github.com/alltuner/vibetuner/commit/ba5240a2c640233a5ee210bec718d5c672835bd7))
+
+
+### Performance Improvements
+
+* reduce vibetuner Python import time with lazy imports ([#1339](https://github.com/alltuner/vibetuner/issues/1339)) ([47ab3ff](https://github.com/alltuner/vibetuner/commit/47ab3ff06fe3633865078e08ba700e54192849e9))
+
 ## [8.6.5](https://github.com/alltuner/vibetuner/compare/v8.6.4...v8.6.5) (2026-02-27)
 
 
