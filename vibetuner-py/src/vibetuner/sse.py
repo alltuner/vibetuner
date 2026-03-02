@@ -404,6 +404,21 @@ async def _resolve_channel_or_generator(
     return static_channel, None
 
 
+def _parse_last_event_id(request: Request) -> int | None:
+    """Extract and parse the Last-Event-ID header from a request.
+
+    Returns the integer event ID, or None if the header is absent or not a
+    valid integer.
+    """
+    raw = request.headers.get("last-event-id")
+    if raw is not None:
+        try:
+            return int(raw)
+        except (ValueError, TypeError):
+            pass
+    return None
+
+
 def sse_endpoint(
     path: str,
     *,
@@ -411,6 +426,7 @@ def sse_endpoint(
     template: str | None = None,
     router: APIRouter | None = None,
     name: str | None = None,
+    buffer_size: int | None = None,
 ) -> Callable:
     """Decorator that creates an SSE endpoint with automatic connection management.
 
@@ -429,6 +445,9 @@ def sse_endpoint(
         template: Default template for rendering events on this endpoint.
         router: APIRouter to register the route on. If None, a new one is created.
         name: Optional route name.
+        buffer_size: If set, enables a ring buffer of this size for the channel.
+            When a client reconnects with a ``Last-Event-ID`` header, missed
+            events are replayed before switching to live streaming.
 
     Returns:
         Decorator that wraps a function into an SSE endpoint.
@@ -455,6 +474,10 @@ def sse_endpoint(
     """
 
     def decorator(func: Callable) -> Callable:
+        # Register buffer for static channels at decoration time
+        if buffer_size is not None and channel is not None:
+            _channel_buffers[channel] = _EventBuffer(maxlen=buffer_size)
+
         @wraps(func)
         async def endpoint(**kwargs):
             request: Request = kwargs["request"]
@@ -475,7 +498,16 @@ def sse_endpoint(
                 )
 
             _validate_channel_name(ch)
-            return EventSourceResponse(_stream_from_channel(ch))
+
+            # Register buffer for dynamic channels on first connection
+            if buffer_size is not None and ch not in _channel_buffers:
+                _channel_buffers[ch] = _EventBuffer(maxlen=buffer_size)
+
+            return EventSourceResponse(
+                _stream_from_channel(
+                    ch, last_event_id=_parse_last_event_id(request)
+                )
+            )
 
         if router is not None:
             if router.prefix and path.startswith(router.prefix):

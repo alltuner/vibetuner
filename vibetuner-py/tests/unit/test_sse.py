@@ -5,12 +5,14 @@
 import asyncio
 
 import pytest
+from fastapi import APIRouter, Request
 from vibetuner.sse import (
     _channel_buffers,
     _dispatch_local,
     _EventBuffer,
     _format_event,
     _stream_from_channel,
+    sse_endpoint,
 )
 
 
@@ -149,3 +151,27 @@ class TestStreamFromChannelResumption:
             assert b"data: old\n" not in items[0]
         finally:
             _channel_buffers.pop(ch, None)
+
+
+class TestSseEndpointBuffering:
+    def test_sse_endpoint_with_buffer_size_creates_buffer(self):
+        router = APIRouter()
+
+        @sse_endpoint("/events", channel="buf-test", buffer_size=50, router=router)
+        async def stream(request: Request):
+            pass
+
+        assert "buf-test" in _channel_buffers
+        assert _channel_buffers["buf-test"]._buf.maxlen == 50
+
+        # Cleanup
+        _channel_buffers.pop("buf-test", None)
+
+    def test_sse_endpoint_without_buffer_size_no_buffer(self):
+        router = APIRouter()
+
+        @sse_endpoint("/events2", channel="no-buf-test", router=router)
+        async def stream(request: Request):
+            pass
+
+        assert "no-buf-test" not in _channel_buffers
