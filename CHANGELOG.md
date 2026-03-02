@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.8.1](https://github.com/alltuner/vibetuner/compare/v8.8.0...v8.8.1) (2026-03-02)
+
+
+### Miscellaneous Chores
+
+* switch lint-po back to upstream repo ([#1346](https://github.com/alltuner/vibetuner/issues/1346)) ([11c7d68](https://github.com/alltuner/vibetuner/commit/11c7d68a5f9316936297988fbf4387e38e3344ae))
+
 ## [8.8.0](https://github.com/alltuner/vibetuner/compare/v8.7.1...v8.8.0) (2026-03-02)
 
 
