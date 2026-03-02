@@ -10,7 +10,7 @@ from functools import wraps
 from typing import Any
 
 from fastapi import APIRouter, Request
-from sse_starlette.sse import EventSourceResponse
+from fastapi.sse import EventSourceResponse, format_sse_event
 
 from vibetuner.logging import logger
 from vibetuner.rendering import render_template_string
@@ -74,6 +74,26 @@ class _EventBuffer:
     def events_after(self, last_id: int) -> list[tuple[int, dict[str, str]]]:
         """Return all buffered events with ID > last_id."""
         return [(eid, p) for eid, p in self._buf if eid > last_id]
+
+
+# ────────────────────────────────────────────────────────────────
+#  Wire-format encoding
+# ────────────────────────────────────────────────────────────────
+
+
+def _format_event(
+    payload: dict[str, str], *, event_id: str | None = None
+) -> bytes:
+    """Encode an SSE payload dict into wire-format bytes.
+
+    Wraps fastapi.sse.format_sse_event for internal use.
+    """
+    return format_sse_event(
+        data_str=payload.get("data"),
+        event=payload.get("event"),
+        id=event_id,
+        comment=payload.get("comment"),
+    )
 
 
 # ────────────────────────────────────────────────────────────────
@@ -315,29 +335,29 @@ async def broadcast(
 
 async def _stream_from_generator(
     result: AsyncGenerator, template: str | None, request: Request
-) -> AsyncGenerator[dict[str, str], None]:
-    """Yield SSE events from a user-provided async generator."""
+) -> AsyncGenerator[bytes, None]:
+    """Yield SSE wire-format bytes from a user-provided async generator."""
     async for event in result:
         if isinstance(event, dict):
             data = event.get("data", "")
             if template and not data:
                 data = render_template_string(template, request, event.get("ctx"))
                 event = {**event, "data": data}
-            yield event
+            yield _format_event(event)
         else:
-            yield {"data": str(event)}
+            yield _format_event({"data": str(event)})
 
 
-async def _stream_from_channel(ch: str) -> AsyncGenerator[dict[str, str], None]:
-    """Subscribe to a channel and yield SSE events with keepalive."""
+async def _stream_from_channel(ch: str) -> AsyncGenerator[bytes, None]:
+    """Subscribe to a channel and yield SSE wire-format bytes with keepalive."""
     queue = _subscribe(ch)
     try:
         while True:
             try:
                 payload = await asyncio.wait_for(queue.get(), timeout=30)
-                yield payload
+                yield _format_event(payload)
             except asyncio.TimeoutError:
-                yield {"comment": "keepalive"}
+                yield _format_event({"comment": "keepalive"})
     except asyncio.CancelledError:
         pass
     finally:

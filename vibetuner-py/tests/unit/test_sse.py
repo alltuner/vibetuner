@@ -2,7 +2,7 @@
 # ABOUTME: Tests ring buffer, event ID assignment, and replay logic
 # ruff: noqa: S101
 
-from vibetuner.sse import _EventBuffer
+from vibetuner.sse import _EventBuffer, _format_event
 
 
 class TestEventBuffer:
@@ -55,3 +55,24 @@ class TestEventBuffer:
         result = buf.events_after(1)
         assert len(result) == 2
         assert result[0][0] == 2
+
+
+class TestFormatEvent:
+    def test_formats_data_and_event(self):
+        result = _format_event({"event": "update", "data": "hello"})
+        assert b"event: update\n" in result
+        assert b"data: hello\n" in result
+        assert result.endswith(b"\n\n")
+
+    def test_formats_with_id(self):
+        result = _format_event({"event": "msg", "data": "hi"}, event_id="42")
+        assert b"id: 42\n" in result
+
+    def test_formats_comment_only(self):
+        result = _format_event({"comment": "keepalive"})
+        assert b": keepalive\n" in result
+
+    def test_multiline_data(self):
+        result = _format_event({"event": "msg", "data": "line1\nline2"})
+        assert b"data: line1\n" in result
+        assert b"data: line2\n" in result
