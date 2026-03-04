@@ -474,6 +474,60 @@ async def list_items(request: Request):
 | `.current_url` | Browser's current URL when request was made |
 | `.prompt` | User response from `hx-prompt` |
 
+### Block Rendering for HTMX Partials
+
+Use `render_template_block()` to render a single `{% block %}` from a template,
+enabling one template to serve both full-page and HTMX partial responses:
+
+```html
+<!-- templates/frontend/items/list.html.jinja -->
+{% extends "base/skeleton.html.jinja" %}
+{% block body %}
+<div id="items-container">
+    {% block items_list %}
+    {% for item in items %}
+        <div class="item">{{ item.name }}</div>
+    {% endfor %}
+    {% endblock items_list %}
+</div>
+{% endblock body %}
+```
+
+```python
+from vibetuner import render_template, render_template_block
+
+@router.get("/items")
+async def list_items(request: Request):
+    items = await Item.find_all().to_list()
+    ctx = {"items": items}
+
+    if request.state.htmx:
+        return render_template_block(
+            "items/list.html.jinja", "items_list", request, ctx
+        )
+
+    return render_template("items/list.html.jinja", request, ctx)
+```
+
+For HTMX [out-of-band swaps](https://htmx.org/attributes/hx-swap-oob/) that update
+multiple page regions in one response, use `render_template_blocks()` (plural):
+
+```python
+from vibetuner import render_template_blocks
+
+@router.post("/items")
+async def create_item(request: Request):
+    item = await Item.insert(...)
+    items = await Item.find_all().to_list()
+    ctx = {"items": items, "item_count": len(items)}
+
+    return render_template_blocks(
+        "items/list.html.jinja",
+        ["items_list", "notification_badge"],
+        request, ctx,
+    )
+```
+
 ### HTMX-Only Routes
 
 Use the `require_htmx` dependency to reject non-HTMX requests with a 400 error:

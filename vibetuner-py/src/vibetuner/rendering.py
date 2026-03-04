@@ -23,6 +23,8 @@ __all__ = [
     "render",
     "render_static_template",
     "render_template",
+    "render_template_block",
+    "render_template_blocks",
     "render_template_stream",
     "render_template_string",
     "register_globals",
@@ -601,6 +603,129 @@ def render_template_stream(
         yield from template_obj.generate(**merged_ctx)
 
     return StreamingResponse(_generate(), media_type="text/html")
+
+
+def _build_merged_ctx(
+    request: Request, ctx: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """Build the merged template context (shared by all render functions)."""
+    _ensure_custom_filters()
+    ctx = ctx or {}
+    language = getattr(request.state, "language", data_ctx.default_language)
+    with _context_lock:
+        globals_snapshot = dict(_template_globals)
+    return {
+        **data_ctx.model_dump(),
+        **globals_snapshot,
+        **_collect_provider_context(request=request),
+        "request": request,
+        "language": language,
+        **ctx,
+    }
+
+
+def render_template_block(
+    template: str,
+    block_name: str,
+    request: Request,
+    ctx: dict[str, Any] | None = None,
+) -> HTMLResponse:
+    """Render a single named ``{% block %}`` from a template.
+
+    Enables one template to serve both full-page and HTMX partial responses
+    without duplicating markup in separate template files.
+
+    Args:
+        template: Path to template file relative to ``templates/frontend/``.
+        block_name: Name of the ``{% block %}`` to render.
+        request: FastAPI Request object.
+        ctx: Optional context dictionary merged into the template context.
+
+    Returns:
+        HTMLResponse containing only the rendered block content.
+
+    Raises:
+        ValueError: If the named block does not exist in the template.
+
+    Example::
+
+        @router.get("/items")
+        async def list_items(request: Request):
+            items = await Item.find_all().to_list()
+            ctx = {"items": items}
+
+            if request.state.htmx:
+                return render_template_block(
+                    "items/list.html.jinja", "items_list", request, ctx
+                )
+
+            return render_template("items/list.html.jinja", request, ctx)
+    """
+    merged_ctx = _build_merged_ctx(request, ctx)
+    template_obj = templates.get_template(template)
+
+    if block_name not in template_obj.blocks:
+        raise ValueError(
+            f"Block '{block_name}' not found in template '{template}'. "
+            f"Available blocks: {list(template_obj.blocks.keys())}"
+        )
+
+    block_func = template_obj.blocks[block_name]
+    rendered = "".join(block_func(template_obj.new_context(merged_ctx)))
+    return HTMLResponse(rendered)
+
+
+def render_template_blocks(
+    template: str,
+    block_names: list[str],
+    request: Request,
+    ctx: dict[str, Any] | None = None,
+) -> HTMLResponse:
+    """Render multiple named blocks from a template, concatenated.
+
+    Useful for HTMX out-of-band (OOB) swaps where one server response updates
+    multiple parts of the page simultaneously.
+
+    Args:
+        template: Path to template file relative to ``templates/frontend/``.
+        block_names: List of ``{% block %}`` names to render.
+        request: FastAPI Request object.
+        ctx: Optional context dictionary merged into the template context.
+
+    Returns:
+        HTMLResponse containing all rendered blocks concatenated together.
+
+    Raises:
+        ValueError: If any named block does not exist in the template.
+
+    Example::
+
+        @router.post("/items")
+        async def create_item(request: Request):
+            item = await Item.insert(...)
+            items = await Item.find_all().to_list()
+            ctx = {"items": items, "item_count": len(items)}
+
+            return render_template_blocks(
+                "items/list.html.jinja",
+                ["items_list", "notification_badge"],
+                request, ctx,
+            )
+    """
+    merged_ctx = _build_merged_ctx(request, ctx)
+    template_obj = templates.get_template(template)
+
+    parts: list[str] = []
+    for block_name in block_names:
+        if block_name not in template_obj.blocks:
+            raise ValueError(
+                f"Block '{block_name}' not found in template '{template}'. "
+                f"Available blocks: {list(template_obj.blocks.keys())}"
+            )
+        block_func = template_obj.blocks[block_name]
+        parts.append("".join(block_func(template_obj.new_context(merged_ctx))))
+
+    return HTMLResponse("".join(parts))
 
 
 # Global Vars

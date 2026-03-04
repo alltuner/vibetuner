@@ -43,6 +43,9 @@ Important notes:
 - **Streaming HTML**: `render_template_stream()` returns a `StreamingResponse` using
   Jinja2's `generate()`, improving TTFB for large pages. Same context merging as
   `render_template()`. Import from `vibetuner`
+- **Block Rendering**: `render_template_block(template, block_name, request, ctx)`
+  renders a single `{% block %}` for HTMX partials. `render_template_blocks()` renders
+  multiple blocks for OOB swaps. No extra dependencies. Import from `vibetuner`
 - **Template Context Providers**: `register_globals()` and `@register_context_provider`
   inject variables into every template render
 - **Service DI**: `get_email_service()`, `get_blob_service()`, `get_runtime_config()`
