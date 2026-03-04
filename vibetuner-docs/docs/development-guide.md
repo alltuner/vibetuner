@@ -474,6 +474,31 @@ async def list_items(request: Request):
 | `.current_url` | Browser's current URL when request was made |
 | `.prompt` | User response from `hx-prompt` |
 
+### HTMX Response Headers
+
+Helper functions for setting HTMX response headers. Import from `vibetuner.htmx`:
+
+```python
+from vibetuner.htmx import hx_redirect, hx_location, hx_trigger
+
+# Full-reload redirect (when <head> or scripts differ)
+return hx_redirect("/items/123")
+
+# HTMX-style navigation without full reload
+return hx_location("/items", target="#main", swap="innerHTML")
+
+# Trigger client-side events after swap
+response = render_template("items/created.html.jinja", request, ctx)
+hx_trigger(response, "itemCreated", {"id": str(item.id)})
+return response
+```
+
+Available helpers: `hx_redirect`, `hx_location`, `hx_trigger`,
+`hx_trigger_after_settle`, `hx_trigger_after_swap`, `hx_push_url`,
+`hx_replace_url`, `hx_reswap`, `hx_retarget`, `hx_refresh`.
+
+JSON serialization is handled internally — you never need to call `json.dumps()`.
+
 ### Cache Control Headers
 
 Use the `@cache_control` decorator to set `Cache-Control` HTTP headers declaratively

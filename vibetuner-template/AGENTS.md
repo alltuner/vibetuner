@@ -855,6 +855,48 @@ await broadcast(
 </div>
 ```
 
+### HTMX Response Headers
+
+Helper functions for setting HTMX response headers, reducing boilerplate when
+building interactive HTMX flows:
+
+```python
+from vibetuner.htmx import (
+    hx_redirect, hx_location, hx_trigger,
+    hx_push_url, hx_reswap, hx_retarget, hx_refresh,
+)
+
+# Full-reload redirect (when <head> or scripts differ)
+return hx_redirect("/items/123")
+
+# HTMX-style navigation without full reload
+return hx_location("/items", target="#main", swap="innerHTML")
+
+# Trigger client-side events after swap
+response = render_template("items/created.html.jinja", request, ctx)
+hx_trigger(response, "itemCreated", {"id": str(item.id)})
+return response
+
+# Combine multiple on an existing response
+response = HTMLResponse(html)
+hx_push_url(response, "/items?page=2")
+hx_reswap(response, "outerHTML")
+return response
+```
+
+| Helper | Header | Use case |
+|---|---|---|
+| `hx_redirect(url)` | `HX-Redirect` | Full reload redirect |
+| `hx_location(path, **opts)` | `HX-Location` | HTMX navigation (no full reload) |
+| `hx_trigger(response, event, detail)` | `HX-Trigger` | Client-side event after swap |
+| `hx_trigger_after_settle(...)` | `HX-Trigger-After-Settle` | Event after settle phase |
+| `hx_trigger_after_swap(...)` | `HX-Trigger-After-Swap` | Event after swap phase |
+| `hx_push_url(response, url)` | `HX-Push-Url` | Update browser URL/history |
+| `hx_replace_url(response, url)` | `HX-Replace-Url` | Replace current URL (no history) |
+| `hx_reswap(response, strategy)` | `HX-Reswap` | Override swap strategy |
+| `hx_retarget(response, selector)` | `HX-Retarget` | Override target element |
+| `hx_refresh(response)` | `HX-Refresh` | Force full page refresh |
+
 ### Cache Control Headers
 
 Use the `@cache_control` decorator to set `Cache-Control` headers declaratively:
