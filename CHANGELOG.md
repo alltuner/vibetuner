@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.9.0](https://github.com/alltuner/vibetuner/compare/v8.8.3...v8.9.0) (2026-03-04)
+
+
+### Features
+
+* add rendering decorators, streaming, block rendering, cache control, and HTMX helpers ([#1366](https://github.com/alltuner/vibetuner/issues/1366)) ([fea2467](https://github.com/alltuner/vibetuner/commit/fea246787a8481bc60736b0b93ac41745138a346))
+
 ## [8.8.3](https://github.com/alltuner/vibetuner/compare/v8.8.2...v8.8.3) (2026-03-04)
 
 
