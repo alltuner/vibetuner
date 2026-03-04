@@ -1,5 +1,14 @@
 # Changelog
 
+## [8.8.2](https://github.com/alltuner/vibetuner/compare/v8.8.1...v8.8.2) (2026-03-04)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump ty from 0.0.19 to 0.0.20 in /vibetuner-py ([#1348](https://github.com/alltuner/vibetuner/issues/1348)) ([4414e57](https://github.com/alltuner/vibetuner/commit/4414e5711923938c7f2d0aafbd9338e3e63ae7ef))
+* **deps:** bump types-authlib from 1.6.8.20260215 to 1.6.9.20260303 in /vibetuner-py ([#1349](https://github.com/alltuner/vibetuner/issues/1349)) ([26fe1c5](https://github.com/alltuner/vibetuner/commit/26fe1c5cd01377310d2d33b5f98dd80c79c9aafd))
+* Update scaffolding deps ([#1351](https://github.com/alltuner/vibetuner/issues/1351)) ([62b2184](https://github.com/alltuner/vibetuner/commit/62b2184151bad4c96ad36e5b070541326da6fa3b))
+
 ## [8.8.1](https://github.com/alltuner/vibetuner/compare/v8.8.0...v8.8.1) (2026-03-02)
 
 
