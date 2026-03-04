@@ -226,6 +226,19 @@ from app.frontend.routes import blog
 app.include_router(blog.router)
 ```
 
+**`@render` decorator** — for simple routes, eliminate `render_template()` boilerplate:
+
+```python
+from vibetuner import render
+
+@router.get("/dashboard")
+@render("dashboard.html.jinja")
+async def dashboard(request: Request, user=Depends(get_current_user)) -> dict:
+    return {"user": user}
+```
+
+Returns `Response` objects unchanged (escape hatch for redirects, conditional logic).
+
 #### Adding Database Models
 
 Create models in `src/app/models/`. The approach depends on your database choice:
@@ -491,6 +504,34 @@ async def list_posts(page: int = 1):
         "posts": posts
     })
 ```
+
+#### HTMX Request Detection
+
+Every request has `request.state.htmx` available (via `starlette-htmx` middleware).
+Use it to serve different responses for HTMX vs regular requests:
+
+```python
+from fastapi import Request
+from starlette.responses import HTMLResponse
+from vibetuner import render_template, render_template_string
+
+@router.get("/items")
+async def list_items(request: Request):
+    items = await Item.find_all().to_list()
+    ctx = {"items": items}
+
+    if request.state.htmx:
+        html = render_template_string("items/_list.html.jinja", request, ctx)
+        return HTMLResponse(html)
+
+    return render_template("items/list.html.jinja", request, ctx)
+```
+
+Properties: `bool(request.state.htmx)`, `.boosted`, `.target`, `.trigger`,
+`.trigger_name`, `.current_url`, `.prompt`.
+
+HTMX-only routes — use the `require_htmx` dependency from
+`vibetuner.frontend.deps` to reject non-HTMX requests with a 400.
 
 ### Architecture
 

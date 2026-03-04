@@ -1,5 +1,6 @@
 # ABOUTME: Jinja2 template rendering for HTML responses.
 # ABOUTME: Lives outside vibetuner.frontend to avoid circular imports with tune.py.
+import functools
 import inspect
 import threading
 from collections.abc import Callable
@@ -7,7 +8,7 @@ from datetime import timedelta
 from typing import Any
 
 from starlette.requests import Request
-from starlette.responses import HTMLResponse
+from starlette.responses import HTMLResponse, Response, StreamingResponse
 from starlette.templating import Jinja2Templates
 
 from vibetuner.context import ctx as data_ctx
@@ -19,8 +20,12 @@ from vibetuner.time import age_in_timedelta
 
 
 __all__ = [
+    "render",
     "render_static_template",
     "render_template",
+    "render_template_block",
+    "render_template_blocks",
+    "render_template_stream",
     "render_template_string",
     "register_globals",
     "register_context_provider",
@@ -93,6 +98,72 @@ def register_context_provider(func=None):
                 "request" in inspect.signature(fn).parameters
             )
         return fn
+
+    return decorator
+
+
+def render(template: str) -> Callable:
+    """Decorator that renders a template with the route's return value as context.
+
+    Eliminates ``render_template()`` boilerplate for simple routes. The
+    decorated function should return a ``dict`` that becomes the template
+    context.  The ``request`` parameter is automatically extracted from the
+    route's arguments.
+
+    If the route returns a :class:`~starlette.responses.Response` (e.g.
+    ``HTMLResponse`` or ``RedirectResponse``), it is passed through unchanged
+    — this is the escape hatch for conditional logic.
+
+    Example::
+
+        @router.get("/")
+        @render("items/list.html.jinja")
+        async def index(request: Request) -> dict:
+            items = await Item.find_all().to_list()
+            return {"items": items}
+
+    Args:
+        template: Path to template file relative to ``templates/frontend/``.
+
+    Returns:
+        Decorator that wraps the route function.
+    """
+
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        async def wrapper(*args: Any, **kwargs: Any) -> Response:
+            # Extract request from kwargs or positional args
+            request = kwargs.get("request")
+            if request is None:
+                for arg in args:
+                    if isinstance(arg, Request):
+                        request = arg
+                        break
+
+            if request is None:
+                raise TypeError(
+                    f"@render('{template}'): route '{func.__name__}' must accept "
+                    "a 'request' parameter"
+                )
+
+            if inspect.iscoroutinefunction(func):
+                result = await func(*args, **kwargs)
+            else:
+                result = func(*args, **kwargs)
+
+            # Escape hatch: pass through Response objects unchanged
+            if isinstance(result, Response):
+                return result
+
+            if not isinstance(result, dict):
+                raise TypeError(
+                    f"@render('{template}'): route '{func.__name__}' must return "
+                    f"a dict or Response, got {type(result).__name__}"
+                )
+
+            return render_template(template, request, result)
+
+        return wrapper
 
     return decorator
 
@@ -473,6 +544,188 @@ def render_template_string(
 
     template_obj = templates.get_template(template)
     return template_obj.render(merged_ctx)
+
+
+def render_template_stream(
+    template: str,
+    request: Request,
+    ctx: dict[str, Any] | None = None,
+) -> StreamingResponse:
+    """Render a template as a streaming HTML response.
+
+    Uses Jinja2's ``generate_async()`` to yield HTML chunks as the template
+    renders, allowing the browser to start painting before the full page is
+    ready.  This improves time-to-first-byte (TTFB) for large pages like
+    dashboards and data tables.
+
+    Context merging (globals, providers, etc.) works identically to
+    ``render_template()``.
+
+    Args:
+        template: Path to template file relative to ``templates/frontend/``.
+        request: FastAPI Request object.
+        ctx: Optional context dictionary merged into the template context.
+
+    Returns:
+        StreamingResponse with ``media_type="text/html"``.
+
+    Example::
+
+        @router.get("/dashboard")
+        async def dashboard(request: Request):
+            data = await get_dashboard_data()
+            return render_template_stream(
+                "dashboard.html.jinja", request, {"data": data}
+            )
+
+    Note:
+        HTMX partial responses are typically small and don't benefit from
+        streaming.  Use this for full page loads where the ``<head>`` and
+        initial layout should reach the browser as early as possible.
+    """
+    _ensure_custom_filters()
+    ctx = ctx or {}
+    language = getattr(request.state, "language", data_ctx.default_language)
+    with _context_lock:
+        globals_snapshot = dict(_template_globals)
+    merged_ctx = {
+        **data_ctx.model_dump(),
+        **globals_snapshot,
+        **_collect_provider_context(request=request),
+        "request": request,
+        "language": language,
+        **ctx,
+    }
+
+    template_obj = templates.get_template(template)
+
+    def _generate():
+        yield from template_obj.generate(**merged_ctx)
+
+    return StreamingResponse(_generate(), media_type="text/html")
+
+
+def _build_merged_ctx(
+    request: Request, ctx: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """Build the merged template context (shared by all render functions)."""
+    _ensure_custom_filters()
+    ctx = ctx or {}
+    language = getattr(request.state, "language", data_ctx.default_language)
+    with _context_lock:
+        globals_snapshot = dict(_template_globals)
+    return {
+        **data_ctx.model_dump(),
+        **globals_snapshot,
+        **_collect_provider_context(request=request),
+        "request": request,
+        "language": language,
+        **ctx,
+    }
+
+
+def render_template_block(
+    template: str,
+    block_name: str,
+    request: Request,
+    ctx: dict[str, Any] | None = None,
+) -> HTMLResponse:
+    """Render a single named ``{% block %}`` from a template.
+
+    Enables one template to serve both full-page and HTMX partial responses
+    without duplicating markup in separate template files.
+
+    Args:
+        template: Path to template file relative to ``templates/frontend/``.
+        block_name: Name of the ``{% block %}`` to render.
+        request: FastAPI Request object.
+        ctx: Optional context dictionary merged into the template context.
+
+    Returns:
+        HTMLResponse containing only the rendered block content.
+
+    Raises:
+        ValueError: If the named block does not exist in the template.
+
+    Example::
+
+        @router.get("/items")
+        async def list_items(request: Request):
+            items = await Item.find_all().to_list()
+            ctx = {"items": items}
+
+            if request.state.htmx:
+                return render_template_block(
+                    "items/list.html.jinja", "items_list", request, ctx
+                )
+
+            return render_template("items/list.html.jinja", request, ctx)
+    """
+    merged_ctx = _build_merged_ctx(request, ctx)
+    template_obj = templates.get_template(template)
+
+    if block_name not in template_obj.blocks:
+        raise ValueError(
+            f"Block '{block_name}' not found in template '{template}'. "
+            f"Available blocks: {list(template_obj.blocks.keys())}"
+        )
+
+    block_func = template_obj.blocks[block_name]
+    rendered = "".join(block_func(template_obj.new_context(merged_ctx)))
+    return HTMLResponse(rendered)
+
+
+def render_template_blocks(
+    template: str,
+    block_names: list[str],
+    request: Request,
+    ctx: dict[str, Any] | None = None,
+) -> HTMLResponse:
+    """Render multiple named blocks from a template, concatenated.
+
+    Useful for HTMX out-of-band (OOB) swaps where one server response updates
+    multiple parts of the page simultaneously.
+
+    Args:
+        template: Path to template file relative to ``templates/frontend/``.
+        block_names: List of ``{% block %}`` names to render.
+        request: FastAPI Request object.
+        ctx: Optional context dictionary merged into the template context.
+
+    Returns:
+        HTMLResponse containing all rendered blocks concatenated together.
+
+    Raises:
+        ValueError: If any named block does not exist in the template.
+
+    Example::
+
+        @router.post("/items")
+        async def create_item(request: Request):
+            item = await Item.insert(...)
+            items = await Item.find_all().to_list()
+            ctx = {"items": items, "item_count": len(items)}
+
+            return render_template_blocks(
+                "items/list.html.jinja",
+                ["items_list", "notification_badge"],
+                request, ctx,
+            )
+    """
+    merged_ctx = _build_merged_ctx(request, ctx)
+    template_obj = templates.get_template(template)
+
+    parts: list[str] = []
+    for block_name in block_names:
+        if block_name not in template_obj.blocks:
+            raise ValueError(
+                f"Block '{block_name}' not found in template '{template}'. "
+                f"Available blocks: {list(template_obj.blocks.keys())}"
+            )
+        block_func = template_obj.blocks[block_name]
+        parts.append("".join(block_func(template_obj.new_context(merged_ctx))))
+
+    return HTMLResponse("".join(parts))
 
 
 # Global Vars

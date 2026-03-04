@@ -29,10 +29,31 @@ Important notes:
 
 ## Features
 
+- **HTMX Request Detection**: `request.state.htmx` available on every request
+  (via `starlette-htmx` middleware). Properties: `.boosted`, `.target`, `.trigger`,
+  `.trigger_name`, `.current_url`, `.prompt`. Use `require_htmx` dependency from
+  `vibetuner.frontend.deps` to reject non-HTMX requests with 400
 - **CRUD Factory**: `create_crud_routes()` generates list/create/read/update/delete
   endpoints for Beanie models with pagination, filtering, sorting, and search
 - **SSE Helpers**: `@sse_endpoint()` and `broadcast()` for real-time streaming with
   HTMX. Import from `vibetuner.sse`. Redis pub/sub for multi-worker support
+- **`@render` Decorator**: `@render("template.html.jinja")` eliminates
+  `render_template()` boilerplate — route returns a dict, decorator handles rendering.
+  Returns `Response` objects unchanged (escape hatch). Import from `vibetuner`
+- **Streaming HTML**: `render_template_stream()` returns a `StreamingResponse` using
+  Jinja2's `generate()`, improving TTFB for large pages. Same context merging as
+  `render_template()`. Import from `vibetuner`
+- **Block Rendering**: `render_template_block(template, block_name, request, ctx)`
+  renders a single `{% block %}` for HTMX partials. `render_template_blocks()` renders
+  multiple blocks for OOB swaps. No extra dependencies. Import from `vibetuner`
+- **`@cache_control` Decorator**: `@cache_control(max_age=300, public=True)` sets
+  `Cache-Control` headers declaratively. Supports `public`, `private`, `no_cache`,
+  `no_store`, `max_age`, `s_maxage`, `must_revalidate`, `stale_while_revalidate`,
+  `immutable`. Import from `vibetuner.decorators`
+- **HTMX Response Helpers**: `hx_redirect()`, `hx_location()`, `hx_trigger()`,
+  `hx_push_url()`, `hx_reswap()`, `hx_retarget()`, `hx_refresh()`,
+  `hx_replace_url()`, `hx_trigger_after_settle()`, `hx_trigger_after_swap()`.
+  Handles JSON serialization internally. Import from `vibetuner.htmx`
 - **Template Context Providers**: `register_globals()` and `@register_context_provider`
   inject variables into every template render
 - **Service DI**: `get_email_service()`, `get_blob_service()`, `get_runtime_config()`

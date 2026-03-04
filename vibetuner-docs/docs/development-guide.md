@@ -137,6 +137,52 @@ async def list_posts():
 
 The framework finds any `router` variable in route files and registers it automatically.
 
+#### `@render` Decorator
+
+For simple routes, use `@render()` to eliminate `render_template()` boilerplate.
+Return a dict and the decorator handles rendering:
+
+```python
+from vibetuner import render
+
+@router.get("/dashboard")
+@render("dashboard.html.jinja")
+async def dashboard(request: Request, user=Depends(get_current_user)) -> dict:
+    return {"user": user}
+```
+
+The decorator auto-extracts `request` from route parameters. If the route returns a
+`Response` object (e.g. `RedirectResponse`) instead of a dict, it passes through
+unchanged — this is the escape hatch for conditional logic:
+
+```python
+@router.get("/items/{id}")
+@render("items/detail.html.jinja")
+async def item_detail(request: Request, id: str) -> dict:
+    item = await Item.get(id)
+    if not item:
+        return RedirectResponse("/items")  # Passed through as-is
+    return {"item": item}
+```
+
+#### Streaming Large Pages
+
+For large pages (dashboards, data tables), use `render_template_stream()` to send
+HTML chunks as the template renders. The browser can start painting the `<head>` and
+initial layout before the full page is ready:
+
+```python
+from vibetuner import render_template_stream
+
+@router.get("/dashboard")
+async def dashboard(request: Request):
+    data = await get_dashboard_data()
+    return render_template_stream("dashboard.html.jinja", request, {"data": data})
+```
+
+Context merging works identically to `render_template()`. Best suited for full page
+loads — HTMX partials are typically small and don't benefit from streaming.
+
 ### Adding Database Models
 
 Create models in `src/app/models/`. Models are **automatically discovered** and initialized.
@@ -386,11 +432,175 @@ Server endpoint:
 ```python
 @router.get("/blog")
 async def list_posts(page: int = 1):
-posts = await Post.find().skip((page - 1) * 10).limit(10).to_list()
-return templates.TemplateResponse("blog/posts.html.jinja", {
-"posts": posts
-})
+    posts = await Post.find().skip((page - 1) * 10).limit(10).to_list()
+    return templates.TemplateResponse("blog/posts.html.jinja", {
+        "posts": posts
+    })
 ```
+
+### HTMX Request Detection
+
+Every request has `request.state.htmx` available (provided by the `starlette-htmx`
+middleware). Use it to serve different responses for HTMX vs regular requests:
+
+```python
+from fastapi import Request
+from starlette.responses import HTMLResponse
+from vibetuner import render_template, render_template_string
+
+@router.get("/items")
+async def list_items(request: Request):
+    items = await Item.find_all().to_list()
+    ctx = {"items": items}
+
+    if request.state.htmx:
+        # HTMX request — return just the partial
+        html = render_template_string("items/_list.html.jinja", request, ctx)
+        return HTMLResponse(html)
+
+    # Regular request — return the full page
+    return render_template("items/list.html.jinja", request, ctx)
+```
+
+**Available properties on `request.state.htmx`:**
+
+| Property | Description |
+|----------|-------------|
+| `bool(request.state.htmx)` | `True` if this is an HTMX request |
+| `.boosted` | `True` if request came via `hx-boost` |
+| `.target` | ID of the target element (`hx-target`) |
+| `.trigger` | ID of the element that triggered the request |
+| `.trigger_name` | Name attribute of the triggering element |
+| `.current_url` | Browser's current URL when request was made |
+| `.prompt` | User response from `hx-prompt` |
+
+### HTMX Response Headers
+
+Helper functions for setting HTMX response headers. Import from `vibetuner.htmx`:
+
+```python
+from vibetuner.htmx import hx_redirect, hx_location, hx_trigger
+
+# Full-reload redirect (when <head> or scripts differ)
+return hx_redirect("/items/123")
+
+# HTMX-style navigation without full reload
+return hx_location("/items", target="#main", swap="innerHTML")
+
+# Trigger client-side events after swap
+response = render_template("items/created.html.jinja", request, ctx)
+hx_trigger(response, "itemCreated", {"id": str(item.id)})
+return response
+```
+
+Available helpers: `hx_redirect`, `hx_location`, `hx_trigger`,
+`hx_trigger_after_settle`, `hx_trigger_after_swap`, `hx_push_url`,
+`hx_replace_url`, `hx_reswap`, `hx_retarget`, `hx_refresh`.
+
+JSON serialization is handled internally — you never need to call `json.dumps()`.
+
+### Cache Control Headers
+
+Use the `@cache_control` decorator to set `Cache-Control` HTTP headers declaratively
+instead of manually manipulating response headers:
+
+```python
+from vibetuner.decorators import cache_control
+
+@router.get("/static-page")
+@cache_control(max_age=300, public=True)
+async def static_page(request: Request):
+    return render_template("static_page.html.jinja", request)
+```
+
+Supported directives: `public`, `private`, `no_cache`, `no_store`, `max_age`,
+`s_maxage`, `must_revalidate`, `stale_while_revalidate`, `immutable`.
+
+### Block Rendering for HTMX Partials
+
+Use `render_template_block()` to render a single `{% block %}` from a template,
+enabling one template to serve both full-page and HTMX partial responses:
+
+```html
+<!-- templates/frontend/items/list.html.jinja -->
+{% extends "base/skeleton.html.jinja" %}
+{% block body %}
+<div id="items-container">
+    {% block items_list %}
+    {% for item in items %}
+        <div class="item">{{ item.name }}</div>
+    {% endfor %}
+    {% endblock items_list %}
+</div>
+{% endblock body %}
+```
+
+```python
+from vibetuner import render_template, render_template_block
+
+@router.get("/items")
+async def list_items(request: Request):
+    items = await Item.find_all().to_list()
+    ctx = {"items": items}
+
+    if request.state.htmx:
+        return render_template_block(
+            "items/list.html.jinja", "items_list", request, ctx
+        )
+
+    return render_template("items/list.html.jinja", request, ctx)
+```
+
+For HTMX [out-of-band swaps](https://htmx.org/attributes/hx-swap-oob/) that update
+multiple page regions in one response, use `render_template_blocks()` (plural):
+
+```python
+from vibetuner import render_template_blocks
+
+@router.post("/items")
+async def create_item(request: Request):
+    item = await Item.insert(...)
+    items = await Item.find_all().to_list()
+    ctx = {"items": items, "item_count": len(items)}
+
+    return render_template_blocks(
+        "items/list.html.jinja",
+        ["items_list", "notification_badge"],
+        request, ctx,
+    )
+```
+
+### HTMX-Only Routes
+
+Use the `require_htmx` dependency to reject non-HTMX requests with a 400 error:
+
+```python
+from fastapi import Depends
+from vibetuner.frontend.deps import require_htmx
+
+@router.post("/items/create", dependencies=[Depends(require_htmx)])
+async def create_item(request: Request):
+    # Only reachable via HTMX — non-HTMX requests get 400
+    ...
+```
+
+### Using `hx-boost`
+
+For links and forms that should use HTMX navigation without writing custom
+`hx-get`/`hx-post` attributes, use `hx-boost="true"` on a parent element. Boosted
+links and forms swap the `<body>` content and update the URL without a full page
+reload:
+
+```html
+<nav hx-boost="true">
+    <a href="/dashboard">Dashboard</a>
+    <a href="/settings">Settings</a>
+</nav>
+```
+
+Boosted requests set `request.state.htmx.boosted = True`. Since boosted requests
+expect a full page response (they swap the entire body), you typically don't need
+to branch on `request.state.htmx` for boosted routes.
 
 ## Internationalization
 
