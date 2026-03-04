@@ -73,12 +73,12 @@ dev = [
   "djlint>=1.36.4",
   "granian[pname,reload]>=2.7.2",
   "ruff>=0.15.4",
-  "rumdl>=0.1.34",
+  "rumdl>=0.1.38",
   "semver>=3.0.4",
   "taplo>=0.9.3",
-  "ty>=0.0.19",
+  "ty>=0.0.20",
   "types-aioboto3[s3]>=15.5.0",
-  "types-authlib>=1.6.8.20260215",
+  "types-authlib>=1.6.9.20260303",
   "types-pyyaml>=6.0.12.20250915",
 ]
 test = [
