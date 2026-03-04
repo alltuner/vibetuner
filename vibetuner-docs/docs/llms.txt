@@ -29,6 +29,10 @@ Important notes:
 
 ## Features
 
+- **HTMX Request Detection**: `request.state.htmx` available on every request
+  (via `starlette-htmx` middleware). Properties: `.boosted`, `.target`, `.trigger`,
+  `.trigger_name`, `.current_url`, `.prompt`. Use `require_htmx` dependency from
+  `vibetuner.frontend.deps` to reject non-HTMX requests with 400
 - **CRUD Factory**: `create_crud_routes()` generates list/create/read/update/delete
   endpoints for Beanie models with pagination, filtering, sorting, and search
 - **SSE Helpers**: `@sse_endpoint()` and `broadcast()` for real-time streaming with

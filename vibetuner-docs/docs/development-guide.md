@@ -386,11 +386,79 @@ Server endpoint:
 ```python
 @router.get("/blog")
 async def list_posts(page: int = 1):
-posts = await Post.find().skip((page - 1) * 10).limit(10).to_list()
-return templates.TemplateResponse("blog/posts.html.jinja", {
-"posts": posts
-})
+    posts = await Post.find().skip((page - 1) * 10).limit(10).to_list()
+    return templates.TemplateResponse("blog/posts.html.jinja", {
+        "posts": posts
+    })
 ```
+
+### HTMX Request Detection
+
+Every request has `request.state.htmx` available (provided by the `starlette-htmx`
+middleware). Use it to serve different responses for HTMX vs regular requests:
+
+```python
+from fastapi import Request
+from starlette.responses import HTMLResponse
+from vibetuner import render_template, render_template_string
+
+@router.get("/items")
+async def list_items(request: Request):
+    items = await Item.find_all().to_list()
+    ctx = {"items": items}
+
+    if request.state.htmx:
+        # HTMX request — return just the partial
+        html = render_template_string("items/_list.html.jinja", request, ctx)
+        return HTMLResponse(html)
+
+    # Regular request — return the full page
+    return render_template("items/list.html.jinja", request, ctx)
+```
+
+**Available properties on `request.state.htmx`:**
+
+| Property | Description |
+|----------|-------------|
+| `bool(request.state.htmx)` | `True` if this is an HTMX request |
+| `.boosted` | `True` if request came via `hx-boost` |
+| `.target` | ID of the target element (`hx-target`) |
+| `.trigger` | ID of the element that triggered the request |
+| `.trigger_name` | Name attribute of the triggering element |
+| `.current_url` | Browser's current URL when request was made |
+| `.prompt` | User response from `hx-prompt` |
+
+### HTMX-Only Routes
+
+Use the `require_htmx` dependency to reject non-HTMX requests with a 400 error:
+
+```python
+from fastapi import Depends
+from vibetuner.frontend.deps import require_htmx
+
+@router.post("/items/create", dependencies=[Depends(require_htmx)])
+async def create_item(request: Request):
+    # Only reachable via HTMX — non-HTMX requests get 400
+    ...
+```
+
+### Using `hx-boost`
+
+For links and forms that should use HTMX navigation without writing custom
+`hx-get`/`hx-post` attributes, use `hx-boost="true"` on a parent element. Boosted
+links and forms swap the `<body>` content and update the URL without a full page
+reload:
+
+```html
+<nav hx-boost="true">
+    <a href="/dashboard">Dashboard</a>
+    <a href="/settings">Settings</a>
+</nav>
+```
+
+Boosted requests set `request.state.htmx.boosted = True`. Since boosted requests
+expect a full page response (they swap the entire body), you typically don't need
+to branch on `request.state.htmx` for boosted routes.
 
 ## Internationalization
 

@@ -824,6 +824,57 @@ await broadcast(
 </div>
 ```
 
+### HTMX Request Detection
+
+Every request has `request.state.htmx` available (provided by middleware). Use it
+to serve different responses for HTMX vs regular requests:
+
+```python
+from fastapi import Request
+from starlette.responses import HTMLResponse
+from vibetuner import render_template, render_template_string
+
+@router.get("/items")
+async def list_items(request: Request):
+    items = await Item.find_all().to_list()
+    ctx = {"items": items}
+
+    if request.state.htmx:
+        # HTMX request — return just the partial
+        html = render_template_string("items/_list.html.jinja", request, ctx)
+        return HTMLResponse(html)
+
+    # Regular request — return the full page
+    return render_template("items/list.html.jinja", request, ctx)
+```
+
+**Available properties on `request.state.htmx`:**
+
+- `bool(request.state.htmx)` — `True` if HTMX request
+- `.boosted` — `True` if via `hx-boost`
+- `.target` — id of the target element
+- `.trigger` — id of the triggering element
+- `.trigger_name` — name of the triggering element
+- `.current_url` — browser's current URL
+- `.prompt` — user response to `hx-prompt`
+
+**HTMX-only routes** — use the `require_htmx` dependency to reject non-HTMX
+requests with a 400:
+
+```python
+from fastapi import Depends
+from vibetuner.frontend.deps import require_htmx
+
+@router.post("/items/create", dependencies=[Depends(require_htmx)])
+async def create_item(request: Request):
+    ...
+```
+
+**`hx-boost`** — for links and forms that should use HTMX navigation without
+custom `hx-get`/`hx-post` attributes. Boosted requests set
+`request.state.htmx.boosted = True` and expect a full page response (they swap
+the entire body), so you typically don't need to branch on `request.state.htmx`.
+
 ### Template Context Providers
 
 Register variables available in every template render:
