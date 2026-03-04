@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.8.3](https://github.com/alltuner/vibetuner/compare/v8.8.2...v8.8.3) (2026-03-04)
+
+
+### Documentation Updates
+
+* move ad-hoc database operations to template AGENTS.md ([#1353](https://github.com/alltuner/vibetuner/issues/1353)) ([2c46071](https://github.com/alltuner/vibetuner/commit/2c460719f5fc8f521c34443c4f9168cf9e68a948))
+
 ## [8.8.2](https://github.com/alltuner/vibetuner/compare/v8.8.1...v8.8.2) (2026-03-04)
 
 
