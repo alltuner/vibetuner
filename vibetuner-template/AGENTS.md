@@ -430,6 +430,21 @@ async def dashboard(request: Request, user=Depends(get_current_user)):
     return render_template("dashboard.html.jinja", request, {"user": user})
 ```
 
+**Shorthand with `@render` decorator** — for simple routes, eliminate the
+`render_template()` boilerplate by returning a dict:
+
+```python
+from vibetuner import render
+
+@router.get("/dashboard")
+@render("dashboard.html.jinja")
+async def dashboard(request: Request, user=Depends(get_current_user)) -> dict:
+    return {"user": user}
+```
+
+The decorator auto-extracts `request` from route params. If the route returns a
+`Response` (e.g. `RedirectResponse`) instead of a dict, it passes through unchanged.
+
 ```python
 # src/app/frontend/routes/__init__.py
 from fastapi import APIRouter

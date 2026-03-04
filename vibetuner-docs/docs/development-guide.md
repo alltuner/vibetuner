@@ -137,6 +137,34 @@ async def list_posts():
 
 The framework finds any `router` variable in route files and registers it automatically.
 
+#### `@render` Decorator
+
+For simple routes, use `@render()` to eliminate `render_template()` boilerplate.
+Return a dict and the decorator handles rendering:
+
+```python
+from vibetuner import render
+
+@router.get("/dashboard")
+@render("dashboard.html.jinja")
+async def dashboard(request: Request, user=Depends(get_current_user)) -> dict:
+    return {"user": user}
+```
+
+The decorator auto-extracts `request` from route parameters. If the route returns a
+`Response` object (e.g. `RedirectResponse`) instead of a dict, it passes through
+unchanged — this is the escape hatch for conditional logic:
+
+```python
+@router.get("/items/{id}")
+@render("items/detail.html.jinja")
+async def item_detail(request: Request, id: str) -> dict:
+    item = await Item.get(id)
+    if not item:
+        return RedirectResponse("/items")  # Passed through as-is
+    return {"item": item}
+```
+
 ### Adding Database Models
 
 Create models in `src/app/models/`. Models are **automatically discovered** and initialized.

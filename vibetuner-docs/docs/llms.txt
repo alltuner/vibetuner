@@ -37,6 +37,9 @@ Important notes:
   endpoints for Beanie models with pagination, filtering, sorting, and search
 - **SSE Helpers**: `@sse_endpoint()` and `broadcast()` for real-time streaming with
   HTMX. Import from `vibetuner.sse`. Redis pub/sub for multi-worker support
+- **`@render` Decorator**: `@render("template.html.jinja")` eliminates
+  `render_template()` boilerplate — route returns a dict, decorator handles rendering.
+  Returns `Response` objects unchanged (escape hatch). Import from `vibetuner`
 - **Template Context Providers**: `register_globals()` and `@register_context_provider`
   inject variables into every template render
 - **Service DI**: `get_email_service()`, `get_blob_service()`, `get_runtime_config()`

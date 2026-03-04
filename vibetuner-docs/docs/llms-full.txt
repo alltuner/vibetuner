@@ -226,6 +226,19 @@ from app.frontend.routes import blog
 app.include_router(blog.router)
 ```
 
+**`@render` decorator** — for simple routes, eliminate `render_template()` boilerplate:
+
+```python
+from vibetuner import render
+
+@router.get("/dashboard")
+@render("dashboard.html.jinja")
+async def dashboard(request: Request, user=Depends(get_current_user)) -> dict:
+    return {"user": user}
+```
+
+Returns `Response` objects unchanged (escape hatch for redirects, conditional logic).
+
 #### Adding Database Models
 
 Create models in `src/app/models/`. The approach depends on your database choice:

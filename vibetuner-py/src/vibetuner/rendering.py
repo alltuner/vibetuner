@@ -1,5 +1,6 @@
 # ABOUTME: Jinja2 template rendering for HTML responses.
 # ABOUTME: Lives outside vibetuner.frontend to avoid circular imports with tune.py.
+import functools
 import inspect
 import threading
 from collections.abc import Callable
@@ -7,7 +8,7 @@ from datetime import timedelta
 from typing import Any
 
 from starlette.requests import Request
-from starlette.responses import HTMLResponse
+from starlette.responses import HTMLResponse, Response
 from starlette.templating import Jinja2Templates
 
 from vibetuner.context import ctx as data_ctx
@@ -19,6 +20,7 @@ from vibetuner.time import age_in_timedelta
 
 
 __all__ = [
+    "render",
     "render_static_template",
     "render_template",
     "render_template_string",
@@ -93,6 +95,72 @@ def register_context_provider(func=None):
                 "request" in inspect.signature(fn).parameters
             )
         return fn
+
+    return decorator
+
+
+def render(template: str) -> Callable:
+    """Decorator that renders a template with the route's return value as context.
+
+    Eliminates ``render_template()`` boilerplate for simple routes. The
+    decorated function should return a ``dict`` that becomes the template
+    context.  The ``request`` parameter is automatically extracted from the
+    route's arguments.
+
+    If the route returns a :class:`~starlette.responses.Response` (e.g.
+    ``HTMLResponse`` or ``RedirectResponse``), it is passed through unchanged
+    — this is the escape hatch for conditional logic.
+
+    Example::
+
+        @router.get("/")
+        @render("items/list.html.jinja")
+        async def index(request: Request) -> dict:
+            items = await Item.find_all().to_list()
+            return {"items": items}
+
+    Args:
+        template: Path to template file relative to ``templates/frontend/``.
+
+    Returns:
+        Decorator that wraps the route function.
+    """
+
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        async def wrapper(*args: Any, **kwargs: Any) -> Response:
+            # Extract request from kwargs or positional args
+            request = kwargs.get("request")
+            if request is None:
+                for arg in args:
+                    if isinstance(arg, Request):
+                        request = arg
+                        break
+
+            if request is None:
+                raise TypeError(
+                    f"@render('{template}'): route '{func.__name__}' must accept "
+                    "a 'request' parameter"
+                )
+
+            if inspect.iscoroutinefunction(func):
+                result = await func(*args, **kwargs)
+            else:
+                result = func(*args, **kwargs)
+
+            # Escape hatch: pass through Response objects unchanged
+            if isinstance(result, Response):
+                return result
+
+            if not isinstance(result, dict):
+                raise TypeError(
+                    f"@render('{template}'): route '{func.__name__}' must return "
+                    f"a dict or Response, got {type(result).__name__}"
+                )
+
+            return render_template(template, request, result)
+
+        return wrapper
 
     return decorator
 
