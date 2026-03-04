@@ -46,6 +46,10 @@ Important notes:
 - **Block Rendering**: `render_template_block(template, block_name, request, ctx)`
   renders a single `{% block %}` for HTMX partials. `render_template_blocks()` renders
   multiple blocks for OOB swaps. No extra dependencies. Import from `vibetuner`
+- **`@cache_control` Decorator**: `@cache_control(max_age=300, public=True)` sets
+  `Cache-Control` headers declaratively. Supports `public`, `private`, `no_cache`,
+  `no_store`, `max_age`, `s_maxage`, `must_revalidate`, `stale_while_revalidate`,
+  `immutable`. Import from `vibetuner.decorators`
 - **Template Context Providers**: `register_globals()` and `@register_context_provider`
   inject variables into every template render
 - **Service DI**: `get_email_service()`, `get_blob_service()`, `get_runtime_config()`

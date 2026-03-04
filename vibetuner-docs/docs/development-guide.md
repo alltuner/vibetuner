@@ -474,6 +474,23 @@ async def list_items(request: Request):
 | `.current_url` | Browser's current URL when request was made |
 | `.prompt` | User response from `hx-prompt` |
 
+### Cache Control Headers
+
+Use the `@cache_control` decorator to set `Cache-Control` HTTP headers declaratively
+instead of manually manipulating response headers:
+
+```python
+from vibetuner.decorators import cache_control
+
+@router.get("/static-page")
+@cache_control(max_age=300, public=True)
+async def static_page(request: Request):
+    return render_template("static_page.html.jinja", request)
+```
+
+Supported directives: `public`, `private`, `no_cache`, `no_store`, `max_age`,
+`s_maxage`, `must_revalidate`, `stale_while_revalidate`, `immutable`.
+
 ### Block Rendering for HTMX Partials
 
 Use `render_template_block()` to render a single `{% block %}` from a template,
