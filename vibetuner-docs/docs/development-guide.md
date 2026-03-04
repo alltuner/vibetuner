@@ -165,6 +165,24 @@ async def item_detail(request: Request, id: str) -> dict:
     return {"item": item}
 ```
 
+#### Streaming Large Pages
+
+For large pages (dashboards, data tables), use `render_template_stream()` to send
+HTML chunks as the template renders. The browser can start painting the `<head>` and
+initial layout before the full page is ready:
+
+```python
+from vibetuner import render_template_stream
+
+@router.get("/dashboard")
+async def dashboard(request: Request):
+    data = await get_dashboard_data()
+    return render_template_stream("dashboard.html.jinja", request, {"data": data})
+```
+
+Context merging works identically to `render_template()`. Best suited for full page
+loads — HTMX partials are typically small and don't benefit from streaming.
+
 ### Adding Database Models
 
 Create models in `src/app/models/`. Models are **automatically discovered** and initialized.

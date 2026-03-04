@@ -445,6 +445,22 @@ async def dashboard(request: Request, user=Depends(get_current_user)) -> dict:
 The decorator auto-extracts `request` from route params. If the route returns a
 `Response` (e.g. `RedirectResponse`) instead of a dict, it passes through unchanged.
 
+**Streaming large pages** — for dashboards or data tables, use
+`render_template_stream()` to send HTML chunks as they render, improving
+time-to-first-byte:
+
+```python
+from vibetuner import render_template_stream
+
+@router.get("/dashboard")
+async def dashboard(request: Request):
+    data = await get_dashboard_data()
+    return render_template_stream("dashboard.html.jinja", request, {"data": data})
+```
+
+Context merging works identically to `render_template()`. Best suited for full
+page loads — HTMX partials are typically small and don't benefit from streaming.
+
 ```python
 # src/app/frontend/routes/__init__.py
 from fastapi import APIRouter

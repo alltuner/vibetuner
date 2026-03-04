@@ -40,6 +40,9 @@ Important notes:
 - **`@render` Decorator**: `@render("template.html.jinja")` eliminates
   `render_template()` boilerplate — route returns a dict, decorator handles rendering.
   Returns `Response` objects unchanged (escape hatch). Import from `vibetuner`
+- **Streaming HTML**: `render_template_stream()` returns a `StreamingResponse` using
+  Jinja2's `generate()`, improving TTFB for large pages. Same context merging as
+  `render_template()`. Import from `vibetuner`
 - **Template Context Providers**: `register_globals()` and `@register_context_provider`
   inject variables into every template render
 - **Service DI**: `get_email_service()`, `get_blob_service()`, `get_runtime_config()`

@@ -8,7 +8,7 @@ from datetime import timedelta
 from typing import Any
 
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, Response
+from starlette.responses import HTMLResponse, Response, StreamingResponse
 from starlette.templating import Jinja2Templates
 
 from vibetuner.context import ctx as data_ctx
@@ -23,6 +23,7 @@ __all__ = [
     "render",
     "render_static_template",
     "render_template",
+    "render_template_stream",
     "render_template_string",
     "register_globals",
     "register_context_provider",
@@ -541,6 +542,65 @@ def render_template_string(
 
     template_obj = templates.get_template(template)
     return template_obj.render(merged_ctx)
+
+
+def render_template_stream(
+    template: str,
+    request: Request,
+    ctx: dict[str, Any] | None = None,
+) -> StreamingResponse:
+    """Render a template as a streaming HTML response.
+
+    Uses Jinja2's ``generate_async()`` to yield HTML chunks as the template
+    renders, allowing the browser to start painting before the full page is
+    ready.  This improves time-to-first-byte (TTFB) for large pages like
+    dashboards and data tables.
+
+    Context merging (globals, providers, etc.) works identically to
+    ``render_template()``.
+
+    Args:
+        template: Path to template file relative to ``templates/frontend/``.
+        request: FastAPI Request object.
+        ctx: Optional context dictionary merged into the template context.
+
+    Returns:
+        StreamingResponse with ``media_type="text/html"``.
+
+    Example::
+
+        @router.get("/dashboard")
+        async def dashboard(request: Request):
+            data = await get_dashboard_data()
+            return render_template_stream(
+                "dashboard.html.jinja", request, {"data": data}
+            )
+
+    Note:
+        HTMX partial responses are typically small and don't benefit from
+        streaming.  Use this for full page loads where the ``<head>`` and
+        initial layout should reach the browser as early as possible.
+    """
+    _ensure_custom_filters()
+    ctx = ctx or {}
+    language = getattr(request.state, "language", data_ctx.default_language)
+    with _context_lock:
+        globals_snapshot = dict(_template_globals)
+    merged_ctx = {
+        **data_ctx.model_dump(),
+        **globals_snapshot,
+        **_collect_provider_context(request=request),
+        "request": request,
+        "language": language,
+        **ctx,
+    }
+
+    template_obj = templates.get_template(template)
+
+    def _generate():
+        yield from template_obj.generate(**merged_ctx)
+
+    return StreamingResponse(_generate(), media_type="text/html")
 
 
 # Global Vars

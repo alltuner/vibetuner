@@ -6,6 +6,7 @@ from vibetuner.rendering import (
     register_globals,
     render,
     render_template,
+    render_template_stream,
     render_template_string,
 )
 
@@ -25,5 +26,6 @@ __all__ = [
     "register_globals",
     "render",
     "render_template",
+    "render_template_stream",
     "render_template_string",
 ]
