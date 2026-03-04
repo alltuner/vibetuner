@@ -1154,6 +1154,35 @@ on real-world usage, and your feedback helps us prioritize what to fix next.
 This applies to both **developers** and **AI agents**: if these instructions were unclear,
 incomplete, or caused a mistake, that's a vibetuner bug we want to hear about.
 
+## Ad-hoc Database Operations
+
+For one-off database scripts (backfills, migrations, data fixes):
+
+```python
+import asyncio
+from beanie import init_beanie
+from pymongo import AsyncMongoClient
+from vibetuner.config import settings
+
+async def run():
+    client = AsyncMongoClient(str(settings.mongodb_url))
+    db = client[settings.project.project_slug]
+    await init_beanie(database=db, document_models=[YourModel])
+
+    # Use Beanie queries or raw pymongo:
+    col = YourModel.get_pymongo_collection()
+    result = await col.update_many(filter, update)
+
+asyncio.run(run())
+```
+
+**Important**: This project uses `pymongo` (not `motor`). Use `AsyncMongoClient`
+from `pymongo`, and `get_pymongo_collection()` on Beanie documents.
+
+**Gotcha**: Existing documents may have `None` for fields that have defaults in
+Pydantic models. When querying by such fields, include `None` in your filter
+(e.g., `{"status": {"$in": [None, "draft"]}}`).
+
 ## Custom Project Instructions
 
 Add project-specific notes here.
