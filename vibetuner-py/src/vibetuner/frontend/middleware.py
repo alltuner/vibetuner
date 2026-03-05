@@ -1,11 +1,10 @@
 import secrets
 
-from fastapi import Request, Response
 from fastapi.middleware import Middleware
 from fastapi.requests import HTTPConnection
 from starlette.authentication import AuthCredentials, AuthenticationBackend
+from starlette.datastructures import MutableHeaders
 from starlette.middleware.authentication import AuthenticationMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import Response as StarletteResponse
@@ -19,7 +18,7 @@ from starlette_babel import (
 )
 from starlette_context.middleware import RawContextMiddleware
 from starlette_context.plugins import RequestIdPlugin
-from starlette_htmx.middleware import HtmxMiddleware
+from starlette_htmx.middleware import HtmxDetails
 
 from vibetuner.config import settings
 from vibetuner.context import ctx
@@ -81,24 +80,47 @@ if locales_path is not None and locales_path.exists() and locales_path.is_dir():
     shared_translator.load_from_directories([locales_path])
 
 
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """Adds security headers (CSP with nonce, X-Content-Type-Options, etc.) to responses."""
+class HtmxMiddleware:
+    """Pure ASGI replacement for starlette_htmx.middleware.HtmxMiddleware.
+
+    The upstream starlette-htmx uses BaseHTTPMiddleware, which adds an extra
+    empty sentinel body chunk on response completion. This triggers a bug in
+    slowapi's SlowAPIASGIMiddleware where http.response.start is re-sent on
+    every body chunk, causing "ASGI flow error: Response already started".
+    See: https://github.com/laurentS/slowapi/issues/XXX
+
+    This pure ASGI version avoids the issue. Can be removed once slowapi
+    fixes SlowAPIASGIMiddleware upstream.
+    """
+
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "http":
+            from starlette.requests import Request
+
+            request = Request(scope)
+            scope.setdefault("state", {})["htmx"] = HtmxDetails(request)
+        await self.app(scope, receive, send)
+
+
+class SecurityHeadersMiddleware:
+    """Pure ASGI middleware that adds security headers (CSP with nonce, etc.) to responses.
+
+    Converted from BaseHTTPMiddleware to avoid triggering a bug in slowapi's
+    SlowAPIASGIMiddleware that re-sends http.response.start on every body chunk.
+    Can revert to BaseHTTPMiddleware once slowapi fixes the issue upstream.
+    """
 
     BYPASS_PREFIXES = ("/static/", "/health/")
 
-    async def dispatch(self, request: Request, call_next):
-        path = request.url.path
-        if any(path.startswith(p) for p in self.BYPASS_PREFIXES):
-            return await call_next(request)
+    def __init__(self, app: ASGIApp):
+        self.app = app
 
-        nonce = secrets.token_urlsafe(16)
-        request.state.csp_nonce = nonce
-
-        response: Response = await call_next(request)
-
+    def _apply_headers(self, headers: MutableHeaders, nonce: str) -> None:
         config = settings.security_headers
 
-        # Build CSP directives
         script_src = f"'nonce-{nonce}' 'strict-dynamic'"
         if config.extra_script_src:
             script_src += f" {config.extra_script_src}"
@@ -131,43 +153,92 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             if settings.debug
             else "Content-Security-Policy"
         )
-        response.headers[csp_header] = csp_value
+        headers[csp_header] = csp_value
 
-        # Non-CSP security headers
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["X-XSS-Protection"] = "0"
-        response.headers["Permissions-Policy"] = (
+        headers["X-Content-Type-Options"] = "nosniff"
+        headers["X-Frame-Options"] = "DENY"
+        headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        headers["X-XSS-Protection"] = "0"
+        headers["Permissions-Policy"] = (
             "camera=(), microphone=(), geolocation=(), payment=()"
         )
 
-        # Remove server identity header
-        if "server" in response.headers:
-            del response.headers["server"]
+        if "server" in headers:
+            del headers["server"]
 
-        return response
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        path = scope.get("path", "")
+        if any(path.startswith(p) for p in self.BYPASS_PREFIXES):
+            await self.app(scope, receive, send)
+            return
+
+        nonce = secrets.token_urlsafe(16)
+
+        if "state" not in scope:
+            scope["state"] = {}
+        scope["state"]["csp_nonce"] = nonce
+
+        async def send_with_headers(message):
+            if message["type"] == "http.response.start":
+                self._apply_headers(MutableHeaders(scope=message), nonce)
+            await send(message)
+
+        await self.app(scope, receive, send_with_headers)
 
 
-class AdjustLangCookieMiddleware(BaseHTTPMiddleware):
+class AdjustLangCookieMiddleware:
+    """Pure ASGI middleware that syncs the language cookie with request.state.language.
+
+    Converted from BaseHTTPMiddleware to avoid triggering a bug in slowapi's
+    SlowAPIASGIMiddleware that re-sends http.response.start on every body chunk.
+    Can revert to BaseHTTPMiddleware once slowapi fixes the issue upstream.
+    """
+
     BYPASS_PREFIXES = ("/static/", "/health/")
 
-    async def dispatch(self, request: Request, call_next):
-        path = request.url.path
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        path = scope.get("path", "")
         if any(path.startswith(p) for p in self.BYPASS_PREFIXES):
-            return await call_next(request)
+            await self.app(scope, receive, send)
+            return
 
-        response: Response = await call_next(request)
+        # Parse language cookie from request headers
+        lang_cookie = None
+        for header_name, header_value in scope.get("headers", []):
+            if header_name == b"cookie":
+                for chunk in header_value.decode().split(";"):
+                    chunk = chunk.strip()
+                    if chunk.startswith("language="):
+                        lang_cookie = chunk.split("=", 1)[1]
+                        break
+                break
 
-        lang_cookie = request.cookies.get("language")
-        if not lang_cookie or lang_cookie != request.state.language:
-            response.set_cookie(
-                key="language",
-                value=request.state.language,
-                max_age=LANGUAGE_COOKIE_MAX_AGE,
-            )
+        async def send_with_cookie(message):
+            if message["type"] == "http.response.start":
+                state = scope.get("state", {})
+                language = state.get("language")
+                if language and (not lang_cookie or lang_cookie != language):
+                    headers = MutableHeaders(scope=message)
+                    cookie = (
+                        f"language={language}; Max-Age={LANGUAGE_COOKIE_MAX_AGE}; "
+                        f"Path=/; SameSite=lax"
+                    )
+                    headers.append("set-cookie", cookie)
 
-        return response
+            await send(message)
+
+        await self.app(scope, receive, send_with_cookie)
 
 
 class LangPrefixMiddleware:

@@ -2,15 +2,15 @@
 # ABOUTME: Verifies cookie setting, bypass paths for static/health, and cookie update logic
 # ruff: noqa: S101
 
-from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.datastructures import MutableHeaders
 from starlette.testclient import TestClient
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 
 LANGUAGE_COOKIE_MAX_AGE = 365 * 24 * 60 * 60
 
 
-class AdjustLangCookieMiddleware(BaseHTTPMiddleware):
+class AdjustLangCookieMiddleware:
     """Test copy of middleware to avoid importing full vibetuner.frontend package.
 
     Mirrors the implementation in vibetuner.frontend.middleware.AdjustLangCookieMiddleware.
@@ -18,22 +18,44 @@ class AdjustLangCookieMiddleware(BaseHTTPMiddleware):
 
     BYPASS_PREFIXES = ("/static/", "/health/")
 
-    async def dispatch(self, request: Request, call_next):
-        path = request.url.path
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        path = scope.get("path", "")
         if any(path.startswith(p) for p in self.BYPASS_PREFIXES):
-            return await call_next(request)
+            await self.app(scope, receive, send)
+            return
 
-        response: Response = await call_next(request)
+        lang_cookie = None
+        for header_name, header_value in scope.get("headers", []):
+            if header_name == b"cookie":
+                for chunk in header_value.decode().split(";"):
+                    chunk = chunk.strip()
+                    if chunk.startswith("language="):
+                        lang_cookie = chunk.split("=", 1)[1]
+                        break
+                break
 
-        lang_cookie = request.cookies.get("language")
-        if not lang_cookie or lang_cookie != request.state.language:
-            response.set_cookie(
-                key="language",
-                value=request.state.language,
-                max_age=LANGUAGE_COOKIE_MAX_AGE,
-            )
+        async def send_with_cookie(message):
+            if message["type"] == "http.response.start":
+                state = scope.get("state", {})
+                language = state.get("language")
+                if language and (not lang_cookie or lang_cookie != language):
+                    headers = MutableHeaders(scope=message)
+                    cookie = (
+                        f"language={language}; Max-Age={LANGUAGE_COOKIE_MAX_AGE}; "
+                        f"Path=/; SameSite=lax"
+                    )
+                    headers.append("set-cookie", cookie)
 
-        return response
+            await send(message)
+
+        await self.app(scope, receive, send_with_cookie)
 
 
 def _make_app(default_language: str = "en"):
@@ -46,9 +68,8 @@ def _make_app(default_language: str = "en"):
         request.state.language = default_language
         return PlainTextResponse("OK")
 
-    app = Starlette(routes=[Route("/{path:path}", homepage), Route("/", homepage)])
-    app = AdjustLangCookieMiddleware(app)
-    return app
+    inner = Starlette(routes=[Route("/{path:path}", homepage), Route("/", homepage)])
+    return AdjustLangCookieMiddleware(inner)
 
 
 class TestAdjustLangCookieMiddleware:
