@@ -4,24 +4,6 @@ Starlette (and FastAPI) supports referencing routes in mounted sub-applications 
 the `url_for('mount_name:route_name')` syntax. This works in both Python code and
 Jinja templates.
 
-## Basic Usage
-
-### In Templates
-
-```jinja
-<a href="{{ url_for('admin:index') }}">Admin Panel</a>
-```
-
-### In Python
-
-```python
-from starlette.requests import Request
-
-def my_route(request: Request):
-    admin_url = request.url_for("admin:index")
-    return RedirectResponse(url=admin_url)
-```
-
 ## How It Works
 
 When you mount a sub-application with `app.mount()`, the `name` parameter defines
@@ -44,23 +26,11 @@ for `url_for`:
 
 | App | Mount Name | Path | Condition |
 |-----|-----------|------|-----------|
-| Admin Panel (starlette-admin) | `admin` | `/admin` | MongoDB configured |
 | CSS static files | `css` | `/static/v{hash}/css` | Always |
 | JS static files | `js` | `/static/v{hash}/js` | Always |
 | Image static files | `img` | `/static/v{hash}/img` | Always |
 | Favicon files | `favicons` | `/static/favicons` | Always |
 | Font files | `fonts` | `/static/fonts` | Always |
-
-### Admin Panel
-
-The admin panel is only mounted when MongoDB is configured (`MONGODB_URL` is set).
-Templates should check the `admin_available` variable before using `url_for('admin:index')`:
-
-```jinja
-{% if admin_available %}
-    <a href="{{ url_for('admin:index') }}">Admin Panel</a>
-{% endif %}
-```
 
 ### Static Files
 
