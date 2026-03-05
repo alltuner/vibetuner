@@ -51,3 +51,34 @@ def reset_redis_client() -> None:
     """
     global _client
     _client = None
+
+
+def get_redis_url() -> str | None:
+    """Return the configured Redis URL as a string, or None if not set.
+
+    Useful for libraries (e.g. slowapi/limits) that accept a URI string
+    rather than a client object.
+    """
+    from vibetuner.config import settings
+
+    if settings.redis_url is None:
+        return None
+    return str(settings.redis_url)
+
+
+def create_redis_client():
+    """Create a new, independent async Redis client.
+
+    Unlike :func:`get_redis_client`, each call returns a **separate** connection.
+    Use this when a dedicated connection is needed (e.g. pub/sub).
+
+    Returns None if ``redis_url`` is not configured.
+    """
+    from vibetuner.config import settings
+
+    if settings.redis_url is None:
+        return None
+
+    import redis.asyncio as aioredis
+
+    return aioredis.from_url(str(settings.redis_url))
