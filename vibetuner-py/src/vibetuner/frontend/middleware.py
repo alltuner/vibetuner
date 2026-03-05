@@ -18,7 +18,7 @@ from starlette_babel import (
 )
 from starlette_context.middleware import RawContextMiddleware
 from starlette_context.plugins import RequestIdPlugin
-from starlette_htmx.middleware import HtmxMiddleware
+from starlette_htmx.middleware import HtmxDetails
 
 from vibetuner.config import settings
 from vibetuner.context import ctx
@@ -80,8 +80,38 @@ if locales_path is not None and locales_path.exists() and locales_path.is_dir():
     shared_translator.load_from_directories([locales_path])
 
 
+class HtmxMiddleware:
+    """Pure ASGI replacement for starlette_htmx.middleware.HtmxMiddleware.
+
+    The upstream starlette-htmx uses BaseHTTPMiddleware, which adds an extra
+    empty sentinel body chunk on response completion. This triggers a bug in
+    slowapi's SlowAPIASGIMiddleware where http.response.start is re-sent on
+    every body chunk, causing "ASGI flow error: Response already started".
+    See: https://github.com/laurentS/slowapi/issues/XXX
+
+    This pure ASGI version avoids the issue. Can be removed once slowapi
+    fixes SlowAPIASGIMiddleware upstream.
+    """
+
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "http":
+            from starlette.requests import Request
+
+            request = Request(scope)
+            scope.setdefault("state", {})["htmx"] = HtmxDetails(request)
+        await self.app(scope, receive, send)
+
+
 class SecurityHeadersMiddleware:
-    """Pure ASGI middleware that adds security headers (CSP with nonce, etc.) to responses."""
+    """Pure ASGI middleware that adds security headers (CSP with nonce, etc.) to responses.
+
+    Converted from BaseHTTPMiddleware to avoid triggering a bug in slowapi's
+    SlowAPIASGIMiddleware that re-sends http.response.start on every body chunk.
+    Can revert to BaseHTTPMiddleware once slowapi fixes the issue upstream.
+    """
 
     BYPASS_PREFIXES = ("/static/", "/health/")
 
@@ -161,7 +191,12 @@ class SecurityHeadersMiddleware:
 
 
 class AdjustLangCookieMiddleware:
-    """Pure ASGI middleware that syncs the language cookie with request.state.language."""
+    """Pure ASGI middleware that syncs the language cookie with request.state.language.
+
+    Converted from BaseHTTPMiddleware to avoid triggering a bug in slowapi's
+    SlowAPIASGIMiddleware that re-sends http.response.start on every body chunk.
+    Can revert to BaseHTTPMiddleware once slowapi fixes the issue upstream.
+    """
 
     BYPASS_PREFIXES = ("/static/", "/health/")
 
