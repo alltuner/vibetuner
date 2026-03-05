@@ -5,9 +5,9 @@
 import secrets
 from dataclasses import dataclass, field
 
-from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.datastructures import MutableHeaders
 from starlette.testclient import TestClient
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 
 @dataclass
@@ -29,7 +29,7 @@ class _Settings:
     )
 
 
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+class SecurityHeadersMiddleware:
     """Test copy of middleware to avoid importing full vibetuner.frontend package.
 
     Mirrors the implementation in vibetuner.frontend.middleware.SecurityHeadersMiddleware.
@@ -37,23 +37,13 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
     BYPASS_PREFIXES = ("/static/", "/health/")
 
-    def __init__(self, app, settings: _Settings | None = None):
-        super().__init__(app)
+    def __init__(self, app: ASGIApp, settings: _Settings | None = None):
+        self.app = app
         self._settings = settings or _Settings()
 
-    async def dispatch(self, request: Request, call_next):
-        path = request.url.path
-        if any(path.startswith(p) for p in self.BYPASS_PREFIXES):
-            return await call_next(request)
-
-        nonce = secrets.token_urlsafe(16)
-        request.state.csp_nonce = nonce
-
-        response: Response = await call_next(request)
-
+    def _apply_headers(self, headers: MutableHeaders, nonce: str) -> None:
         config = self._settings.security_headers
 
-        # Build CSP directives
         script_src = f"'nonce-{nonce}' 'strict-dynamic'"
         if config.extra_script_src:
             script_src += f" {config.extra_script_src}"
@@ -86,26 +76,45 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             if self._settings.debug
             else "Content-Security-Policy"
         )
-        response.headers[csp_header] = csp_value
+        headers[csp_header] = csp_value
 
-        # Non-CSP security headers
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["X-XSS-Protection"] = "0"
-        response.headers["Permissions-Policy"] = (
+        headers["X-Content-Type-Options"] = "nosniff"
+        headers["X-Frame-Options"] = "DENY"
+        headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        headers["X-XSS-Protection"] = "0"
+        headers["Permissions-Policy"] = (
             "camera=(), microphone=(), geolocation=(), payment=()"
         )
 
-        # Remove server identity header
-        if "server" in response.headers:
-            del response.headers["server"]
+        if "server" in headers:
+            del headers["server"]
 
-        return response
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        path = scope.get("path", "")
+        if any(path.startswith(p) for p in self.BYPASS_PREFIXES):
+            await self.app(scope, receive, send)
+            return
+
+        nonce = secrets.token_urlsafe(16)
+
+        if "state" not in scope:
+            scope["state"] = {}
+        scope["state"]["csp_nonce"] = nonce
+
+        async def send_with_headers(message):
+            if message["type"] == "http.response.start":
+                self._apply_headers(MutableHeaders(scope=message), nonce)
+            await send(message)
+
+        await self.app(scope, receive, send_with_headers)
 
 
 def _make_app(settings: _Settings | None = None):
-    """Create a minimal FastAPI app wrapped with SecurityHeadersMiddleware."""
+    """Create a minimal Starlette app wrapped with SecurityHeadersMiddleware."""
     from starlette.applications import Starlette
     from starlette.responses import PlainTextResponse
     from starlette.routing import Route
@@ -118,9 +127,9 @@ def _make_app(settings: _Settings | None = None):
             captured_nonces.append(nonce)
         return PlainTextResponse("OK")
 
-    app = Starlette(routes=[Route("/{path:path}", homepage), Route("/", homepage)])
-    app = SecurityHeadersMiddleware(app, settings=settings)
-    # Stash list on app for test access
+    inner = Starlette(routes=[Route("/{path:path}", homepage), Route("/", homepage)])
+    app = SecurityHeadersMiddleware(inner, settings=settings)
+    # Stash list on wrapper for test access
     app._captured_nonces = captured_nonces  # type: ignore[attr-defined]
     return app
 
