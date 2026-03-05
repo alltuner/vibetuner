@@ -86,7 +86,7 @@ Get started: {{ dashboard_url }}
 
 ```python
 from vibetuner.templates import render_static_template
-from vibetuner.services.email import SESEmailService
+from vibetuner.services.email import EmailService
 
 async def send_welcome_email(user_email: str, user_name: str, lang: str = "en"):
     html_body = render_static_template(
@@ -111,12 +111,12 @@ async def send_welcome_email(user_email: str, user_name: str, lang: str = "en"):
         }
     )
 
-    ses_service = SESEmailService()
-    await ses_service.send_email(
-        subject=f"Welcome to My App!",
+    email_service = EmailService()
+    await email_service.send_email(
+        subject="Welcome to My App!",
         html_body=html_body,
         text_body=text_body,
-        to_address=user_email
+        to_address=user_email,
     )
 ```
 

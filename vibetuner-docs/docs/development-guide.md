@@ -364,7 +364,7 @@ If you enabled background jobs, create tasks in `src/app/tasks/`. Task modules a
 # src/app/tasks/emails.py
 from vibetuner.tasks.worker import get_worker
 from vibetuner.models import UserModel
-from vibetuner.services.email import send_email
+from vibetuner.services.email import EmailService
 
 worker = get_worker()
 
@@ -372,10 +372,12 @@ worker = get_worker()
 async def send_welcome_email(user_id: str):
     user = await UserModel.get(user_id)
     if user:
-        await send_email(
-            to_email=user.email,
+        email_service = EmailService()
+        await email_service.send_email(
+            to_address=user.email,
             subject="Welcome!",
-            html_content="<h1>Welcome!</h1>"
+            html_body="<h1>Welcome!</h1>",
+            text_body="Welcome!",
         )
     return {"status": "sent"}
 ```
@@ -1239,7 +1241,7 @@ healthcheck:
 ```
 
 Services checked automatically based on configuration: MongoDB, Redis,
-S3/R2 endpoint, and email (Mailjet).
+S3/R2 endpoint, and email (Resend or Mailjet).
 
 ## Debugging
 

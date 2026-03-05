@@ -527,15 +527,31 @@ Services don't need registration - just import them where needed:
 
 ```python
 # src/app/services/notifications.py
-from vibetuner.services.email import send_email
+from vibetuner.services.email import EmailService
 
 async def send_notification(user_email: str, message: str):
-    await send_email(
-        to_email=user_email,
+    email_service = EmailService()
+    await email_service.send_email(
+        to_address=user_email,
         subject="Notification",
-        html_content=f"<p>{message}</p>"
+        html_body=f"<p>{message}</p>",
+        text_body=message,
     )
 ```
+
+**Email provider configuration** — set one of these in your `.env`:
+
+```bash
+# Option A: Resend (recommended)
+MAIL_RESEND_API_KEY=re_xxxxxxxxxxxx
+
+# Option B: Mailjet
+MAIL_MAILJET_API_KEY=your-api-key
+MAIL_MAILJET_API_SECRET=your-api-secret
+```
+
+The provider is auto-detected from which credentials are present. You can also
+set `MAIL_PROVIDER=resend` or `MAIL_PROVIDER=mailjet` explicitly.
 
 ### Adding Template Filters
 

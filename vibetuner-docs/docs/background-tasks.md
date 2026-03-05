@@ -40,14 +40,16 @@ worker = get_worker()
 async def send_welcome_email(user_id: str) -> dict[str, str]:
     """Send a welcome email to a newly registered user."""
     from vibetuner.models import UserModel
-    from vibetuner.services.email import send_email
+    from vibetuner.services.email import EmailService
 
     user = await UserModel.get(user_id)
     if user:
-        await send_email(
-            to_email=user.email,
+        email_service = EmailService()
+        await email_service.send_email(
+            to_address=user.email,
             subject="Welcome!",
-            html_content="<h1>Welcome!</h1>",
+            html_body="<h1>Welcome!</h1>",
+            text_body="Welcome!",
         )
         return {"status": "sent", "email": user.email}
     return {"status": "skipped"}
@@ -381,7 +383,7 @@ async def upload_stream(request: Request, user_id: str):
 ```
 
 For more details on SSE, see the
-[SSE / Real-Time Streaming](development-guide.md#sse-real-time-streaming)
+[SSE / Real-Time Streaming](development-guide.md#sse--real-time-streaming)
 section in the development guide.
 
 ## Worker Lifecycle
@@ -571,7 +573,7 @@ Use `just local-all-with-worker` or start the worker separately with
 
 ## Next Steps
 
-- [SSE / Real-Time Streaming](development-guide.md#sse-real-time-streaming) —
+- [SSE / Real-Time Streaming](development-guide.md#sse--real-time-streaming) —
   Push live updates to the browser
 - [Deployment](deployment.md) — Run workers in production
 - [CLI Reference](cli-reference.md) — Full `vibetuner run` command details
