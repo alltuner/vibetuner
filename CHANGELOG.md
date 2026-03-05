@@ -1,5 +1,30 @@
 # Changelog
 
+## [9.0.0](https://github.com/alltuner/vibetuner/compare/v8.9.0...v9.0.0) (2026-03-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace mailjet with multi-provider email service (Resend + Mailjet) ([#1372](https://github.com/alltuner/vibetuner/issues/1372))
+
+### Features
+
+* add auto-generated admin panel with starlette-admin ([#1377](https://github.com/alltuner/vibetuner/issues/1377)) ([ae116c8](https://github.com/alltuner/vibetuner/commit/ae116c8b026b3ffa6a0b8e759102e17574c2d5af))
+* add rate limiting support ([#1374](https://github.com/alltuner/vibetuner/issues/1374)) ([522fc89](https://github.com/alltuner/vibetuner/commit/522fc899f59bf336fd103f34fca4e4d329bec3aa))
+* add request ID / correlation ID middleware ([#1373](https://github.com/alltuner/vibetuner/issues/1373)) ([a9b5945](https://github.com/alltuner/vibetuner/commit/a9b594527f6c5fba5bce9ab442bfc4ae94f83252))
+* add response caching decorator with shared Redis client ([#1370](https://github.com/alltuner/vibetuner/issues/1370)) ([352027a](https://github.com/alltuner/vibetuner/commit/352027a95f6147d42ac13638742ac8eb41e81258))
+* replace mailjet with multi-provider email service (Resend + Mailjet) ([#1372](https://github.com/alltuner/vibetuner/issues/1372)) ([93fb441](https://github.com/alltuner/vibetuner/commit/93fb441c03ff86a4c6a222df656789d9209110d2))
+
+
+### Bug Fixes
+
+* replace hardcoded admin URLs with url_for and document sub-mount routing ([#1381](https://github.com/alltuner/vibetuner/issues/1381)) ([a6c0ebc](https://github.com/alltuner/vibetuner/commit/a6c0ebcb882445f7e76e32afcd160591ad8f9929))
+
+
+### Code Refactoring
+
+* migrate Redis consumers to shared vibetuner.redis client ([#1376](https://github.com/alltuner/vibetuner/issues/1376)) ([54f123f](https://github.com/alltuner/vibetuner/commit/54f123ff72461f169aa5b3a497f019d9b3481d69))
+
 ## [8.9.0](https://github.com/alltuner/vibetuner/compare/v8.8.3...v8.9.0) (2026-03-04)
 
 
