@@ -18,7 +18,7 @@ from .oauth import auto_register_providers
 from .routes import auth, debug, health, language, meta, user
 from .routes.auth import register_oauth_routes
 from .routing import LocalizedRouter as LocalizedRouter, localized as localized
-from .templates import render_template
+from .templates import register_globals, render_template
 
 
 # Load user's app configuration
@@ -131,14 +131,20 @@ if settings.workers_available:
         pass
 
 # Mount admin panel (starlette-admin with Beanie backend)
+_admin_available = False
 if settings.mongodb_url is not None:
     try:
         from .admin import create_admin
 
         admin = create_admin()
         admin.mount_to(app)
+        _admin_available = True
         logger.debug("Admin panel mounted at /admin")
     except Exception as exc:
         logger.warning(f"Failed to mount admin panel: {exc}")
+
+# Expose admin availability to templates so they can use url_for('admin:index')
+# conditionally instead of hardcoding /admin links.
+register_globals({"admin_available": _admin_available})
 
 app.include_router(health.router)
