@@ -1235,6 +1235,37 @@ disabled.
 **Important:** Avoid inline event handlers (`onclick`, `onload`, etc.) in your templates.
 CSP with `strict-dynamic` blocks them. Use `addEventListener` or HTMX attributes instead.
 
+### Request ID / Correlation ID
+
+Every request is assigned a unique `X-Request-ID` header (UUID4). If the incoming request
+already carries an `X-Request-ID` (e.g., from a load balancer or API gateway), vibetuner
+reuses it. The ID is always returned in the response headers.
+
+**In logs:** The request ID is automatically included in every Loguru log line emitted
+during request handling — no configuration needed. Use it to filter logs for a single
+request.
+
+**Accessing the request ID in code:**
+
+```python
+# Option 1: helper function (works anywhere during a request — no Request object needed)
+from vibetuner.frontend.request_id import get_request_id
+
+rid = get_request_id()
+
+# Option 2: FastAPI dependency
+from fastapi import Depends
+from vibetuner.frontend.request_id import request_id_dependency
+
+@router.get("/")
+def index(request_id: str = Depends(request_id_dependency)):
+    ...
+```
+
+**In templates:** The request ID is available via `starlette_context.context` but is
+not injected into the template context by default. If you need it in templates, pass
+it explicitly or use a template context provider.
+
 ## Localization
 
 ```bash

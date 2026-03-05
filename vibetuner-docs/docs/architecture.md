@@ -157,7 +157,7 @@ The `vibetuner` Python package provides the following key modules:
 | `vibetuner.testing` | Pytest fixtures for test client, mock auth, mock tasks |
 | `vibetuner.mongo` | MongoDB connection and model registration |
 | `vibetuner.sqlmodel` | SQLModel/SQLAlchemy integration |
-| `vibetuner.frontend` | FastAPI app, auth, middleware, route discovery |
+| `vibetuner.frontend` | FastAPI app, auth, middleware, request ID, route discovery |
 | `vibetuner.services` | DI wrappers for email, blob storage, runtime config |
 | `vibetuner.tasks` | Background job infrastructure (Streaq worker, robust tasks) |
 | `vibetuner.cli` | CLI commands (scaffold, run, db, doctor) |

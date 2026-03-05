@@ -2685,6 +2685,18 @@ wheels = [
 ]
 
 [[package]]
+name = "starlette-context"
+version = "0.5.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "starlette" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/29/fd/d28907759adf31f1112e71006b649c81a74a115b8c14645f87a5f5c83dd3/starlette_context-0.5.1.tar.gz", hash = "sha256:f6025753f8ede041778b2f2c3823e2da9df3c2d94832575bcb59374216b7c2b2", size = 8397, upload-time = "2026-02-28T11:32:00.185Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/87/9f/c1d842f7a628a1aaa6754f3e7d28218978af8ed28170c7f9eec49dc6401a/starlette_context-0.5.1-py3-none-any.whl", hash = "sha256:df55da1d7ae3453e89874b9d5c1d40a98dd2f1293c37791dd7c1a907087c9b5e", size = 12836, upload-time = "2026-02-28T11:32:01.254Z" },
+]
+
+[[package]]
 name = "starlette-htmx"
 version = "0.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2992,6 +3004,7 @@ dependencies = [
     { name = "rich" },
     { name = "sqlmodel" },
     { name = "starlette-babel" },
+    { name = "starlette-context" },
     { name = "starlette-htmx" },
     { name = "streaq", extra = ["web"] },
     { name = "typer" },
@@ -3053,6 +3066,7 @@ requires-dist = [
     { name = "semver", marker = "extra == 'dev'", specifier = ">=3.0.4" },
     { name = "sqlmodel", specifier = ">=0.0.37" },
     { name = "starlette-babel", specifier = ">=1.0.3" },
+    { name = "starlette-context", specifier = ">=0.3.6" },
     { name = "starlette-htmx", specifier = ">=0.1.1" },
     { name = "streaq", extras = ["web"], specifier = ">=6.2.1,<7.0.0" },
     { name = "taplo", marker = "extra == 'dev'", specifier = ">=0.9.3" },
