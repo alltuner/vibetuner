@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.0.3](https://github.com/alltuner/vibetuner/compare/v9.0.2...v9.0.3) (2026-03-05)
+
+
+### Bug Fixes
+
+* convert BaseHTTPMiddleware classes to pure ASGI for SlowAPIASGIMiddleware compatibility ([#1388](https://github.com/alltuner/vibetuner/issues/1388)) ([78946bc](https://github.com/alltuner/vibetuner/commit/78946bc7e6e1b3add37f70669e5ff8399f01aa81))
+
 ## [9.0.2](https://github.com/alltuner/vibetuner/compare/v9.0.1...v9.0.2) (2026-03-05)
 
 
