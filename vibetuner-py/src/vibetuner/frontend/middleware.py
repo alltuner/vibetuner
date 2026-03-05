@@ -368,9 +368,13 @@ middlewares: list[Middleware] = [
 ]
 
 if settings.rate_limit.enabled:
-    from slowapi.middleware import SlowAPIASGIMiddleware
+    # SlowAPIASGIMiddleware has a bug where it re-sends http.response.start on
+    # every body chunk, crashing streaming responses (FileResponse).
+    # Using SlowAPIMiddleware (BaseHTTPMiddleware-based) as workaround.
+    # See: https://github.com/laurentS/slowapi/issues/XXX
+    from slowapi.middleware import SlowAPIMiddleware
 
-    middlewares.append(Middleware(SlowAPIASGIMiddleware))
+    middlewares.append(Middleware(SlowAPIMiddleware))
 
 if settings.security_headers.enabled:
     middlewares.append(Middleware(SecurityHeadersMiddleware))
