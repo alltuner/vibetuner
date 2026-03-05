@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.0.1](https://github.com/alltuner/vibetuner/compare/v9.0.0...v9.0.1) (2026-03-05)
+
+
+### Documentation Updates
+
+* condense AGENTS.md/CLAUDE.md template from 45k to 12k chars ([#1382](https://github.com/alltuner/vibetuner/issues/1382)) ([5cd82d5](https://github.com/alltuner/vibetuner/commit/5cd82d5e593372b19d1f49e70b443f586c22eec5))
+
 ## [9.0.0](https://github.com/alltuner/vibetuner/compare/v8.9.0...v9.0.0) (2026-03-05)
 
 
