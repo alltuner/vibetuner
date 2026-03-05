@@ -17,6 +17,8 @@ from starlette_babel import (
     LocaleMiddleware,
     get_translator,
 )
+from starlette_context.middleware import RawContextMiddleware
+from starlette_context.plugins import RequestIdPlugin
 from starlette_htmx.middleware import HtmxMiddleware
 
 from vibetuner.config import settings
@@ -284,7 +286,9 @@ def _build_locale_selectors() -> list:
     return selectors
 
 
-middlewares: list[Middleware] = []
+middlewares: list[Middleware] = [
+    Middleware(RawContextMiddleware, plugins=[RequestIdPlugin(validate=False)]),
+]
 
 if settings.security_headers.enabled:
     middlewares.append(Middleware(SecurityHeadersMiddleware))

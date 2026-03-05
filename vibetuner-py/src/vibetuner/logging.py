@@ -35,6 +35,17 @@ class InterceptHandler(logging.Handler):
         )
 
 
+def _request_id_patcher(record):
+    """Inject request_id from starlette-context into every log record."""
+    try:
+        from starlette_context import context
+        from starlette_context.header_keys import HeaderKeys
+
+        record["extra"]["request_id"] = context.get(HeaderKeys.request_id, "")
+    except Exception:
+        record["extra"].setdefault("request_id", "")
+
+
 def setup_logging(
     level: str | int | None = LogLevel.INFO,
     log_file: str | Path | None = None,
@@ -56,11 +67,15 @@ def setup_logging(
     if level is None:
         level = LogLevel.INFO
 
+    # Patch every log record with the current request ID
+    logger.configure(patcher=_request_id_patcher)
+
     # Define format for the logs
     format_string = (
         "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "
         "<level>{level: <8}</level> | "
-        "<cyan>{name}</cyan>:<cyan>{line}</cyan> - "
+        "<cyan>{name}</cyan>:<cyan>{line}</cyan> | "
+        "<dim>{extra[request_id]:8.8}</dim> - "
         "<level>{message}</level>"
     )
 
