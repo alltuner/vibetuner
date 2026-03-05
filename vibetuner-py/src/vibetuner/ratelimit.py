@@ -6,16 +6,11 @@ from slowapi.util import get_remote_address
 
 from vibetuner.config import settings
 from vibetuner.logging import logger
-
-
-def _get_storage_uri() -> str | None:
-    if settings.redis_url is None:
-        return None
-    return str(settings.redis_url)
+from vibetuner.redis import get_redis_url
 
 
 def _build_limiter() -> Limiter:
-    storage_uri = _get_storage_uri()
+    storage_uri = get_redis_url()
 
     kwargs: dict = {
         "key_func": get_remote_address,

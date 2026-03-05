@@ -210,13 +210,12 @@ async def _start_redis_listener() -> None:
 
     try:
         from vibetuner.config import settings
+        from vibetuner.redis import create_redis_client
 
-        if settings.redis_url is None:
+        client = create_redis_client()
+        if client is None:
             return
 
-        import redis.asyncio as aioredis
-
-        client = aioredis.from_url(str(settings.redis_url))
         pubsub = client.pubsub()
         prefix = f"{settings.redis_key_prefix}sse:"
         await pubsub.psubscribe(f"{prefix}*")
@@ -243,26 +242,20 @@ async def _stop_redis_listener() -> None:
 
 
 async def _get_redis_publish_client():
-    """Get or create the cached Redis client for publishing."""
+    """Get the shared Redis client for publishing."""
     global _redis_publish_client
     if _redis_publish_client is None:
-        from vibetuner.config import settings
+        from vibetuner.redis import get_redis_client
 
-        if settings.redis_url is None:
-            return None
-
-        import redis.asyncio as aioredis
-
-        _redis_publish_client = aioredis.from_url(str(settings.redis_url))
+        _redis_publish_client = await get_redis_client()
     return _redis_publish_client
 
 
 async def _close_redis_publish_client() -> None:
-    """Close the cached Redis publish client."""
+    """Release the local reference to the shared Redis publish client."""
     global _redis_publish_client
-    if _redis_publish_client is not None:
-        await _redis_publish_client.aclose()
-        _redis_publish_client = None
+    # Don't close the shared client — just drop the local reference.
+    _redis_publish_client = None
 
 
 async def _publish_to_redis(channel: str, payload: dict[str, str]) -> None:
@@ -281,7 +274,10 @@ async def _publish_to_redis(channel: str, payload: dict[str, str]) -> None:
         logger.debug(
             "Redis SSE publish failed due to connection error, resetting client"
         )
+        from vibetuner.redis import reset_redis_client
+
         _redis_publish_client = None
+        reset_redis_client()
     except Exception:
         logger.debug("Redis SSE publish failed (local dispatch still succeeded)")
 
