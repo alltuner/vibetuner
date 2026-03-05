@@ -148,8 +148,13 @@ Magic links are enabled by default. Configure email settings:
 
 ```bash
 # .env
-MAILJET_API_KEY=your-mailjet-api-key
-MAILJET_API_SECRET=your-mailjet-api-secret
+# Option A: Resend (recommended)
+MAIL_RESEND_API_KEY=re_xxxxxxxxxxxx
+
+# Option B: Mailjet
+# MAIL_MAILJET_API_KEY=your-api-key
+# MAIL_MAILJET_API_SECRET=your-api-secret
+
 FROM_EMAIL=noreply@example.com
 ```
 
@@ -368,7 +373,7 @@ Ensure callback URLs exactly match in:
 
 Check:
 
-1. Mailjet API credentials are correct
+1. Email provider credentials are correct (MAIL_RESEND_API_KEY or MAIL_MAILJET_API_KEY)
 2. Email is being sent (check logs)
 3. Token hasn't expired (15 minutes default)
 4. Email isn't in spam folder

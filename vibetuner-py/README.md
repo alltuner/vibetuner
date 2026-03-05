@@ -126,7 +126,7 @@ In a Vibetuner-generated project, import from `vibetuner`:
 from vibetuner.models import UserModel, OAuthAccountModel
 
 # Use services
-from vibetuner.services.email import send_email
+from vibetuner.services.email import EmailService
 
 # Use configuration
 from vibetuner.config import settings

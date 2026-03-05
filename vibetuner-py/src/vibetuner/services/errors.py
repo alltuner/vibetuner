@@ -119,12 +119,18 @@ def s3_not_configured(*, log: bool = True) -> str:
     return S3_ERROR
 
 
-# ── Email (Mailjet) ─────────────────────────────────────────────────
+# ── Email ────────────────────────────────────────────────────────────
 
 EMAIL_ERROR = _build_message(
-    service="Email (Mailjet)",
-    env_vars=["MAILJET_API_KEY", "MAILJET_API_SECRET"],
-    example_env=("MAILJET_API_KEY=your-api-key\nMAILJET_API_SECRET=your-api-secret"),
+    service="Email sending",
+    env_vars=["MAIL_RESEND_API_KEY", "MAIL_MAILJET_API_KEY", "MAIL_MAILJET_API_SECRET"],
+    example_env=(
+        "# Option A: Resend (recommended)\n"
+        "MAIL_RESEND_API_KEY=re_xxxxxxxxxxxx\n\n"
+        "# Option B: Mailjet\n"
+        "MAIL_MAILJET_API_KEY=your-api-key\n"
+        "MAIL_MAILJET_API_SECRET=your-api-secret"
+    ),
     disable_hint="Don't import EmailService or get_email_service if email isn't needed.",
     docs_path="configuration#email",
 )

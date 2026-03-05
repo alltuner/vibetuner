@@ -40,9 +40,8 @@ MONGODB_URL=mongodb://user:password@mongodb-host:27017/myapp?authSource=admin
 DATABASE_URL=postgresql+asyncpg://user:password@postgres-host:5432/myapp
 # Redis (if background jobs enabled)
 REDIS_URL=redis://redis-host:6379/0
-# Email (Mailjet)
-MAILJET_API_KEY=your-mailjet-api-key
-MAILJET_API_SECRET=your-mailjet-api-secret
+# Email (Resend recommended, Mailjet also supported)
+MAIL_RESEND_API_KEY=re_xxxxxxxxxxxx
 FROM_EMAIL=noreply@example.com
 # OAuth
 GOOGLE_CLIENT_ID=your-production-client-id

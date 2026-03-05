@@ -100,6 +100,26 @@ class LocaleDetectionSettings(BaseSettings):
     )
 
 
+class MailSettings(BaseSettings):
+    """Mail provider configuration. Read from MAIL_* env vars."""
+
+    provider: Literal["resend", "mailjet"] | None = None
+
+    # Resend
+    resend_api_key: SecretStr | None = None
+
+    # Mailjet
+    mailjet_api_key: SecretStr | None = None
+    mailjet_api_secret: SecretStr | None = None
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        extra="ignore",
+        env_prefix="MAIL_",
+        env_file=(".env", ".env.local"),
+    )
+
+
 def _load_project_config() -> "ProjectConfiguration":
     if config_vars_path is None:
         raise RuntimeError(
@@ -183,8 +203,8 @@ class CoreConfiguration(BaseSettings):
     redis_url: RedisDsn | None = None
     database_url: PostgresDsn | MariaDBDsn | MySQLDsn | SQLiteDsn | None = None
 
-    mailjet_api_key: SecretStr | None = None
-    mailjet_api_secret: SecretStr | None = None
+    # Mail provider settings (MAIL_* env vars)
+    mail: MailSettings = Field(default_factory=MailSettings)
 
     r2_default_bucket_name: str | None = None
     r2_bucket_endpoint_url: HttpUrl | None = None
