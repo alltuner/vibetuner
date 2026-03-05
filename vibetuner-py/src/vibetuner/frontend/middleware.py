@@ -150,7 +150,13 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 class AdjustLangCookieMiddleware(BaseHTTPMiddleware):
+    BYPASS_PREFIXES = ("/static/", "/health/")
+
     async def dispatch(self, request: Request, call_next):
+        path = request.url.path
+        if any(path.startswith(p) for p in self.BYPASS_PREFIXES):
+            return await call_next(request)
+
         response: Response = await call_next(request)
 
         lang_cookie = request.cookies.get("language")
