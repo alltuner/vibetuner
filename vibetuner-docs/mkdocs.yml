@@ -73,6 +73,7 @@ nav:
   - User Guide:
       - Development: development-guide.md
       - Background Tasks: background-tasks.md
+      - Rate Limiting: rate-limiting.md
       - Authentication: authentication.md
       - Runtime Configuration: runtime-config.md
       - Deployment: deployment.md

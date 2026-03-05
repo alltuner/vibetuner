@@ -123,7 +123,15 @@ The main CLI entry point using Typer. Commands:
 ### `config.py`
 
 Framework configuration using Pydantic Settings. This is the **immutable** config that all projects
-inherit. User-specific config goes in the scaffolded `src/app/config.py`.
+inherit. User-specific config goes in the scaffolded `src/app/config.py`. Includes nested settings
+classes: `SecurityHeadersSettings`, `RateLimitSettings`, `LocaleDetectionSettings`.
+
+### `ratelimit.py`
+
+Rate limiting module using slowapi. Exports a pre-configured `limiter` singleton that auto-uses
+the project's Redis connection (with in-memory fallback). Configuration via `RateLimitSettings`
+in `config.py` with `RATE_LIMIT_` env prefix. The middleware (`SlowAPIASGIMiddleware`) and
+exception handler are wired in `frontend/middleware.py` and `frontend/__init__.py`.
 
 ### `frontend/lifespan.py`
 

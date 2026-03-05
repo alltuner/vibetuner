@@ -286,6 +286,11 @@ def _build_locale_selectors() -> list:
 
 middlewares: list[Middleware] = []
 
+if settings.rate_limit.enabled:
+    from slowapi.middleware import SlowAPIASGIMiddleware
+
+    middlewares.append(Middleware(SlowAPIASGIMiddleware))
+
 if settings.security_headers.enabled:
     middlewares.append(Middleware(SecurityHeadersMiddleware))
 

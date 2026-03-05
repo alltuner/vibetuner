@@ -42,6 +42,16 @@ app = FastAPI(
     dependencies=dependencies,
 )
 
+# Rate limiting setup (slowapi requires app.state.limiter)
+if settings.rate_limit.enabled:
+    from slowapi import _rate_limit_exceeded_handler
+    from slowapi.errors import RateLimitExceeded
+
+    from vibetuner.ratelimit import limiter
+
+    app.state.limiter = limiter
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 # Static files
 app.mount(f"/static/v{ctx.v_hash}/css", StaticFiles(directory=paths.css), name="css")
 app.mount(f"/static/v{ctx.v_hash}/img", StaticFiles(directory=paths.img), name="img")

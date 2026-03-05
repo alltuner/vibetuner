@@ -611,6 +611,56 @@ app = VibetunerApp(
 )
 ```
 
+### Rate Limiting
+
+Rate limiting is built in and enabled by default. Apply per-route limits with the
+`@limiter.limit()` decorator:
+
+```python
+# src/app/frontend/routes/api.py
+from fastapi import APIRouter, Request
+from vibetuner.ratelimit import limiter
+
+router = APIRouter()
+
+@router.get("/api/search")
+@limiter.limit("10/minute")
+async def search(request: Request):
+    return {"results": []}
+
+@router.post("/api/login")
+@limiter.limit("5/minute")
+async def login(request: Request):
+    ...
+```
+
+**Important**: Every rate-limited route must have a `request: Request` parameter.
+
+Exempt routes from limiting:
+
+```python
+@router.get("/health")
+@limiter.exempt
+async def health(request: Request):
+    return {"status": "ok"}
+```
+
+Set global default limits via environment variables:
+
+```bash
+# .env
+RATE_LIMIT_DEFAULT_LIMITS='["100/hour", "10/second"]'
+```
+
+Responses include `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`,
+and `Retry-After` headers by default. Exceeded limits return `429 Too Many Requests`.
+
+Configure via `RATE_LIMIT_` prefixed env vars: `RATE_LIMIT_ENABLED`,
+`RATE_LIMIT_HEADERS_ENABLED`, `RATE_LIMIT_STRATEGY`, `RATE_LIMIT_SWALLOW_ERRORS`.
+
+With Redis configured, limits are shared across workers with automatic in-memory
+fallback. Without Redis, limits are per-process (suitable for development).
+
 ### Adding Background Tasks
 
 Create tasks with the `@worker.task()` decorator, then list them in `tune.py`:
