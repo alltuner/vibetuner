@@ -130,4 +130,15 @@ if settings.workers_available:
     except ImportError:
         pass
 
+# Mount admin panel (starlette-admin with Beanie backend)
+if settings.mongodb_url is not None:
+    try:
+        from .admin import create_admin
+
+        admin = create_admin()
+        admin.mount_to(app)
+        logger.debug("Admin panel mounted at /admin")
+    except Exception as exc:
+        logger.warning(f"Failed to mount admin panel: {exc}")
+
 app.include_router(health.router)
