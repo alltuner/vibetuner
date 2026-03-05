@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.0.2](https://github.com/alltuner/vibetuner/compare/v9.0.1...v9.0.2) (2026-03-05)
+
+
+### Bug Fixes
+
+* add bypass prefixes to AdjustLangCookieMiddleware for static files ([#1385](https://github.com/alltuner/vibetuner/issues/1385)) ([4fc1dae](https://github.com/alltuner/vibetuner/commit/4fc1dae153c885ab8bdd04c4e99e6290fb75f893))
+
 ## [9.0.1](https://github.com/alltuner/vibetuner/compare/v9.0.0...v9.0.1) (2026-03-05)
 
 
