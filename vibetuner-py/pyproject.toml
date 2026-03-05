@@ -53,6 +53,8 @@ dependencies = [
   "greenlet>=3.3.2",
   "sqlmodel>=0.0.37",
   "gitpython>=3.1.46",
+  "starlette-admin>=0.16.0",
+  "starlette-admin-beanie-backend>=0.1.1",
 ]
 
 [project.scripts]

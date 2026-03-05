@@ -2710,6 +2710,33 @@ wheels = [
 ]
 
 [[package]]
+name = "starlette-admin"
+version = "0.16.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "jinja2" },
+    { name = "python-multipart" },
+    { name = "starlette" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/56/5e/2487c92a3239d01cf1cb7db5d8455454b231c49a7576c06f3241050e8813/starlette_admin-0.16.0.tar.gz", hash = "sha256:e706a1582a22a69202d3165d8c626d5868822c229353a81e1d189666d8418f64", size = 2104304, upload-time = "2025-12-13T21:49:40.087Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/66/85/f3950e95771e92079ad2c6f8d52ce4c04a0e2e47cedc989ae465d9cfbd9c/starlette_admin-0.16.0-py3-none-any.whl", hash = "sha256:9b7ee51cc275684ba75dda5eafc650e0c8afa1d2b7e99e4d1c83fe7d1e83de9e", size = 2175927, upload-time = "2025-12-13T21:49:42.272Z" },
+]
+
+[[package]]
+name = "starlette-admin-beanie-backend"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "beanie" },
+    { name = "starlette-admin" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ee/e5/fd37252e86e32acb9d730b3eacd301ed396a4b3f41c7573e8575618c57b8/starlette_admin_beanie_backend-0.1.1.tar.gz", hash = "sha256:2e734f600aa03109300c58dc606a6957aa4255bb1bd4772169ab918d132b4a76", size = 8992, upload-time = "2026-01-04T09:52:07.899Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/14/7d/5a362faaf56a1fca2c80c855394846b0af1babff95ce9747161a15d383c0/starlette_admin_beanie_backend-0.1.1-py3-none-any.whl", hash = "sha256:d08ce57cdc562e452852cb755e7e0ede657ef536dfc542eebb675ba7c6b6b72b", size = 9293, upload-time = "2026-01-04T09:52:06.921Z" },
+]
+
+[[package]]
 name = "starlette-babel"
 version = "1.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -3044,6 +3071,8 @@ dependencies = [
     { name = "rich" },
     { name = "slowapi" },
     { name = "sqlmodel" },
+    { name = "starlette-admin" },
+    { name = "starlette-admin-beanie-backend" },
     { name = "starlette-babel" },
     { name = "starlette-context" },
     { name = "starlette-htmx" },
@@ -3108,6 +3137,8 @@ requires-dist = [
     { name = "semver", marker = "extra == 'dev'", specifier = ">=3.0.4" },
     { name = "slowapi", specifier = ">=0.1.9" },
     { name = "sqlmodel", specifier = ">=0.0.37" },
+    { name = "starlette-admin", specifier = ">=0.16.0" },
+    { name = "starlette-admin-beanie-backend", specifier = ">=0.1.1" },
     { name = "starlette-babel", specifier = ">=1.0.3" },
     { name = "starlette-context", specifier = ">=0.5.1" },
     { name = "starlette-htmx", specifier = ">=0.1.1" },
