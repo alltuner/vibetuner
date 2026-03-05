@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.0.4](https://github.com/alltuner/vibetuner/compare/v9.0.3...v9.0.4) (2026-03-05)
+
+
+### Bug Fixes
+
+* revert to SlowAPIMiddleware to fix streaming response crash ([#1390](https://github.com/alltuner/vibetuner/issues/1390)) ([3b0eb12](https://github.com/alltuner/vibetuner/commit/3b0eb12d68fc9ce03f891449af1c771eddf9cddb))
+
 ## [9.0.3](https://github.com/alltuner/vibetuner/compare/v9.0.2...v9.0.3) (2026-03-05)
 
 
