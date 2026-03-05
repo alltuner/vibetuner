@@ -290,6 +290,11 @@ middlewares: list[Middleware] = [
     Middleware(RawContextMiddleware, plugins=[RequestIdPlugin(validate=False)]),
 ]
 
+if settings.rate_limit.enabled:
+    from slowapi.middleware import SlowAPIASGIMiddleware
+
+    middlewares.append(Middleware(SlowAPIASGIMiddleware))
+
 if settings.security_headers.enabled:
     middlewares.append(Middleware(SecurityHeadersMiddleware))
 

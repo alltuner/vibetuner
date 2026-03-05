@@ -52,6 +52,7 @@ These are imported by user code for route protection.
 
 Request/response middleware:
 
+- Rate limiting middleware (slowapi, ASGI-native, first in stack)
 - HTMX middleware (request/response helpers)
 - Session middleware (secure cookie-based sessions)
 - i18n middleware (internationalization)

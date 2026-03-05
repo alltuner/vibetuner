@@ -43,6 +43,7 @@ dependencies = [
   "pyyaml>=6.0.3",
   "redis[hiredis]>=7.2.1",
   "rich>=14.3.3",
+  "slowapi>=0.1.9",
   "starlette-babel>=1.0.3",
   "starlette-context>=0.3.6",
   "starlette-htmx>=0.1.1",

@@ -75,6 +75,28 @@ class SecurityHeadersSettings(BaseSettings):
     )
 
 
+class RateLimitSettings(BaseSettings):
+    """Settings for rate limiting middleware.
+
+    Rate limit strings follow the format: "X per Y" or "X/Y"
+    where X is the number and Y is the period (second, minute, hour, day).
+    Examples: "10/minute", "100/hour", "5 per second"
+    """
+
+    enabled: bool = True
+    default_limits: list[str] = []
+    headers_enabled: bool = True
+    strategy: str = "fixed-window"
+    swallow_errors: bool = True
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        extra="ignore",
+        env_prefix="RATE_LIMIT_",
+        env_file=(".env", ".env.local"),
+    )
+
+
 class LocaleDetectionSettings(BaseSettings):
     """Settings for locale detection selectors.
 
@@ -257,6 +279,9 @@ class CoreConfiguration(BaseSettings):
         from vibetuner.versioning import get_version
 
         return get_version()
+
+    # Rate limiting settings
+    rate_limit: RateLimitSettings = Field(default_factory=RateLimitSettings)
 
     # Locale detection settings
     locale_detection: LocaleDetectionSettings = Field(
