@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.0.5](https://github.com/alltuner/vibetuner/compare/v9.0.4...v9.0.5) (2026-03-05)
+
+
+### Bug Fixes
+
+* remove starlette-admin integration ([#1393](https://github.com/alltuner/vibetuner/issues/1393)) ([3a728cb](https://github.com/alltuner/vibetuner/commit/3a728cbad291ca36e5d161e58358000a01a522e5))
+
 ## [9.0.4](https://github.com/alltuner/vibetuner/compare/v9.0.3...v9.0.4) (2026-03-05)
 
 
