@@ -499,7 +499,48 @@ Available helpers: `hx_redirect`, `hx_location`, `hx_trigger`,
 
 JSON serialization is handled internally — you never need to call `json.dumps()`.
 
-### Cache Control Headers
+### Response Caching (Server-Side)
+
+Use the `@cache` decorator to cache route responses in Redis with a configurable TTL.
+This is ideal for expensive queries, aggregation endpoints, or rendered pages that
+don't change on every request:
+
+```python
+from vibetuner.cache import cache
+
+@router.get("/api/stats")
+@cache(expire=60)  # cache for 60 seconds
+async def get_stats(request: Request):
+    return {"users": await count_users()}
+```
+
+The decorator uses vibetuner's existing Redis connection — no extra setup required
+if you already have `REDIS_URL` configured.
+
+**Key features:**
+
+- Cache key derived from route path + sorted query parameters
+- Respects `Cache-Control: no-cache` request header (bypasses cache)
+- Works with JSON, HTML, and dict responses
+- **Disabled by default in debug mode** — pass `force_caching=True` to override
+- If Redis is not configured or unavailable, the decorator is a transparent no-op
+
+**Cache invalidation:**
+
+```python
+from vibetuner.cache import invalidate, invalidate_pattern
+
+# Invalidate a specific path
+await invalidate("/api/stats")
+
+# Invalidate a specific query variant
+await invalidate("/api/stats", query_params="page=1")
+
+# Invalidate all matching paths (uses Redis SCAN)
+await invalidate_pattern("/api/*")
+```
+
+### Cache Control Headers (Browser-Side)
 
 Use the `@cache_control` decorator to set `Cache-Control` HTTP headers declaratively
 instead of manually manipulating response headers:
@@ -515,6 +556,17 @@ async def static_page(request: Request):
 
 Supported directives: `public`, `private`, `no_cache`, `no_store`, `max_age`,
 `s_maxage`, `must_revalidate`, `stale_while_revalidate`, `immutable`.
+
+You can combine both decorators — `@cache` for server-side Redis caching and
+`@cache_control` for browser-side HTTP caching:
+
+```python
+@router.get("/api/stats")
+@cache(expire=60)
+@cache_control(max_age=30, public=True)
+async def get_stats(request: Request):
+    return {"users": await count_users()}
+```
 
 ### Block Rendering for HTMX Partials
 

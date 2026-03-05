@@ -897,7 +897,46 @@ return response
 | `hx_retarget(response, selector)` | `HX-Retarget` | Override target element |
 | `hx_refresh(response)` | `HX-Refresh` | Force full page refresh |
 
-### Cache Control Headers
+### Response Caching (Server-Side)
+
+Use the `@cache` decorator to cache route responses in Redis with a TTL:
+
+```python
+from vibetuner.cache import cache
+
+@router.get("/api/stats")
+@cache(expire=60)  # cache for 60 seconds
+async def get_stats(request: Request):
+    return {"users": await count_users()}
+
+@router.get("/dashboard")
+@cache(expire=300)
+async def dashboard(request: Request):
+    return render_template("dashboard.html.jinja", request)
+```
+
+**Behavior:**
+
+- Cache key is derived from route path + sorted query parameters
+- Respects `Cache-Control: no-cache` request header (bypasses cache)
+- Works with JSON, HTML, and dict responses
+- **Disabled by default in debug mode** to avoid stale-data confusion
+- Pass `force_caching=True` to enable even in debug mode
+
+**Cache invalidation:**
+
+```python
+from vibetuner.cache import invalidate, invalidate_pattern
+
+await invalidate("/api/stats")                   # exact path
+await invalidate("/api/stats", query_params="page=1")  # specific variant
+await invalidate_pattern("/api/*")               # glob pattern
+```
+
+**Graceful degradation:** If Redis is not configured or unavailable, the decorator
+is a transparent no-op — handlers execute normally with zero overhead.
+
+### Cache Control Headers (Browser-Side)
 
 Use the `@cache_control` decorator to set `Cache-Control` headers declaratively:
 
@@ -922,6 +961,17 @@ async def config_js():
 
 Supported directives: `public`, `private`, `no_cache`, `no_store`, `max_age`,
 `s_maxage`, `must_revalidate`, `stale_while_revalidate`, `immutable`.
+
+**Combining both:** Use `@cache` for server-side Redis caching and
+`@cache_control` for browser-side caching together:
+
+```python
+@router.get("/api/stats")
+@cache(expire=60)
+@cache_control(max_age=30, public=True)
+async def get_stats(request: Request):
+    return {"users": await count_users()}
+```
 
 ### Block Rendering for HTMX Partials
 

@@ -53,6 +53,11 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Vibetuner frontend stopping")
     if ctx.DEBUG:
         await hotreload.shutdown()
+
+    from vibetuner.redis import close_redis_client
+
+    await close_redis_client()
+
     logger.info("Vibetuner frontend stopped")
 
     await teardown_sqlmodel()
