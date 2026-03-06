@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.0.6](https://github.com/alltuner/vibetuner/compare/v9.0.5...v9.0.6) (2026-03-06)
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency @alltuner/vibetuner to v9 ([#1395](https://github.com/alltuner/vibetuner/issues/1395)) ([d9df70b](https://github.com/alltuner/vibetuner/commit/d9df70be30db4bc3027342c075513e1292478ba9))
+* update deps ([#1396](https://github.com/alltuner/vibetuner/issues/1396)) ([6a7f03f](https://github.com/alltuner/vibetuner/commit/6a7f03f2cf028afce9c5eb215e2ac7762896683a))
+
 ## [9.0.5](https://github.com/alltuner/vibetuner/compare/v9.0.4...v9.0.5) (2026-03-05)
 
 
