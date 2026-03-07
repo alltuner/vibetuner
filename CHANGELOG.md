@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.1.0](https://github.com/alltuner/vibetuner/compare/v9.0.6...v9.1.0) (2026-03-07)
+
+
+### Features
+
+* add /update-scaffolding Claude Code skill to template ([#1398](https://github.com/alltuner/vibetuner/issues/1398)) ([47db2aa](https://github.com/alltuner/vibetuner/commit/47db2aa798c0621b5f67e05b67dddcdfa6579db8))
+
 ## [9.0.6](https://github.com/alltuner/vibetuner/compare/v9.0.5...v9.0.6) (2026-03-06)
 
 
