@@ -114,12 +114,68 @@ There are two supported update flows:
 Both commands update tracked files. Always commit or stash local changes before
 running them, review the results, and resolve any merge prompts Copier surfaces.
 
+## Automated Update with Claude Code
+
+Scaffolded projects ship with an `/update-scaffolding` Claude Code skill that
+automates the entire update-and-PR workflow. It:
+
+1. Checks upstream for a newer template version (stops early if already
+   up to date).
+2. Creates an isolated git worktree so your working tree is untouched.
+3. Updates dependencies (`just update-and-commit-repo-deps`).
+4. Applies the latest scaffolding (`just update-scaffolding`).
+5. Detects and resolves merge conflicts intelligently.
+6. Creates a PR with a summary of changes and any unresolved conflicts.
+
+### Using the Skill Interactively
+
+Open Claude Code in your project and run:
+
+```text
+/update-scaffolding
+```
+
+### Running from the Command Line (Headless)
+
+You can invoke the skill directly from your terminal without entering the
+Claude Code TUI:
+
+```bash
+claude -p "run the /update-scaffolding skill"
+```
+
+This is useful for cron jobs, CI pipelines, or quick one-liners.
+
+### Conflict Resolution
+
+The skill resolves most conflicts automatically:
+
+| File type | Strategy |
+|-----------|----------|
+| `pyproject.toml`, `package.json` | Keep newer upstream deps, preserve project additions |
+| Justfiles, CI workflows, Dockerfiles | Prefer upstream (infrastructure stays current) |
+| Templates (`.html.jinja`) | Prefer upstream structure, keep project content |
+| Source code (`src/app/`) | Prefer project version (user code wins) |
+
+If a conflict cannot be resolved with confidence, the skill leaves the
+conflict markers in place, flags the file in the PR description, and does
+**not** auto-merge. You resolve those files manually and push to the PR branch.
+
 ## Recommended Workflow
+
+### Manual
 
 1. Commit your working tree.
 2. Run either `vibetuner scaffold update` or `just update-scaffolding`.
 3. Re-run tests (`just test-build-prod`, `just dev`) to confirm nothing broke.
 4. Commit the changes produced by the update.
+
+### With Claude Code
+
+1. Run `/update-scaffolding` (or `claude -p "run the /update-scaffolding skill"`).
+2. Review the PR it creates.
+3. Resolve any flagged conflicts if needed.
+4. Merge the PR.
 
 Refer back to this document whenever you need to adjust template answers,
 automate non-interactive scaffolding, or keep existing projects in sync with the
