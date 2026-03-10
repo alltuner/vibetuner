@@ -90,13 +90,12 @@ uvx git+https://github.com/alltuner/vibetuner#subdirectory=vibetuner-py scaffold
 - Allowing others to test your changes before review
 - CI/CD integration testing
 
-**Note:** The repository includes a `tmp/` directory at the root with its contents
-automatically ignored by git. Use this directory for testing scaffold commands if you have
-difficulty accessing external directories like `/tmp`:
+**Note:** The `.tmp/` directory at the root is gitignored. Use it for testing scaffold
+commands if you have difficulty accessing external directories like `/tmp`:
 
 ```bash
-# Test scaffolding in the repo's tmp directory
-uvx git+https://github.com/alltuner/vibetuner@BRANCH_NAME#subdirectory=vibetuner-py scaffold new ./tmp/test-project
+# Test scaffolding in the repo's .tmp directory
+uvx git+https://github.com/alltuner/vibetuner@BRANCH_NAME#subdirectory=vibetuner-py scaffold new ./.tmp/test-project
 ```
 
 See `vibetuner-docs/docs/development.md` for complete development workflows.

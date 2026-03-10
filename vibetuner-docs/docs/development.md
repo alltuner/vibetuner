@@ -116,14 +116,13 @@ This is particularly useful for:
 - Sharing development versions with collaborators
 - CI/CD integration testing
 
-**Note for AI Assistants:** The repository includes a `tmp/` directory at the root with its
-contents automatically ignored by git. This directory is specifically for testing scaffold
-commands without needing to access external directories like `/tmp`, which can be problematic
-for some AI coding assistants:
+**Note for AI Assistants:** The `.tmp/` directory at the root is gitignored. Use it for
+testing scaffold commands without needing to access external directories like `/tmp`, which
+can be problematic for some AI coding assistants:
 
 ```bash
-# Test scaffolding in the repo's tmp directory
-uvx git+https://github.com/alltuner/vibetuner@BRANCH_NAME#subdirectory=vibetuner-py scaffold new ./tmp/test-project
+# Test scaffolding in the repo's .tmp directory
+uvx git+https://github.com/alltuner/vibetuner@BRANCH_NAME#subdirectory=vibetuner-py scaffold new ./.tmp/test-project
 ```
 
 ### Working on Documentation
