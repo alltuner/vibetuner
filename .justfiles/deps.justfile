@@ -57,7 +57,7 @@ deps-pr:
     BRANCH="chore/update-deps-${DATE_STAMP}-$(date +%H%M)"
     WORKTREE_DIR=$(mktemp -d)
 
-    cleanup() { git worktree remove --force "$WORKTREE_DIR" 2>/dev/null; git branch -D "$BRANCH" 2>/dev/null; }
+    cleanup() { cd /; git worktree remove --force "$WORKTREE_DIR" 2>/dev/null; git branch -D "$BRANCH" 2>/dev/null || true; }
     trap cleanup EXIT
 
     git fetch origin main
