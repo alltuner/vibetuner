@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.3.1](https://github.com/alltuner/vibetuner/compare/v9.3.0...v9.3.1) (2026-03-10)
+
+
+### Performance Improvements
+
+* optimize Dockerfile for multi-platform builds ([#1420](https://github.com/alltuner/vibetuner/issues/1420)) ([dc3af10](https://github.com/alltuner/vibetuner/commit/dc3af107ddd0acde1bea8818588259b8cd38577f))
+
 ## [9.3.0](https://github.com/alltuner/vibetuner/compare/v9.2.0...v9.3.0) (2026-03-10)
 
 
