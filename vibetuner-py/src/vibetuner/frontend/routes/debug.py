@@ -13,7 +13,7 @@ from fastapi.responses import (
 
 from vibetuner.config import settings
 from vibetuner.context import ctx
-from vibetuner.extras import has_extra
+from vibetuner.extras import get_extras_status, has_extra
 from vibetuner.logging import logger
 from vibetuner.paths import package_templates
 
@@ -81,7 +81,9 @@ router = APIRouter(prefix="/debug", dependencies=[Depends(check_debug_access)])
 
 @router.get("/", response_class=HTMLResponse)
 def debug_index(request: Request):
-    return render_template("debug/index.html.jinja", request)
+    return render_template(
+        "debug/index.html.jinja", request, {"extras": get_extras_status()}
+    )
 
 
 @router.get("/version", response_class=HTMLResponse)
@@ -92,7 +94,11 @@ def debug_version(request: Request):
 @router.get("/info", response_class=HTMLResponse)
 def debug_info(request: Request):
     cookies = dict(request.cookies)
-    return render_template("debug/info.html.jinja", request, {"cookies": cookies})
+    return render_template(
+        "debug/info.html.jinja",
+        request,
+        {"cookies": cookies, "extras": get_extras_status()},
+    )
 
 
 # Skeleton template block metadata for developer reference.

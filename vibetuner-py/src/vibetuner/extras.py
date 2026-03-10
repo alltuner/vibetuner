@@ -62,6 +62,14 @@ def require_extra(name: str, feature: str | None = None) -> None:
     raise ImportError(msg)
 
 
+def get_extras_status() -> dict[str, bool]:
+    """Return the installation status of all known extras.
+
+    Returns a sorted dict mapping extra names to their availability.
+    """
+    return {name: has_extra(name) for name in sorted(_EXTRA_MARKERS)}
+
+
 def import_optional(
     module_name: str, extra: str, feature: str | None = None
 ) -> types.ModuleType:
