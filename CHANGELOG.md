@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.1.1](https://github.com/alltuner/vibetuner/compare/v9.1.0...v9.1.1) (2026-03-10)
+
+
+### Bug Fixes
+
+* prevent exit code 128 in deps-pr cleanup trap ([#1402](https://github.com/alltuner/vibetuner/issues/1402)) ([3012945](https://github.com/alltuner/vibetuner/commit/301294516fcb6a290d98e429f64c5394c00e95c5))
+
+
+### Miscellaneous Chores
+
+* update deps 2026-03-10 ([afd8fb6](https://github.com/alltuner/vibetuner/commit/afd8fb65f4703ce6c12ada6210ecc9a7d93eb74b))
+
 ## [9.1.0](https://github.com/alltuner/vibetuner/compare/v9.0.6...v9.1.0) (2026-03-07)
 
 
