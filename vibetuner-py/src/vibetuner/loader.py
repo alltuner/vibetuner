@@ -69,5 +69,30 @@ def load_app_config() -> VibetunerApp:
             f"got {type(app_config).__name__}"
         )
 
+    _warn_missing_extras(app_config)
     logger.info(f"Loaded app config from {package_name}.tune")
     return app_config
+
+
+def _warn_missing_extras(config: VibetunerApp) -> None:
+    """Warn when tune.py configures features that require missing extras."""
+    from vibetuner.extras import has_extra
+
+    checks: list[tuple[str, str, str]] = [
+        ("models", "mongo", "[mongo]"),
+        ("oauth_providers", "auth", "[auth]"),
+        ("custom_oauth_providers", "auth", "[auth]"),
+        ("sql_models", "sql", "[sql]"),
+        ("tasks", "worker", "[worker]"),
+    ]
+
+    for field, extra, label in checks:
+        value = getattr(config, field, None)
+        if value and not has_extra(extra):
+            logger.warning(
+                "tune.py configures '{}' but {} extra is not installed — "
+                "install with: pip install vibetuner{}",
+                field,
+                label,
+                label,
+            )
