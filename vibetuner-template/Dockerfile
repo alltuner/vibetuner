@@ -58,6 +58,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # ────────────────────────────────────────────────────────────────────────────────
 FROM --platform=$BUILDPLATFORM python-base AS locales
 
+ENV UV_COMPILE_BYTECODE=0
+
 WORKDIR /app
 
 # Copy localization source files
