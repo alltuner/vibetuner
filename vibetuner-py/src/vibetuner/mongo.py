@@ -1,19 +1,15 @@
 # ABOUTME: MongoDB client and Beanie ODM initialization.
 # ABOUTME: Manages connection lifecycle and model registration.
-from typing import Optional
+from typing import Any, Optional
 
-from beanie import init_beanie
 from deprecated import deprecated
-from pymongo import AsyncMongoClient
 
 from vibetuner.config import settings
-from vibetuner.loader import load_app_config
 from vibetuner.logging import logger
-from vibetuner.models import __all__ as core_models
 
 
 # Global singleton, created lazily
-mongo_client: Optional[AsyncMongoClient] = None
+mongo_client: Optional[Any] = None
 
 
 def _ensure_client() -> None:
@@ -27,6 +23,12 @@ def _ensure_client() -> None:
         return
 
     if mongo_client is None:
+        from vibetuner.extras import require_extra
+
+        require_extra("mongo", "MongoDB connectivity")
+
+        from pymongo import AsyncMongoClient
+
         mongo_client = AsyncMongoClient(
             host=str(settings.mongodb_url),
             compressors=["zstd"],
@@ -36,6 +38,9 @@ def _ensure_client() -> None:
 
 def get_all_models() -> list[type]:
     """Get all models: core vibetuner models + user models from tune.py."""
+    from vibetuner.loader import load_app_config
+    from vibetuner.models import __all__ as core_models
+
     app_config = load_app_config()
     return list(core_models) + list(app_config.models)
 
@@ -55,6 +60,8 @@ async def init_mongodb() -> None:
 
     if mongo_client is None:
         return
+
+    from beanie import init_beanie
 
     all_models = get_all_models()
     logger.debug(f"Initializing Beanie with {len(all_models)} models")

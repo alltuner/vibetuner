@@ -202,19 +202,24 @@ def _check_service_connectivity() -> list[CheckResult]:
 def _check_models() -> list[CheckResult]:
     results: list[CheckResult] = []
 
-    try:
-        from vibetuner.mongo import get_all_models
+    from vibetuner.extras import has_extra
 
-        models = get_all_models()
-        results.append(
-            CheckResult(
-                "Beanie models",
-                "ok",
-                f"{len(models)} model(s): {', '.join(m.__name__ for m in models)}",
+    if has_extra("mongo"):
+        try:
+            from vibetuner.mongo import get_all_models
+
+            models = get_all_models()
+            results.append(
+                CheckResult(
+                    "Beanie models",
+                    "ok",
+                    f"{len(models)} model(s): {', '.join(m.__name__ for m in models)}",
+                )
             )
-        )
-    except Exception as exc:
-        results.append(CheckResult("Beanie models", "warn", f"Cannot load: {exc}"))
+        except Exception as exc:
+            results.append(CheckResult("Beanie models", "warn", f"Cannot load: {exc}"))
+    else:
+        results.append(CheckResult("Beanie models", "skip", "[mongo] extra not installed"))
 
     try:
         from vibetuner.sqlmodel import get_all_sql_models
@@ -294,7 +299,11 @@ def _check_dependencies() -> list[CheckResult]:
     except importlib.metadata.PackageNotFoundError:
         results.append(CheckResult("vibetuner", "error", "Package not installed"))
 
-    key_packages = ["fastapi", "beanie", "granian", "pydantic"]
+    from vibetuner.extras import has_extra
+
+    key_packages = ["fastapi", "granian", "pydantic"]
+    if has_extra("mongo"):
+        key_packages.append("beanie")
     for pkg in key_packages:
         try:
             ver = importlib.metadata.version(pkg)
