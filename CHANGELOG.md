@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.1.4](https://github.com/alltuner/vibetuner/compare/v9.1.3...v9.1.4) (2026-03-10)
+
+
+### Bug Fixes
+
+* always clean up existing worktree in deps-scaffolding-pr ([#1408](https://github.com/alltuner/vibetuner/issues/1408)) ([5504655](https://github.com/alltuner/vibetuner/commit/55046557ba551bd7de66b57999ded0b7b4893f45))
+* preserve language settings during scaffolding updates ([#1410](https://github.com/alltuner/vibetuner/issues/1410)) ([a0b91c4](https://github.com/alltuner/vibetuner/commit/a0b91c45e2597e1642f010ed8c46443c5cf60275))
+
 ## [9.1.3](https://github.com/alltuner/vibetuner/compare/v9.1.2...v9.1.3) (2026-03-10)
 
 
