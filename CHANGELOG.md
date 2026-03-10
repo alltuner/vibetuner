@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.1.3](https://github.com/alltuner/vibetuner/compare/v9.1.2...v9.1.3) (2026-03-10)
+
+
+### Bug Fixes
+
+* remove .venv and node_modules before worktree cleanup in deps-pr ([#1405](https://github.com/alltuner/vibetuner/issues/1405)) ([8ad1410](https://github.com/alltuner/vibetuner/commit/8ad1410d046c9c8e55aa4194b718a6c308634b5f))
+* stop copier from deleting locale .po files on update ([#1406](https://github.com/alltuner/vibetuner/issues/1406)) ([7db58b5](https://github.com/alltuner/vibetuner/commit/7db58b5007fe53907e3073d056d92baa7f99921b))
+
 ## [9.1.2](https://github.com/alltuner/vibetuner/compare/v9.1.1...v9.1.2) (2026-03-10)
 
 
