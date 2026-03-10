@@ -95,6 +95,12 @@ The skill will stop early if the scaffolding is already up to date.
 If conflicts can't be auto-resolved, it leaves them flagged in the PR
 for manual resolution.
 
+For a one-command workflow that also updates dependencies:
+
+```bash
+just deps-scaffolding-pr     # Update deps + scaffolding and open a PR
+```
+
 ---
 
 ## Quick Start
