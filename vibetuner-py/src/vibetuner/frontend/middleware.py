@@ -1,3 +1,4 @@
+import re
 import secrets
 
 from fastapi.middleware import Middleware
@@ -105,6 +106,9 @@ class HtmxMiddleware:
         await self.app(scope, receive, send)
 
 
+_SCRIPT_WITHOUT_NONCE_RE = re.compile(rb"<script(?![^>]*\snonce=)", re.IGNORECASE)
+
+
 class SecurityHeadersMiddleware:
     """Pure ASGI middleware that adds security headers (CSP with nonce, etc.) to responses.
 
@@ -133,11 +137,16 @@ class SecurityHeadersMiddleware:
         if config.extra_img_src:
             img_src += f" {config.extra_img_src}"
 
+        media_src = "'self' blob:"
+        if config.extra_media_src:
+            media_src += f" {config.extra_media_src}"
+
         directives = [
             "default-src 'self'",
             f"script-src {script_src}",
             f"style-src {style_src}",
             f"img-src {img_src}",
+            f"media-src {media_src}",
             f"frame-ancestors {config.frame_ancestors}",
         ]
 
@@ -166,6 +175,11 @@ class SecurityHeadersMiddleware:
         if "server" in headers:
             del headers["server"]
 
+    @staticmethod
+    def _inject_nonces(body: bytes, nonce: str) -> bytes:
+        replacement = f'<script nonce="{nonce}"'.encode()
+        return _SCRIPT_WITHOUT_NONCE_RE.sub(replacement, body)
+
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
@@ -182,9 +196,39 @@ class SecurityHeadersMiddleware:
             scope["state"] = {}
         scope["state"]["csp_nonce"] = nonce
 
+        initial_message = None
+        is_html = False
+        body_parts: list[bytes] = []
+
         async def send_with_headers(message):
+            nonlocal initial_message, is_html
+
             if message["type"] == "http.response.start":
-                self._apply_headers(MutableHeaders(scope=message), nonce)
+                headers = MutableHeaders(scope=message)
+                self._apply_headers(headers, nonce)
+                content_type = headers.get("content-type", "")
+                is_html = "text/html" in content_type
+                if is_html:
+                    initial_message = message
+                else:
+                    await send(message)
+                return
+
+            if message["type"] == "http.response.body":
+                if not is_html:
+                    await send(message)
+                    return
+
+                body_parts.append(message.get("body", b""))
+                more_body = message.get("more_body", False)
+                if not more_body:
+                    full_body = self._inject_nonces(b"".join(body_parts), nonce)
+                    headers = MutableHeaders(scope=initial_message)
+                    headers["content-length"] = str(len(full_body))
+                    await send(initial_message)
+                    await send({"type": "http.response.body", "body": full_body})
+                return
+
             await send(message)
 
         await self.app(scope, receive, send_with_headers)
