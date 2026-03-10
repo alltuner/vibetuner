@@ -32,6 +32,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=README.md,target=README.md \
     uv sync --frozen --no-install-project --no-group dev
 
+# Extract vibetuner core templates for frontend build (Tailwind class scanning)
+# Done here rather than python-app so frontend-build can start without waiting for project install
+RUN cp -r $(.venv/bin/python -c "import vibetuner; print(vibetuner.__path__[0])")/templates/frontend .core-templates
+
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 3: Install Project (editable mode for source access)
 # ────────────────────────────────────────────────────────────────────────────────
@@ -40,22 +44,21 @@ FROM python-deps AS python-app
 # Copy application source code
 COPY src/ src/
 
-# Install project in editable mode and copy vibetuner templates
+# Install project in editable mode, then clean up test and doc files from dependencies
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=README.md,target=README.md \
     uv sync --frozen --no-group dev && \
-    cp -r $(.venv/bin/python -c "import vibetuner; print(vibetuner.__path__[0])")/templates/frontend .core-templates
-
-# Clean up test and documentation files from dependencies (failures are non-fatal)
-RUN find .venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null || true && \
+    find .venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null || true && \
     find .venv -type f \( -name '*.md' -o -name '*.rst' -o -name '*.txt' \) ! -path '*/METADATA' -delete 2>/dev/null || true
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 4: Compile Localization Files (parallel with frontend)
 # ────────────────────────────────────────────────────────────────────────────────
-FROM python-base AS locales
+FROM --platform=$BUILDPLATFORM python-base AS locales
+
+ENV UV_COMPILE_BYTECODE=0
 
 WORKDIR /app
 
@@ -63,13 +66,14 @@ WORKDIR /app
 COPY locales/ locales/
 
 # Compile .po files to .mo files if any locales exist
-RUN find locales -mindepth 1 -maxdepth 1 -type d -name '??' 2>/dev/null | grep -q . \
+RUN --mount=type=cache,target=/root/.cache/uv \
+    find locales -mindepth 1 -maxdepth 1 -type d -name '??' 2>/dev/null | grep -q . \
     && uvx --from babel pybabel compile -d locales || echo "No locales to compile"
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 5: Install Frontend Dependencies (parallel with locales)
 # ────────────────────────────────────────────────────────────────────────────────
-FROM oven/bun:1-alpine AS frontend-deps
+FROM --platform=$BUILDPLATFORM oven/bun:1-alpine AS frontend-deps
 
 WORKDIR /app
 
@@ -82,11 +86,11 @@ RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 6: Build Frontend Assets
 # ────────────────────────────────────────────────────────────────────────────────
-FROM frontend-deps AS frontend-build
+FROM --platform=$BUILDPLATFORM frontend-deps AS frontend-build
 
 # Copy templates for Tailwind CSS class scanning
 COPY templates/frontend/ templates/frontend/
-COPY --from=python-app /app/.core-templates/ .core-templates/
+COPY --from=python-deps /app/.core-templates/ .core-templates/
 
 # Build production assets with Bun
 RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
