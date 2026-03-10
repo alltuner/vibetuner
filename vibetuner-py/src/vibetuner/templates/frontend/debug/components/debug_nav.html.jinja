@@ -19,7 +19,7 @@
             </svg>
             System Info
         </a>
-        {% set _nav_mongo = extras.get("mongo", true) if extras is defined and extras else true %}
+        {% set _nav_mongo = (extras.get("mongo", true) if extras is defined and extras else true) and (mongodb_connected if mongodb_connected is defined else true) %}
         <a href="{{ url_for('debug_collections') }}"
            class="btn btn-outline btn-primary gap-2 {{ '' if _nav_mongo else 'btn-disabled opacity-50' }}">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

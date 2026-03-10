@@ -126,8 +126,8 @@
         <h2 class="text-sm uppercase tracking-wider text-base-content/50 mb-4 font-semibold">Feature Tools</h2>
         <div class="grid md:grid-cols-2 gap-6">
             <!-- Database Collections -->
-            {% set mongo_available = extras.get("mongo", false) if extras else true %}
-            <div class="card bg-base-100 shadow-xl border border-base-200 {{ '' if mongo_available else 'opacity-50' }}">
+            {% set mongo_ready = (extras.get("mongo", false) if extras else true) and mongodb_connected %}
+            <div class="card bg-base-100 shadow-xl border border-base-200 {{ '' if mongo_ready else 'opacity-50' }}">
                 <div class="card-body">
                     <h2 class="card-title text-primary flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,17 +138,20 @@
                     </h2>
                     <p class="text-base-content/70 mb-4">Explore MongoDB collections and their field schemas</p>
                     <div class="card-actions justify-end items-center">
-                        {% if not mongo_available %}
-                            <span class="badge badge-warning badge-sm">requires [mongo]</span>
+                        {% if not mongo_ready %}
+                            {% if not extras.get("mongo", false) %}
+                                <span class="badge badge-warning badge-sm">requires [mongo]</span>
+                            {% else %}
+                                <span class="badge badge-warning badge-sm">no MongoDB configured</span>
+                            {% endif %}
                         {% endif %}
                         <a href="{{ url_for('debug_collections') }}"
-                           class="btn btn-primary btn-sm {{ '' if mongo_available else 'btn-disabled' }}">View Schemas</a>
+                           class="btn btn-primary btn-sm {{ '' if mongo_ready else 'btn-disabled' }}">View Schemas</a>
                     </div>
                 </div>
             </div>
             <!-- User Impersonation -->
-            {% set auth_available = extras.get("auth", false) if extras else true %}
-            <div class="card bg-base-100 shadow-xl border border-base-200 {{ '' if mongo_available else 'opacity-50' }}">
+            <div class="card bg-base-100 shadow-xl border border-base-200 {{ '' if mongo_ready else 'opacity-50' }}">
                 <div class="card-body">
                     <h2 class="card-title text-warning flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,11 +162,15 @@
                     </h2>
                     <p class="text-base-content/70 mb-4">Switch between users in debug mode for testing purposes</p>
                     <div class="card-actions justify-end items-center">
-                        {% if not mongo_available %}
-                            <span class="badge badge-warning badge-sm">requires [mongo]</span>
+                        {% if not mongo_ready %}
+                            {% if not extras.get("mongo", false) %}
+                                <span class="badge badge-warning badge-sm">requires [mongo]</span>
+                            {% else %}
+                                <span class="badge badge-warning badge-sm">no MongoDB configured</span>
+                            {% endif %}
                         {% endif %}
                         <a href="{{ url_for('debug_users') }}"
-                           class="btn btn-warning btn-sm {{ '' if mongo_available else 'btn-disabled' }}">View Users</a>
+                           class="btn btn-warning btn-sm {{ '' if mongo_ready else 'btn-disabled' }}">View Users</a>
                     </div>
                 </div>
             </div>

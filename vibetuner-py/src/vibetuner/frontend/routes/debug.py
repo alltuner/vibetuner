@@ -82,7 +82,12 @@ router = APIRouter(prefix="/debug", dependencies=[Depends(check_debug_access)])
 @router.get("/", response_class=HTMLResponse)
 def debug_index(request: Request):
     return render_template(
-        "debug/index.html.jinja", request, {"extras": get_extras_status()}
+        "debug/index.html.jinja",
+        request,
+        {
+            "extras": get_extras_status(),
+            "mongodb_connected": settings.mongodb_url is not None,
+        },
     )
 
 
@@ -516,9 +521,14 @@ def _get_collection_info(model) -> dict:
 @router.get("/collections", response_class=HTMLResponse)
 def debug_collections(request: Request):
     """Debug endpoint to display MongoDB collection schemas."""
-    if not has_extra("mongo"):
+    if not has_extra("mongo") or settings.mongodb_url is None:
         return render_template(
-            "debug/collections.html.jinja", request, {"collections": []}
+            "debug/collections.html.jinja",
+            request,
+            {
+                "collections": [],
+                "mongodb_connected": settings.mongodb_url is not None,
+            },
         )
 
     from vibetuner.mongo import get_all_models
@@ -533,11 +543,15 @@ def debug_collections(request: Request):
 @router.get("/users", response_class=HTMLResponse)
 async def debug_users(request: Request):
     """Debug endpoint to list and impersonate users."""
-    if not has_extra("mongo"):
+    if not has_extra("mongo") or settings.mongodb_url is None:
         return render_template(
             "debug/users.html.jinja",
             request,
-            {"users": [], "current_user_id": None},
+            {
+                "users": [],
+                "current_user_id": None,
+                "mongodb_connected": settings.mongodb_url is not None,
+            },
         )
 
     from vibetuner.models import UserModel
@@ -565,7 +579,7 @@ async def debug_impersonate_user(request: Request, user_id: str):
     """Impersonate a user by setting their ID in the session."""
     if not ctx.DEBUG:
         raise HTTPException(status_code=404, detail="Not found")
-    if not has_extra("mongo"):
+    if not has_extra("mongo") or settings.mongodb_url is None:
         raise HTTPException(status_code=404, detail="Not found")
 
     from vibetuner.models import UserModel
