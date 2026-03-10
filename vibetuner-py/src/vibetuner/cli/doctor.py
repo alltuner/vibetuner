@@ -67,6 +67,12 @@ def _check_project_structure(root: Path | None) -> list[CheckResult]:
             CheckResult(".env file", "warn", "Missing — copy from .env.example")
         )
 
+    env_local = root / ".env.local"
+    if env_local.exists():
+        results.append(
+            CheckResult(".env.local", "ok", "Found (local overrides active)")
+        )
+
     src_dir = root / "src"
     if src_dir.is_dir():
         packages = [
@@ -254,7 +260,11 @@ def _check_templates(root: Path | None) -> list[CheckResult]:
         results.append(CheckResult("Templates dir", "warn", "templates/ not found"))
         return results
 
-    results.append(CheckResult("Templates dir", "ok", "Found"))
+    results.append(CheckResult("Project overrides", "ok", str(templates_dir)))
+
+    from vibetuner.paths import package_templates
+
+    results.append(CheckResult("Package defaults", "ok", str(package_templates)))
 
     # Check for common Jinja2 syntax issues in template files
     template_files = (
@@ -394,7 +404,7 @@ def doctor() -> None:
         ("Service Connectivity", _check_service_connectivity()),
         ("Models", _check_models()),
         ("Templates", _check_templates(root)),
-        ("Dependencies", _check_dependencies()),
+        ("Core Dependencies", _check_dependencies()),
         ("Extras", _check_extras()),
         ("Ports", _check_port_availability()),
     ]
