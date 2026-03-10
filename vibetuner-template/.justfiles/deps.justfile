@@ -21,7 +21,7 @@ deps-scaffolding-pr:
     set -euo pipefail
 
     BRANCH="chore/deps-scaffolding-$(date +%Y-%m-%d-%H%M)"
-    WORKTREE_DIR="tmp/deps-scaffolding"
+    WORKTREE_DIR="$(pwd)/.tmp/deps-scaffolding"
 
     # Handle leftover worktree from a previous run
     if [ -d "$WORKTREE_DIR" ]; then
@@ -29,16 +29,27 @@ deps-scaffolding-pr:
         AGE_HOURS=$(( ($(date +%s) - MTIME) / 3600 ))
         if [ "$AGE_HOURS" -ge 36 ]; then
             echo "Removing stale worktree ($AGE_HOURS hours old)..."
-            cd /; git worktree remove --force "$WORKTREE_DIR" 2>/dev/null || true; cd -
+            if ! git worktree remove --force "$WORKTREE_DIR" 2>/dev/null; then
+                echo "Error: failed to remove stale worktree at $WORKTREE_DIR"
+                echo "Try manually: rm -rf $WORKTREE_DIR && git worktree prune"
+                exit 1
+            fi
         else
             echo "Error: $WORKTREE_DIR already exists (${AGE_HOURS}h old, <36h)."
             echo "Resolve or remove it first: git worktree remove $WORKTREE_DIR"
             exit 1
         fi
     fi
-    mkdir -p tmp
+    mkdir -p .tmp
 
-    cleanup() { cd /; git worktree remove --force "$WORKTREE_DIR" 2>/dev/null; git branch -D "$BRANCH" 2>/dev/null || true; }
+    cleanup() {
+        cd /
+        if ! git worktree remove --force "$WORKTREE_DIR" 2>/dev/null; then
+            echo "Warning: could not remove worktree at $WORKTREE_DIR"
+            echo "Clean up manually: rm -rf $WORKTREE_DIR && git worktree prune"
+        fi
+        git branch -D "$BRANCH" 2>/dev/null || true
+    }
     trap cleanup ERR INT TERM
 
     git fetch origin main
