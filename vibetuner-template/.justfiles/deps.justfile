@@ -44,6 +44,7 @@ deps-scaffolding-pr:
 
     cleanup() {
         cd /
+        rm -rf "$WORKTREE_DIR/.venv" "$WORKTREE_DIR/node_modules"
         if ! git worktree remove --force "$WORKTREE_DIR" 2>/dev/null; then
             echo "Warning: could not remove worktree at $WORKTREE_DIR"
             echo "Clean up manually: rm -rf $WORKTREE_DIR && git worktree prune"
