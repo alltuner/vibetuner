@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.1.2](https://github.com/alltuner/vibetuner/compare/v9.1.1...v9.1.2) (2026-03-10)
+
+
+### Code Refactoring
+
+* improve deps-scaffolding-pr ergonomics ([#1403](https://github.com/alltuner/vibetuner/issues/1403)) ([f0774af](https://github.com/alltuner/vibetuner/commit/f0774afd9f7b209f7645fe32c9ec65151d56cf57))
+
 ## [9.1.1](https://github.com/alltuner/vibetuner/compare/v9.1.0...v9.1.1) (2026-03-10)
 
 
