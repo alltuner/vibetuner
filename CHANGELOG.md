@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.3.0](https://github.com/alltuner/vibetuner/compare/v9.2.0...v9.3.0) (2026-03-10)
+
+
+### Features
+
+* auto-inject CSP nonce and add media-src directive ([#1417](https://github.com/alltuner/vibetuner/issues/1417)) ([f43864d](https://github.com/alltuner/vibetuner/commit/f43864db60292bbad903245fec6c2d2c6130c1c2))
+
 ## [9.2.0](https://github.com/alltuner/vibetuner/compare/v9.1.4...v9.2.0) (2026-03-10)
 
 
