@@ -9,15 +9,17 @@
         <header class="mb-8">
             <h1 class="text-4xl font-bold text-base-content mb-2">User Impersonation</h1>
             <p class="text-base-content/70">Switch between users in debug mode for testing purposes</p>
-            <div class="alert alert-warning mt-4">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="stroke-current shrink-0 h-6 w-6"
-                     fill="none"
-                     viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-                <span>⚠️ Debug mode only - This feature is disabled in production</span>
-            </div>
+            {% if not DEBUG %}
+                <div class="alert alert-info mt-4">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="stroke-current shrink-0 h-6 w-6"
+                         fill="none"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Impersonation is disabled in production. User list is read-only.</span>
+                </div>
+            {% endif %}
         </header>
         <!-- Current User Status -->
         {% if current_user_id %}
