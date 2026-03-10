@@ -378,11 +378,11 @@ at `http://localhost:8000`.
 
 ### Security Headers
 
-CSP with nonce-based scripts enabled by default. Use
-`nonce="{{ request.state.csp_nonce | default('') }}"` on custom
-`<script>` tags. Debug mode = report-only. Configure via `CSP_*`
-env vars. Avoid inline event handlers (`onclick` etc.) — use HTMX
-attributes or `addEventListener`.
+CSP with nonce-based scripts enabled by default. The CSP nonce is
+auto-injected into all `<script>` tags in HTML responses, so you
+don't need to add it manually. Debug mode = report-only. Configure
+via `CSP_*` env vars. Avoid inline event handlers (`onclick`
+etc.) — use HTMX attributes or `addEventListener`.
 
 ### Request ID
 
