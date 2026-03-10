@@ -13,9 +13,8 @@ from fastapi.responses import (
 
 from vibetuner.config import settings
 from vibetuner.context import ctx
+from vibetuner.extras import has_extra
 from vibetuner.logging import logger
-from vibetuner.models import UserModel
-from vibetuner.mongo import get_all_models
 from vibetuner.paths import package_templates
 
 from ..deps import MAGIC_COOKIE_NAME
@@ -511,6 +510,13 @@ def _get_collection_info(model) -> dict:
 @router.get("/collections", response_class=HTMLResponse)
 def debug_collections(request: Request):
     """Debug endpoint to display MongoDB collection schemas."""
+    if not has_extra("mongo"):
+        return render_template(
+            "debug/collections.html.jinja", request, {"collections": []}
+        )
+
+    from vibetuner.mongo import get_all_models
+
     collections_info = [_get_collection_info(model) for model in get_all_models()]
 
     return render_template(
@@ -521,6 +527,14 @@ def debug_collections(request: Request):
 @router.get("/users", response_class=HTMLResponse)
 async def debug_users(request: Request):
     """Debug endpoint to list and impersonate users."""
+    if not has_extra("mongo"):
+        return render_template(
+            "debug/users.html.jinja",
+            request,
+            {"users": [], "current_user_id": None},
+        )
+
+    from vibetuner.models import UserModel
 
     users = await UserModel.find_all().to_list()
     current_user_id = (
@@ -545,6 +559,10 @@ async def debug_impersonate_user(request: Request, user_id: str):
     """Impersonate a user by setting their ID in the session."""
     if not ctx.DEBUG:
         raise HTTPException(status_code=404, detail="Not found")
+    if not has_extra("mongo"):
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from vibetuner.models import UserModel
 
     # Verify user exists
     user = await UserModel.get(user_id)
