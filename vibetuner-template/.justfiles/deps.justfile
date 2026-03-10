@@ -21,7 +21,22 @@ deps-scaffolding-pr:
     set -euo pipefail
 
     BRANCH="chore/deps-scaffolding-$(date +%Y-%m-%d-%H%M)"
-    WORKTREE_DIR=$(mktemp -d)
+    WORKTREE_DIR="tmp/deps-scaffolding"
+
+    # Handle leftover worktree from a previous run
+    if [ -d "$WORKTREE_DIR" ]; then
+        MTIME=$(stat -f %m "$WORKTREE_DIR" 2>/dev/null || stat -c %Y "$WORKTREE_DIR")
+        AGE_HOURS=$(( ($(date +%s) - MTIME) / 3600 ))
+        if [ "$AGE_HOURS" -ge 36 ]; then
+            echo "Removing stale worktree ($AGE_HOURS hours old)..."
+            cd /; git worktree remove --force "$WORKTREE_DIR" 2>/dev/null || true; cd -
+        else
+            echo "Error: $WORKTREE_DIR already exists (${AGE_HOURS}h old, <36h)."
+            echo "Resolve or remove it first: git worktree remove $WORKTREE_DIR"
+            exit 1
+        fi
+    fi
+    mkdir -p tmp
 
     cleanup() { cd /; git worktree remove --force "$WORKTREE_DIR" 2>/dev/null; git branch -D "$BRANCH" 2>/dev/null || true; }
     trap cleanup ERR INT TERM
