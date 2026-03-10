@@ -219,7 +219,9 @@ def _check_models() -> list[CheckResult]:
         except Exception as exc:
             results.append(CheckResult("Beanie models", "warn", f"Cannot load: {exc}"))
     else:
-        results.append(CheckResult("Beanie models", "skip", "[mongo] extra not installed"))
+        results.append(
+            CheckResult("Beanie models", "skip", "[mongo] extra not installed")
+        )
 
     try:
         from vibetuner.sqlmodel import get_all_sql_models
@@ -314,12 +316,51 @@ def _check_dependencies() -> list[CheckResult]:
     return results
 
 
+def _check_extras() -> list[CheckResult]:
+    results: list[CheckResult] = []
+
+    from vibetuner.extras import get_extras_status
+
+    status = get_extras_status()
+    installed = [name for name, available in status.items() if available]
+    missing = [name for name, available in status.items() if not available]
+
+    if installed:
+        results.append(
+            CheckResult(
+                "Installed",
+                "ok",
+                ", ".join(f"\\[{name}]" for name in installed),
+            )
+        )
+    if missing:
+        results.append(
+            CheckResult(
+                "Not installed",
+                "skip",
+                ", ".join(f"\\[{name}]" for name in missing),
+            )
+        )
+
+    return results
+
+
 def _check_port_availability() -> list[CheckResult]:
     results: list[CheckResult] = []
 
+    try:
+        from vibetuner.config import CoreConfiguration, ProjectConfiguration
+
+        config = CoreConfiguration(project=ProjectConfiguration())
+        frontend_port = config.resolved_port
+        worker_port = config.resolved_worker_port
+    except Exception:
+        frontend_port = 8000
+        worker_port = 11111
+
     for port, label in [
-        (8000, "Frontend default (8000)"),
-        (11111, "Worker UI default (11111)"),
+        (frontend_port, f"Frontend ({frontend_port})"),
+        (worker_port, f"Worker UI ({worker_port})"),
     ]:
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -354,6 +395,7 @@ def doctor() -> None:
         ("Models", _check_models()),
         ("Templates", _check_templates(root)),
         ("Dependencies", _check_dependencies()),
+        ("Extras", _check_extras()),
         ("Ports", _check_port_availability()),
     ]
 
