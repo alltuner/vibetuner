@@ -115,6 +115,7 @@ just deploy-latest HOST      # Deploy to remote host
 
 ```bash
 just update-scaffolding      # Update project to latest vibetuner template
+just deps-scaffolding-pr     # Update deps + scaffolding and open a PR
 ```
 
 ## Common Tasks
