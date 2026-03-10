@@ -19,6 +19,7 @@ class _SecurityHeadersConfig:
     extra_font_src: str = ""
     extra_connect_src: str = ""
     extra_img_src: str = ""
+    extra_media_src: str = ""
     frame_ancestors: str = "'self'"
 
 
@@ -60,11 +61,16 @@ class SecurityHeadersMiddleware:
         if config.extra_img_src:
             img_src += f" {config.extra_img_src}"
 
+        media_src = "'self' blob:"
+        if config.extra_media_src:
+            media_src += f" {config.extra_media_src}"
+
         directives = [
             "default-src 'self'",
             f"script-src {script_src}",
             f"style-src {style_src}",
             f"img-src {img_src}",
+            f"media-src {media_src}",
             f"frame-ancestors {config.frame_ancestors}",
         ]
 
@@ -270,6 +276,23 @@ class TestSecurityHeadersMiddleware:
         resp = client.get("/")
         csp = resp.headers["Content-Security-Policy"]
         assert "connect-src 'self' wss://ws.example.com" in csp
+
+    def test_media_src_includes_blob(self):
+        """Default media-src includes 'self' and blob: for audio/video playback."""
+        app = _make_app()
+        client = TestClient(app)
+        resp = client.get("/")
+        csp = resp.headers["Content-Security-Policy"]
+        assert "media-src 'self' blob:" in csp
+
+    def test_extra_media_src_appended(self):
+        """Extra media-src sources are appended to media-src directive."""
+        config = _SecurityHeadersConfig(extra_media_src="https://cdn.example.com")
+        app = _make_app(settings=_Settings(security_headers=config))
+        client = TestClient(app)
+        resp = client.get("/")
+        csp = resp.headers["Content-Security-Policy"]
+        assert "media-src 'self' blob: https://cdn.example.com" in csp
 
     def test_strict_dynamic_present_in_script_src(self):
         """'strict-dynamic' is present in script-src."""

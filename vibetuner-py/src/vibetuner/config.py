@@ -65,6 +65,7 @@ class SecurityHeadersSettings(BaseSettings):
     extra_font_src: str = ""
     extra_connect_src: str = ""
     extra_img_src: str = ""
+    extra_media_src: str = ""
     frame_ancestors: str = "'self'"
 
     model_config = SettingsConfigDict(

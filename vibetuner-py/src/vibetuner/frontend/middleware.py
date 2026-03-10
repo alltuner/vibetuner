@@ -137,11 +137,16 @@ class SecurityHeadersMiddleware:
         if config.extra_img_src:
             img_src += f" {config.extra_img_src}"
 
+        media_src = "'self' blob:"
+        if config.extra_media_src:
+            media_src += f" {config.extra_media_src}"
+
         directives = [
             "default-src 'self'",
             f"script-src {script_src}",
             f"style-src {style_src}",
             f"img-src {img_src}",
+            f"media-src {media_src}",
             f"frame-ancestors {config.frame_ancestors}",
         ]
 
