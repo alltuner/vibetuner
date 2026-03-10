@@ -37,7 +37,7 @@
                         User ID: <code>{{ current_user_id }}</code>
                     </p>
                     <div class="card-actions justify-end">
-                        <form method="post" action="{{ url_for('debug.stop_impersonation') }}">
+                        <form method="post" action="{{ url_for('debug_stop_impersonation') }}">
                             <button type="submit" class="btn btn-secondary btn-sm">Stop Impersonation</button>
                         </form>
                     </div>
@@ -106,7 +106,7 @@
                                         <td class="text-center">
                                             {% if current_user_id != user.id|string %}
                                                 <form method="post"
-                                                      action="{{ url_for('debug.impersonate_user', user_id=user.id) }}"
+                                                      action="{{ url_for('debug_impersonate_user', user_id=user.id) }}"
                                                       class="inline">
                                                     <button type="submit" class="btn btn-outline btn-sm">Impersonate</button>
                                                 </form>
