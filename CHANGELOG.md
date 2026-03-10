@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.2.0](https://github.com/alltuner/vibetuner/compare/v9.1.4...v9.2.0) (2026-03-10)
+
+
+### Features
+
+* add testing scaffolding and ruff test exemptions ([#1413](https://github.com/alltuner/vibetuner/issues/1413)) ([7e3ee64](https://github.com/alltuner/vibetuner/commit/7e3ee6498f721d273d8ed2f54d366276d25073fe))
+
 ## [9.1.4](https://github.com/alltuner/vibetuner/compare/v9.1.3...v9.1.4) (2026-03-10)
 
 
