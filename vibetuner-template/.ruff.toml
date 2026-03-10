@@ -16,6 +16,9 @@ ignore = [
   'B008', # function call in default argument — intentional for FastAPI Depends() / Query()
 ]
 
+[lint.per-file-ignores]
+"tests/**" = ["S101"] # assert is expected in tests
+
 [lint.isort]
 combine-as-imports = true
 lines-after-imports = 2
