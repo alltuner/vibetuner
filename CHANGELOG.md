@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.6.0](https://github.com/alltuner/vibetuner/compare/v9.5.0...v9.6.0) (2026-03-11)
+
+
+### Features
+
+* add repo icon convention for Conductor integration ([#1438](https://github.com/alltuner/vibetuner/issues/1438)) ([1d6f5ed](https://github.com/alltuner/vibetuner/commit/1d6f5ed58b08631dc9a36cce5590324ffccdb200))
+
+
+### Bug Fixes
+
+* prevent orphaned granian workers on local-all shutdown ([#1442](https://github.com/alltuner/vibetuner/issues/1442)) ([be7552e](https://github.com/alltuner/vibetuner/commit/be7552e6ca042f55b5fca819d15b0181fbea48a6))
+
 ## [9.5.0](https://github.com/alltuner/vibetuner/compare/v9.4.0...v9.5.0) (2026-03-11)
 
 
