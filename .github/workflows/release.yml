@@ -70,19 +70,25 @@ jobs:
         if: steps.release.outputs.prs_created == 'true'
         uses: astral-sh/setup-uv@v7
 
-      - name: Regenerate uv.lock files on release PR
+      - name: Install bun
+        if: steps.release.outputs.prs_created == 'true'
+        uses: oven-sh/setup-bun@v2
+
+      - name: Regenerate lockfiles on release PR
         if: steps.release.outputs.prs_created == 'true'
         run: |
           uv lock --directory vibetuner-py
           uv lock
-          if git diff --quiet uv.lock vibetuner-py/uv.lock; then
+          cd vibetuner-js && bun install && cd ..
+          cd vibetuner-py && bun install && cd ..
+          if git diff --quiet uv.lock vibetuner-py/uv.lock vibetuner-py/bun.lock vibetuner-js/bun.lock; then
             echo "Lock files already up to date"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add uv.lock vibetuner-py/uv.lock
-          git commit -m "chore: regenerate uv.lock files"
+          git add uv.lock vibetuner-py/uv.lock vibetuner-py/bun.lock vibetuner-js/bun.lock
+          git commit -m "chore: regenerate lockfiles"
           git push
 
   # Determine what needs to be released
