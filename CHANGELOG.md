@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.7.0](https://github.com/alltuner/vibetuner/compare/v9.6.0...v9.7.0) (2026-03-11)
+
+
+### Features
+
+* add Emdash ADE integration ([#1443](https://github.com/alltuner/vibetuner/issues/1443)) ([6e6a3e5](https://github.com/alltuner/vibetuner/commit/6e6a3e5d5711ad9b02a32161738c8fb8b29223ed))
+
+
+### Bug Fixes
+
+* symlink .env in workspace hook instead of Emdash copy ([#1445](https://github.com/alltuner/vibetuner/issues/1445)) ([b1803e4](https://github.com/alltuner/vibetuner/commit/b1803e497e445e049e4191f8238114ac02dcd511))
+
 ## [9.6.0](https://github.com/alltuner/vibetuner/compare/v9.5.0...v9.6.0) (2026-03-11)
 
 
