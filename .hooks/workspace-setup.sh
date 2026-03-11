@@ -10,14 +10,14 @@ fi
 
 # --- Python dependencies ---
 if [ -f "pyproject.toml" ]; then
-    uv sync --frozen
+    uv sync --frozen || echo "⚠ uv sync failed, continuing anyway"
     echo "✓ Python dependencies installed"
 fi
 
 # --- JavaScript dependencies ---
 for dir in vibetuner-js vibetuner-template; do
     if [ -f "$dir/bun.lock" ] || [ -f "$dir/package.json" ]; then
-        (cd "$dir" && bun install --frozen-lockfile)
+        (cd "$dir" && bun install) || echo "⚠ bun install failed in $dir, continuing anyway"
         echo "✓ Bun dependencies installed in $dir"
     fi
 done
@@ -27,6 +27,6 @@ if [ -f ".pre-commit-config.yaml" ] && command -v uv >/dev/null 2>&1; then
     if git config --get core.hooksPath >/dev/null 2>&1; then
         git config --local --unset-all core.hooksPath 2>/dev/null || true
     fi
-    uv tool run prek install
+    uv tool run prek install || echo "⚠ prek install failed, continuing anyway"
     echo "✓ Pre-commit hooks installed"
 fi

@@ -18,12 +18,12 @@ done
 
 # --- Dependencies ---
 if [ -f "bun.lock" ] || [ -f "package.json" ]; then
-    bun install --frozen-lockfile
+    bun install --frozen-lockfile || echo "⚠ bun install failed, continuing anyway"
     echo "✓ Bun dependencies installed"
 fi
 
 if [ -f "pyproject.toml" ]; then
-    uv sync --all-extras --all-groups --frozen
+    uv sync --all-extras --all-groups --frozen || echo "⚠ uv sync failed, continuing anyway"
     echo "✓ Python dependencies installed"
 fi
 
@@ -32,7 +32,7 @@ if [ -f ".pre-commit-config.yaml" ] && command -v uv >/dev/null 2>&1; then
     if git config --get core.hooksPath >/dev/null 2>&1; then
         git config --local --unset-all core.hooksPath 2>/dev/null || true
     fi
-    uv tool run prek install
+    uv tool run prek install || echo "⚠ prek install failed, continuing anyway"
     echo "✓ Pre-commit hooks installed"
 fi
 
