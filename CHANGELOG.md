@@ -1,5 +1,19 @@
 # Changelog
 
+## [9.5.0](https://github.com/alltuner/vibetuner/compare/v9.4.0...v9.5.0) (2026-03-11)
+
+
+### Features
+
+* add Conductor and Superset workspace support for monorepo ([#1434](https://github.com/alltuner/vibetuner/issues/1434)) ([eb0137c](https://github.com/alltuner/vibetuner/commit/eb0137c909883c8ffd038ef752c099d15ea1c8d0))
+
+
+### Bug Fixes
+
+* prevent workspace-setup hooks from blocking worktree creation ([#1435](https://github.com/alltuner/vibetuner/issues/1435)) ([57aae6e](https://github.com/alltuner/vibetuner/commit/57aae6e78620124490458b9021beacd6bc2f4861))
+* regenerate bun.lock files on release PR ([#1431](https://github.com/alltuner/vibetuner/issues/1431)) ([1a98b11](https://github.com/alltuner/vibetuner/commit/1a98b113759991c1da30bdde8700b42eb5aa6d9d))
+* regenerate bun.lock in template release workflow ([#1433](https://github.com/alltuner/vibetuner/issues/1433)) ([39fa07f](https://github.com/alltuner/vibetuner/commit/39fa07fa54c0242c73cefb542bb43ac615e951b0))
+
 ## [9.4.0](https://github.com/alltuner/vibetuner/compare/v9.3.1...v9.4.0) (2026-03-11)
 
 
