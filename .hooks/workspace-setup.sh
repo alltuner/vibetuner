@@ -8,6 +8,21 @@ if [ -z "${ROOT_PATH:-}" ]; then
     exit 1
 fi
 
+# --- .env symlink ---
+for envfile in .env .env.local .envrc; do
+    if [ -f "$ROOT_PATH/$envfile" ] && [ ! -e "$envfile" ]; then
+        ln -sf "$ROOT_PATH/$envfile" "$envfile"
+        echo "✓ Symlinked $envfile"
+    fi
+done
+for srcfile in "$ROOT_PATH"/.env.*.local; do
+    [ -f "$srcfile" ] || continue
+    envfile="$(basename "$srcfile")"
+    [ -e "$envfile" ] && continue
+    ln -sf "$srcfile" "$envfile"
+    echo "✓ Symlinked $envfile"
+done
+
 # --- Python dependencies ---
 if [ -f "pyproject.toml" ]; then
     uv sync --frozen || echo "⚠ uv sync failed, continuing anyway"

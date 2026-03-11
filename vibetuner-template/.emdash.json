@@ -1,5 +1,5 @@
 {
   "setupScript": ".hooks/emdash-setup.sh",
   "runScript": "DEV_PORT=$EMDASH_PORT just local-all",
-  "preservePatterns": [".env", ".env.local", ".env.*.local", ".envrc"]
+  "preservePatterns": []
 }
