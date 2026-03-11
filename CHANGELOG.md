@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.4.0](https://github.com/alltuner/vibetuner/compare/v9.3.1...v9.4.0) (2026-03-11)
+
+
+### Features
+
+* add Conductor and Superset workspace support ([#1428](https://github.com/alltuner/vibetuner/issues/1428)) ([9528e00](https://github.com/alltuner/vibetuner/commit/9528e00de344bb588c318c51874eb0f006dac068))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump rumdl from 0.1.44 to 0.1.45 in /vibetuner-py ([#1427](https://github.com/alltuner/vibetuner/issues/1427)) ([57ac3f3](https://github.com/alltuner/vibetuner/commit/57ac3f3e6dc782ee19b32e054d9cbb84c2a8c8ab))
+
 ## [9.3.1](https://github.com/alltuner/vibetuner/compare/v9.3.0...v9.3.1) (2026-03-10)
 
 
