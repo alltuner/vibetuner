@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "setup": ".hooks/conductor-setup.sh",
+    "run": "just local-all"
+  }
+}
