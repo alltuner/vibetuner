@@ -16,11 +16,10 @@ profile = "jinja"
 # Blank line after load/extends/include tags
 blank_line_after_tag = "load,extends,include"
 
-# Format CSS
-format_css = true
-
-# Format JS
-format_js = true
+# Disable CSS/JS formatting: djlint's formatters don't understand Jinja
+# delimiters ({{ }}) and will mangle them into nested braces.
+format_css = false
+format_js = false
 
 # Preserve leading spaces on text
 preserve_leading_space = false
