@@ -198,7 +198,7 @@ def _collect_provider_context(request: Request | None = None) -> dict[str, Any]:
 
 def _timeago_verbose(diff: timedelta, dt) -> str:
     """Format timedelta as verbose relative time string."""
-    from starlette_babel import gettext_lazy as _
+    from vibetuner.i18n import gettext_lazy as _
 
     ngettext = _
     if diff < timedelta(seconds=60):
@@ -756,10 +756,13 @@ def _ensure_custom_filters() -> None:
         return
     _custom_filters_registered = True
 
-    # Configure Jinja environment with starlette-babel i18n filters (deferred)
-    from starlette_babel.contrib.jinja import configure_jinja_env
+    # Configure Jinja environment with i18n filters when available
+    from vibetuner.extras import has_extra
 
-    configure_jinja_env(jinja_env)
+    if has_extra("i18n"):
+        from starlette_babel.contrib.jinja import configure_jinja_env
+
+        configure_jinja_env(jinja_env)
 
     # Hotreload is imported lazily to avoid pulling in vibetuner.frontend
     from vibetuner.frontend.hotreload import hotreload

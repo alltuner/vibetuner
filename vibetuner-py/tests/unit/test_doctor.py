@@ -10,6 +10,7 @@ from vibetuner.cli.doctor import (
     CheckResult,
     _check_dependencies,
     _check_env_vars,
+    _check_extras,
     _check_port_availability,
     _check_project_structure,
     _check_templates,
@@ -57,6 +58,27 @@ class TestCheckProjectStructure:
         statuses = {r.name: r.status for r in results}
 
         assert statuses[".env file"] == "warn"
+
+    def test_env_local_shown_when_present(self, tmp_path):
+        (tmp_path / ".copier-answers.yml").write_text("project_slug: test\n")
+        (tmp_path / ".env").write_text("FOO=bar\n")
+        (tmp_path / ".env.local").write_text("LOCAL=yes\n")
+        (tmp_path / "src" / "app").mkdir(parents=True)
+
+        results = _check_project_structure(tmp_path)
+        statuses = {r.name: r.status for r in results}
+
+        assert statuses[".env.local"] == "ok"
+
+    def test_env_local_omitted_when_absent(self, tmp_path):
+        (tmp_path / ".copier-answers.yml").write_text("project_slug: test\n")
+        (tmp_path / ".env").write_text("FOO=bar\n")
+        (tmp_path / "src" / "app").mkdir(parents=True)
+
+        results = _check_project_structure(tmp_path)
+        names = {r.name for r in results}
+
+        assert ".env.local" not in names
 
     def test_missing_src_dir(self, tmp_path):
         (tmp_path / ".copier-answers.yml").write_text("project_slug: test\n")
@@ -120,7 +142,7 @@ class TestCheckTemplates:
         results = _check_templates(tmp_path)
         statuses = {r.name: r.status for r in results}
 
-        assert statuses["Templates dir"] == "ok"
+        assert statuses["Project overrides"] == "ok"
         assert statuses["Template syntax"] == "ok"
 
     def test_template_syntax_issue(self, tmp_path):
@@ -156,8 +178,31 @@ class TestCheckPortAvailability:
     def test_returns_results_for_both_ports(self):
         results = _check_port_availability()
         labels = {r.name for r in results}
-        assert "Frontend default (8000)" in labels
-        assert "Worker UI default (11111)" in labels
+        assert len(labels) == 2
+        assert any(name.startswith("Frontend") for name in labels)
+        assert any(name.startswith("Worker UI") for name in labels)
+
+
+class TestCheckExtras:
+    """Tests for extras status checks."""
+
+    def test_returns_installed_and_missing(self):
+        results = _check_extras()
+        names = {r.name for r in results}
+        # Should have at least one of these categories
+        assert names & {"Installed", "Not installed"}
+
+    def test_installed_extras_have_ok_status(self):
+        results = _check_extras()
+        installed = [r for r in results if r.name == "Installed"]
+        if installed:
+            assert installed[0].status == "ok"
+
+    def test_missing_extras_have_skip_status(self):
+        results = _check_extras()
+        missing = [r for r in results if r.name == "Not installed"]
+        if missing:
+            assert missing[0].status == "skip"
 
 
 class TestCheckResult:

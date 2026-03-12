@@ -159,7 +159,7 @@ def _register_create_route(
                 logger.error(f"Hook execution failed: pre_create: {exc}")
                 raise HTTPException(
                     status_code=500, detail="Hook execution failed: pre_create"
-                )
+                ) from None
 
         doc = model(**data.model_dump())
         await doc.insert()
@@ -173,7 +173,7 @@ def _register_create_route(
                 logger.error(f"Hook execution failed: post_create: {exc}")
                 raise HTTPException(
                     status_code=500, detail="Hook execution failed: post_create"
-                )
+                ) from None
 
         return _serialize_one(doc, response_schema)
 
@@ -224,7 +224,7 @@ def _register_update_route(
                 logger.error(f"Hook execution failed: pre_update: {exc}")
                 raise HTTPException(
                     status_code=500, detail="Hook execution failed: pre_update"
-                )
+                ) from None
 
         update_data = data.model_dump(exclude_unset=True)
         if update_data:
@@ -239,7 +239,7 @@ def _register_update_route(
                 logger.error(f"Hook execution failed: post_update: {exc}")
                 raise HTTPException(
                     status_code=500, detail="Hook execution failed: post_update"
-                )
+                ) from None
 
         return _serialize_one(doc, response_schema)
 
@@ -266,7 +266,7 @@ def _register_delete_route(
                 logger.error(f"Hook execution failed: pre_delete: {exc}")
                 raise HTTPException(
                     status_code=500, detail="Hook execution failed: pre_delete"
-                )
+                ) from None
 
         await doc.delete()
 
@@ -279,7 +279,7 @@ def _register_delete_route(
                 logger.error(f"Hook execution failed: post_delete: {exc}")
                 raise HTTPException(
                     status_code=500, detail="Hook execution failed: post_delete"
-                )
+                ) from None
 
         return None
 

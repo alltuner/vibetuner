@@ -28,6 +28,10 @@ async def get_redis_client():
         if _client is not None:
             return _client
 
+        from vibetuner.extras import require_extra
+
+        require_extra("redis", "Redis connectivity")
+
         import redis.asyncio as aioredis
 
         _client = aioredis.from_url(str(settings.redis_url))
@@ -78,6 +82,10 @@ def create_redis_client():
 
     if settings.redis_url is None:
         return None
+
+    from vibetuner.extras import require_extra
+
+    require_extra("redis", "Redis connectivity")
 
     import redis.asyncio as aioredis
 

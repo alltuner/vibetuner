@@ -13,6 +13,10 @@ from vibetuner.services.email.base import (
 
 def _resolve_provider() -> EmailProvider:
     """Resolve the email provider from settings."""
+    from vibetuner.extras import require_extra
+
+    require_extra("email", "Email sending")
+
     mail = settings.mail
 
     # Explicit provider selection

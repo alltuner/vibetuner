@@ -6,6 +6,23 @@ Deploy Vibetuner applications to production.
 
 Vibetuner includes a multi-stage Dockerfile optimized for production.
 
+### Optimizing Image Size with Extras
+
+Vibetuner uses [optional extras](extras.md) so Docker images only ship the
+dependencies your project needs. Edit the `uv sync` line in your `Dockerfile`
+to install specific extras:
+
+```dockerfile
+# Full stack (default)
+RUN uv sync --frozen --no-dev --extra all
+
+# API service with MongoDB only (smaller image)
+RUN uv sync --frozen --no-dev --extra mongo
+
+# SQL-only project
+RUN uv sync --frozen --no-dev --extra sql --extra email
+```
+
 ### Test Production Build Locally
 
 ```bash

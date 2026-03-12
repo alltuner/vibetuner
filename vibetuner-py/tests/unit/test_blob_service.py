@@ -29,7 +29,7 @@ def blob_service(mock_storage):
 async def test_object_exists_blob_not_found_in_mongo(blob_service):
     """Test object_exists when BlobModel.get returns None."""
     with patch(
-        "vibetuner.services.blob.BlobModel.get", new_callable=AsyncMock
+        "vibetuner.models.BlobModel.get", new_callable=AsyncMock
     ) as mock_get:
         mock_get.return_value = None
 
@@ -47,7 +47,7 @@ async def test_object_exists_blob_found_in_mongo_no_check_bucket(blob_service):
     mock_blob.bucket = "test-bucket"
 
     with patch(
-        "vibetuner.services.blob.BlobModel.get", new_callable=AsyncMock
+        "vibetuner.models.BlobModel.get", new_callable=AsyncMock
     ) as mock_get:
         mock_get.return_value = mock_blob
 
@@ -65,7 +65,7 @@ async def test_object_exists_blob_found_in_mongo_and_s3(blob_service):
     mock_blob.bucket = "test-bucket"
 
     with patch(
-        "vibetuner.services.blob.BlobModel.get", new_callable=AsyncMock
+        "vibetuner.models.BlobModel.get", new_callable=AsyncMock
     ) as mock_get:
         mock_get.return_value = mock_blob
         blob_service.storage.object_exists.return_value = True
@@ -86,7 +86,7 @@ async def test_object_exists_blob_found_in_mongo_but_not_s3(blob_service):
     mock_blob.bucket = "test-bucket"
 
     with patch(
-        "vibetuner.services.blob.BlobModel.get", new_callable=AsyncMock
+        "vibetuner.models.BlobModel.get", new_callable=AsyncMock
     ) as mock_get:
         mock_get.return_value = mock_blob
         blob_service.storage.object_exists.return_value = False

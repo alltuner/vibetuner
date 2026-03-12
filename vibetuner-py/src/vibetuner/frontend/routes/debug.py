@@ -13,9 +13,8 @@ from fastapi.responses import (
 
 from vibetuner.config import settings
 from vibetuner.context import ctx
+from vibetuner.extras import get_extras_status, has_extra
 from vibetuner.logging import logger
-from vibetuner.models import UserModel
-from vibetuner.mongo import get_all_models
 from vibetuner.paths import package_templates
 
 from ..deps import MAGIC_COOKIE_NAME
@@ -82,7 +81,14 @@ router = APIRouter(prefix="/debug", dependencies=[Depends(check_debug_access)])
 
 @router.get("/", response_class=HTMLResponse)
 def debug_index(request: Request):
-    return render_template("debug/index.html.jinja", request)
+    return render_template(
+        "debug/index.html.jinja",
+        request,
+        {
+            "extras": get_extras_status(),
+            "mongodb_connected": settings.mongodb_url is not None,
+        },
+    )
 
 
 @router.get("/version", response_class=HTMLResponse)
@@ -93,7 +99,11 @@ def debug_version(request: Request):
 @router.get("/info", response_class=HTMLResponse)
 def debug_info(request: Request):
     cookies = dict(request.cookies)
-    return render_template("debug/info.html.jinja", request, {"cookies": cookies})
+    return render_template(
+        "debug/info.html.jinja",
+        request,
+        {"cookies": cookies, "extras": get_extras_status()},
+    )
 
 
 # Skeleton template block metadata for developer reference.
@@ -511,6 +521,18 @@ def _get_collection_info(model) -> dict:
 @router.get("/collections", response_class=HTMLResponse)
 def debug_collections(request: Request):
     """Debug endpoint to display MongoDB collection schemas."""
+    if not has_extra("mongo") or settings.mongodb_url is None:
+        return render_template(
+            "debug/collections.html.jinja",
+            request,
+            {
+                "collections": [],
+                "mongodb_connected": settings.mongodb_url is not None,
+            },
+        )
+
+    from vibetuner.mongo import get_all_models
+
     collections_info = [_get_collection_info(model) for model in get_all_models()]
 
     return render_template(
@@ -521,6 +543,18 @@ def debug_collections(request: Request):
 @router.get("/users", response_class=HTMLResponse)
 async def debug_users(request: Request):
     """Debug endpoint to list and impersonate users."""
+    if not has_extra("mongo") or settings.mongodb_url is None:
+        return render_template(
+            "debug/users.html.jinja",
+            request,
+            {
+                "users": [],
+                "current_user_id": None,
+                "mongodb_connected": settings.mongodb_url is not None,
+            },
+        )
+
+    from vibetuner.models import UserModel
 
     users = await UserModel.find_all().to_list()
     current_user_id = (
@@ -545,6 +579,10 @@ async def debug_impersonate_user(request: Request, user_id: str):
     """Impersonate a user by setting their ID in the session."""
     if not ctx.DEBUG:
         raise HTTPException(status_code=404, detail="Not found")
+    if not has_extra("mongo") or settings.mongodb_url is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from vibetuner.models import UserModel
 
     # Verify user exists
     user = await UserModel.get(user_id)

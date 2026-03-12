@@ -39,6 +39,26 @@ pip install vibetuner
 vibetuner scaffold new my-project
 ```
 
+## Optional Extras
+
+Vibetuner uses optional dependency extras so you only install what you need.
+Scaffolded projects install `vibetuner[all]` by default.
+
+For production Docker images, install only the extras your project uses:
+
+```bash
+# Full stack (default for scaffolded projects)
+uv add "vibetuner[all]"
+
+# MongoDB + auth only
+uv add "vibetuner[mongo,auth]"
+
+# SQL database only
+uv add "vibetuner[sql]"
+```
+
+See [Optional Extras](extras.md) for the complete list and Docker optimization guide.
+
 ## Installing uv
 
 If you don't have `uv` installed:

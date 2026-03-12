@@ -2,11 +2,13 @@
 ABOUTME: Provides async operations for R2, MinIO, and other S3-compatible storage providers.
 """
 
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
-import aioboto3
-from aiobotocore.config import AioConfig
-from botocore.exceptions import ClientError
+from vibetuner.extras import require_extra
+
+
+if TYPE_CHECKING:
+    import aioboto3
 
 
 S3_SERVICE_NAME: Literal["s3"] = "s3"
@@ -29,7 +31,7 @@ class S3StorageService:
         secret_key: str,
         region: str = "auto",
         default_bucket: str | None = None,
-        session: aioboto3.Session | None = None,
+        session: "aioboto3.Session | None" = None,
     ) -> None:
         """Initialize S3 storage service with explicit configuration.
 
@@ -41,6 +43,11 @@ class S3StorageService:
             default_bucket: Optional default bucket for operations
             session: Optional custom aioboto3 session
         """
+        require_extra("s3", "S3/R2 blob storage")
+
+        import aioboto3
+        from aiobotocore.config import AioConfig
+
         self.endpoint_url = endpoint_url
         self.default_bucket = default_bucket
         self.session = session or aioboto3.Session(
@@ -168,6 +175,8 @@ class S3StorageService:
         Returns:
             True if object exists, False otherwise
         """
+        from botocore.exceptions import ClientError
+
         bucket_name = self._get_bucket(bucket)
 
         try:
@@ -351,6 +360,8 @@ class S3StorageService:
         Returns:
             True if bucket exists and is accessible, False otherwise
         """
+        from botocore.exceptions import ClientError
+
         try:
             async with self.session.client(
                 service_name=S3_SERVICE_NAME,

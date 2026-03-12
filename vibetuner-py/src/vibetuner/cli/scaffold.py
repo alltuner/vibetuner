@@ -266,7 +266,15 @@ def new(
     # Run copier
     try:
         import copier
+    except ImportError:
+        _console().print(
+            "[red]Error: Scaffold requires additional dependencies.[/red]\n"
+            "Install with: [bold]uvx vibetuner\\[scaffold] scaffold new "
+            f"{destination}[/bold]"
+        )
+        raise typer.Exit(code=1) from None
 
+    try:
         _console().print(f"\n[green]Creating new project in: {destination}[/green]\n")
 
         copier.run_copy(
@@ -349,17 +357,24 @@ def update(
         _console().print(f"[yellow]Directory: {path}[/yellow]")
         raise typer.Exit(code=1)
 
+    if branch:
+        _console().print(
+            f"\n[green]Updating project: {path}[/green] "
+            f"[dim](branch: {branch})[/dim]\n"
+        )
+    else:
+        _console().print(f"\n[green]Updating project: {path}[/green]\n")
+
     try:
-        if branch:
-            _console().print(
-                f"\n[green]Updating project: {path}[/green] "
-                f"[dim](branch: {branch})[/dim]\n"
-            )
-        else:
-            _console().print(f"\n[green]Updating project: {path}[/green]\n")
-
         import copier
+    except ImportError:
+        _console().print(
+            "[red]Error: Scaffold requires additional dependencies.[/red]\n"
+            "Install with: [bold]uv add 'vibetuner\\[scaffold]'[/bold]"
+        )
+        raise typer.Exit(code=1) from None
 
+    try:
         update_kwargs: dict[str, Any] = {
             "dst_path": path,
             "skip_answered": skip_answered,
@@ -472,7 +487,14 @@ def adopt(
     # Run copier
     try:
         import copier
+    except ImportError:
+        _console().print(
+            "[red]Error: Scaffold requires additional dependencies.[/red]\n"
+            "Install with: [bold]uv add 'vibetuner\\[scaffold]'[/bold]"
+        )
+        raise typer.Exit(code=1) from None
 
+    try:
         _console().print(f"\n[green]Adopting scaffolding in: {path}[/green]\n")
         _console().print(
             "[yellow]Copier will prompt for conflict resolution on existing files.[/yellow]\n"

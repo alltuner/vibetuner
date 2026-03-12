@@ -1,7 +1,7 @@
-from babel import Locale
 from pydantic import UUID4, BaseModel, PrivateAttr, computed_field
 
 from vibetuner.config import settings
+from vibetuner.extras import has_extra
 
 
 class Context(BaseModel):
@@ -26,16 +26,19 @@ class Context(BaseModel):
     def locale_names(self) -> dict[str, str]:
         """Language codes mapped to native display names, sorted alphabetically."""
         if self._locale_names_cache is None:
+            if has_extra("i18n"):
+                from babel import Locale
+
+                names = {
+                    locale: (
+                        Locale.parse(locale).display_name or locale
+                    ).capitalize()
+                    for locale in self.supported_languages
+                }
+            else:
+                names = {locale: locale.upper() for locale in self.supported_languages}
             self._locale_names_cache = dict(
-                sorted(
-                    {
-                        locale: (
-                            Locale.parse(locale).display_name or locale
-                        ).capitalize()
-                        for locale in self.supported_languages
-                    }.items(),
-                    key=lambda x: x[1],
-                ),
+                sorted(names.items(), key=lambda x: x[1]),
             )
         return self._locale_names_cache
 

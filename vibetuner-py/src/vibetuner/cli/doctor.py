@@ -67,6 +67,12 @@ def _check_project_structure(root: Path | None) -> list[CheckResult]:
             CheckResult(".env file", "warn", "Missing — copy from .env.example")
         )
 
+    env_local = root / ".env.local"
+    if env_local.exists():
+        results.append(
+            CheckResult(".env.local", "ok", "Found (local overrides active)")
+        )
+
     src_dir = root / "src"
     if src_dir.is_dir():
         packages = [
@@ -202,19 +208,26 @@ def _check_service_connectivity() -> list[CheckResult]:
 def _check_models() -> list[CheckResult]:
     results: list[CheckResult] = []
 
-    try:
-        from vibetuner.mongo import get_all_models
+    from vibetuner.extras import has_extra
 
-        models = get_all_models()
-        results.append(
-            CheckResult(
-                "Beanie models",
-                "ok",
-                f"{len(models)} model(s): {', '.join(m.__name__ for m in models)}",
+    if has_extra("mongo"):
+        try:
+            from vibetuner.mongo import get_all_models
+
+            models = get_all_models()
+            results.append(
+                CheckResult(
+                    "Beanie models",
+                    "ok",
+                    f"{len(models)} model(s): {', '.join(m.__name__ for m in models)}",
+                )
             )
+        except Exception as exc:
+            results.append(CheckResult("Beanie models", "warn", f"Cannot load: {exc}"))
+    else:
+        results.append(
+            CheckResult("Beanie models", "skip", "[mongo] extra not installed")
         )
-    except Exception as exc:
-        results.append(CheckResult("Beanie models", "warn", f"Cannot load: {exc}"))
 
     try:
         from vibetuner.sqlmodel import get_all_sql_models
@@ -247,7 +260,11 @@ def _check_templates(root: Path | None) -> list[CheckResult]:
         results.append(CheckResult("Templates dir", "warn", "templates/ not found"))
         return results
 
-    results.append(CheckResult("Templates dir", "ok", "Found"))
+    results.append(CheckResult("Project overrides", "ok", str(templates_dir)))
+
+    from vibetuner.paths import package_templates
+
+    results.append(CheckResult("Package defaults", "ok", str(package_templates)))
 
     # Check for common Jinja2 syntax issues in template files
     template_files = (
@@ -294,7 +311,11 @@ def _check_dependencies() -> list[CheckResult]:
     except importlib.metadata.PackageNotFoundError:
         results.append(CheckResult("vibetuner", "error", "Package not installed"))
 
-    key_packages = ["fastapi", "beanie", "granian", "pydantic"]
+    from vibetuner.extras import has_extra
+
+    key_packages = ["fastapi", "granian", "pydantic"]
+    if has_extra("mongo"):
+        key_packages.append("beanie")
     for pkg in key_packages:
         try:
             ver = importlib.metadata.version(pkg)
@@ -305,12 +326,51 @@ def _check_dependencies() -> list[CheckResult]:
     return results
 
 
+def _check_extras() -> list[CheckResult]:
+    results: list[CheckResult] = []
+
+    from vibetuner.extras import get_extras_status
+
+    status = get_extras_status()
+    installed = [name for name, available in status.items() if available]
+    missing = [name for name, available in status.items() if not available]
+
+    if installed:
+        results.append(
+            CheckResult(
+                "Installed",
+                "ok",
+                ", ".join(f"\\[{name}]" for name in installed),
+            )
+        )
+    if missing:
+        results.append(
+            CheckResult(
+                "Not installed",
+                "skip",
+                ", ".join(f"\\[{name}]" for name in missing),
+            )
+        )
+
+    return results
+
+
 def _check_port_availability() -> list[CheckResult]:
     results: list[CheckResult] = []
 
+    try:
+        from vibetuner.config import CoreConfiguration, ProjectConfiguration
+
+        config = CoreConfiguration(project=ProjectConfiguration())
+        frontend_port = config.resolved_port
+        worker_port = config.resolved_worker_port
+    except Exception:
+        frontend_port = 8000
+        worker_port = 11111
+
     for port, label in [
-        (8000, "Frontend default (8000)"),
-        (11111, "Worker UI default (11111)"),
+        (frontend_port, f"Frontend ({frontend_port})"),
+        (worker_port, f"Worker UI ({worker_port})"),
     ]:
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -344,7 +404,8 @@ def doctor() -> None:
         ("Service Connectivity", _check_service_connectivity()),
         ("Models", _check_models()),
         ("Templates", _check_templates(root)),
-        ("Dependencies", _check_dependencies()),
+        ("Core Dependencies", _check_dependencies()),
+        ("Extras", _check_extras()),
         ("Ports", _check_port_availability()),
     ]
 
