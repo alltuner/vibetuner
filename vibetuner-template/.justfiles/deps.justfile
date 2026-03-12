@@ -58,8 +58,10 @@ deps-scaffolding-pr:
     just update-scaffolding
 
     # Check for conflict markers in any file (tracked or new)
+    # Pattern is split to avoid matching itself when scanning for unresolved conflicts
+    CONFLICT_MARKER="<""<""<""<""<""<""<"
     HAS_CONFLICTS=false
-    if grep -rl '<<<<<<<' --exclude-dir=.git . >/dev/null 2>&1; then
+    if grep -rl "$CONFLICT_MARKER" --exclude-dir=.git . >/dev/null 2>&1; then
         HAS_CONFLICTS=true
     fi
 
@@ -88,7 +90,7 @@ deps-scaffolding-pr:
         echo "PR created, but scaffolding has conflicts. Next steps:"
         echo ""
         echo "1. cd $WORKTREE_DIR"
-        echo "2. Resolve conflicts (look for <<<<<<< markers)"
+        echo "2. Resolve conflicts (look for $CONFLICT_MARKER markers)"
         echo "3. git add -A && git commit -m 'chore: resolve scaffolding conflicts'"
         echo "4. git push"
         echo "5. Merge the PR, then clean up:"
