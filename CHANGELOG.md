@@ -1,5 +1,14 @@
 # Changelog
 
+## [9.7.2](https://github.com/alltuner/vibetuner/compare/v9.7.1...v9.7.2) (2026-03-12)
+
+
+### Bug Fixes
+
+* avoid literal conflict markers in deps.justfile template ([#1450](https://github.com/alltuner/vibetuner/issues/1450)) ([7c4f0f8](https://github.com/alltuner/vibetuner/commit/7c4f0f86add601151ee9eb1c40992480f49d8a5f))
+* disable djlint CSS/JS formatting to preserve Jinja delimiters ([#1451](https://github.com/alltuner/vibetuner/issues/1451)) ([57a6e8f](https://github.com/alltuner/vibetuner/commit/57a6e8f17dc378032c246c58ba35035e0d5b6750))
+* set daemon=True on worker child processes to prevent orphans ([#1448](https://github.com/alltuner/vibetuner/issues/1448)) ([61777c7](https://github.com/alltuner/vibetuner/commit/61777c79a658e486b4129d9a11a50bccdb8a00ca))
+
 ## [9.7.1](https://github.com/alltuner/vibetuner/compare/v9.7.0...v9.7.1) (2026-03-12)
 
 
