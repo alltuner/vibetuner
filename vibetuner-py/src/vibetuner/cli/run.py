@@ -54,12 +54,14 @@ def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
     web_host = "0.0.0.0"  # noqa: S104
     processes: list[Process] = []
 
-    web_process = Process(target=run_web, args=(web_host, port, worker_path))
+    web_process = Process(target=run_web, args=(web_host, port, worker_path), daemon=True)
     web_process.start()
     processes.append(web_process)
 
     for _ in range(workers - 1):
-        p = Process(target=run_worker, args=(worker_path, False, is_dev, verbose))
+        p = Process(
+            target=run_worker, args=(worker_path, False, is_dev, verbose), daemon=True
+        )
         p.start()
         processes.append(p)
 
