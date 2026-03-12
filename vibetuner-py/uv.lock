@@ -3015,7 +3015,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "9.7.0"
+version = "9.7.1"
 source = { editable = "." }
 dependencies = [
     { name = "aioboto3" },

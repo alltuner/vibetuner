@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.7.1](https://github.com/alltuner/vibetuner/compare/v9.7.0...v9.7.1) (2026-03-12)
+
+
+### Bug Fixes
+
+* use correct emdash config schema ([#1446](https://github.com/alltuner/vibetuner/issues/1446)) ([81fbae7](https://github.com/alltuner/vibetuner/commit/81fbae7c4d22a6e122f3e05fc6e89fb51243b288))
+
 ## [9.7.0](https://github.com/alltuner/vibetuner/compare/v9.6.0...v9.7.0) (2026-03-11)
 
 
