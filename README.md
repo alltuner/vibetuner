@@ -290,6 +290,20 @@ Created and maintained by [All Tuner Labs, S.L.](https://alltuner.com) and
 David Poblador i Garcia ([@davidpoblador](https://github.com/davidpoblador) |
 [davidpoblador.com](https://davidpoblador.com/))
 
+## Support the project
+
+Vibetuner is an open source project built by [David Poblador i Garcia](https://davidpoblador.com/) through [All Tuner Labs](https://www.alltuner.com/).
+
+If this project helped you ship faster or prototype with confidence, consider supporting its development.
+
+❤️ **Sponsor development**
+https://github.com/sponsors/alltuner
+
+☕ **One-time support**
+https://buymeacoffee.com/alltuner
+
+Your support helps fund the continued development of Vibetuner and other open source developer tools such as [Factory Floor](https://github.com/alltuner/factoryfloor).
+
 ---
 
 Made with ❤️ for rapid prototyping and production deployments
