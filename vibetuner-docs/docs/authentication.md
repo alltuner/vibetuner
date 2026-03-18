@@ -106,12 +106,121 @@ app = VibetunerApp(
 | `params` | `dict` | OAuth endpoint URLs (`authorize_url`, etc.) |
 | `client_kwargs` | `dict` | Client settings (e.g., `{"scope": "..."}`) |
 | `config` | `dict` | Credentials (`CLIENT_ID`, `CLIENT_SECRET`) |
+| `compliance_fix` | `Callable \| None` | Authlib compliance fix callback (default `None`) |
 
 The callback URL for any provider follows the pattern:
 `/auth/provider/{provider_name}`
 
+#### Compliance Fixes
+
+Some OAuth providers deviate from the spec in ways that break standard token
+handling. Authlib supports `compliance_fix` callbacks to patch these responses
+before they are parsed. Pass one via the `compliance_fix` field:
+
+```python
+from vibetuner.models.oauth import OauthProviderModel
+
+
+def strip_id_token(session, token):
+    """LinkedIn includes an id_token that triggers OIDC nonce validation failure."""
+    token.pop("id_token", None)
+    return token
+
+
+app = VibetunerApp(
+    custom_oauth_providers={
+        "linkedin": OauthProviderModel(
+            identifier="sub",
+            params={
+                "authorize_url": "https://www.linkedin.com/oauth/v2/authorization",
+                "access_token_url": "https://www.linkedin.com/oauth/v2/accessToken",
+                "userinfo_endpoint": "https://api.linkedin.com/v2/userinfo",
+            },
+            client_kwargs={"scope": "openid profile email"},
+            config={
+                "LINKEDIN_CLIENT_ID": "your-client-id",
+                "LINKEDIN_CLIENT_SECRET": "your-client-secret",
+            },
+            compliance_fix=strip_id_token,
+        ),
+    },
+)
+```
+
+The fix is automatically applied to both env-var-based and database-backed OAuth
+apps that use the same provider.
+
 For more built-in providers, file an issue at
 [github.com/alltuner/vibetuner](https://github.com/alltuner/vibetuner/issues).
+
+### Database-Backed OAuth Apps
+
+For scenarios where you need multiple sets of credentials per provider (e.g.,
+different LinkedIn apps for different organizations), vibetuner supports
+database-backed OAuth apps via `OAuthProviderAppModel`.
+
+Each app stores its own `client_id`, `client_secret`, optional scope overrides,
+and metadata in MongoDB. The underlying provider (endpoints, compliance fixes)
+is inherited from the registered `OauthProviderModel`.
+
+#### Creating an OAuth App
+
+```python
+from vibetuner.models.oauth_app import OAuthProviderAppModel
+
+app = OAuthProviderAppModel(
+    provider="linkedin",       # must match a registered provider name
+    name="Acme Corp",
+    client_id="app-specific-client-id",
+    client_secret="app-specific-secret",
+    scopes=["openid", "profile", "email", "w_member_social"],
+    metadata={"org_id": "12345"},
+)
+await app.insert()
+```
+
+#### `OAuthProviderAppModel` Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `provider` | `str` | Registered provider name (e.g., `"google"`) |
+| `name` | `str` | Human-readable label |
+| `client_id` | `str` | OAuth client ID for this app |
+| `client_secret` | `str` | OAuth client secret for this app |
+| `external_app_id` | `str \| None` | Provider's own identifier for this app |
+| `scopes` | `list[str]` | Scope overrides (empty = use provider defaults) |
+| `capabilities` | `list[str]` | Detected capabilities for this app |
+| `is_active` | `bool` | Whether available for OAuth flows (default `True`) |
+| `metadata` | `dict` | Provider-specific extra data |
+
+#### Resolving OAuth Clients
+
+Use `resolve_oauth_client` to resolve the correct Authlib client for a given
+provider, with optional app-specific credentials:
+
+```python
+from vibetuner.frontend.oauth import resolve_oauth_client
+
+# Environment-variable credentials (default)
+client_name = await resolve_oauth_client("google", app_id=None)
+
+# Database-backed app credentials
+client_name = await resolve_oauth_client("linkedin", app_id="6801...")
+```
+
+When `app_id` is `None`, the function returns the bare provider name (using
+env-var credentials). When an `app_id` is provided, it loads the
+`OAuthProviderAppModel` from the database, registers a namespaced Authlib
+client with the app's credentials, and returns the client name.
+
+The built-in login and callback routes accept an optional `app_id` query
+parameter that flows through this resolution automatically.
+
+#### App-to-Account Linking
+
+When a user authenticates through a database-backed OAuth app, the `app_id`
+is stored on the `OAuthAccountModel`. This lets you trace which app was
+used for each OAuth account link.
 
 ### OAuth Account Linking
 
