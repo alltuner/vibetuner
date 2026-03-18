@@ -29,7 +29,9 @@ def register_oauth_provider(name: str, provider: OauthProviderModel) -> None:
     _PROVIDERS[name] = provider
     PROVIDER_IDENTIFIERS[name] = provider.identifier
     _oauth_config.update(**provider.config)
-    register_kwargs = {"client_kwargs": provider.client_kwargs, **provider.params}
+    register_kwargs: dict = {"client_kwargs": provider.client_kwargs, **provider.params}
+    if provider.compliance_fix is not None:
+        register_kwargs["compliance_fix"] = provider.compliance_fix
     oauth.register(name, overwrite=True, **register_kwargs)
 
 
@@ -106,13 +108,15 @@ def _register_app_client(app: "OAuthProviderAppModel") -> str:
     if app.scopes:
         client_kwargs["scope"] = " ".join(app.scopes)
 
-    register_kwargs = {"client_kwargs": client_kwargs, **provider_config.params}
+    register_kwargs: dict = {"client_kwargs": client_kwargs, **provider_config.params}
+    if provider_config.compliance_fix is not None:
+        register_kwargs["compliance_fix"] = provider_config.compliance_fix
     oauth.register(client_name, overwrite=True, **register_kwargs)
 
     return client_name
 
 
-async def _resolve_oauth_client(provider_name: str, app_id: str | None) -> str:
+async def resolve_oauth_client(provider_name: str, app_id: str | None) -> str:
     """Resolve the Authlib client name, optionally loading a DB-backed app.
 
     Returns the bare provider name when no app_id is given (env-var fallback),
@@ -302,7 +306,7 @@ def _create_auth_login_handler(provider_name: str):
         request.session["next_url"] = next or get_homepage_url(request)
 
         try:
-            client_name = await _resolve_oauth_client(provider_name, app_id)
+            client_name = await resolve_oauth_client(provider_name, app_id)
         except ValueError:
             logger.warning(f"Invalid app_id '{app_id}' for provider '{provider_name}'")
             return RedirectResponse(url=get_homepage_url(request))
@@ -350,7 +354,7 @@ def _create_auth_handler(provider_name: str):
             # Resolve the Authlib client (DB-backed app or env-var default)
             app_id = request.session.pop("oauth_app_id", None)
             try:
-                client_name = await _resolve_oauth_client(provider_name, app_id)
+                client_name = await resolve_oauth_client(provider_name, app_id)
             except ValueError:
                 logger.warning(
                     f"Failed to resolve OAuth app '{app_id}' for provider '{provider_name}'"
