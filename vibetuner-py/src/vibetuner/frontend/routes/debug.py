@@ -742,10 +742,14 @@ async def debug_oauth_app_store(request: Request):
 
     form = await request.form()
     scopes_raw = form.get("scopes", "").strip()
-    scopes = [s.strip() for s in scopes_raw.split(",") if s.strip()] if scopes_raw else []
+    scopes = (
+        [s.strip() for s in scopes_raw.split(",") if s.strip()] if scopes_raw else []
+    )
     capabilities_raw = form.get("capabilities", "").strip()
     capabilities = (
-        [c.strip() for c in capabilities_raw.split(",") if c.strip()] if capabilities_raw else []
+        [c.strip() for c in capabilities_raw.split(",") if c.strip()]
+        if capabilities_raw
+        else []
     )
 
     app = OAuthProviderAppModel(
@@ -777,10 +781,14 @@ async def debug_oauth_app_update(request: Request, app_id: str):
 
     form = await request.form()
     scopes_raw = form.get("scopes", "").strip()
-    scopes = [s.strip() for s in scopes_raw.split(",") if s.strip()] if scopes_raw else []
+    scopes = (
+        [s.strip() for s in scopes_raw.split(",") if s.strip()] if scopes_raw else []
+    )
     capabilities_raw = form.get("capabilities", "").strip()
     capabilities = (
-        [c.strip() for c in capabilities_raw.split(",") if c.strip()] if capabilities_raw else []
+        [c.strip() for c in capabilities_raw.split(",") if c.strip()]
+        if capabilities_raw
+        else []
     )
 
     app.provider = form.get("provider", app.provider)

@@ -95,10 +95,12 @@ def _register_app_client(app: "OAuthProviderAppModel") -> str:
     client_name = _authlib_name_for_app(app.provider, str(app.id))
     env_prefix = client_name.upper()
 
-    _oauth_config.update(**{
-        f"{env_prefix}_CLIENT_ID": app.client_id,
-        f"{env_prefix}_CLIENT_SECRET": app.client_secret,
-    })
+    _oauth_config.update(
+        **{
+            f"{env_prefix}_CLIENT_ID": app.client_id,
+            f"{env_prefix}_CLIENT_SECRET": app.client_secret,
+        }
+    )
 
     client_kwargs = dict(provider_config.client_kwargs)
     if app.scopes:

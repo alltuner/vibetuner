@@ -41,7 +41,9 @@ def clean_provider_registry():
 def registered_google(monkeypatch):
     """Register Google as a provider for tests that need it."""
     monkeypatch.setattr(settings, "google_client_id", SecretStr("env-google-id"))
-    monkeypatch.setattr(settings, "google_client_secret", SecretStr("env-google-secret"))
+    monkeypatch.setattr(
+        settings, "google_client_secret", SecretStr("env-google-secret")
+    )
     auto_register_providers(["google"])
 
 
@@ -240,12 +242,16 @@ class TestResolveOAuthClient:
         )
         app.id = app_id
 
-        with patch.object(OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app):
+        with patch.object(
+            OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app
+        ):
             result = await _resolve_oauth_client("google", str(app_id))
             assert result == _authlib_name_for_app("google", str(app_id))
 
     async def test_raises_when_app_not_found(self, registered_google):
-        with patch.object(OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=None):
+        with patch.object(
+            OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=None
+        ):
             with pytest.raises(ValueError, match="not found or inactive"):
                 await _resolve_oauth_client("google", "nonexistent-id")
 
@@ -261,7 +267,9 @@ class TestResolveOAuthClient:
         )
         app.id = ObjectId()
 
-        with patch.object(OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app):
+        with patch.object(
+            OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app
+        ):
             with pytest.raises(ValueError, match="not found or inactive"):
                 await _resolve_oauth_client("google", str(app.id))
 
@@ -276,6 +284,8 @@ class TestResolveOAuthClient:
         )
         app.id = ObjectId()
 
-        with patch.object(OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app):
+        with patch.object(
+            OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app
+        ):
             with pytest.raises(ValueError, match="provider 'github', not 'google'"):
                 await _resolve_oauth_client("google", str(app.id))
