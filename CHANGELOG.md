@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.10.0](https://github.com/alltuner/vibetuner/compare/v9.9.2...v9.10.0) (2026-03-18)
+
+
+### Features
+
+* allow registering OAuth providers without login routes ([#1481](https://github.com/alltuner/vibetuner/issues/1481)) ([048dd79](https://github.com/alltuner/vibetuner/commit/048dd7967da7409ca249be3b22f8dc44b396aefb))
+
 ## [9.9.2](https://github.com/alltuner/vibetuner/compare/v9.9.1...v9.9.2) (2026-03-18)
 
 
