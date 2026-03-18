@@ -47,6 +47,35 @@ Dev tools included via `vibetuner[dev]`: `babel`, `djlint`, `taplo`,
 
 ---
 
+## Optional Extras
+
+Vibetuner features are installed via optional extras. Scaffolded projects
+use `vibetuner[all]` by default. For smaller Docker images, install only
+what you need:
+
+| Extra | Provides |
+|-------|----------|
+| `[all]` | Everything |
+| `[mongo]` | MongoDB / Beanie ODM |
+| `[auth]` | OAuth + user accounts (includes mongo) |
+| `[s3]` | S3-compatible storage |
+| `[blobs]` | Blob storage with DB tracking (includes s3, mongo) |
+| `[redis]` | Redis client |
+| `[worker]` | Background task queue (includes redis) |
+| `[i18n]` | Internationalization |
+| `[email]` | Email sending (Resend, Mailjet) |
+| `[sql]` | SQL databases (SQLModel) |
+
+```bash
+# Trim for production Dockerfile:
+RUN uv sync --frozen --no-dev --extra mongo --extra auth --extra redis
+```
+
+Missing extras degrade gracefully (no crashes). Check with
+`from vibetuner.extras import has_extra`.
+
+---
+
 ## App Configuration (`tune.py`)
 
 Zero-config works out of the box. For custom components, create
@@ -400,7 +429,7 @@ just new-locale LANG         # New language
 ```
 
 Templates: `{% trans %}Welcome{% endtrans %}`.
-Python: `from starlette_babel import gettext_lazy as _`.
+Python: `from vibetuner.i18n import gettext_lazy as _`.
 
 ---
 

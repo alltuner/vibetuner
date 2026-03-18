@@ -6,21 +6,27 @@ To extend blob functionality, create wrapper services in the parent services dir
 
 import mimetypes
 from pathlib import Path
-
-import aioboto3
+from typing import TYPE_CHECKING
 
 from vibetuner.config import settings
-from vibetuner.models import BlobModel
-from vibetuner.models.blob import BlobStatus
+from vibetuner.extras import require_extra
 from vibetuner.services.s3_storage import DEFAULT_CONTENT_TYPE, S3StorageService
+
+
+if TYPE_CHECKING:
+    import aioboto3
+
+    from vibetuner.models import BlobModel
 
 
 class BlobService:
     def __init__(
         self,
-        session: aioboto3.Session | None = None,
+        session: "aioboto3.Session | None" = None,
         default_bucket: str | None = None,
     ) -> None:
+        require_extra("blobs", "Tracked blob storage")
+
         if (
             settings.r2_bucket_endpoint_url is None
             or settings.r2_access_key is None
@@ -53,8 +59,10 @@ class BlobService:
         bucket: str | None = None,
         namespace: str | None = None,
         original_filename: str | None = None,
-    ) -> BlobModel:
+    ) -> "BlobModel":
         """Put an object into the R2 bucket and return the blob model"""
+        from vibetuner.models import BlobModel
+        from vibetuner.models.blob import BlobStatus
 
         bucket = bucket or self.default_bucket
 
@@ -92,7 +100,7 @@ class BlobService:
         extension: str,
         bucket: str | None = None,
         namespace: str | None = None,
-    ) -> BlobModel:
+    ) -> "BlobModel":
         """Put an object into the R2 bucket with content type guessed from extension"""
         content_type, _ = mimetypes.guess_type(f"file.{extension.lstrip('.')}")
         content_type = content_type or DEFAULT_CONTENT_TYPE
@@ -105,7 +113,7 @@ class BlobService:
         content_type: str | None = None,
         bucket: str | None = None,
         namespace: str | None = None,
-    ) -> BlobModel:
+    ) -> "BlobModel":
         """Put a file from filesystem into the R2 bucket"""
         file_path = Path(file_path)
 
@@ -127,6 +135,8 @@ class BlobService:
 
     async def get_object(self, key: str) -> bytes:
         """Retrieve an object from the R2 bucket"""
+        from vibetuner.models import BlobModel
+
         blob = await BlobModel.get(key)
         if not blob:
             raise ValueError(f"Blob not found: {key}")
@@ -138,6 +148,9 @@ class BlobService:
 
     async def delete_object(self, key: str) -> None:
         """Delete an object from the R2 bucket"""
+        from vibetuner.models import BlobModel
+        from vibetuner.models.blob import BlobStatus
+
         blob = await BlobModel.get(key)
         if not blob:
             raise ValueError(f"Blob not found: {key}")
@@ -148,6 +161,7 @@ class BlobService:
 
     async def object_exists(self, key: str, check_bucket: bool = False) -> bool:
         """Check if an object exists in the R2 bucket"""
+        from vibetuner.models import BlobModel
 
         blob = await BlobModel.get(key)
         if not blob:

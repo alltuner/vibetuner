@@ -1,7 +1,7 @@
 from pydantic import EmailStr
-from starlette_babel import gettext_lazy as _
 
 from vibetuner.config import settings
+from vibetuner.i18n import gettext_lazy as _
 from vibetuner.services.email import EmailService
 
 from .templates import render_static_template

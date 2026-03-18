@@ -2,31 +2,21 @@
 # ABOUTME: Handles provider registration, builtin configs, and auth flow handlers.
 from typing import Optional
 
-from authlib.integrations.base_client.errors import OAuthError
-from authlib.integrations.starlette_client import OAuth
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 from pydantic_extra_types.language_code import LanguageAlpha2
 from starlette.authentication import BaseUser
 
+from vibetuner.extras import has_extra
 from vibetuner.frontend.routes import get_homepage_url
 from vibetuner.logging import logger
-from vibetuner.models.oauth import OAuthAccountModel, OauthProviderModel
-from vibetuner.models.user import UserModel
 
 
 DEFAULT_AVATAR_IMAGE = "/statics/img/user-avatar.png"
 
-_PROVIDERS: dict[str, OauthProviderModel] = {}
-
-
-def register_oauth_provider(name: str, provider: OauthProviderModel) -> None:
-    _PROVIDERS[name] = provider
-    PROVIDER_IDENTIFIERS[name] = provider.identifier
-    _oauth_config.update(**provider.config)
-    register_kwargs = {"client_kwargs": provider.client_kwargs, **provider.params}
-    oauth.register(name, overwrite=True, **register_kwargs)
+_PROVIDERS: dict = {}
+PROVIDER_IDENTIFIERS: dict[str, str] = {}
 
 
 class WebUser(BaseUser, BaseModel):
@@ -51,56 +41,24 @@ class WebUser(BaseUser, BaseModel):
         return self.name
 
 
-class Config:
-    def __init__(self, **kwargs):
-        self._data = kwargs
-
-    def get(self, key, default=None):
-        return self._data.get(key, default)
-
-    def update(self, **kwargs):
-        self._data.update(kwargs)
-
-
-_oauth_config = Config()
-oauth = OAuth(_oauth_config)
-
-PROVIDER_IDENTIFIERS: dict[str, str] = {}
-
-
 def get_oauth_providers() -> list[str]:
     return list(_PROVIDERS.keys())
 
 
-_BUILTIN_PROVIDERS: dict[str, OauthProviderModel] = {
-    "google": OauthProviderModel(
-        identifier="sub",
-        params={
-            "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration",
-        },
-        client_kwargs={"scope": "openid email profile"},
-        config={},
-    ),
-    "github": OauthProviderModel(
-        identifier="id",
-        params={
-            "authorize_url": "https://github.com/login/oauth/authorize",
-            "access_token_url": "https://github.com/login/oauth/access_token",
-            "api_base_url": "https://api.github.com/",
-            "userinfo_endpoint": "https://api.github.com/user",
-        },
-        client_kwargs={"scope": "user:email"},
-        config={},
-    ),
-}
-
-
 def auto_register_providers(
     provider_names: list[str],
-    custom_providers: dict[str, OauthProviderModel] | None = None,
+    custom_providers: "dict | None" = None,
 ) -> None:
     """Register OAuth providers from builtin configs, settings credentials, and custom configs."""
+    if not has_extra("auth"):
+        if provider_names or custom_providers:
+            logger.warning(
+                "OAuth providers configured but [auth] extra not installed — skipping"
+            )
+        return
+
     from vibetuner.config import settings
+    from vibetuner.models.oauth import OauthProviderModel
 
     known = sorted(_BUILTIN_PROVIDERS.keys())
     for name in provider_names:
@@ -130,7 +88,7 @@ def auto_register_providers(
                 f"{env_prefix}_CLIENT_SECRET": client_secret.get_secret_value(),
             },
         )
-        register_oauth_provider(name, provider)
+        _register_oauth_provider(name, provider)
         logger.info(f"Auto-registered OAuth provider: {name}")
 
     # Register custom providers (fully configured by the user)
@@ -151,155 +109,217 @@ def auto_register_providers(
                 f"Custom OAuth provider '{name}' conflicts with already-registered provider, skipping"
             )
             continue
-        register_oauth_provider(name, provider)
+        _register_oauth_provider(name, provider)
         logger.info(f"Registered custom OAuth provider: {name}")
 
 
-async def _handle_user_account(
-    provider: str, identifier: str, email: str, name: str, picture: str
-) -> UserModel:
-    """Handle user account creation or OAuth linking."""
-    # Check if OAuth account already exists
-    oauth_account = await OAuthAccountModel.get_by_provider_and_id(
-        provider=provider,
-        provider_user_id=identifier,
-    )
+# ────────────────────────────────────────────────────────────────
+#  Auth-specific code (requires [auth] extra)
+# ────────────────────────────────────────────────────────────────
 
-    if oauth_account:
-        # OAuth account exists, resolve user through the link (survives email changes)
-        account = await UserModel.find_one({"oauth_accounts.$id": oauth_account.id})
-        if not account:
-            raise OAuthError("No account linked to this OAuth account")
+_HAS_AUTH = has_extra("auth")
+
+if _HAS_AUTH:
+    from authlib.integrations.base_client.errors import OAuthError
+    from authlib.integrations.starlette_client import OAuth
+
+    from vibetuner.models.oauth import OauthProviderModel
+
+    class _OAuthConfig:
+        def __init__(self, **kwargs):
+            self._data = kwargs
+
+        def get(self, key, default=None):
+            return self._data.get(key, default)
+
+        def update(self, **kwargs):
+            self._data.update(kwargs)
+
+    _oauth_config = _OAuthConfig()
+    oauth = OAuth(_oauth_config)
+
+    _BUILTIN_PROVIDERS: dict[str, OauthProviderModel] = {
+        "google": OauthProviderModel(
+            identifier="sub",
+            params={
+                "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration",
+            },
+            client_kwargs={"scope": "openid email profile"},
+            config={},
+        ),
+        "github": OauthProviderModel(
+            identifier="id",
+            params={
+                "authorize_url": "https://github.com/login/oauth/authorize",
+                "access_token_url": "https://github.com/login/oauth/access_token",
+                "api_base_url": "https://api.github.com/",
+                "userinfo_endpoint": "https://api.github.com/user",
+            },
+            client_kwargs={"scope": "user:email"},
+            config={},
+        ),
+    }
+
+    def _register_oauth_provider(name: str, provider: OauthProviderModel) -> None:
+        _PROVIDERS[name] = provider
+        PROVIDER_IDENTIFIERS[name] = provider.identifier
+        _oauth_config.update(**provider.config)
+        register_kwargs = {"client_kwargs": provider.client_kwargs, **provider.params}
+        oauth.register(name, overwrite=True, **register_kwargs)
+
+    async def _handle_user_account(
+        provider: str, identifier: str, email: str, name: str, picture: str
+    ):
+        """Handle user account creation or OAuth linking."""
+        from vibetuner.models.oauth import OAuthAccountModel
+        from vibetuner.models.user import UserModel
+
+        # Check if OAuth account already exists
+        oauth_account = await OAuthAccountModel.get_by_provider_and_id(
+            provider=provider,
+            provider_user_id=identifier,
+        )
+
+        if oauth_account:
+            # OAuth account exists, resolve user through the link (survives email changes)
+            account = await UserModel.find_one(
+                {"oauth_accounts.$id": oauth_account.id}
+            )
+            if not account:
+                raise OAuthError("No account linked to this OAuth account")
+            return account
+
+        # OAuth account doesn't exist, check if user exists
+
+        if account := (await UserModel.get_by_email(email)):
+            # User exists, link OAuth account
+            await _link_oauth_account(
+                account, provider, identifier, email, name, picture
+            )
+        else:
+            # New user, create account and OAuth link
+            account = await _create_new_user_with_oauth(
+                provider, identifier, email, name, picture
+            )
+
         return account
 
-    # OAuth account doesn't exist, check if user exists
+    async def _link_oauth_account(
+        account,
+        provider: str,
+        identifier: str,
+        email: str,
+        name: str,
+        picture: str,
+    ) -> None:
+        """Link OAuth account to existing user."""
+        from vibetuner.models.oauth import OAuthAccountModel
 
-    if account := (await UserModel.get_by_email(email)):
-        # User exists, link OAuth account
-        await _link_oauth_account(account, provider, identifier, email, name, picture)
-    else:
-        # New user, create account and OAuth link
-        account = await _create_new_user_with_oauth(
-            provider, identifier, email, name, picture
+        oauth_account = OAuthAccountModel(
+            provider=provider,
+            provider_user_id=identifier,
+            email=email,
+            name=name,
+            picture=picture,
         )
+        await oauth_account.insert()
+        account.oauth_accounts.append(oauth_account)
+        await account.save()
 
-    return account
+    async def _create_new_user_with_oauth(
+        provider: str, identifier: str, email: str, name: str, picture: str
+    ):
+        """Create new user account with OAuth linking."""
+        from vibetuner.models.oauth import OAuthAccountModel
+        from vibetuner.models.user import UserModel
 
-
-async def _link_oauth_account(
-    account: UserModel,
-    provider: str,
-    identifier: str,
-    email: str,
-    name: str,
-    picture: str,
-) -> None:
-    """Link OAuth account to existing user."""
-    oauth_account = OAuthAccountModel(
-        provider=provider,
-        provider_user_id=identifier,
-        email=email,
-        name=name,
-        picture=picture,
-    )
-    await oauth_account.insert()
-    account.oauth_accounts.append(oauth_account)
-    await account.save()
-
-
-async def _create_new_user_with_oauth(
-    provider: str, identifier: str, email: str, name: str, picture: str
-) -> UserModel:
-    """Create new user account with OAuth linking."""
-    # Create user account
-    oauth_account = OAuthAccountModel(
-        provider=provider,
-        provider_user_id=identifier,
-        email=email,
-        name=name,
-        picture=picture,
-    )
-    await oauth_account.insert()
-
-    account = UserModel(
-        email=email,
-        name=name,
-        picture=picture,
-        oauth_accounts=[oauth_account],
-    )
-    await account.insert()
-
-    return account
-
-
-def _create_auth_login_handler(provider_name: str):
-    async def auth_login(request: Request, next: str | None = None):
-        from vibetuner.config import settings
-
-        request.session["next_url"] = next or get_homepage_url(request)
-        client = oauth.create_client(provider_name)
-        if not client:
-            return RedirectResponse(url=get_homepage_url(request))
-
-        if settings.oauth_relay_url and settings.environment == "dev":
-            relay_url = str(settings.oauth_relay_url).rstrip("/")
-            redirect_uri = f"{relay_url}/auth/provider/{provider_name}"
-            response = await client.authorize_redirect(
-                request, redirect_uri, hl=request.state.language
-            )
-            # Wrap the state param with the app URL so the relay
-            # can redirect back: {scheme}://{host}:{port}|{original_state}
-            from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
-
-            location = response.headers.get("location", "")
-            parsed = urlparse(location)
-            params = parse_qs(parsed.query, keep_blank_values=True)
-            if "state" in params:
-                original_state = params["state"][0]
-                params["state"] = [f"{settings.expose_url}|{original_state}"]
-                new_query = urlencode(params, doseq=True)
-                new_location = urlunparse(parsed._replace(query=new_query))
-                response.headers["location"] = new_location
-            return response
-
-        redirect_uri = request.url_for(f"auth_with_{provider_name}")
-        return await client.authorize_redirect(
-            request, redirect_uri, hl=request.state.language
+        # Create user account
+        oauth_account = OAuthAccountModel(
+            provider=provider,
+            provider_user_id=identifier,
+            email=email,
+            name=name,
+            picture=picture,
         )
+        await oauth_account.insert()
 
-    return auth_login
+        account = UserModel(
+            email=email,
+            name=name,
+            picture=picture,
+            oauth_accounts=[oauth_account],
+        )
+        await account.insert()
 
+        return account
 
-def _create_auth_handler(provider_name: str):
-    async def auth_handler(request: Request):
-        """Handle OAuth authentication flow."""
-        try:
-            # Initialize OAuth client
+    def _create_auth_login_handler(provider_name: str):
+        async def auth_login(request: Request, next: str | None = None):
+            from vibetuner.config import settings
+
+            request.session["next_url"] = next or get_homepage_url(request)
             client = oauth.create_client(provider_name)
             if not client:
-                return get_homepage_url(request)
+                return RedirectResponse(url=get_homepage_url(request))
 
-            # Get user info from OAuth provider
-            token = await client.authorize_access_token(request)
-            userinfo = token.get("userinfo")
-            if not userinfo:
-                raise OAuthError("No userinfo found in token")
+            if settings.oauth_relay_url and settings.environment == "dev":
+                relay_url = str(settings.oauth_relay_url).rstrip("/")
+                redirect_uri = f"{relay_url}/auth/provider/{provider_name}"
+                response = await client.authorize_redirect(
+                    request, redirect_uri, hl=request.state.language
+                )
+                # Wrap the state param with the app URL so the relay
+                # can redirect back: {scheme}://{host}:{port}|{original_state}
+                from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
-            # Extract user data
-            identifier = userinfo.get(PROVIDER_IDENTIFIERS[provider_name])
-            email = userinfo.get("email")
-            name = userinfo.get("name")
-            picture = userinfo.get("picture")
+                location = response.headers.get("location", "")
+                parsed = urlparse(location)
+                params = parse_qs(parsed.query, keep_blank_values=True)
+                if "state" in params:
+                    original_state = params["state"][0]
+                    params["state"] = [f"{settings.expose_url}|{original_state}"]
+                    new_query = urlencode(params, doseq=True)
+                    new_location = urlunparse(parsed._replace(query=new_query))
+                    response.headers["location"] = new_location
+                return response
 
-            # Handle user account creation/linking
-            account = await _handle_user_account(
-                provider_name, identifier, email, name, picture
+            redirect_uri = request.url_for(f"auth_with_{provider_name}")
+            return await client.authorize_redirect(
+                request, redirect_uri, hl=request.state.language
             )
 
-            # Set session and redirect
-            request.session["user"] = account.session_dict
-            return request.session.pop("next_url", get_homepage_url(request))
-        except OAuthError:
-            return get_homepage_url(request)
+        return auth_login
 
-    return auth_handler
+    def _create_auth_handler(provider_name: str):
+        async def auth_handler(request: Request):
+            """Handle OAuth authentication flow."""
+            try:
+                # Initialize OAuth client
+                client = oauth.create_client(provider_name)
+                if not client:
+                    return get_homepage_url(request)
+
+                # Get user info from OAuth provider
+                token = await client.authorize_access_token(request)
+                userinfo = token.get("userinfo")
+                if not userinfo:
+                    raise OAuthError("No userinfo found in token")
+
+                # Extract user data
+                identifier = userinfo.get(PROVIDER_IDENTIFIERS[provider_name])
+                email = userinfo.get("email")
+                name = userinfo.get("name")
+                picture = userinfo.get("picture")
+
+                # Handle user account creation/linking
+                account = await _handle_user_account(
+                    provider_name, identifier, email, name, picture
+                )
+
+                # Set session and redirect
+                request.session["user"] = account.session_dict
+                return request.session.pop("next_url", get_homepage_url(request))
+            except OAuthError:
+                return get_homepage_url(request)
+
+        return auth_handler

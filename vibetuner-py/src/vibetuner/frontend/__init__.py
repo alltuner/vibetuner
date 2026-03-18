@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 import vibetuner.frontend.lifespan as lifespan_module
 from vibetuner.config import settings
+from vibetuner.extras import has_extra
 from vibetuner.loader import load_app_config
 from vibetuner.logging import logger
 from vibetuner.paths import paths
@@ -15,10 +16,14 @@ from vibetuner.paths import paths
 from .lifespan import ctx
 from .middleware import middlewares
 from .oauth import auto_register_providers
-from .routes import auth, debug, health, language, meta, user
-from .routes.auth import register_oauth_routes
+from .routes import debug, health, language, meta
 from .routing import LocalizedRouter as LocalizedRouter, localized as localized
 from .templates import render_template
+
+
+if has_extra("auth"):
+    from .routes import auth, user
+    from .routes.auth import register_oauth_routes
 
 
 # Load user's app configuration
@@ -91,14 +96,15 @@ if ctx.DEBUG:
 # Auto-register OAuth providers from config + env vars
 auto_register_providers(_app_config.oauth_providers, _app_config.custom_oauth_providers)
 
-# Register OAuth routes on auth.router (must happen before include_router)
-register_oauth_routes()
-
 # Core routes
 app.include_router(meta.router)
-app.include_router(auth.router)
-app.include_router(user.router)
 app.include_router(language.router)
+
+if has_extra("auth"):
+    # Register OAuth routes on auth.router (must happen before include_router)
+    register_oauth_routes()
+    app.include_router(auth.router)
+    app.include_router(user.router)
 
 # User routes from tune.py
 for router in _app_config.routes:

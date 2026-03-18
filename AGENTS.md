@@ -156,6 +156,20 @@ uv run python -m pytest tests/          # run all tests
 uv run python -m pytest tests/unit/     # run unit tests only
 ```
 
+### Optional Extras (vibetuner-py)
+
+Heavy dependencies are organized into optional extras so production Docker
+images only ship what's needed. Key extras: `[mongo]`, `[auth]`, `[s3]`,
+`[blobs]`, `[redis]`, `[worker]`, `[i18n]`, `[email]`, `[sql]`,
+`[scaffold]`, `[all]`, `[dev]`.
+
+When modifying framework code that uses optional dependencies:
+
+- Use `from vibetuner.extras import has_extra, require_extra`
+- Guard imports with `if has_extra("extra_name")` or `TYPE_CHECKING`
+- Call `require_extra("name", "feature description")` at public entry points
+- Test with all extras installed (`uv sync --extra dev` includes everything)
+
 ### Template Management
 
 ```bash

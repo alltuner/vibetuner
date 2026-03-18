@@ -10,8 +10,36 @@
             <h1 class="text-4xl font-bold text-base-content mb-2">Debug Dashboard</h1>
             <p class="text-base-content/70">Development and debugging tools for {{ project_name }}</p>
         </header>
-        <!-- Debug Tools Grid -->
-        <div class="grid md:grid-cols-2 gap-6">
+        <!-- Extras Status -->
+        {% if extras %}
+            <div class="card bg-base-100 shadow-xl border border-base-200 mb-8">
+                <div class="card-body py-5">
+                    <h2 class="card-title text-sm uppercase tracking-wider text-base-content/50 mb-3">Installed Extras</h2>
+                    <div class="flex flex-wrap gap-2">
+                        {% for name, installed in extras.items() %}
+                            {% if installed %}
+                                <span class="badge badge-success gap-1.5">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    {{ name }}
+                                </span>
+                            {% else %}
+                                <span class="badge badge-ghost gap-1.5 opacity-50">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    {{ name }}
+                                </span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <!-- Core Tools -->
+        <h2 class="text-sm uppercase tracking-wider text-base-content/50 mb-4 font-semibold">Core Tools</h2>
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
             <!-- System Information -->
             <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow">
                 <div class="card-body">
@@ -25,23 +53,6 @@
                     <p class="text-base-content/70 mb-4">View application configuration, cookies, and runtime information</p>
                     <div class="card-actions justify-end">
                         <a href="{{ url_for('debug_info') }}" class="btn btn-primary btn-sm">View Details</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Database Collections -->
-            <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow">
-                <div class="card-body">
-                    <h2 class="card-title text-primary flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4">
-                            </path>
-                        </svg>
-                        Database Collections
-                    </h2>
-                    <p class="text-base-content/70 mb-4">Explore MongoDB collections and their field schemas</p>
-                    <div class="card-actions justify-end">
-                        <a href="{{ url_for('debug_collections') }}"
-                           class="btn btn-primary btn-sm">View Schemas</a>
                     </div>
                 </div>
             </div>
@@ -77,6 +88,22 @@
                     </div>
                 </div>
             </div>
+            <!-- Template Blocks -->
+            <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-accent flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z">
+                            </path>
+                        </svg>
+                        Template Blocks
+                    </h2>
+                    <p class="text-base-content/70 mb-4">Discover available skeleton blocks for template inheritance</p>
+                    <div class="card-actions justify-end">
+                        <a href="{{ url_for('debug_blocks') }}" class="btn btn-accent btn-sm">View Blocks</a>
+                    </div>
+                </div>
+            </div>
             <!-- Runtime Configuration -->
             <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow">
                 <div class="card-body">
@@ -94,19 +121,56 @@
                     </div>
                 </div>
             </div>
-            <!-- Template Blocks -->
-            <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow">
+        </div>
+        <!-- Feature Tools (extras-dependent) -->
+        <h2 class="text-sm uppercase tracking-wider text-base-content/50 mb-4 font-semibold">Feature Tools</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Database Collections -->
+            {% set mongo_ready = (extras.get("mongo", false) if extras else true) and mongodb_connected %}
+            <div class="card bg-base-100 shadow-xl border border-base-200 {{ '' if mongo_ready else 'opacity-50' }}">
                 <div class="card-body">
-                    <h2 class="card-title text-accent flex items-center gap-2">
+                    <h2 class="card-title text-primary flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4">
                             </path>
                         </svg>
-                        Template Blocks
+                        Database Collections
                     </h2>
-                    <p class="text-base-content/70 mb-4">Discover available skeleton blocks for template inheritance</p>
-                    <div class="card-actions justify-end">
-                        <a href="{{ url_for('debug_blocks') }}" class="btn btn-accent btn-sm">View Blocks</a>
+                    <p class="text-base-content/70 mb-4">Explore MongoDB collections and their field schemas</p>
+                    <div class="card-actions justify-end items-center">
+                        {% if not mongo_ready %}
+                            {% if not extras.get("mongo", false) %}
+                                <span class="badge badge-warning badge-sm">requires [mongo]</span>
+                            {% else %}
+                                <span class="badge badge-warning badge-sm">no MongoDB configured</span>
+                            {% endif %}
+                        {% endif %}
+                        <a href="{{ url_for('debug_collections') }}"
+                           class="btn btn-primary btn-sm {{ '' if mongo_ready else 'btn-disabled' }}">View Schemas</a>
+                    </div>
+                </div>
+            </div>
+            <!-- User Impersonation -->
+            <div class="card bg-base-100 shadow-xl border border-base-200 {{ '' if mongo_ready else 'opacity-50' }}">
+                <div class="card-body">
+                    <h2 class="card-title text-warning flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                            </path>
+                        </svg>
+                        User Impersonation
+                    </h2>
+                    <p class="text-base-content/70 mb-4">Switch between users in debug mode for testing purposes</p>
+                    <div class="card-actions justify-end items-center">
+                        {% if not mongo_ready %}
+                            {% if not extras.get("mongo", false) %}
+                                <span class="badge badge-warning badge-sm">requires [mongo]</span>
+                            {% else %}
+                                <span class="badge badge-warning badge-sm">no MongoDB configured</span>
+                            {% endif %}
+                        {% endif %}
+                        <a href="{{ url_for('debug_users') }}"
+                           class="btn btn-warning btn-sm {{ '' if mongo_ready else 'btn-disabled' }}">View Users</a>
                     </div>
                 </div>
             </div>

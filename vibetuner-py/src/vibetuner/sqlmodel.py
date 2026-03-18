@@ -26,6 +26,10 @@ def _ensure_engine() -> None:
         return
 
     if engine is None:
+        from vibetuner.extras import require_extra
+
+        require_extra("sql", "SQL database support")
+
         from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
         from sqlmodel.ext.asyncio.session import AsyncSession
 

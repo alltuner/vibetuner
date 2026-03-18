@@ -10,22 +10,28 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import Response as StarletteResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
-from starlette_babel import (
-    LocaleFromCookie,
-    LocaleFromHeader,
-    LocaleFromQuery,
-    LocaleMiddleware,
-    get_translator,
-)
 from starlette_context.middleware import RawContextMiddleware
 from starlette_context.plugins import RequestIdPlugin
 from starlette_htmx.middleware import HtmxDetails
 
 from vibetuner.config import settings
 from vibetuner.context import ctx
+from vibetuner.extras import has_extra
 from vibetuner.paths import locales as locales_path
 
 from .oauth import WebUser
+
+
+_HAS_I18N = has_extra("i18n")
+
+if _HAS_I18N:
+    from starlette_babel import (
+        LocaleFromCookie,
+        LocaleFromHeader,
+        LocaleFromQuery,
+        LocaleMiddleware,
+        get_translator,
+    )
 
 
 # Cookie expiry: 1 year in seconds
@@ -75,10 +81,10 @@ def user_preference_selector(conn: HTTPConnection) -> str | None:
     return None
 
 
-shared_translator = get_translator()
-if locales_path is not None and locales_path.exists() and locales_path.is_dir():
-    # Load translations from the locales directory
-    shared_translator.load_from_directories([locales_path])
+if _HAS_I18N:
+    shared_translator = get_translator()
+    if locales_path is not None and locales_path.exists() and locales_path.is_dir():
+        shared_translator.load_from_directories([locales_path])
 
 
 class HtmxMiddleware:
@@ -390,6 +396,9 @@ def _build_locale_selectors() -> list:
     4. cookie - language cookie
     5. accept_language - browser Accept-Language header
     """
+    if not _HAS_I18N:
+        return []
+
     selectors: list = []
     config = settings.locale_detection
 
@@ -431,12 +440,19 @@ middlewares += [
         secret_key=settings.session_key.get_secret_value(),
         https_only=not ctx.DEBUG,
     ),
-    Middleware(
-        LocaleMiddleware,
-        locales=list(ctx.supported_languages),
-        default_locale=ctx.default_language,
-        selectors=_build_locale_selectors(),
-    ),
+]
+
+if _HAS_I18N:
+    middlewares.append(
+        Middleware(
+            LocaleMiddleware,
+            locales=list(ctx.supported_languages),
+            default_locale=ctx.default_language,
+            selectors=_build_locale_selectors(),
+        ),
+    )
+
+middlewares += [
     Middleware(LangPrefixMiddleware, supported_languages=ctx.supported_languages),
     Middleware(AdjustLangCookieMiddleware),
     Middleware(AuthenticationMiddleware, backend=AuthBackend()),

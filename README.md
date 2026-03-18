@@ -12,7 +12,7 @@ Built by [All Tuner Labs](https://www.alltuner.com) for rapid iteration and mode
 ### Option 1: Just add the package
 
 ```bash
-uv add vibetuner
+uv add "vibetuner[all]"
 vibetuner run dev
 # → Working app at http://localhost:8000
 ```
@@ -59,6 +59,18 @@ Or install globally:
 uv tool install vibetuner
 vibetuner scaffold new my-app
 ```
+
+### Optional Extras
+
+Install only what you need for smaller Docker images:
+
+```bash
+uv add "vibetuner[mongo,auth,redis]"  # Specific features
+uv add "vibetuner[all]"               # Everything (default for scaffolded projects)
+```
+
+Available extras: `[mongo]`, `[auth]`, `[s3]`, `[blobs]`, `[redis]`,
+`[worker]`, `[i18n]`, `[email]`, `[sql]`, `[scaffold]`, `[all]`, `[dev]`.
 
 ### Your First Project
 
