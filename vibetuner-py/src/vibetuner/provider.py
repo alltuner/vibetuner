@@ -12,3 +12,4 @@ class OauthProviderModel(BaseModel):
     client_kwargs: dict[str, str]
     config: dict[str, str]
     compliance_fix: Callable[..., Any] | None = None
+    login_routes: bool = True

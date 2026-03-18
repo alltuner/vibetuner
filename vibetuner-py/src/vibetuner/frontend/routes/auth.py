@@ -19,7 +19,7 @@ from ..email import send_magic_link_email
 from ..oauth import (
     _create_auth_handler,
     _create_auth_login_handler,
-    get_oauth_providers,
+    get_registered_providers,
 )
 from ..templates import render_template
 from . import get_homepage_url
@@ -56,7 +56,11 @@ async def auth_login(
         # If user is already authenticated, redirect to homepage
         return RedirectResponse(url=get_homepage_url(request), status_code=302)
 
-    oauth_providers = get_oauth_providers()
+    oauth_providers = [
+        name
+        for name, config in get_registered_providers().items()
+        if config.login_routes
+    ]
     return render_template(
         "login.html.jinja",
         request=request,
@@ -139,9 +143,14 @@ def register_oauth_routes() -> None:
     """Register OAuth provider routes dynamically.
 
     This must be called after OAuth providers are registered to ensure
-    routes are created for all configured providers.
+    routes are created for all configured providers. Providers with
+    login_routes=False are skipped (they are registered for credential
+    management only, e.g. account linking).
     """
-    for provider in get_oauth_providers():
+    for provider, config in get_registered_providers().items():
+        if not config.login_routes:
+            continue
+
         router.get(
             f"/provider/{provider}",
             response_class=RedirectResponse,

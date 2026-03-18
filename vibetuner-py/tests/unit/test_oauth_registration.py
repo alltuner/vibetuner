@@ -117,6 +117,102 @@ class TestAutoRegisterProviders:
         assert google_after.params == google_before.params
 
 
+class TestLoginRoutes:
+    """Tests for login_routes flag on OauthProviderModel."""
+
+    def test_login_routes_defaults_to_true(self):
+        provider = OauthProviderModel(
+            identifier="id",
+            params={},
+            client_kwargs={"scope": "openid"},
+            config={},
+        )
+        assert provider.login_routes is True
+
+    def test_login_routes_can_be_disabled(self):
+        provider = OauthProviderModel(
+            identifier="id",
+            params={},
+            client_kwargs={"scope": "openid"},
+            config={},
+            login_routes=False,
+        )
+        assert provider.login_routes is False
+
+    def test_no_routes_when_login_routes_false(self):
+        """Providers with login_routes=False should not get login/callback routes."""
+        custom = {
+            "linkedin": OauthProviderModel(
+                identifier="sub",
+                params={"authorize_url": "https://example.com/auth"},
+                client_kwargs={"scope": "openid"},
+                config={
+                    "LINKEDIN_CLIENT_ID": "id",
+                    "LINKEDIN_CLIENT_SECRET": "secret",
+                },
+                login_routes=False,
+            ),
+        }
+        auto_register_providers([], custom_providers=custom)
+
+        # Provider should be registered for credential management
+        assert "linkedin" in get_oauth_providers()
+
+        routes_before = len(router.routes)
+        register_oauth_routes()
+        routes_after = len(router.routes)
+
+        # No routes should be added
+        assert routes_after == routes_before
+        route_paths = [r.path for r in router.routes]
+        assert "/auth/provider/linkedin" not in route_paths
+        assert "/auth/login/provider/linkedin" not in route_paths
+
+    def test_routes_created_when_login_routes_true(self, monkeypatch):
+        """Providers with login_routes=True (default) should get routes as usual."""
+        monkeypatch.setattr(settings, "google_client_id", SecretStr("test-id"))
+        monkeypatch.setattr(settings, "google_client_secret", SecretStr("test-secret"))
+        auto_register_providers(["google"])
+
+        routes_before = len(router.routes)
+        register_oauth_routes()
+        routes_after = len(router.routes)
+
+        assert routes_after == routes_before + 2
+        route_paths = [r.path for r in router.routes]
+        assert "/auth/provider/google" in route_paths
+        assert "/auth/login/provider/google" in route_paths
+
+    def test_mixed_login_routes(self, monkeypatch):
+        """Mix of login_routes=True and False: only True providers get routes."""
+        monkeypatch.setattr(settings, "google_client_id", SecretStr("test-id"))
+        monkeypatch.setattr(settings, "google_client_secret", SecretStr("test-secret"))
+
+        custom = {
+            "linkedin": OauthProviderModel(
+                identifier="sub",
+                params={"authorize_url": "https://example.com/auth"},
+                client_kwargs={"scope": "openid"},
+                config={
+                    "LINKEDIN_CLIENT_ID": "id",
+                    "LINKEDIN_CLIENT_SECRET": "secret",
+                },
+                login_routes=False,
+            ),
+        }
+        auto_register_providers(["google"], custom_providers=custom)
+
+        routes_before = len(router.routes)
+        register_oauth_routes()
+        routes_after = len(router.routes)
+
+        # Only google should get routes (2), not linkedin
+        assert routes_after == routes_before + 2
+        route_paths = [r.path for r in router.routes]
+        assert "/auth/provider/google" in route_paths
+        assert "/auth/provider/linkedin" not in route_paths
+
+
 class TestComplianceFix:
     """Tests for compliance_fix support in OauthProviderModel."""
 
