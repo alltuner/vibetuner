@@ -1,6 +1,6 @@
 from typing import Self
 
-from beanie import Document
+from beanie import Document, PydanticObjectId
 from beanie.operators import Eq
 from pydantic import Field
 
@@ -29,6 +29,10 @@ class OAuthAccountModel(Document, TimeStampMixin):
     picture: str | None = Field(
         default=None,
         description="Profile picture URL retrieved from OAuth provider",
+    )
+    app_id: PydanticObjectId | None = Field(
+        default=None,
+        description="References the OAuthProviderAppModel used during the OAuth flow",
     )
 
     class Settings:
