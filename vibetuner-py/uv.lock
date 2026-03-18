@@ -2180,15 +2180,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pytz"
-version = "2026.1.post1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/56/db/b8721d71d945e6a8ac63c0fc900b2067181dbb50805958d4d4661cf7d277/pytz-2026.1.post1.tar.gz", hash = "sha256:3378dde6a0c3d26719182142c56e60c7f9af7e968076f31aae569d72a0358ee1", size = 321088, upload-time = "2026-03-03T07:47:50.683Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/10/99/781fe0c827be2742bcc775efefccb3b048a3a9c6ce9aec0cbf4a101677e5/pytz-2026.1.post1-py2.py3-none-any.whl", hash = "sha256:f2fd16142fda348286a75e1a524be810bb05d444e5a081f37f7affc635035f7a", size = 510489, upload-time = "2026-03-03T07:47:49.167Z" },
-]
-
-[[package]]
 name = "pywin32"
 version = "311"
 source = { registry = "https://pypi.org/simple" }
@@ -2711,16 +2702,15 @@ wheels = [
 
 [[package]]
 name = "starlette-babel"
-version = "1.0.3"
+version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "babel" },
-    { name = "pytz" },
     { name = "starlette" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/03/30/1d2148e38016472f55de70088ea8d9e9cf3fc15244e09e71ad4ca5499942/starlette_babel-1.0.3.tar.gz", hash = "sha256:03b0d230ffec432b8653ae04c9294a40f26ae8d5d3c01829438883c5e6a6d19a", size = 16056, upload-time = "2024-11-30T17:37:51.906Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/df/a0/1480f1b699b351bc2405ff25c9d2f6e6b8d492caf26f1a2cb6a62a91d45e/starlette_babel-1.1.0.tar.gz", hash = "sha256:8376ac25a8fef2ed018e14005fa4ea2fde8e30d26dc2090f2ab0d221512542ba", size = 12812, upload-time = "2026-03-12T13:02:07.641Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d3/35/31d1540f6315be88a8fe25624d1e688276b48472d450a8da00a10c645c2a/starlette_babel-1.0.3-py3-none-any.whl", hash = "sha256:884ce60e74e80da7ef8e0781c025c17e70a1e948cf5c788a1668e7d14646e1a6", size = 14954, upload-time = "2024-11-30T17:37:49.38Z" },
+    { url = "https://files.pythonhosted.org/packages/1c/53/f2bb6f5976740c56bac8fd6208c6ddd7cf87c6f032df825a79809513636c/starlette_babel-1.1.0-py3-none-any.whl", hash = "sha256:8b08da9537522c50ed2005cb641120b1bfb630f58f09617bf6825e7223f4dcc5", size = 15696, upload-time = "2026-03-12T13:02:06.828Z" },
 ]
 
 [[package]]
