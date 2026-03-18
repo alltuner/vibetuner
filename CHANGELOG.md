@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.9.0](https://github.com/alltuner/vibetuner/compare/v9.8.0...v9.9.0) (2026-03-18)
+
+
+### Features
+
+* OAuth compliance_fix, public resolve_oauth_client, htmx-ext-preload ([#1472](https://github.com/alltuner/vibetuner/issues/1472)) ([3abcd1e](https://github.com/alltuner/vibetuner/commit/3abcd1e001927e4d77e01ac29931fd89cee42786))
+
+
+### Bug Fixes
+
+* use bundled htmx 4 preload extension instead of htmx-ext-preload ([#1474](https://github.com/alltuner/vibetuner/issues/1474)) ([98476cc](https://github.com/alltuner/vibetuner/commit/98476cc15114f53ac388655414d150645144c09c))
+
 ## [9.8.0](https://github.com/alltuner/vibetuner/compare/v9.7.2...v9.8.0) (2026-03-18)
 
 
