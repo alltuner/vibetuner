@@ -1,5 +1,33 @@
 # Changelog
 
+## [9.8.0](https://github.com/alltuner/vibetuner/compare/v9.7.2...v9.8.0) (2026-03-18)
+
+
+### Features
+
+* database-backed OAuth app registry with multi-app-per-provider support ([#1466](https://github.com/alltuner/vibetuner/issues/1466)) ([73bf22b](https://github.com/alltuner/vibetuner/commit/73bf22bb5a2f2993e11dc70b5cce680a1726b7a9))
+* link OAuthAccountModel to OAuthProviderApp via app_id ([#1468](https://github.com/alltuner/vibetuner/issues/1468)) ([5f22bbf](https://github.com/alltuner/vibetuner/commit/5f22bbf82e55c916e567508b72e988c3395a140f))
+
+
+### Bug Fixes
+
+* **deps:** update dependency htmx.org to v4.0.0-alpha8 ([#1452](https://github.com/alltuner/vibetuner/issues/1452)) ([1b884b8](https://github.com/alltuner/vibetuner/commit/1b884b8c771b2c5c08d5be41fd756d78558b22c2))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump copier from 9.13.1 to 9.14.0 in /vibetuner-py ([#1458](https://github.com/alltuner/vibetuner/issues/1458)) ([ebb1395](https://github.com/alltuner/vibetuner/commit/ebb139509056ae93f24d7530508b5a6c0576219d))
+* **deps:** bump htmx.org from 4.0.0-alpha7 to 4.0.0-alpha8 in /vibetuner-js ([#1459](https://github.com/alltuner/vibetuner/issues/1459)) ([63348f1](https://github.com/alltuner/vibetuner/commit/63348f18123e9343b225d6ffdf33575eb4919d8c))
+* **deps:** bump resend from 2.23.0 to 2.24.0 in /vibetuner-py ([#1455](https://github.com/alltuner/vibetuner/issues/1455)) ([f0cf3a9](https://github.com/alltuner/vibetuner/commit/f0cf3a95dff15b6825e93f4308b6233fa5407386))
+* **deps:** bump ruff from 0.15.5 to 0.15.6 in /vibetuner-py ([#1460](https://github.com/alltuner/vibetuner/issues/1460)) ([5b72696](https://github.com/alltuner/vibetuner/commit/5b726961c677a538ffb740e3513b68cd34859be7))
+* **deps:** bump rumdl from 0.1.45 to 0.1.53 in /vibetuner-py ([#1457](https://github.com/alltuner/vibetuner/issues/1457)) ([6c3e671](https://github.com/alltuner/vibetuner/commit/6c3e671e1fc7b73b24fe61c39def5df0efe16804))
+* **deps:** bump starlette-babel from 1.0.3 to 1.1.0 in /vibetuner-py ([#1456](https://github.com/alltuner/vibetuner/issues/1456)) ([9252f4d](https://github.com/alltuner/vibetuner/commit/9252f4d52c1bde8361bb9af1957059478658281b))
+
+
+### Documentation Updates
+
+* add support section and FUNDING.yml ([#1453](https://github.com/alltuner/vibetuner/issues/1453)) ([34518f5](https://github.com/alltuner/vibetuner/commit/34518f5ba7c8909a999da2af68c32dda3cd64e9d))
+
 ## [9.7.2](https://github.com/alltuner/vibetuner/compare/v9.7.1...v9.7.2) (2026-03-12)
 
 
