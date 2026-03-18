@@ -11,10 +11,10 @@ from vibetuner.frontend.oauth import (
     PROVIDER_IDENTIFIERS,
     _authlib_name_for_app,
     _register_app_client,
-    _resolve_oauth_client,
     auto_register_providers,
     get_registered_providers,
     oauth,
+    resolve_oauth_client,
 )
 from vibetuner.models.oauth_app import OAuthProviderAppModel
 
@@ -196,6 +196,52 @@ class TestRegisterAppClient:
         client = oauth.create_client(client_name)
         assert client.client_kwargs["scope"] == "openid email profile"
 
+    def test_passes_compliance_fix_through(self, registered_google, monkeypatch):
+        """compliance_fix from the provider config is passed to oauth.register()."""
+        from unittest.mock import patch
+
+        from bson import ObjectId
+
+        def my_fix(session, token):
+            return token
+
+        # Patch the provider config to include a compliance_fix
+        from vibetuner.frontend.oauth import _PROVIDERS
+
+        monkeypatch.setattr(_PROVIDERS["google"], "compliance_fix", my_fix)
+
+        app = OAuthProviderAppModel(
+            provider="google",
+            name="With Fix",
+            client_id="app-id",
+            client_secret="app-secret",
+        )
+        app.id = ObjectId()
+
+        with patch.object(oauth, "register") as mock_register:
+            _register_app_client(app)
+            mock_register.assert_called_once()
+            assert mock_register.call_args.kwargs["compliance_fix"] is my_fix
+
+    def test_omits_compliance_fix_when_none(self, registered_google):
+        """compliance_fix=None should not be passed to oauth.register()."""
+        from unittest.mock import patch
+
+        from bson import ObjectId
+
+        app = OAuthProviderAppModel(
+            provider="google",
+            name="No Fix",
+            client_id="app-id",
+            client_secret="app-secret",
+        )
+        app.id = ObjectId()
+
+        with patch.object(oauth, "register") as mock_register:
+            _register_app_client(app)
+            mock_register.assert_called_once()
+            assert "compliance_fix" not in mock_register.call_args.kwargs
+
     def test_raises_for_unknown_provider(self):
         app = OAuthProviderAppModel(
             provider="myspace",
@@ -227,7 +273,7 @@ class TestResolveOAuthClient:
     """Tests for resolving the Authlib client name from an optional app_id."""
 
     async def test_returns_provider_name_when_no_app_id(self):
-        result = await _resolve_oauth_client("google", None)
+        result = await resolve_oauth_client("google", None)
         assert result == "google"
 
     async def test_returns_app_client_name_for_valid_app(self, registered_google):
@@ -245,7 +291,7 @@ class TestResolveOAuthClient:
         with patch.object(
             OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app
         ):
-            result = await _resolve_oauth_client("google", str(app_id))
+            result = await resolve_oauth_client("google", str(app_id))
             assert result == _authlib_name_for_app("google", str(app_id))
 
     async def test_raises_when_app_not_found(self, registered_google):
@@ -253,7 +299,7 @@ class TestResolveOAuthClient:
             OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=None
         ):
             with pytest.raises(ValueError, match="not found or inactive"):
-                await _resolve_oauth_client("google", "nonexistent-id")
+                await resolve_oauth_client("google", "nonexistent-id")
 
     async def test_raises_when_app_inactive(self, registered_google):
         from bson import ObjectId
@@ -271,7 +317,7 @@ class TestResolveOAuthClient:
             OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app
         ):
             with pytest.raises(ValueError, match="not found or inactive"):
-                await _resolve_oauth_client("google", str(app.id))
+                await resolve_oauth_client("google", str(app.id))
 
     async def test_raises_when_provider_mismatch(self, registered_google):
         from bson import ObjectId
@@ -288,4 +334,4 @@ class TestResolveOAuthClient:
             OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app
         ):
             with pytest.raises(ValueError, match="provider 'github', not 'google'"):
-                await _resolve_oauth_client("google", str(app.id))
+                await resolve_oauth_client("google", str(app.id))

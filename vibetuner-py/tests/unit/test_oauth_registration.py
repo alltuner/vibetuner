@@ -117,6 +117,74 @@ class TestAutoRegisterProviders:
         assert google_after.params == google_before.params
 
 
+class TestComplianceFix:
+    """Tests for compliance_fix support in OauthProviderModel."""
+
+    def test_compliance_fix_defaults_to_none(self):
+        provider = OauthProviderModel(
+            identifier="id",
+            params={},
+            client_kwargs={"scope": "openid"},
+            config={},
+        )
+        assert provider.compliance_fix is None
+
+    def test_compliance_fix_accepts_callable(self):
+        def my_fix(session, token):
+            return token
+
+        provider = OauthProviderModel(
+            identifier="id",
+            params={},
+            client_kwargs={"scope": "openid"},
+            config={},
+            compliance_fix=my_fix,
+        )
+        assert provider.compliance_fix is my_fix
+
+    def test_compliance_fix_passed_to_oauth_register(self):
+        """compliance_fix should be included in the kwargs passed to oauth.register()."""
+        from unittest.mock import patch
+
+        def my_fix(session, token):
+            return token
+
+        provider = OauthProviderModel(
+            identifier="id",
+            params={"authorize_url": "https://example.com/auth"},
+            client_kwargs={"scope": "openid"},
+            config={"EXAMPLE_CLIENT_ID": "id", "EXAMPLE_CLIENT_SECRET": "secret"},
+            compliance_fix=my_fix,
+        )
+
+        from vibetuner.frontend.oauth import oauth, register_oauth_provider
+
+        with patch.object(oauth, "register") as mock_register:
+            register_oauth_provider("example", provider)
+            mock_register.assert_called_once()
+            call_kwargs = mock_register.call_args
+            assert call_kwargs.kwargs["compliance_fix"] is my_fix
+
+    def test_compliance_fix_omitted_when_none(self):
+        """compliance_fix=None should not be passed to oauth.register()."""
+        from unittest.mock import patch
+
+        provider = OauthProviderModel(
+            identifier="id",
+            params={"authorize_url": "https://example.com/auth"},
+            client_kwargs={"scope": "openid"},
+            config={"EXAMPLE_CLIENT_ID": "id", "EXAMPLE_CLIENT_SECRET": "secret"},
+        )
+
+        from vibetuner.frontend.oauth import oauth, register_oauth_provider
+
+        with patch.object(oauth, "register") as mock_register:
+            register_oauth_provider("example", provider)
+            mock_register.assert_called_once()
+            call_kwargs = mock_register.call_args
+            assert "compliance_fix" not in call_kwargs.kwargs
+
+
 class TestCustomProviders:
     """Tests for custom OAuth provider registration."""
 
