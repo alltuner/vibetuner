@@ -1,6 +1,6 @@
 # ABOUTME: OAuth provider integration using Authlib.
 # ABOUTME: Handles provider registration, builtin configs, and auth flow handlers.
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from authlib.integrations.base_client.errors import OAuthError
 from authlib.integrations.starlette_client import OAuth
@@ -14,6 +14,10 @@ from vibetuner.frontend.routes import get_homepage_url
 from vibetuner.logging import logger
 from vibetuner.models.oauth import OAuthAccountModel, OauthProviderModel
 from vibetuner.models.user import UserModel
+
+
+if TYPE_CHECKING:
+    from vibetuner.models.oauth_app import OAuthProviderAppModel
 
 
 DEFAULT_AVATAR_IMAGE = "/statics/img/user-avatar.png"
@@ -70,6 +74,63 @@ PROVIDER_IDENTIFIERS: dict[str, str] = {}
 
 def get_oauth_providers() -> list[str]:
     return list(_PROVIDERS.keys())
+
+
+def get_registered_providers() -> dict[str, OauthProviderModel]:
+    """Return a copy of the registered provider configs (for admin UI dropdowns)."""
+    return dict(_PROVIDERS)
+
+
+def _authlib_name_for_app(provider: str, app_id: str) -> str:
+    """Build a deterministic Authlib client name for a DB-backed OAuth app."""
+    return f"{provider}__app_{app_id}"
+
+
+def _register_app_client(app: "OAuthProviderAppModel") -> str:
+    """Register an Authlib client for a DB-backed OAuth app. Returns the client name."""
+    provider_config = _PROVIDERS.get(app.provider)
+    if not provider_config:
+        raise ValueError(f"No registered provider '{app.provider}'")
+
+    client_name = _authlib_name_for_app(app.provider, str(app.id))
+    env_prefix = client_name.upper()
+
+    _oauth_config.update(
+        **{
+            f"{env_prefix}_CLIENT_ID": app.client_id,
+            f"{env_prefix}_CLIENT_SECRET": app.client_secret,
+        }
+    )
+
+    client_kwargs = dict(provider_config.client_kwargs)
+    if app.scopes:
+        client_kwargs["scope"] = " ".join(app.scopes)
+
+    register_kwargs = {"client_kwargs": client_kwargs, **provider_config.params}
+    oauth.register(client_name, overwrite=True, **register_kwargs)
+
+    return client_name
+
+
+async def _resolve_oauth_client(provider_name: str, app_id: str | None) -> str:
+    """Resolve the Authlib client name, optionally loading a DB-backed app.
+
+    Returns the bare provider name when no app_id is given (env-var fallback),
+    or registers and returns a namespaced client name for a DB-backed app.
+    """
+    if not app_id:
+        return provider_name
+
+    from vibetuner.models.oauth_app import OAuthProviderAppModel
+
+    app = await OAuthProviderAppModel.get(app_id)
+    if not app or not app.is_active:
+        raise ValueError(f"OAuth app '{app_id}' not found or inactive")
+    if app.provider != provider_name:
+        raise ValueError(
+            f"OAuth app '{app_id}' is for provider '{app.provider}', not '{provider_name}'"
+        )
+    return _register_app_client(app)
 
 
 _BUILTIN_PROVIDERS: dict[str, OauthProviderModel] = {
@@ -233,11 +294,23 @@ async def _create_new_user_with_oauth(
 
 
 def _create_auth_login_handler(provider_name: str):
-    async def auth_login(request: Request, next: str | None = None):
+    async def auth_login(
+        request: Request, next: str | None = None, app_id: str | None = None
+    ):
         from vibetuner.config import settings
 
         request.session["next_url"] = next or get_homepage_url(request)
-        client = oauth.create_client(provider_name)
+
+        try:
+            client_name = await _resolve_oauth_client(provider_name, app_id)
+        except ValueError:
+            logger.warning(f"Invalid app_id '{app_id}' for provider '{provider_name}'")
+            return RedirectResponse(url=get_homepage_url(request))
+
+        if app_id:
+            request.session["oauth_app_id"] = app_id
+
+        client = oauth.create_client(client_name)
         if not client:
             return RedirectResponse(url=get_homepage_url(request))
 
@@ -274,8 +347,17 @@ def _create_auth_handler(provider_name: str):
     async def auth_handler(request: Request):
         """Handle OAuth authentication flow."""
         try:
-            # Initialize OAuth client
-            client = oauth.create_client(provider_name)
+            # Resolve the Authlib client (DB-backed app or env-var default)
+            app_id = request.session.pop("oauth_app_id", None)
+            try:
+                client_name = await _resolve_oauth_client(provider_name, app_id)
+            except ValueError:
+                logger.warning(
+                    f"Failed to resolve OAuth app '{app_id}' for provider '{provider_name}'"
+                )
+                return get_homepage_url(request)
+
+            client = oauth.create_client(client_name)
             if not client:
                 return get_homepage_url(request)
 

@@ -681,3 +681,145 @@ async def debug_config_clear_override(request: Request, key: str):
 
     await RuntimeConfig.clear_runtime_override(key)
     return RedirectResponse(url=f"/debug/config/{key}", status_code=302)
+
+
+# OAuth Provider App Routes
+
+
+@router.get("/oauth-apps", response_class=HTMLResponse)
+async def debug_oauth_apps(request: Request):
+    """List all OAuth provider apps."""
+    from vibetuner.frontend.oauth import get_registered_providers
+    from vibetuner.models.oauth_app import OAuthProviderAppModel
+
+    apps = await OAuthProviderAppModel.find_all().to_list()
+    providers = sorted(get_registered_providers().keys())
+    return render_template(
+        "debug/oauth_apps.html.jinja",
+        request,
+        {"apps": apps, "providers": providers},
+    )
+
+
+@router.get("/oauth-apps/create", response_class=HTMLResponse)
+async def debug_oauth_app_create(request: Request):
+    """Show create form for OAuth provider app."""
+    from vibetuner.frontend.oauth import get_registered_providers
+
+    providers = sorted(get_registered_providers().keys())
+    return render_template(
+        "debug/oauth_app_form.html.jinja",
+        request,
+        {"app": None, "providers": providers},
+    )
+
+
+@router.get("/oauth-apps/{app_id}", response_class=HTMLResponse)
+async def debug_oauth_app_edit(request: Request, app_id: str):
+    """Show edit form for OAuth provider app."""
+    from vibetuner.frontend.oauth import get_registered_providers
+    from vibetuner.models.oauth_app import OAuthProviderAppModel
+
+    app = await OAuthProviderAppModel.get(app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="OAuth app not found")
+
+    providers = sorted(get_registered_providers().keys())
+    return render_template(
+        "debug/oauth_app_form.html.jinja",
+        request,
+        {"app": app, "providers": providers},
+    )
+
+
+@router.post("/oauth-apps/create")
+async def debug_oauth_app_store(request: Request):
+    """Create a new OAuth provider app (DEBUG only)."""
+    if not ctx.DEBUG:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from vibetuner.models.oauth_app import OAuthProviderAppModel
+
+    form = await request.form()
+    scopes_raw = form.get("scopes", "").strip()
+    scopes = (
+        [s.strip() for s in scopes_raw.split(",") if s.strip()] if scopes_raw else []
+    )
+    capabilities_raw = form.get("capabilities", "").strip()
+    capabilities = (
+        [c.strip() for c in capabilities_raw.split(",") if c.strip()]
+        if capabilities_raw
+        else []
+    )
+
+    app = OAuthProviderAppModel(
+        provider=form.get("provider", ""),
+        name=form.get("name", ""),
+        client_id=form.get("client_id", ""),
+        client_secret=form.get("client_secret", ""),
+        external_app_id=form.get("external_app_id", "").strip() or None,
+        scopes=scopes,
+        capabilities=capabilities,
+        is_active=form.get("is_active") == "on",
+    )
+    await app.insert()
+
+    return RedirectResponse(url="/debug/oauth-apps", status_code=302)
+
+
+@router.post("/oauth-apps/{app_id}")
+async def debug_oauth_app_update(request: Request, app_id: str):
+    """Update an OAuth provider app (DEBUG only)."""
+    if not ctx.DEBUG:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from vibetuner.models.oauth_app import OAuthProviderAppModel
+
+    app = await OAuthProviderAppModel.get(app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="OAuth app not found")
+
+    form = await request.form()
+    scopes_raw = form.get("scopes", "").strip()
+    scopes = (
+        [s.strip() for s in scopes_raw.split(",") if s.strip()] if scopes_raw else []
+    )
+    capabilities_raw = form.get("capabilities", "").strip()
+    capabilities = (
+        [c.strip() for c in capabilities_raw.split(",") if c.strip()]
+        if capabilities_raw
+        else []
+    )
+
+    app.provider = form.get("provider", app.provider)
+    app.name = form.get("name", app.name)
+    app.client_id = form.get("client_id", app.client_id)
+    # Only update secret if a new value was provided
+    new_secret = form.get("client_secret", "").strip()
+    if new_secret:
+        app.client_secret = new_secret
+    app.external_app_id = form.get("external_app_id", "").strip() or None
+    app.scopes = scopes
+    app.capabilities = capabilities
+    app.is_active = form.get("is_active") == "on"
+
+    await app.save()
+
+    return RedirectResponse(url="/debug/oauth-apps", status_code=302)
+
+
+@router.post("/oauth-apps/{app_id}/delete")
+async def debug_oauth_app_delete(request: Request, app_id: str):
+    """Delete an OAuth provider app (DEBUG only)."""
+    if not ctx.DEBUG:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from vibetuner.models.oauth_app import OAuthProviderAppModel
+
+    app = await OAuthProviderAppModel.get(app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="OAuth app not found")
+
+    await app.delete()
+
+    return RedirectResponse(url="/debug/oauth-apps", status_code=302)
