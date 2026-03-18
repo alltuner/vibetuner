@@ -6,6 +6,7 @@ from .blob import BlobModel
 from .config_entry import ConfigEntryModel
 from .email_verification import EmailVerificationTokenModel
 from .oauth import OAuthAccountModel
+from .oauth_app import OAuthProviderAppModel
 from .user import UserModel
 
 
@@ -15,5 +16,6 @@ __all__: list[type[Document] | type[View]] = [
     DeadLetterModel,
     EmailVerificationTokenModel,
     OAuthAccountModel,
+    OAuthProviderAppModel,
     UserModel,
 ]
