@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.9.2](https://github.com/alltuner/vibetuner/compare/v9.9.1...v9.9.2) (2026-03-18)
+
+
+### Bug Fixes
+
+* suppress browser password save prompt on OAuth app secret field ([#1478](https://github.com/alltuner/vibetuner/issues/1478)) ([e88a72a](https://github.com/alltuner/vibetuner/commit/e88a72a336b60d91c93786760a5378d730476955))
+
 ## [9.9.1](https://github.com/alltuner/vibetuner/compare/v9.9.0...v9.9.1) (2026-03-18)
 
 
