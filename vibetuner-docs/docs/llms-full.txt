@@ -832,7 +832,9 @@ app = VibetunerApp(
 
 `OauthProviderModel` fields: `identifier` (unique user ID field), `params` (endpoint URLs),
 `client_kwargs` (client settings like scope), `config` (credentials), `compliance_fix`
-(optional Authlib compliance fix callback for providers that deviate from the OAuth spec).
+(optional Authlib compliance fix callback for providers that deviate from the OAuth spec),
+`login_routes` (bool, default `True`; set to `False` to register a provider for credential
+management only without creating login/callback routes, useful for account linking flows).
 
 **Compliance Fixes**
 

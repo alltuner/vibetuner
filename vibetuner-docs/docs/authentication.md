@@ -107,9 +107,35 @@ app = VibetunerApp(
 | `client_kwargs` | `dict` | Client settings (e.g., `{"scope": "..."}`) |
 | `config` | `dict` | Credentials (`CLIENT_ID`, `CLIENT_SECRET`) |
 | `compliance_fix` | `Callable \| None` | Authlib compliance fix callback (default `None`) |
+| `login_routes` | `bool` | Create login/callback routes (default `True`) |
 
 The callback URL for any provider follows the pattern:
 `/auth/provider/{provider_name}`
+
+#### Providers Without Login Routes
+
+Some apps need OAuth providers for **account linking** (e.g., connecting a
+LinkedIn profile to publish on its behalf), not for user login. Set
+`login_routes=False` to register a provider for credential management only,
+without creating the default login/callback routes:
+
+```python
+app = VibetunerApp(
+    custom_oauth_providers={
+        "linkedin": OauthProviderModel(
+            identifier="sub",
+            params={...},
+            client_kwargs={"scope": "openid profile email"},
+            config={...},
+            login_routes=False,  # no /auth/login/provider/linkedin route
+        ),
+    },
+)
+```
+
+The provider is still available for `resolve_oauth_client()` and
+database-backed OAuth apps. Your app can define its own callback routes
+for custom flows like account linking.
 
 #### Compliance Fixes
 
