@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.9.1](https://github.com/alltuner/vibetuner/compare/v9.9.0...v9.9.1) (2026-03-18)
+
+
+### Documentation Updates
+
+* add OAuth compliance_fix, DB-backed apps, and resolve_oauth_client ([#1475](https://github.com/alltuner/vibetuner/issues/1475)) ([96d40ca](https://github.com/alltuner/vibetuner/commit/96d40cab9dca5b9a3ac8d2821b455fd9d6509798))
+
 ## [9.9.0](https://github.com/alltuner/vibetuner/compare/v9.8.0...v9.9.0) (2026-03-18)
 
 
