@@ -1,0 +1,181 @@
+{% extends "base/skeleton.html.jinja" %}
+
+{% block title %}
+    Debug - {{ 'Edit' if app else 'Create' }} OAuth App
+{% endblock title %}
+{% block body %}
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex items-center gap-2 mb-2">
+                <a href="{{ url_for('debug_oauth_apps') }}"
+                   class="btn btn-ghost btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-4 w-4"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back
+                </a>
+            </div>
+            <h1 class="text-3xl font-bold text-base-content mb-2">
+                {{ 'Edit' if app else 'Create' }} OAuth App
+            </h1>
+        </header>
+        {% if not DEBUG %}
+            <div class="alert alert-info mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="stroke-current shrink-0 h-6 w-6"
+                     fill="none"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>OAuth app editing is disabled in production mode.</span>
+            </div>
+        {% else %}
+            <div class="card bg-base-100 shadow-xl mb-6">
+                <div class="card-body">
+                    <form method="post"
+                          action="{{ url_for('debug_oauth_app_update', app_id=app.id) if app else url_for('debug_oauth_app_store') }}">
+                        <!-- Provider -->
+                        <div class="form-control w-full mb-4">
+                            <label class="label">
+                                <span class="label-text">Provider</span>
+                            </label>
+                            <select name="provider"
+                                    class="select select-bordered w-full"
+                                    required>
+                                <option value="" disabled {{ 'selected' if not app else '' }}>
+                                    Select a provider
+                                </option>
+                                {% for provider in providers %}
+                                    <option value="{{ provider }}"
+                                            {{ 'selected' if app and app.provider == provider else '' }}>
+                                        {{ provider }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <label class="label">
+                                <span class="label-text-alt text-base-content/60">
+                                    Must be registered in tune.py or as a builtin
+                                </span>
+                            </label>
+                        </div>
+                        <!-- Name -->
+                        <div class="form-control w-full mb-4">
+                            <label class="label">
+                                <span class="label-text">Name</span>
+                            </label>
+                            <input type="text"
+                                   name="name"
+                                   value="{{ app.name if app else '' }}"
+                                   class="input input-bordered w-full"
+                                   placeholder="e.g. Personal, Acme Corp Page"
+                                   required />
+                        </div>
+                        <!-- Client ID -->
+                        <div class="form-control w-full mb-4">
+                            <label class="label">
+                                <span class="label-text">Client ID</span>
+                            </label>
+                            <input type="text"
+                                   name="client_id"
+                                   value="{{ app.client_id if app else '' }}"
+                                   class="input input-bordered w-full font-mono"
+                                   required />
+                        </div>
+                        <!-- Client Secret -->
+                        <div class="form-control w-full mb-4">
+                            <label class="label">
+                                <span class="label-text">Client Secret</span>
+                            </label>
+                            <input type="password"
+                                   name="client_secret"
+                                   value=""
+                                   class="input input-bordered w-full font-mono"
+                                   placeholder="{{ '(unchanged)' if app else '' }}"
+                                   {{ '' if app else 'required' }} />
+                            {% if app %}
+                                <label class="label">
+                                    <span class="label-text-alt text-base-content/60">
+                                        Leave empty to keep current secret
+                                    </span>
+                                </label>
+                            {% endif %}
+                        </div>
+                        <!-- External App ID -->
+                        <div class="form-control w-full mb-4">
+                            <label class="label">
+                                <span class="label-text">External App ID</span>
+                                <span class="label-text-alt text-base-content/60">Optional</span>
+                            </label>
+                            <input type="text"
+                                   name="external_app_id"
+                                   value="{{ app.external_app_id if app and app.external_app_id else '' }}"
+                                   class="input input-bordered w-full"
+                                   placeholder="Provider's app identifier" />
+                        </div>
+                        <!-- Scopes -->
+                        <div class="form-control w-full mb-4">
+                            <label class="label">
+                                <span class="label-text">Scopes</span>
+                                <span class="label-text-alt text-base-content/60">Optional</span>
+                            </label>
+                            <input type="text"
+                                   name="scopes"
+                                   value="{{ app.scopes | join(', ') if app and app.scopes else '' }}"
+                                   class="input input-bordered w-full"
+                                   placeholder="comma-separated, e.g. openid, email, profile" />
+                            <label class="label">
+                                <span class="label-text-alt text-base-content/60">
+                                    Overrides provider defaults when set. Leave empty for provider defaults.
+                                </span>
+                            </label>
+                        </div>
+                        <!-- Capabilities -->
+                        <div class="form-control w-full mb-4">
+                            <label class="label">
+                                <span class="label-text">Capabilities</span>
+                                <span class="label-text-alt text-base-content/60">Optional</span>
+                            </label>
+                            <input type="text"
+                                   name="capabilities"
+                                   value="{{ app.capabilities | join(', ') if app and app.capabilities else '' }}"
+                                   class="input input-bordered w-full"
+                                   placeholder="comma-separated, e.g. post_as_org, read_analytics" />
+                        </div>
+                        <!-- Active -->
+                        <div class="form-control mb-6">
+                            <label class="label cursor-pointer justify-start gap-4">
+                                <input type="checkbox"
+                                       name="is_active"
+                                       class="checkbox"
+                                       {{ 'checked' if not app or app.is_active else '' }} />
+                                <span class="label-text">Active</span>
+                            </label>
+                        </div>
+                        <!-- Submit -->
+                        <div class="card-actions justify-end">
+                            <a href="{{ url_for('debug_oauth_apps') }}"
+                               class="btn btn-ghost">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                {{ 'Save Changes' if app else 'Create App' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+        <!-- Debug Navigation Footer -->
+        {% include "debug/components/debug_nav.html.jinja" %}
+
+    </div>
+{% endblock body %}
