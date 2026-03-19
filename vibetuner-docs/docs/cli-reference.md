@@ -226,6 +226,38 @@ Summary
 - **✗** (red) — error, must be fixed
 - **-** (dim) — skipped (not applicable)
 
+## `vibetuner crypto`
+
+Manage encryption keys for OAuth app secrets stored in MongoDB.
+See [Encrypting OAuth Secrets at Rest](authentication.md#encrypting-oauth-secrets-at-rest)
+for background.
+
+### `set-key`
+
+```bash
+vibetuner crypto set-key [--key PASSPHRASE] [--env-file PATH]
+```
+
+Sets the encryption key and encrypts all existing plaintext secrets.
+
+- `--key`, `-k` — Encryption passphrase. A secure random key is generated
+  if omitted.
+- `--env-file`, `-e` — Path to `.env` file (default: `.env`).
+- Errors if a key is already configured (use `rotate-key` instead).
+
+### `rotate-key`
+
+```bash
+vibetuner crypto rotate-key [--new-key PASSPHRASE] [--env-file PATH]
+```
+
+Rotates the encryption key: decrypts all secrets with the current key and
+re-encrypts with a new one.
+
+- `--new-key`, `-k` — New passphrase. Generated if omitted.
+- `--env-file`, `-e` — Path to `.env` file (default: `.env`).
+- Errors if no current key is configured (use `set-key` first).
+
 ## `vibetuner version`
 
 Show version information.

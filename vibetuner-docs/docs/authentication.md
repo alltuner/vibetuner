@@ -248,6 +248,58 @@ When a user authenticates through a database-backed OAuth app, the `app_id`
 is stored on the `OAuthAccountModel`. This lets you trace which app was
 used for each OAuth account link.
 
+### Encrypting OAuth Secrets at Rest
+
+Database-backed OAuth app secrets (`client_secret`) are stored as plaintext by
+default. You can encrypt them at rest using a passphrase-derived Fernet key.
+
+#### Setting the Encryption Key
+
+```bash
+# Generate a key automatically and encrypt all existing secrets
+vibetuner crypto set-key
+
+# Or provide your own passphrase
+vibetuner crypto set-key --key "my-secure-passphrase"
+```
+
+This will:
+
+1. Encrypt all plaintext `client_secret` values in MongoDB
+2. Write `OAUTH_ENCRYPTION_KEY` to your `.env` file
+
+#### How It Works
+
+Once `OAUTH_ENCRYPTION_KEY` is set in your environment:
+
+- **On save**: `client_secret` is Fernet-encrypted before writing to MongoDB
+- **On load**: `client_secret` is transparently decrypted when reading from
+  MongoDB
+
+Your application code works with plaintext secrets as usual. Encryption is
+handled automatically by the model layer.
+
+#### Key Rotation
+
+```bash
+# Rotate to a new auto-generated key
+vibetuner crypto rotate-key
+
+# Or specify the new key
+vibetuner crypto rotate-key --new-key "new-secure-passphrase"
+```
+
+Rotation re-encrypts all secrets with the new key in a single operation
+and updates your `.env` file.
+
+#### Behavior Without a Key
+
+When `OAUTH_ENCRYPTION_KEY` is not set:
+
+- Secrets are stored and read as plaintext (no encryption)
+- Existing plaintext secrets continue to work normally
+- If an encrypted value is encountered without a key, an error is raised
+
 ### OAuth Account Linking
 
 Vibetuner resolves returning users by their **OAuth account ID** (the
