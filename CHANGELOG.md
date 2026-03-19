@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.15.0](https://github.com/alltuner/vibetuner/compare/v9.14.0...v9.15.0) (2026-03-19)
+
+
+### Features
+
+* add public set_config() and support runtime config registration in VibetunerApp ([#1508](https://github.com/alltuner/vibetuner/issues/1508)) ([d0e732c](https://github.com/alltuner/vibetuner/commit/d0e732cb63bd034ab1966a65a33c216f9f5b1fa8))
+
 ## [9.14.0](https://github.com/alltuner/vibetuner/compare/v9.13.0...v9.14.0) (2026-03-19)
 
 
