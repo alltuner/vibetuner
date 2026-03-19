@@ -1,5 +1,7 @@
 # ABOUTME: Main vibetuner package entry point.
 # ABOUTME: Exports VibetunerApp, AsyncTyper, and core template rendering functions.
+from importlib.metadata import version
+
 from vibetuner.app_config import VibetunerApp
 from vibetuner.rendering import (
     register_context_provider,
@@ -13,6 +15,9 @@ from vibetuner.rendering import (
 )
 
 
+__version__ = version("vibetuner")
+
+
 def __getattr__(name: str):
     if name == "AsyncTyper":
         from vibetuner.cli import AsyncTyper
@@ -22,6 +27,7 @@ def __getattr__(name: str):
 
 
 __all__ = [
+    "__version__",
     "AsyncTyper",
     "VibetunerApp",
     "register_context_provider",
