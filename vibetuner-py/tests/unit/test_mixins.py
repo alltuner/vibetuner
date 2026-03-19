@@ -1,11 +1,20 @@
-# ABOUTME: Unit tests for vibetuner.models.mixins module
-# ABOUTME: Tests TimeStampMixin functionality including timestamps, age calculations, and helper methods
-# ruff: noqa: S101
+# ABOUTME: Unit tests for vibetuner.models.mixins module.
+# ABOUTME: Tests TimeStampMixin and EncryptedFieldsMixin functionality.
+# ruff: noqa: S101, S105, S106
 
 from datetime import UTC, datetime, timedelta
 from unittest.mock import patch
 
-from vibetuner.models.mixins import Since, TimeStampMixin
+import pytest
+from pydantic import Field
+from vibetuner.config import settings
+from vibetuner.models.mixins import (
+    EncryptedFieldsMixin,
+    EncryptedStr,
+    Since,
+    TimeStampMixin,
+    _encrypted_field_names,
+)
 from vibetuner.time import Unit
 
 
@@ -335,3 +344,116 @@ class TestTimeStampMixin:
         # Verify we can chain methods
         assert returned_doc is doc
         assert isinstance(returned_doc, SampleModel)
+
+
+# ── EncryptedFieldsMixin tests ────────────────────────────────────
+
+
+class SecretModel(EncryptedFieldsMixin):
+    """Test model with multiple encrypted and plain fields."""
+
+    api_key: EncryptedStr = Field(default="test-key")
+    optional_token: EncryptedStr | None = Field(default=None)
+    plain_field: str = Field(default="not-encrypted")
+
+
+class TestEncryptedFieldsMixin:
+    """Tests for transparent encrypt-on-save / decrypt-on-load of EncryptedStr fields."""
+
+    PASSPHRASE = "test-encryption-key"
+
+    def test_field_discovery(self):
+        """_encrypted_field_names returns only fields annotated with EncryptedStr."""
+        names = _encrypted_field_names(SecretModel)
+        assert names == {"api_key", "optional_token"}
+
+    def test_encrypt_on_insert(self, monkeypatch):
+        """before_event(Insert) encrypts plaintext fields when key is set."""
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
+        model = SecretModel(api_key="my-key")
+        model._encrypt_on_insert()
+
+        from vibetuner.crypto import is_encrypted
+
+        assert is_encrypted(model.api_key)
+
+    def test_encrypt_on_update(self, monkeypatch):
+        """before_event(Update/Save/...) encrypts plaintext fields."""
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
+        model = SecretModel(api_key="my-key")
+        model._encrypt_on_update()
+
+        from vibetuner.crypto import is_encrypted
+
+        assert is_encrypted(model.api_key)
+
+    def test_decrypt_on_load(self, monkeypatch):
+        """model_validator decrypts ciphertext on model instantiation."""
+        from vibetuner.crypto import encrypt_value
+
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
+        ciphertext = encrypt_value("my-key", self.PASSPHRASE)
+        model = SecretModel(api_key=ciphertext)
+        assert model.api_key == "my-key"
+
+    def test_no_encryption_when_key_unset(self, monkeypatch):
+        """Plaintext stays plaintext when no encryption key is configured."""
+        monkeypatch.setattr(settings, "field_encryption_key", None)
+        model = SecretModel(api_key="my-key")
+        model._encrypt_on_insert()
+        assert model.api_key == "my-key"
+
+    def test_plaintext_passthrough_on_load(self, monkeypatch):
+        """Plaintext values pass through the decrypt validator unchanged."""
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
+        model = SecretModel(api_key="plain-key")
+        assert model.api_key == "plain-key"
+
+    def test_encrypted_without_key_raises_on_load(self, monkeypatch):
+        """Loading an encrypted value with no key raises ValueError."""
+        from vibetuner.crypto import encrypt_value
+
+        monkeypatch.setattr(settings, "field_encryption_key", None)
+        ciphertext = encrypt_value("my-key", self.PASSPHRASE)
+        with pytest.raises(ValueError, match="encrypted.*no.*key"):
+            SecretModel(api_key=ciphertext)
+
+    def test_no_double_encryption(self, monkeypatch):
+        """Calling encrypt hook on an already-encrypted value is idempotent."""
+        from vibetuner.crypto import decrypt_value, encrypt_value
+
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
+        ciphertext = encrypt_value("my-key", self.PASSPHRASE)
+        model = SecretModel(api_key="placeholder")
+        model.api_key = ciphertext
+        model._encrypt_on_insert()
+        assert decrypt_value(model.api_key, self.PASSPHRASE) == "my-key"
+
+    def test_multiple_fields_encrypted(self, monkeypatch):
+        """All EncryptedStr fields are encrypted, not just the first one."""
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
+        model = SecretModel(api_key="key-1", optional_token="token-2")
+        model._encrypt_on_insert()
+
+        from vibetuner.crypto import is_encrypted
+
+        assert is_encrypted(model.api_key)
+        assert is_encrypted(model.optional_token)
+
+    def test_optional_none_skipped(self, monkeypatch):
+        """None values in optional EncryptedStr fields are left alone."""
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
+        model = SecretModel(api_key="my-key", optional_token=None)
+        model._encrypt_on_insert()
+
+        from vibetuner.crypto import is_encrypted
+
+        assert is_encrypted(model.api_key)
+        assert model.optional_token is None
+
+    def test_plain_field_untouched(self, monkeypatch):
+        """Non-EncryptedStr fields are never encrypted."""
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
+        model = SecretModel(api_key="my-key", plain_field="visible")
+        model._encrypt_on_insert()
+        assert model.plain_field == "visible"

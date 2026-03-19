@@ -56,7 +56,7 @@ def decrypt_or_passthrough(value: str, passphrase: str | None) -> str:
     if passphrase is None:
         raise ValueError(
             "Value appears encrypted but no encryption key is configured. "
-            "Set OAUTH_ENCRYPTION_KEY in your environment."
+            "Set FIELD_ENCRYPTION_KEY in your environment."
         )
 
     try:

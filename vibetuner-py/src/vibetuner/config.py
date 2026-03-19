@@ -241,10 +241,10 @@ class CoreConfiguration(BaseSettings):
     github_client_id: SecretStr | None = None
     github_client_secret: SecretStr | None = None
 
-    # Passphrase for encrypting OAuth app secrets at rest in MongoDB.
-    # When set, OAuthProviderAppModel.client_secret is Fernet-encrypted on save
-    # and transparently decrypted on load.
-    oauth_encryption_key: str | None = None
+    # Passphrase for Fernet-encrypting fields at rest in MongoDB.
+    # Any Beanie document field typed as ``EncryptedStr`` (via EncryptedFieldsMixin)
+    # is transparently encrypted on save and decrypted on load when this key is set.
+    field_encryption_key: str | None = None
 
     worker_concurrency: int = 16
 

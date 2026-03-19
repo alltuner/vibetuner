@@ -344,7 +344,7 @@ class TestOAuthAppEncryption:
 
     def test_encrypt_on_insert(self, monkeypatch):
         """before_event(Insert) encrypts plaintext client_secret when key is set."""
-        monkeypatch.setattr(settings, "oauth_encryption_key", self.PASSPHRASE)
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
         app = OAuthProviderAppModel(
             provider="google",
             name="Test",
@@ -358,7 +358,7 @@ class TestOAuthAppEncryption:
 
     def test_encrypt_on_update(self, monkeypatch):
         """before_event(Update/Save/...) encrypts plaintext client_secret."""
-        monkeypatch.setattr(settings, "oauth_encryption_key", self.PASSPHRASE)
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
         app = OAuthProviderAppModel(
             provider="google",
             name="Test",
@@ -374,7 +374,7 @@ class TestOAuthAppEncryption:
         """model_validator decrypts ciphertext on model instantiation."""
         from vibetuner.crypto import encrypt_value
 
-        monkeypatch.setattr(settings, "oauth_encryption_key", self.PASSPHRASE)
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
         ciphertext = encrypt_value("my-secret", self.PASSPHRASE)
         app = OAuthProviderAppModel(
             provider="google",
@@ -386,7 +386,7 @@ class TestOAuthAppEncryption:
 
     def test_no_encryption_when_key_unset(self, monkeypatch):
         """Plaintext stays plaintext when no encryption key is configured."""
-        monkeypatch.setattr(settings, "oauth_encryption_key", None)
+        monkeypatch.setattr(settings, "field_encryption_key", None)
         app = OAuthProviderAppModel(
             provider="google",
             name="Test",
@@ -398,7 +398,7 @@ class TestOAuthAppEncryption:
 
     def test_plaintext_passthrough_on_load(self, monkeypatch):
         """Plaintext values pass through the decrypt validator unchanged."""
-        monkeypatch.setattr(settings, "oauth_encryption_key", self.PASSPHRASE)
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
         app = OAuthProviderAppModel(
             provider="google",
             name="Test",
@@ -411,7 +411,7 @@ class TestOAuthAppEncryption:
         """Loading an encrypted value with no key raises ValueError."""
         from vibetuner.crypto import encrypt_value
 
-        monkeypatch.setattr(settings, "oauth_encryption_key", None)
+        monkeypatch.setattr(settings, "field_encryption_key", None)
         ciphertext = encrypt_value("my-secret", self.PASSPHRASE)
         with pytest.raises(ValueError, match="encrypted.*no.*key"):
             OAuthProviderAppModel(
@@ -425,7 +425,7 @@ class TestOAuthAppEncryption:
         """Calling encrypt hook on an already-encrypted value is idempotent."""
         from vibetuner.crypto import encrypt_value
 
-        monkeypatch.setattr(settings, "oauth_encryption_key", self.PASSPHRASE)
+        monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
         ciphertext = encrypt_value("my-secret", self.PASSPHRASE)
         app = OAuthProviderAppModel(
             provider="google",
