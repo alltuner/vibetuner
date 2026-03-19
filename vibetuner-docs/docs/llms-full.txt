@@ -283,6 +283,27 @@ __all__ = ["Post"]
 
 The model will be automatically registered with the database on startup.
 
+**Soft Delete (MongoDB)**
+
+Use `DocumentWithSoftDelete` instead of `Document` to mark documents as deleted instead of removing them:
+
+```python
+from vibetuner.models import DocumentWithSoftDelete
+from vibetuner.models.mixins import TimeStampMixin
+
+class Post(DocumentWithSoftDelete, TimeStampMixin):
+    title: str
+    content: str
+
+    class Settings:
+        name = "posts"
+```
+
+Soft-deleted documents are automatically excluded from `find()`, `find_one()`, and `get()` queries.
+Use `find_many_in_all()` to include them. `delete()` sets `deleted_at` instead of removing the document.
+`hard_delete()` permanently removes it. To restore: `doc.deleted_at = None; await doc.save()`.
+The CRUD factory's DELETE endpoint automatically performs a soft delete for these models.
+
 #### Creating Templates
 
 Add templates in `templates/`:

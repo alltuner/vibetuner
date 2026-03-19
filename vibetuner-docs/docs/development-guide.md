@@ -237,6 +237,55 @@ For SQL databases, create tables with: `vibetuner db create-schema`
     Projects that only use SQLModel/Postgres do not need `MONGODB_URL`.
     The framework silently skips MongoDB initialization when the URL is not set.
 
+#### Soft Delete
+
+Instead of permanently removing documents, soft delete marks them with a `deleted_at` timestamp.
+Soft-deleted documents stay in the database but are automatically excluded from queries.
+
+Use `DocumentWithSoftDelete` instead of `Document` as your base class:
+
+```python
+# src/app/models/post.py
+from vibetuner.models import DocumentWithSoftDelete
+from vibetuner.models.mixins import TimeStampMixin
+
+class Post(DocumentWithSoftDelete, TimeStampMixin):
+    title: str
+    content: str
+
+    class Settings:
+        name = "posts"
+```
+
+This adds an optional `deleted_at` field to your document automatically.
+
+**Deleting and querying:**
+
+```python
+post = await Post.find_one(Post.title == "Draft")
+
+await post.delete()          # sets deleted_at, document stays in DB
+post.is_deleted()            # True
+
+await Post.find_all().to_list()          # excludes soft-deleted documents
+await Post.find_many_in_all().to_list()  # includes soft-deleted documents
+
+await post.hard_delete()     # permanently removes the document
+```
+
+`find()`, `find_one()`, and `get()` all automatically filter out soft-deleted documents.
+Use `find_many_in_all()` when you need to access them (e.g., admin views, audit logs).
+
+**Restoring a soft-deleted document:**
+
+```python
+post.deleted_at = None
+await post.save()
+```
+
+**CRUD factory:** The `DELETE` endpoint automatically performs a soft delete for models
+that use `DocumentWithSoftDelete`. No configuration needed.
+
 ### Creating Templates
 
 Add templates in `templates/frontend/`:

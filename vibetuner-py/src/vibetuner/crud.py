@@ -159,7 +159,7 @@ def _register_create_route(
                 logger.error(f"Hook execution failed: pre_create: {exc}")
                 raise HTTPException(
                     status_code=500, detail="Hook execution failed: pre_create"
-                )
+                ) from exc
 
         doc = model(**data.model_dump())
         await doc.insert()
@@ -173,7 +173,7 @@ def _register_create_route(
                 logger.error(f"Hook execution failed: post_create: {exc}")
                 raise HTTPException(
                     status_code=500, detail="Hook execution failed: post_create"
-                )
+                ) from exc
 
         return _serialize_one(doc, response_schema)
 
@@ -224,7 +224,7 @@ def _register_update_route(
                 logger.error(f"Hook execution failed: pre_update: {exc}")
                 raise HTTPException(
                     status_code=500, detail="Hook execution failed: pre_update"
-                )
+                ) from exc
 
         update_data = data.model_dump(exclude_unset=True)
         if update_data:
@@ -239,7 +239,7 @@ def _register_update_route(
                 logger.error(f"Hook execution failed: post_update: {exc}")
                 raise HTTPException(
                     status_code=500, detail="Hook execution failed: post_update"
-                )
+                ) from exc
 
         return _serialize_one(doc, response_schema)
 
@@ -266,7 +266,7 @@ def _register_delete_route(
                 logger.error(f"Hook execution failed: pre_delete: {exc}")
                 raise HTTPException(
                     status_code=500, detail="Hook execution failed: pre_delete"
-                )
+                ) from exc
 
         await doc.delete()
 
@@ -279,7 +279,7 @@ def _register_delete_route(
                 logger.error(f"Hook execution failed: post_delete: {exc}")
                 raise HTTPException(
                     status_code=500, detail="Hook execution failed: post_delete"
-                )
+                ) from exc
 
         return None
 
@@ -434,7 +434,7 @@ def _get_collection_name(model: type[Document]) -> str:
 
 def _build_create_schema(model: type[Document]) -> type[BaseModel]:
     """Build a Pydantic create schema from a Beanie Document, excluding id and internal fields."""
-    excluded = {"id", "revision_id", "db_insert_dt", "db_update_dt"}
+    excluded = {"id", "revision_id", "db_insert_dt", "db_update_dt", "deleted_at"}
     fields: dict[str, Any] = {}
     for name, field_info in model.model_fields.items():
         if name in excluded:
