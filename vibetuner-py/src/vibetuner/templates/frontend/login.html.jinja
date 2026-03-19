@@ -13,7 +13,7 @@
                     <p class="text-base-content/70">{{ _("Choose your preferred sign-in method") }}</p>
                 </div>
                 <!-- OAuth Providers -->
-                {% if has_oauth and providers %}
+                {% if has_oauth %}
                     <div class="space-y-3 mb-6">
                         {% for provider in providers %}
                             {% set login_url = url_for('login_with_' + provider) %}
@@ -25,10 +25,20 @@
                                 <span>{{ _("Continue with %(provider)s") | format(provider=provider.title()) }}</span>
                             </a>
                         {% endfor %}
+                        {% for app in db_apps %}
+                            {% set login_url = url_for('login_with_' + app.provider) ~ '?app_id=' ~ app.id %}
+                            {% if next %}
+                                {% set login_url = login_url ~ '&next=' ~ next %}
+                            {% endif %}
+                            <a href="{{ login_url }}"
+                               class="btn btn-outline btn-block justify-start gap-3 hover:btn-primary group transition-all duration-300 hover:scale-[1.02]">
+                                <span>{{ _("Continue with %(provider)s") | format(provider=app.provider.title()) }} · {{ app.name }}</span>
+                            </a>
+                        {% endfor %}
                     </div>
                 {% endif %}
                 <!-- Divider -->
-                {% if has_oauth and providers and has_email %}<div class="divider text-base-content/50">{{ _("OR") }}</div>{% endif %}
+                {% if has_oauth and has_email %}<div class="divider text-base-content/50">{{ _("OR") }}</div>{% endif %}
                 <!-- Email Magic Link -->
                 {% if has_email %}
                     <div class="bg-base-200/50 rounded-2xl p-6 border border-base-300/50">

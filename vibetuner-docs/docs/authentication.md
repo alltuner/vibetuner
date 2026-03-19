@@ -242,6 +242,18 @@ client with the app's credentials, and returns the client name.
 The built-in login and callback routes accept an optional `app_id` query
 parameter that flows through this resolution automatically.
 
+#### Login Page
+
+Active database-backed OAuth apps appear on the login page as additional
+sign-in buttons alongside env-var providers. Each button shows the
+provider name and the app's human-readable `name` field (e.g.,
+"Continue with Google · Acme Corp").
+
+Only apps whose `provider` references a registered provider with
+`login_routes=True` are displayed. Inactive apps (`is_active=False`)
+are excluded. No extra configuration is needed; creating an active
+`OAuthProviderAppModel` for a registered provider is enough.
+
 #### App-to-Account Linking
 
 When a user authenticates through a database-backed OAuth app, the `app_id`

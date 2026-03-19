@@ -886,7 +886,10 @@ client_name = await resolve_oauth_client("linkedin", app_id="6801...")
 ```
 
 The built-in login and callback routes accept an optional `app_id` query parameter
-that flows through this resolution automatically.
+that flows through this resolution automatically. Active database-backed apps
+appear on the login page as additional sign-in buttons (e.g., "Continue with
+Google · Acme Corp") alongside env-var providers, for any registered provider
+with `login_routes=True`.
 
 #### Protecting Routes
 

@@ -54,6 +54,10 @@ class OAuthProviderAppModel(Document, TimeStampMixin):
         ]
 
     @classmethod
+    async def get_all_active(cls) -> list[Self]:
+        return await cls.find(Eq(cls.is_active, True)).to_list()
+
+    @classmethod
     async def get_active_by_provider(cls, provider: str) -> list[Self]:
         return await cls.find(
             Eq(cls.provider, provider),
