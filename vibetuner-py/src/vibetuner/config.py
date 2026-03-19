@@ -241,6 +241,11 @@ class CoreConfiguration(BaseSettings):
     github_client_id: SecretStr | None = None
     github_client_secret: SecretStr | None = None
 
+    # Passphrase for encrypting OAuth app secrets at rest in MongoDB.
+    # When set, OAuthProviderAppModel.client_secret is Fernet-encrypted on save
+    # and transparently decrypted on load.
+    oauth_encryption_key: str | None = None
+
     worker_concurrency: int = 16
 
     # Port configuration (read from DEV_PORT / WORKER_PORT env or .env.local)
