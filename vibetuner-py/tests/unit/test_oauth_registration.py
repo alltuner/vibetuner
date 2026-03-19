@@ -44,13 +44,13 @@ class TestBuiltinProviders:
         assert "google" in _BUILTIN_PROVIDERS
         google = _BUILTIN_PROVIDERS["google"]
         assert google.identifier == "sub"
-        assert "openid" in google.client_kwargs["scope"]
+        assert "openid" in google.scopes
 
     def test_github_defined(self):
         assert "github" in _BUILTIN_PROVIDERS
         github = _BUILTIN_PROVIDERS["github"]
         assert github.identifier == "id"
-        assert "user:email" in github.client_kwargs["scope"]
+        assert "user:email" in github.scopes
 
 
 class TestAutoRegisterProviders:
@@ -123,18 +123,14 @@ class TestLoginRoutes:
     def test_login_routes_defaults_to_true(self):
         provider = OauthProviderModel(
             identifier="id",
-            params={},
-            client_kwargs={"scope": "openid"},
-            config={},
+            scopes=["openid"],
         )
         assert provider.login_routes is True
 
     def test_login_routes_can_be_disabled(self):
         provider = OauthProviderModel(
             identifier="id",
-            params={},
-            client_kwargs={"scope": "openid"},
-            config={},
+            scopes=["openid"],
             login_routes=False,
         )
         assert provider.login_routes is False
@@ -145,7 +141,7 @@ class TestLoginRoutes:
             "linkedin": OauthProviderModel(
                 identifier="sub",
                 params={"authorize_url": "https://example.com/auth"},
-                client_kwargs={"scope": "openid"},
+                scopes=["openid"],
                 config={
                     "LINKEDIN_CLIENT_ID": "id",
                     "LINKEDIN_CLIENT_SECRET": "secret",
@@ -192,7 +188,7 @@ class TestLoginRoutes:
             "linkedin": OauthProviderModel(
                 identifier="sub",
                 params={"authorize_url": "https://example.com/auth"},
-                client_kwargs={"scope": "openid"},
+                scopes=["openid"],
                 config={
                     "LINKEDIN_CLIENT_ID": "id",
                     "LINKEDIN_CLIENT_SECRET": "secret",
@@ -219,9 +215,7 @@ class TestComplianceFix:
     def test_compliance_fix_defaults_to_none(self):
         provider = OauthProviderModel(
             identifier="id",
-            params={},
-            client_kwargs={"scope": "openid"},
-            config={},
+            scopes=["openid"],
         )
         assert provider.compliance_fix is None
 
@@ -231,9 +225,7 @@ class TestComplianceFix:
 
         provider = OauthProviderModel(
             identifier="id",
-            params={},
-            client_kwargs={"scope": "openid"},
-            config={},
+            scopes=["openid"],
             compliance_fix=my_fix,
         )
         assert provider.compliance_fix is my_fix
@@ -248,7 +240,7 @@ class TestComplianceFix:
         provider = OauthProviderModel(
             identifier="id",
             params={"authorize_url": "https://example.com/auth"},
-            client_kwargs={"scope": "openid"},
+            scopes=["openid"],
             config={"EXAMPLE_CLIENT_ID": "id", "EXAMPLE_CLIENT_SECRET": "secret"},
             compliance_fix=my_fix,
         )
@@ -268,7 +260,7 @@ class TestComplianceFix:
         provider = OauthProviderModel(
             identifier="id",
             params={"authorize_url": "https://example.com/auth"},
-            client_kwargs={"scope": "openid"},
+            scopes=["openid"],
             config={"EXAMPLE_CLIENT_ID": "id", "EXAMPLE_CLIENT_SECRET": "secret"},
         )
 
@@ -289,7 +281,7 @@ class TestCustomProviders:
             "discord": OauthProviderModel(
                 identifier="id",
                 params={"authorize_url": "https://discord.com/oauth2/authorize"},
-                client_kwargs={"scope": "identify email"},
+                scopes=["identify", "email"],
                 config={"DISCORD_CLIENT_ID": "test", "DISCORD_CLIENT_SECRET": "secret"},
             ),
         }
@@ -306,9 +298,7 @@ class TestCustomProviders:
         custom = {
             "google": OauthProviderModel(
                 identifier="custom-id",
-                params={},
-                client_kwargs={"scope": "custom"},
-                config={},
+                scopes=["custom"],
             ),
         }
         auto_register_providers(["google"], custom_providers=custom)
@@ -325,8 +315,7 @@ class TestCustomProviders:
         custom = {
             "twitter": OauthProviderModel(
                 identifier="id",
-                params={},
-                client_kwargs={"scope": "tweet.read"},
+                scopes=["tweet.read"],
                 config={
                     "TWITTER_CLIENT_ID": "t-id",
                     "TWITTER_CLIENT_SECRET": "t-secret",

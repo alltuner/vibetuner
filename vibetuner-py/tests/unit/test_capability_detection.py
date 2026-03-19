@@ -94,9 +94,7 @@ class TestOauthProviderModelDetector:
     def test_defaults_to_none(self):
         provider = OauthProviderModel(
             identifier="id",
-            params={},
-            client_kwargs={"scope": "openid"},
-            config={},
+            scopes=["openid"],
         )
         assert provider.capability_detector is None
 
@@ -104,9 +102,7 @@ class TestOauthProviderModelDetector:
         detector = ScopeCapabilityDetector()
         provider = OauthProviderModel(
             identifier="id",
-            params={},
-            client_kwargs={"scope": "openid"},
-            config={},
+            scopes=["openid"],
             capability_detector=detector,
         )
         assert provider.capability_detector is detector
@@ -126,8 +122,7 @@ class TestDetectCapabilities:
 
         provider = OauthProviderModel(
             identifier="id",
-            params={},
-            client_kwargs={"scope": "openid"},
+            scopes=["openid"],
             config={"TEST_CLIENT_ID": "id", "TEST_CLIENT_SECRET": "secret"},
         )
         register_oauth_provider("test_provider", provider)
@@ -142,8 +137,7 @@ class TestDetectCapabilities:
         detector = ScopeCapabilityDetector()
         provider = OauthProviderModel(
             identifier="id",
-            params={},
-            client_kwargs={"scope": "openid"},
+            scopes=["openid"],
             config={"TEST_CLIENT_ID": "id", "TEST_CLIENT_SECRET": "secret"},
             capability_detector=detector,
         )
@@ -164,8 +158,7 @@ class TestDetectCapabilities:
 
         provider = OauthProviderModel(
             identifier="id",
-            params={},
-            client_kwargs={"scope": "openid"},
+            scopes=["openid"],
             config={"TEST_CLIENT_ID": "id", "TEST_CLIENT_SECRET": "secret"},
             capability_detector=FixedDetector(),
         )

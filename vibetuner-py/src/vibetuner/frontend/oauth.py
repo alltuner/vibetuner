@@ -29,7 +29,10 @@ def register_oauth_provider(name: str, provider: OauthProviderModel) -> None:
     _PROVIDERS[name] = provider
     PROVIDER_IDENTIFIERS[name] = provider.identifier
     _oauth_config.update(**provider.config)
-    register_kwargs: dict = {"client_kwargs": provider.client_kwargs, **provider.params}
+    client_kwargs = dict(provider.client_kwargs)
+    if provider.scopes:
+        client_kwargs["scope"] = " ".join(provider.scopes)
+    register_kwargs: dict = {"client_kwargs": client_kwargs, **provider.params}
     if provider.compliance_fix is not None:
         register_kwargs["compliance_fix"] = provider.compliance_fix
     oauth.register(name, overwrite=True, **register_kwargs)
@@ -116,8 +119,9 @@ def _register_app_client(app: "OAuthProviderAppModel") -> str:
     )
 
     client_kwargs = dict(provider_config.client_kwargs)
-    if app.scopes:
-        client_kwargs["scope"] = " ".join(app.scopes)
+    scopes = app.scopes or provider_config.scopes
+    if scopes:
+        client_kwargs["scope"] = " ".join(scopes)
 
     register_kwargs: dict = {"client_kwargs": client_kwargs, **provider_config.params}
     if provider_config.compliance_fix is not None:
@@ -168,8 +172,7 @@ _BUILTIN_PROVIDERS: dict[str, OauthProviderModel] = {
         params={
             "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration",
         },
-        client_kwargs={"scope": "openid email profile"},
-        config={},
+        scopes=["openid", "email", "profile"],
     ),
     "github": OauthProviderModel(
         identifier="id",
@@ -179,8 +182,7 @@ _BUILTIN_PROVIDERS: dict[str, OauthProviderModel] = {
             "api_base_url": "https://api.github.com/",
             "userinfo_endpoint": "https://api.github.com/user",
         },
-        client_kwargs={"scope": "user:email"},
-        config={},
+        scopes=["user:email"],
     ),
 }
 
@@ -213,6 +215,7 @@ def auto_register_providers(
         provider = OauthProviderModel(
             identifier=builtin.identifier,
             params=builtin.params,
+            scopes=builtin.scopes,
             client_kwargs=builtin.client_kwargs,
             config={
                 **builtin.config,

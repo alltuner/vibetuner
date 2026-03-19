@@ -88,7 +88,7 @@ app = VibetunerApp(
                 "access_token_url": "https://api.twitter.com/2/oauth2/token",
                 "userinfo_endpoint": "https://api.twitter.com/2/users/me",
             },
-            client_kwargs={"scope": "users.read tweet.read"},
+            scopes=["users.read", "tweet.read"],
             config={
                 "TWITTER_CLIENT_ID": "your-client-id",
                 "TWITTER_CLIENT_SECRET": "your-client-secret",
@@ -104,7 +104,8 @@ app = VibetunerApp(
 |-------|------|-------------|
 | `identifier` | `str` | Userinfo field that contains the unique user ID |
 | `params` | `dict` | OAuth endpoint URLs (`authorize_url`, etc.) |
-| `client_kwargs` | `dict` | Client settings (e.g., `{"scope": "..."}`) |
+| `scopes` | `list[str]` | OAuth scopes to request (default `[]`) |
+| `client_kwargs` | `dict` | Extra client settings (e.g., `token_endpoint_auth_method`) |
 | `config` | `dict` | Credentials (`CLIENT_ID`, `CLIENT_SECRET`) |
 | `compliance_fix` | `Callable \| None` | Authlib compliance fix callback (default `None`) |
 | `login_routes` | `bool` | Create login/callback routes (default `True`) |
@@ -125,7 +126,7 @@ app = VibetunerApp(
         "linkedin": OauthProviderModel(
             identifier="sub",
             params={...},
-            client_kwargs={"scope": "openid profile email"},
+            scopes=["openid", "profile", "email"],
             config={...},
             login_routes=False,  # no /auth/login/provider/linkedin route
         ),
@@ -162,7 +163,7 @@ app = VibetunerApp(
                 "access_token_url": "https://www.linkedin.com/oauth/v2/accessToken",
                 "userinfo_endpoint": "https://api.linkedin.com/v2/userinfo",
             },
-            client_kwargs={"scope": "openid profile email"},
+            scopes=["openid", "profile", "email"],
             config={
                 "LINKEDIN_CLIENT_ID": "your-client-id",
                 "LINKEDIN_CLIENT_SECRET": "your-client-secret",
