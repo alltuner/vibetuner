@@ -162,6 +162,97 @@ import "htmx-ext-preload";
 import "htmx.org/dist/ext/hx-preload.js";
 ```
 
+## Event Names Changed from camelCase to Colon-Separated
+
+All htmx event names switched from camelCase to colon-separated format.
+
+**Before (v2):**
+
+```javascript
+document.addEventListener("htmx:afterRequest", handler);
+document.addEventListener("htmx:beforeSwap", handler);
+document.addEventListener("htmx:afterSettle", handler);
+```
+
+**After (v4):**
+
+```javascript
+element.addEventListener("htmx:after:request", handler);
+element.addEventListener("htmx:before:swap", handler);
+element.addEventListener("htmx:after:settle", handler);
+```
+
+!!! warning
+    Events no longer bubble to `document.body` in v4. You must attach listeners
+    directly to the element or use `hx-on` attributes. Delegation patterns like
+    `document.body.addEventListener('htmx:after:request', ...)` do not work.
+
+## Event Handler Attributes (`hx-on`)
+
+The `hx-on::` shorthand (e.g., `hx-on::after-request`) is broken in htmx 4.0.0-alpha8.
+It registers a listener for `:after-request`, but the dispatched event is
+`htmx:after:request`. Use the explicit long form instead.
+
+**Before (v2):**
+
+```html
+<form hx-on::after-request="if(event.detail.successful) this.reset()">
+```
+
+**After (v4):**
+
+```html
+<form hx-on:htmx:after:request="this.reset()">
+```
+
+!!! note
+    The `hx-on::` shorthand may be fixed in a future htmx release, but the long
+    form `hx-on:htmx:after:request` works reliably and is the recommended approach.
+
+## Event Detail Structure Changed
+
+The `event.detail` object was restructured. Properties that existed at the top level
+are now nested under `event.detail.ctx`.
+
+**Before (v2):**
+
+```javascript
+event.detail.successful   // boolean
+event.detail.elt          // the triggering element
+event.detail.xhr          // XMLHttpRequest object
+```
+
+**After (v4):**
+
+```javascript
+event.detail.ctx                // context object
+event.detail.ctx.sourceElement  // the triggering element
+event.detail.ctx.response       // response object
+event.detail.ctx.status         // request status string
+```
+
+!!! danger
+    `event.detail.successful` is `undefined` in v4, which is falsy. Any code
+    checking `if(event.detail.successful)` silently skips the handler body
+    without errors.
+
+## View Transitions Disabled
+
+htmx v4 initially shipped with CSS view transitions enabled by default, which
+caused ~500ms UI blocking after each request
+([htmx#3566](https://github.com/bigskysoftware/htmx/issues/3566)). The htmx
+team disabled transitions as the default in a later release.
+
+Vibetuner's skeleton template includes a `<meta>` tag that explicitly disables
+them for compatibility with alpha8:
+
+```html
+<meta name="htmx-config" content='{"globalViewTransitions": false}' />
+```
+
+If you want view transitions, remove this tag and add CSS transition rules
+per the [htmx view transitions docs](https://four.htmx.org).
+
 ## Common Migration Issues
 
 ### SSE elements stop updating after upgrade
@@ -234,6 +325,10 @@ hx-vals='js:{"token": getToken()}'
 
 ## Migration Checklist
 
+- [ ] Replace `hx-on::` shorthand with `hx-on:htmx:` long form
+- [ ] Replace `event.detail.successful` with `event.detail.ctx.response`
+- [ ] Replace camelCase event names with colon-separated (e.g., `afterRequest` → `after:request`)
+- [ ] Move `document.body` event listeners to the element or use `hx-on` attributes
 - [ ] Remove all `hx-ext="sse"` attributes from SSE elements
 - [ ] Remove all other `hx-ext="..."` attributes (extensions auto-register)
 - [ ] Replace `hx-vars` with `hx-vals` using `js:` prefix

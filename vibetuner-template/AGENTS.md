@@ -287,6 +287,37 @@ From `vibetuner.htmx`: `hx_redirect(url)`,
 `hx_replace_url`, `hx_reswap`, `hx_retarget`, `hx_refresh`,
 `hx_trigger_after_settle`, `hx_trigger_after_swap`.
 
+### HTMX 4 Event Handling
+
+htmx 4 changed event handling significantly. Key differences:
+
+**Event names** use colon-separated format (not camelCase):
+`htmx:after:request`, `htmx:before:swap`, `htmx:after:settle`.
+
+**`hx-on` attributes** — the `hx-on::` shorthand is broken in
+alpha8. Use the explicit long form:
+
+```html
+<!-- BROKEN: hx-on::after-request="..." -->
+<!-- WORKS: -->
+<form hx-on:htmx:after:request="this.reset()">
+```
+
+**`event.detail`** was restructured. `event.detail.successful` no
+longer exists. Use `event.detail.ctx.response` instead:
+
+```javascript
+// v2: event.detail.successful, event.detail.elt, event.detail.xhr
+// v4: event.detail.ctx.response, event.detail.ctx.sourceElement,
+//     event.detail.ctx.status
+```
+
+**Events do not bubble** to `document.body` in v4. Attach listeners
+directly to elements or use `hx-on` attributes.
+
+See the [HTMX migration guide](https://vibetuner.alltuner.com/htmx-migration/)
+for full details.
+
 ### Response Caching (Server-Side)
 
 `from vibetuner.cache import cache, invalidate, invalidate_pattern`.
