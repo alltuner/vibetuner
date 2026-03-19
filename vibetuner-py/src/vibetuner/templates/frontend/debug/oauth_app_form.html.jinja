@@ -130,11 +130,46 @@
                                 <span class="label-text">Scopes</span>
                                 <span class="label-text-alt text-base-content/60">Optional</span>
                             </label>
-                            <input type="text"
-                                   name="scopes"
-                                   value="{{ app.scopes | join(', ') if app and app.scopes else '' }}"
-                                   class="input input-bordered w-full"
-                                   placeholder="comma-separated, e.g. openid, email, profile" />
+                            <div id="scopes-container">
+                                <div class="flex flex-wrap gap-2 mb-2"
+                                     id="scopes-tags">
+                                    {% if app and app.scopes %}
+                                        {% for scope in app.scopes %}
+                                            <span class="badge badge-lg gap-1">
+                                                {{ scope }}
+                                                <button type="button"
+                                                        class="btn btn-ghost btn-xs px-0"
+                                                        onclick="removeScope(this)"
+                                                        aria-label="Remove {{ scope }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                         class="h-3 w-3"
+                                                         fill="none"
+                                                         viewBox="0 0 24 24"
+                                                         stroke="currentColor">
+                                                        <path stroke-linecap="round"
+                                                              stroke-linejoin="round"
+                                                              stroke-width="2"
+                                                              d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                                <div class="join w-full">
+                                    <input type="text"
+                                           id="scope-input"
+                                           class="input input-bordered join-item w-full"
+                                           placeholder="e.g. openid"
+                                           onkeydown="handleScopeKey(event)" />
+                                    <button type="button"
+                                            class="btn btn-neutral join-item"
+                                            onclick="addScopeFromInput()">
+                                        Add
+                                    </button>
+                                </div>
+                                <input type="hidden" name="scopes" id="scopes-hidden" />
+                            </div>
                             <label class="label">
                                 <span class="label-text-alt text-base-content/60">
                                     Overrides provider defaults when set. Leave empty for provider defaults.
@@ -179,4 +214,49 @@
         {% include "debug/components/debug_nav.html.jinja" %}
 
     </div>
+    <script>
+        function syncScopesHidden() {
+            const tags = document.getElementById("scopes-tags");
+            const hidden = document.getElementById("scopes-hidden");
+            const scopes = Array.from(tags.querySelectorAll(".badge"))
+                .map(badge => badge.firstChild.textContent.trim());
+            hidden.value = scopes.join(",");
+        }
+
+        function addScope(value) {
+            const scope = value.trim();
+            if (!scope) return;
+            const tags = document.getElementById("scopes-tags");
+            const existing = Array.from(tags.querySelectorAll(".badge"))
+                .map(badge => badge.firstChild.textContent.trim());
+            if (existing.includes(scope)) return;
+
+            const span = document.createElement("span");
+            span.className = "badge badge-lg gap-1";
+            span.innerHTML = `${scope}<button type="button" class="btn btn-ghost btn-xs px-0" onclick="removeScope(this)" aria-label="Remove ${scope}"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>`;
+            tags.appendChild(span);
+            syncScopesHidden();
+        }
+
+        function addScopeFromInput() {
+            const input = document.getElementById("scope-input");
+            addScope(input.value);
+            input.value = "";
+            input.focus();
+        }
+
+        function removeScope(button) {
+            button.closest(".badge").remove();
+            syncScopesHidden();
+        }
+
+        function handleScopeKey(event) {
+            if (event.key === "Enter" || event.key === ",") {
+                event.preventDefault();
+                addScopeFromInput();
+            }
+        }
+
+        syncScopesHidden();
+    </script>
 {% endblock body %}
