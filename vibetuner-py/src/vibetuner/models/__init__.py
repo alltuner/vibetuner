@@ -1,4 +1,4 @@
-from beanie import Document, View
+from beanie import Document, DocumentWithSoftDelete, View
 
 from vibetuner.tasks.robust import DeadLetterModel
 
@@ -11,6 +11,7 @@ from .user import UserModel
 
 
 __all__: list[type[Document] | type[View]] = [
+    DocumentWithSoftDelete,
     BlobModel,
     ConfigEntryModel,
     DeadLetterModel,
