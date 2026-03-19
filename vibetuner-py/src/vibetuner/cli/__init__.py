@@ -7,6 +7,7 @@ from functools import partial, wraps
 import asyncer
 import typer
 
+from vibetuner.cli.crypto import crypto_app
 from vibetuner.cli.db import db_app
 from vibetuner.cli.doctor import doctor_app
 from vibetuner.cli.run import run_app
@@ -129,6 +130,7 @@ def version(
     console.print(table)
 
 
+app.add_typer(crypto_app, name="crypto")
 app.add_typer(db_app, name="db")
 app.add_typer(doctor_app, name="doctor")
 app.add_typer(run_app, name="run")

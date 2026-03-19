@@ -335,3 +335,108 @@ class TestResolveOAuthClient:
         ):
             with pytest.raises(ValueError, match="provider 'github', not 'google'"):
                 await resolve_oauth_client("google", str(app.id))
+
+
+class TestOAuthAppEncryption:
+    """Tests for transparent encrypt-on-save / decrypt-on-load of client_secret."""
+
+    PASSPHRASE = "test-encryption-key"
+
+    def test_encrypt_on_insert(self, monkeypatch):
+        """before_event(Insert) encrypts plaintext client_secret when key is set."""
+        monkeypatch.setattr(settings, "oauth_encryption_key", self.PASSPHRASE)
+        app = OAuthProviderAppModel(
+            provider="google",
+            name="Test",
+            client_id="id",
+            client_secret="my-secret",
+        )
+        app._encrypt_on_insert()
+        from vibetuner.crypto import is_encrypted
+
+        assert is_encrypted(app.client_secret)
+
+    def test_encrypt_on_update(self, monkeypatch):
+        """before_event(Update/Save/...) encrypts plaintext client_secret."""
+        monkeypatch.setattr(settings, "oauth_encryption_key", self.PASSPHRASE)
+        app = OAuthProviderAppModel(
+            provider="google",
+            name="Test",
+            client_id="id",
+            client_secret="my-secret",
+        )
+        app._encrypt_on_update()
+        from vibetuner.crypto import is_encrypted
+
+        assert is_encrypted(app.client_secret)
+
+    def test_decrypt_on_load(self, monkeypatch):
+        """model_validator decrypts ciphertext on model instantiation."""
+        from vibetuner.crypto import encrypt_value
+
+        monkeypatch.setattr(settings, "oauth_encryption_key", self.PASSPHRASE)
+        ciphertext = encrypt_value("my-secret", self.PASSPHRASE)
+        app = OAuthProviderAppModel(
+            provider="google",
+            name="Test",
+            client_id="id",
+            client_secret=ciphertext,
+        )
+        assert app.client_secret == "my-secret"
+
+    def test_no_encryption_when_key_unset(self, monkeypatch):
+        """Plaintext stays plaintext when no encryption key is configured."""
+        monkeypatch.setattr(settings, "oauth_encryption_key", None)
+        app = OAuthProviderAppModel(
+            provider="google",
+            name="Test",
+            client_id="id",
+            client_secret="my-secret",
+        )
+        app._encrypt_on_insert()
+        assert app.client_secret == "my-secret"
+
+    def test_plaintext_passthrough_on_load(self, monkeypatch):
+        """Plaintext values pass through the decrypt validator unchanged."""
+        monkeypatch.setattr(settings, "oauth_encryption_key", self.PASSPHRASE)
+        app = OAuthProviderAppModel(
+            provider="google",
+            name="Test",
+            client_id="id",
+            client_secret="plain-secret",
+        )
+        assert app.client_secret == "plain-secret"
+
+    def test_encrypted_without_key_raises_on_load(self, monkeypatch):
+        """Loading an encrypted value with no key raises ValueError."""
+        from vibetuner.crypto import encrypt_value
+
+        monkeypatch.setattr(settings, "oauth_encryption_key", None)
+        ciphertext = encrypt_value("my-secret", self.PASSPHRASE)
+        with pytest.raises(ValueError, match="encrypted.*no.*key"):
+            OAuthProviderAppModel(
+                provider="google",
+                name="Test",
+                client_id="id",
+                client_secret=ciphertext,
+            )
+
+    def test_no_double_encryption(self, monkeypatch):
+        """Calling encrypt hook on an already-encrypted value is idempotent."""
+        from vibetuner.crypto import encrypt_value
+
+        monkeypatch.setattr(settings, "oauth_encryption_key", self.PASSPHRASE)
+        ciphertext = encrypt_value("my-secret", self.PASSPHRASE)
+        app = OAuthProviderAppModel(
+            provider="google",
+            name="Test",
+            client_id="id",
+            # Bypass the decrypt validator by setting after construction
+            client_secret="placeholder",
+        )
+        app.client_secret = ciphertext
+        app._encrypt_on_insert()
+        # Should still be the same ciphertext (not double-encrypted)
+        from vibetuner.crypto import decrypt_value
+
+        assert decrypt_value(app.client_secret, self.PASSPHRASE) == "my-secret"
