@@ -44,6 +44,7 @@
             <div class="card bg-base-100 shadow-xl mb-6">
                 <div class="card-body">
                     <form method="post"
+                          autocomplete="off"
                           action="{{ url_for('debug_oauth_app_update', app_id=app.id) if app else url_for('debug_oauth_app_store') }}">
                         <!-- Provider -->
                         <div class="form-control w-full mb-4">
