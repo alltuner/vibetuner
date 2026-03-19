@@ -116,6 +116,20 @@ def _register_app_client(app: "OAuthProviderAppModel") -> str:
     return client_name
 
 
+async def get_db_oauth_apps() -> list["OAuthProviderAppModel"]:
+    """Return active DB-backed OAuth apps for providers with login routes."""
+    from vibetuner.models.oauth_app import OAuthProviderAppModel
+
+    providers_with_routes = {
+        name for name, config in _PROVIDERS.items() if config.login_routes
+    }
+    if not providers_with_routes:
+        return []
+
+    apps = await OAuthProviderAppModel.get_all_active()
+    return [app for app in apps if app.provider in providers_with_routes]
+
+
 async def resolve_oauth_client(provider_name: str, app_id: str | None) -> str:
     """Resolve the Authlib client name, optionally loading a DB-backed app.
 

@@ -19,6 +19,7 @@ from ..email import send_magic_link_email
 from ..oauth import (
     _create_auth_handler,
     _create_auth_login_handler,
+    get_db_oauth_apps,
     get_registered_providers,
 )
 from ..templates import render_template
@@ -61,13 +62,15 @@ async def auth_login(
         for name, config in get_registered_providers().items()
         if config.login_routes
     ]
+    db_apps = await get_db_oauth_apps()
     return render_template(
         "login.html.jinja",
         request=request,
         ctx={
             "providers": oauth_providers,
+            "db_apps": db_apps,
             "next": next,
-            "has_oauth": bool(oauth_providers),
+            "has_oauth": bool(oauth_providers) or bool(db_apps),
             "has_email": True,
         },
     )
