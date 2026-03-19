@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.12.1](https://github.com/alltuner/vibetuner/compare/v9.12.0...v9.12.1) (2026-03-19)
+
+
+### Bug Fixes
+
+* defer load_app_config() to prevent circular import on submodule access ([#1496](https://github.com/alltuner/vibetuner/issues/1496)) ([a12fbae](https://github.com/alltuner/vibetuner/commit/a12fbae7877f1f16c662699fa8920158ee649ffa))
+
 ## [9.12.0](https://github.com/alltuner/vibetuner/compare/v9.11.0...v9.12.0) (2026-03-19)
 
 
