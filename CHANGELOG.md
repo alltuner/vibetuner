@@ -1,5 +1,18 @@
 # Changelog
 
+## [9.14.0](https://github.com/alltuner/vibetuner/compare/v9.13.0...v9.14.0) (2026-03-19)
+
+
+### Features
+
+* soft delete support via Beanie's DocumentWithSoftDelete ([#1504](https://github.com/alltuner/vibetuner/issues/1504)) ([6babd47](https://github.com/alltuner/vibetuner/commit/6babd478ecad0587e522aca46b0f01f7f1b8f570))
+
+
+### Documentation Updates
+
+* document HTMX 4 event handling breaking changes and disable view transitions ([#1506](https://github.com/alltuner/vibetuner/issues/1506)) ([056b52d](https://github.com/alltuner/vibetuner/commit/056b52d18d5a9a326a2f97db98deb3f8df2fba59))
+* document that Beanie Document.get() accepts plain strings ([#1501](https://github.com/alltuner/vibetuner/issues/1501)) ([900b519](https://github.com/alltuner/vibetuner/commit/900b51916d6bb1fe291ff8c5ffc0380feb00f1be))
+
 ## [9.13.0](https://github.com/alltuner/vibetuner/compare/v9.12.1...v9.13.0) (2026-03-19)
 
 
