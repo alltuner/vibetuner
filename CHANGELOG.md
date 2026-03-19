@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.13.0](https://github.com/alltuner/vibetuner/compare/v9.12.1...v9.13.0) (2026-03-19)
+
+
+### Features
+
+* generic encrypted field support for Beanie models ([#1498](https://github.com/alltuner/vibetuner/issues/1498)) ([2ce3db3](https://github.com/alltuner/vibetuner/commit/2ce3db3376d30e3e6048c20639096da4648a5f45))
+
 ## [9.12.1](https://github.com/alltuner/vibetuner/compare/v9.12.0...v9.12.1) (2026-03-19)
 
 
