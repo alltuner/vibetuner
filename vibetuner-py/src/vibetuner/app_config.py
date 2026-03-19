@@ -52,5 +52,8 @@ class VibetunerApp(BaseModel):
     tasks: list[Callable[..., Any]] = []
     worker_lifespan: Callable[..., Any] | None = None
 
+    # Runtime config entries to register during startup
+    runtime_config: dict[str, dict[str, Any]] = {}
+
     # CLI extensions
     cli: Typer | None = None

@@ -6,6 +6,7 @@ from importlib import import_module
 from vibetuner.app_config import VibetunerApp
 from vibetuner.logging import logger
 from vibetuner.pyproject import get_project_name
+from vibetuner.runtime_config import register_config_value
 
 
 class ConfigurationError(Exception):
@@ -69,5 +70,19 @@ def load_app_config() -> VibetunerApp:
             f"got {type(app_config).__name__}"
         )
 
+    register_runtime_config(app_config)
     logger.info(f"Loaded app config from {package_name}.tune")
     return app_config
+
+
+def register_runtime_config(app: VibetunerApp) -> None:
+    """Register all runtime config entries declared in a VibetunerApp."""
+    for key, entry in app.runtime_config.items():
+        register_config_value(
+            key=key,
+            default=entry["default"],
+            value_type=entry["value_type"],
+            description=entry.get("description"),
+            category=entry.get("category", "general"),
+            is_secret=entry.get("is_secret", False),
+        )

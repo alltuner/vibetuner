@@ -612,3 +612,133 @@ class TestConfigGroup:
 
         entry = RuntimeConfig._config_registry["secrets.api_key"]
         assert entry["is_secret"] is True
+
+
+class TestSetConfig:
+    """Tests for the public set_config() convenience function."""
+
+    @pytest.mark.asyncio
+    async def test_set_config_persists_value(self):
+        """set_config persists a value using metadata from the registry."""
+        from vibetuner.runtime_config import (
+            RuntimeConfig,
+            register_config_value,
+            set_config,
+        )
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        register_config_value(
+            key="crm.default_region",
+            default="",
+            value_type="str",
+            description="Default region",
+            category="crm",
+        )
+
+        with patch("vibetuner.runtime_config.settings") as mock_settings:
+            mock_settings.mongodb_url = None
+            await set_config("crm.default_region", "US")
+
+        assert RuntimeConfig._config_cache["crm.default_region"] == "US"
+
+    @pytest.mark.asyncio
+    async def test_set_config_infers_value_type_from_registry(self):
+        """set_config uses the value_type from the registered entry."""
+        from vibetuner.runtime_config import (
+            RuntimeConfig,
+            register_config_value,
+            set_config,
+        )
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        register_config_value(
+            key="feature.max_items",
+            default=10,
+            value_type="int",
+            category="feature",
+        )
+
+        with patch("vibetuner.runtime_config.settings") as mock_settings:
+            mock_settings.mongodb_url = None
+            await set_config("feature.max_items", "42")
+
+        # Should be converted to int via the registered value_type
+        assert RuntimeConfig._config_cache["feature.max_items"] == 42
+
+    @pytest.mark.asyncio
+    async def test_set_config_raises_for_unregistered_key(self):
+        """set_config raises KeyError for keys not in the registry."""
+        from vibetuner.runtime_config import RuntimeConfig, set_config
+
+        RuntimeConfig._config_registry.clear()
+
+        with pytest.raises(KeyError, match="not registered"):
+            await set_config("unknown.key", "value")
+
+
+class TestVibetunerAppRuntimeConfig:
+    """Tests for VibetunerApp runtime_config parameter."""
+
+    def test_vibetuner_app_accepts_runtime_config(self):
+        """VibetunerApp accepts a runtime_config dict."""
+        from vibetuner.app_config import VibetunerApp
+
+        app = VibetunerApp(
+            runtime_config={
+                "crm.default_region": {
+                    "default": "",
+                    "value_type": "str",
+                    "description": "Default region",
+                    "category": "crm",
+                },
+            },
+        )
+
+        assert "crm.default_region" in app.runtime_config
+
+    def test_vibetuner_app_runtime_config_defaults_to_empty(self):
+        """VibetunerApp runtime_config defaults to empty dict."""
+        from vibetuner.app_config import VibetunerApp
+
+        app = VibetunerApp()
+        assert app.runtime_config == {}
+
+    def test_register_runtime_config_from_app(self):
+        """register_runtime_config registers all entries from app config."""
+        from vibetuner.app_config import VibetunerApp
+        from vibetuner.loader import register_runtime_config
+        from vibetuner.runtime_config import RuntimeConfig
+
+        RuntimeConfig._config_registry.clear()
+
+        app = VibetunerApp(
+            runtime_config={
+                "crm.default_region": {
+                    "default": "US",
+                    "value_type": "str",
+                    "description": "Default phone region",
+                    "category": "crm",
+                },
+                "crm.max_contacts": {
+                    "default": 100,
+                    "value_type": "int",
+                    "description": "Max contacts",
+                    "category": "crm",
+                },
+            },
+        )
+
+        register_runtime_config(app)
+
+        assert "crm.default_region" in RuntimeConfig._config_registry
+        assert RuntimeConfig._config_registry["crm.default_region"]["default"] == "US"
+        assert RuntimeConfig._config_registry["crm.default_region"]["value_type"] == "str"
+
+        assert "crm.max_contacts" in RuntimeConfig._config_registry
+        assert RuntimeConfig._config_registry["crm.max_contacts"]["default"] == 100
