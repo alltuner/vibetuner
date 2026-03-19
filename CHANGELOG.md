@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.12.0](https://github.com/alltuner/vibetuner/compare/v9.11.0...v9.12.0) (2026-03-19)
+
+
+### Features
+
+* add dedicated scopes field to OauthProviderModel ([#1493](https://github.com/alltuner/vibetuner/issues/1493)) ([875caa6](https://github.com/alltuner/vibetuner/commit/875caa6378258a6ae421157ab64e86bf117dc8be))
+
+
+### Bug Fixes
+
+* prevent browser password manager on OAuth app form ([#1492](https://github.com/alltuner/vibetuner/issues/1492)) ([f813873](https://github.com/alltuner/vibetuner/commit/f81387356723b9e1d56d23401d845619bc4bdc29))
+
 ## [9.11.0](https://github.com/alltuner/vibetuner/compare/v9.10.0...v9.11.0) (2026-03-19)
 
 
