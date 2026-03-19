@@ -3,7 +3,7 @@
 from granian.utils.proxies import wrap_asgi_with_proxy_headers
 
 from vibetuner.config import settings
-from vibetuner.frontend import app as _app
+from vibetuner.frontend.application import app as _app
 
 
 # Wrap the FastAPI app with Granian's proxy header processor
