@@ -889,7 +889,9 @@ The built-in login and callback routes accept an optional `app_id` query paramet
 that flows through this resolution automatically. Active database-backed apps
 appear on the login page as additional sign-in buttons (e.g., "Continue with
 Google · Acme Corp") alongside env-var providers, for any registered provider
-with `login_routes=True`.
+with `login_routes=True`. The provider must be registered via env-var
+credentials for its login route to exist; DB-backed apps for unregistered
+providers will not appear on the login page.
 
 #### Protecting Routes
 
