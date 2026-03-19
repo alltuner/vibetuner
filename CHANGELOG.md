@@ -1,5 +1,19 @@
 # Changelog
 
+## [9.11.0](https://github.com/alltuner/vibetuner/compare/v9.10.0...v9.11.0) (2026-03-19)
+
+
+### Features
+
+* add generic OAuth app capability detection interface ([#1485](https://github.com/alltuner/vibetuner/issues/1485)) ([2e4dfc0](https://github.com/alltuner/vibetuner/commit/2e4dfc064f959860fc57417b1bc73c6edab1e18b))
+* encrypt OAuth client secrets at rest ([#1490](https://github.com/alltuner/vibetuner/issues/1490)) ([c325a3d](https://github.com/alltuner/vibetuner/commit/c325a3da9c84d685b79865eed934730ccaebada8))
+* show DB-backed OAuth apps on the login page ([#1486](https://github.com/alltuner/vibetuner/issues/1486)) ([3431113](https://github.com/alltuner/vibetuner/commit/3431113d5b19516f9293cd5c03adffd9eed74c4f))
+
+
+### Documentation Updates
+
+* document env-var registration requirement for login page OAuth apps ([#1488](https://github.com/alltuner/vibetuner/issues/1488)) ([c9d9594](https://github.com/alltuner/vibetuner/commit/c9d959430f18607fbdb104803e0dd24a1acbafea))
+
 ## [9.10.0](https://github.com/alltuner/vibetuner/compare/v9.9.2...v9.10.0) (2026-03-18)
 
 
