@@ -162,6 +162,24 @@ uv run python -m pytest tests/unit/     # run unit tests only
 just update-frontend-templates  # Sync frontend templates and commit changes
 ```
 
+## Beanie (MongoDB ODM)
+
+### Document.get() accepts plain strings
+
+Beanie's `Document.get()` accepts `Any` for `document_id`, so wrapping IDs with
+`PydanticObjectId()` is unnecessary:
+
+```python
+# Correct - pass the string directly
+doc = await MyDocument.get(some_id)
+
+# Unnecessary - PydanticObjectId wrapping adds no value here
+doc = await MyDocument.get(PydanticObjectId(some_id))
+```
+
+`PydanticObjectId` is still useful as a FastAPI path parameter type annotation (for request
+validation) and in explicit query filters, but `.get()` handles the conversion internally.
+
 ## Markdown Line Length
 
 This project enforces a **120 character line limit** for markdown files using `rumdl`.
