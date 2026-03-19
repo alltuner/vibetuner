@@ -32,8 +32,9 @@ class OauthProviderModel(BaseModel):
 
     identifier: str
     params: dict[str, str] = {}
-    client_kwargs: dict[str, str]
-    config: dict[str, str]
+    scopes: list[str] = []
+    client_kwargs: dict[str, str] = {}
+    config: dict[str, str] = {}
     compliance_fix: Callable[..., Any] | None = None
     login_routes: bool = True
     capability_detector: CapabilityDetector | None = None

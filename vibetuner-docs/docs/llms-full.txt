@@ -820,7 +820,7 @@ app = VibetunerApp(
                 "access_token_url": "https://www.linkedin.com/oauth/v2/accessToken",
                 "userinfo_endpoint": "https://api.linkedin.com/v2/userinfo",
             },
-            client_kwargs={"scope": "openid profile email"},
+            scopes=["openid", "profile", "email"],
             config={
                 "LINKEDIN_CLIENT_ID": "your-client-id",
                 "LINKEDIN_CLIENT_SECRET": "your-client-secret",
@@ -831,7 +831,7 @@ app = VibetunerApp(
 ```
 
 `OauthProviderModel` fields: `identifier` (unique user ID field), `params` (endpoint URLs),
-`client_kwargs` (client settings like scope), `config` (credentials), `compliance_fix`
+`scopes` (list of OAuth scopes), `client_kwargs` (extra client settings), `config` (credentials), `compliance_fix`
 (optional Authlib compliance fix callback for providers that deviate from the OAuth spec),
 `login_routes` (bool, default `True`; set to `False` to register a provider for credential
 management only without creating login/callback routes, useful for account linking flows).

@@ -81,7 +81,7 @@ class TestGetDbOauthApps:
             OauthProviderModel(
                 identifier="sub",
                 params={"authorize_url": "https://example.com/auth"},
-                client_kwargs={"scope": "openid"},
+                scopes=["openid"],
                 config={
                     "LINKEDIN_CLIENT_ID": "id",
                     "LINKEDIN_CLIENT_SECRET": "secret",
