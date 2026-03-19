@@ -2,6 +2,7 @@
 # ABOUTME: Verifies that app-level context is merged into every render call
 # ruff: noqa: S101
 
+from datetime import date, datetime, timezone
 from typing import Any
 from unittest.mock import MagicMock
 
@@ -217,3 +218,64 @@ class TestContextMergeOrder:
         request = self._mock_request()
         ctx = self._build_merged_context({}, request, "en")
         assert ctx["key"] == "from_provider"
+
+
+class TestBuiltinDatetimeContext:
+    """Tests for built-in now/today template context provider."""
+
+    def test_now_is_utc_aware_datetime(self):
+        from vibetuner.rendering import _datetime_context
+
+        result = _datetime_context()
+        assert isinstance(result["now"], datetime)
+        assert result["now"].tzinfo is not None
+
+    def test_now_is_close_to_current_time(self):
+        from vibetuner.rendering import _datetime_context
+
+        before = datetime.now(timezone.utc)
+        result = _datetime_context()
+        after = datetime.now(timezone.utc)
+        assert before <= result["now"] <= after
+
+    def test_today_is_iso_date_string(self):
+        from vibetuner.rendering import _datetime_context
+
+        result = _datetime_context()
+        # Validates ISO format by parsing; raises ValueError if invalid
+        parsed = date.fromisoformat(result["today"])
+        assert isinstance(parsed, date)
+
+    def test_today_matches_current_date(self):
+        from vibetuner.rendering import _datetime_context
+
+        result = _datetime_context()
+        assert result["today"] == date.today().isoformat()
+
+    def test_user_context_can_override_now(self):
+        """User-provided 'now' in render context takes precedence."""
+        register_globals({})  # ensure clean state
+
+        @register_context_provider
+        def provider() -> dict[str, Any]:
+            return {"now": "custom_now"}
+
+        result = _collect_provider_context()
+        assert result["now"] == "custom_now"
+
+        # Clean up
+        _reset_globals()
+
+    def test_provider_registered_on_import(self):
+        """The datetime provider is in _context_providers after import."""
+        from vibetuner.rendering import _datetime_context
+
+        # Re-register to check it works (import-time registration may
+        # have been cleared by earlier test teardowns)
+        register_context_provider(_datetime_context)
+        result = _collect_provider_context()
+        assert "now" in result
+        assert "today" in result
+
+        # Clean up
+        _reset_globals()

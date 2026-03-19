@@ -4,7 +4,7 @@ import functools
 import inspect
 import threading
 from collections.abc import Callable
-from datetime import timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
 from starlette.requests import Request
@@ -727,6 +727,17 @@ def render_template_blocks(
 
     return HTMLResponse("".join(parts))
 
+
+# Built-in context provider for date/time template globals
+def _datetime_context() -> dict[str, Any]:
+    """Provide ``now`` and ``today`` in every template context."""
+    return {
+        "now": datetime.now(timezone.utc),
+        "today": date.today().isoformat(),
+    }
+
+
+register_context_provider(_datetime_context)
 
 # Global Vars
 jinja_env.globals.update({"DEBUG": data_ctx.DEBUG})
