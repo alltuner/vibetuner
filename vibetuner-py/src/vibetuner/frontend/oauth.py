@@ -1,6 +1,6 @@
 # ABOUTME: OAuth provider integration using Authlib.
 # ABOUTME: Handles provider registration, builtin configs, and auth flow handlers.
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from authlib.integrations.base_client.errors import OAuthError
 from authlib.integrations.starlette_client import OAuth
@@ -76,6 +76,17 @@ PROVIDER_IDENTIFIERS: dict[str, str] = {}
 
 def get_oauth_providers() -> list[str]:
     return list(_PROVIDERS.keys())
+
+
+async def detect_capabilities(provider_name: str, token: dict[str, Any]) -> list[str]:
+    """Detect capabilities for a provider using its registered detector.
+
+    Returns an empty list when the provider is unknown or has no detector.
+    """
+    provider = _PROVIDERS.get(provider_name)
+    if not provider or not provider.capability_detector:
+        return []
+    return await provider.capability_detector.detect(token)
 
 
 def get_registered_providers() -> dict[str, OauthProviderModel]:
