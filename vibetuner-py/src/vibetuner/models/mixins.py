@@ -1,15 +1,12 @@
-"""Reusable model mixins for common functionality.
-
-WARNING: This is a scaffolding-managed file. DO NOT MODIFY directly.
-Provides timestamp tracking and other common model behaviors.
-"""
+# ABOUTME: Reusable model mixins for Beanie documents.
+# ABOUTME: Provides timestamp tracking (TimeStampMixin) and at-rest field encryption (EncryptedFieldsMixin).
 
 from datetime import datetime, timedelta
 from enum import StrEnum
-from typing import Self
+from typing import Annotated, Self
 
 from beanie import Insert, Replace, Save, SaveChanges, Update, before_event
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from vibetuner.time import Unit, now
 
@@ -74,3 +71,104 @@ class TimeStampMixin(BaseModel):
         """Manually bump `db_update_dt` and return `self` (chain-friendly)."""
         self.db_update_dt = now()
         return self
+
+
+# ────────────────────────────────────────────────────────────────
+#  At-rest field encryption
+# ────────────────────────────────────────────────────────────────
+
+
+class Encrypted:
+    """Annotation marker for string fields that should be Fernet-encrypted at rest.
+
+    Use via the ``EncryptedStr`` type alias::
+
+        class MyModel(Document, EncryptedFieldsMixin):
+            api_key: EncryptedStr = Field(...)
+            token: EncryptedStr | None = Field(default=None)
+
+    Fields are transparently encrypted before every database write and
+    decrypted on load.  The encryption passphrase is read from
+    ``settings.field_encryption_key``; when unset, values are stored as
+    plaintext.
+    """
+
+
+EncryptedStr = Annotated[str, Encrypted()]
+"""A ``str`` that is Fernet-encrypted at rest when used with ``EncryptedFieldsMixin``."""
+
+
+def _encrypted_field_names(model_cls: type[BaseModel]) -> set[str]:
+    """Return the names of all fields annotated with ``Encrypted`` on *model_cls*.
+
+    Handles both ``EncryptedStr`` (direct) and ``EncryptedStr | None``
+    (union) annotations.
+    """
+    import typing
+
+    names: set[str] = set()
+    for name, field_info in model_cls.model_fields.items():
+        # Direct: Annotated[str, Encrypted()]
+        if any(isinstance(m, Encrypted) for m in field_info.metadata):
+            names.add(name)
+            continue
+        # Union (e.g. EncryptedStr | None): check each union arg
+        origin = typing.get_origin(field_info.annotation)
+        if origin is typing.Union:
+            for arg in typing.get_args(field_info.annotation):
+                if typing.get_origin(arg) is Annotated:
+                    for meta in typing.get_args(arg)[1:]:
+                        if isinstance(meta, Encrypted):
+                            names.add(name)
+    return names
+
+
+class EncryptedFieldsMixin(BaseModel):
+    """Transparent Fernet encrypt-on-save / decrypt-on-load for ``EncryptedStr`` fields.
+
+    Apply as a mixin on any Beanie ``Document`` subclass.  Every field
+    typed as ``EncryptedStr`` (or ``EncryptedStr | None``) will be
+    encrypted before database writes and decrypted when the document is
+    loaded.
+
+    The encryption passphrase comes from ``settings.field_encryption_key``.
+    When the key is ``None``, fields are stored and loaded as plaintext.
+
+    Example::
+
+        class SecretModel(Document, EncryptedFieldsMixin):
+            api_key: EncryptedStr = Field(...)
+    """
+
+    @model_validator(mode="after")
+    def _decrypt_on_load(self) -> Self:
+        from vibetuner.config import settings
+        from vibetuner.crypto import decrypt_or_passthrough
+
+        key = settings.field_encryption_key
+        for name in _encrypted_field_names(type(self)):
+            value = getattr(self, name)
+            if value is None:
+                continue
+            setattr(self, name, decrypt_or_passthrough(value, key))
+        return self
+
+    @before_event(Insert)
+    def _encrypt_on_insert(self) -> None:
+        self._encrypt_fields()
+
+    @before_event(Update, SaveChanges, Save, Replace)
+    def _encrypt_on_update(self) -> None:
+        self._encrypt_fields()
+
+    def _encrypt_fields(self) -> None:
+        from vibetuner.config import settings
+        from vibetuner.crypto import encrypt_value, is_encrypted
+
+        key = settings.field_encryption_key
+        if not key:
+            return
+        for name in _encrypted_field_names(type(self)):
+            value = getattr(self, name)
+            if value is not None and not is_encrypted(value):
+                setattr(self, name, encrypt_value(value, key))

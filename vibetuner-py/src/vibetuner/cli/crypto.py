@@ -1,4 +1,4 @@
-# ABOUTME: CLI commands for managing OAuth secret encryption keys.
+# ABOUTME: CLI commands for managing field encryption keys.
 # ABOUTME: Provides set-key and rotate-key for Fernet encryption of secrets at rest.
 import secrets
 from pathlib import Path
@@ -9,7 +9,7 @@ import typer
 
 
 crypto_app = typer.Typer(
-    help="Manage encryption keys for OAuth secrets at rest", no_args_is_help=True
+    help="Manage encryption keys for secrets at rest", no_args_is_help=True
 )
 
 
@@ -28,7 +28,7 @@ async def _set_key_impl(passphrase: str, env_file: Path) -> None:
             await app.save()
             encrypted_count += 1
 
-    write_env_var(env_file, "OAUTH_ENCRYPTION_KEY", passphrase)
+    write_env_var(env_file, "FIELD_ENCRYPTION_KEY", passphrase)
 
     typer.echo(f"Encryption key written to {env_file}")
     typer.echo(f"Encrypted {encrypted_count} secret(s) across {len(apps)} app(s).")
@@ -57,7 +57,7 @@ async def _rotate_key_impl(
             await app.save()
             rotated_count += 1
 
-    write_env_var(env_file, "OAUTH_ENCRYPTION_KEY", new_passphrase)
+    write_env_var(env_file, "FIELD_ENCRYPTION_KEY", new_passphrase)
 
     typer.echo(f"New encryption key written to {env_file}")
     typer.echo(f"Rotated {rotated_count} secret(s) across {len(apps)} app(s).")
@@ -85,7 +85,7 @@ def set_key(
     """Set the encryption key and encrypt all existing plaintext secrets."""
     from vibetuner.config import settings
 
-    if settings.oauth_encryption_key is not None:
+    if settings.field_encryption_key is not None:
         typer.echo(
             "Error: An encryption key is already configured. "
             "Use 'vibetuner crypto rotate-key' to change it.",
@@ -119,7 +119,7 @@ def rotate_key(
     """Rotate the encryption key: re-encrypt all secrets with a new key."""
     from vibetuner.config import settings
 
-    old_passphrase = settings.oauth_encryption_key
+    old_passphrase = settings.field_encryption_key
     if old_passphrase is None:
         typer.echo(
             "Error: No encryption key is configured. "

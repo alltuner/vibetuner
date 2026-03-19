@@ -284,11 +284,11 @@ vibetuner crypto set-key --key "my-secure-passphrase"
 This will:
 
 1. Encrypt all plaintext `client_secret` values in MongoDB
-2. Write `OAUTH_ENCRYPTION_KEY` to your `.env` file
+2. Write `FIELD_ENCRYPTION_KEY` to your `.env` file
 
 #### How It Works
 
-Once `OAUTH_ENCRYPTION_KEY` is set in your environment:
+Once `FIELD_ENCRYPTION_KEY` is set in your environment:
 
 - **On save**: `client_secret` is Fernet-encrypted before writing to MongoDB
 - **On load**: `client_secret` is transparently decrypted when reading from
@@ -312,7 +312,7 @@ and updates your `.env` file.
 
 #### Behavior Without a Key
 
-When `OAUTH_ENCRYPTION_KEY` is not set:
+When `FIELD_ENCRYPTION_KEY` is not set:
 
 - Secrets are stored and read as plaintext (no encryption)
 - Existing plaintext secrets continue to work normally
