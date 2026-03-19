@@ -254,6 +254,11 @@ Only apps whose `provider` references a registered provider with
 are excluded. No extra configuration is needed; creating an active
 `OAuthProviderAppModel` for a registered provider is enough.
 
+The provider must be registered via env-var credentials for its login
+route to exist. Database-backed apps for a provider that has no
+env-var registration will not appear on the login page because the
+route they would link to does not exist.
+
 #### App-to-Account Linking
 
 When a user authenticates through a database-backed OAuth app, the `app_id`
