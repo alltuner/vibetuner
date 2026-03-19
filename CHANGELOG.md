@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.16.0](https://github.com/alltuner/vibetuner/compare/v9.15.0...v9.16.0) (2026-03-19)
+
+
+### Features
+
+* add `now` and `today` as built-in Jinja template globals ([#1511](https://github.com/alltuner/vibetuner/issues/1511)) ([77251ac](https://github.com/alltuner/vibetuner/commit/77251acf632bc99072d5020499c07c6b6e30d290))
+
 ## [9.15.0](https://github.com/alltuner/vibetuner/compare/v9.14.0...v9.15.0) (2026-03-19)
 
 
