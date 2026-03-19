@@ -294,6 +294,30 @@ def register_config_value(
     )
 
 
+async def set_config(key: str, value: Any) -> None:
+    """Persist a config value, inferring metadata from the registry.
+
+    Args:
+        key: Config key (must have been registered via register_config_value)
+        value: Value to persist
+
+    Raises:
+        KeyError: If key is not registered
+    """
+    if key not in RuntimeConfig._config_registry:
+        raise KeyError(f"Config key '{key}' is not registered")
+
+    entry = RuntimeConfig._config_registry[key]
+    await RuntimeConfig.set_value(
+        key=key,
+        value=value,
+        value_type=entry["value_type"],
+        description=entry["description"],
+        category=entry["category"],
+        is_secret=entry["is_secret"],
+    )
+
+
 async def get_config(key: str, default: Any = None) -> Any:
     """Convenience function to get a config value.
 
