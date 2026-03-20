@@ -60,20 +60,44 @@ app.mount("/static/favicons", StaticFiles(directory=paths.favicons), name="favic
 app.mount("/static/fonts", StaticFiles(directory=paths.fonts), name="fonts")
 
 
-@app.get("/static/v{v_hash}/css/{subpath:path}", response_class=RedirectResponse)
-@app.get("/static/css/{subpath:path}", response_class=RedirectResponse)
+@app.get(
+    "/static/v{v_hash}/css/{subpath:path}",
+    response_class=RedirectResponse,
+    include_in_schema=False,
+)
+@app.get(
+    "/static/css/{subpath:path}",
+    response_class=RedirectResponse,
+    include_in_schema=False,
+)
 def css_redirect(request: Request, subpath: str):
     return request.url_for("css", path=subpath).path
 
 
-@app.get("/static/v{v_hash}/img/{subpath:path}", response_class=RedirectResponse)
-@app.get("/static/img/{subpath:path}", response_class=RedirectResponse)
+@app.get(
+    "/static/v{v_hash}/img/{subpath:path}",
+    response_class=RedirectResponse,
+    include_in_schema=False,
+)
+@app.get(
+    "/static/img/{subpath:path}",
+    response_class=RedirectResponse,
+    include_in_schema=False,
+)
 def img_redirect(request: Request, subpath: str):
     return request.url_for("img", path=subpath).path
 
 
-@app.get("/static/v{v_hash}/js/{subpath:path}", response_class=RedirectResponse)
-@app.get("/static/js/{subpath:path}", response_class=RedirectResponse)
+@app.get(
+    "/static/v{v_hash}/js/{subpath:path}",
+    response_class=RedirectResponse,
+    include_in_schema=False,
+)
+@app.get(
+    "/static/js/{subpath:path}",
+    response_class=RedirectResponse,
+    include_in_schema=False,
+)
 def js_redirect(request: Request, subpath: str):
     return request.url_for("js", path=subpath).path
 
@@ -93,26 +117,31 @@ auto_register_providers(_app_config.oauth_providers, _app_config.custom_oauth_pr
 # Register OAuth routes on auth.router (must happen before include_router)
 register_oauth_routes()
 
-# Core routes
-app.include_router(meta.router)
-app.include_router(auth.router)
-app.include_router(user.router)
-app.include_router(language.router)
+# Core routes (hidden from OpenAPI schema)
+app.include_router(meta.router, include_in_schema=False)
+app.include_router(auth.router, include_in_schema=False)
+app.include_router(user.router, include_in_schema=False)
+app.include_router(language.router, include_in_schema=False)
 
-# User routes from tune.py
+# User frontend routes from tune.py (hidden from OpenAPI schema)
 for router in _app_config.routes:
-    app.include_router(router)
+    app.include_router(router, include_in_schema=False)
     logger.debug(f"Registered user router: {router}")
 
+# User API routes from tune.py (visible in OpenAPI schema)
+for router in _app_config.api_routes:
+    app.include_router(router)
+    logger.debug(f"Registered user API router: {router}")
 
-@app.get("/", name="homepage", response_class=HTMLResponse)
+
+@app.get("/", name="homepage", response_class=HTMLResponse, include_in_schema=False)
 def default_index(request: Request) -> HTMLResponse:
     return render_template("index.html.jinja", request)
 
 
-# Debug and health routes (always last)
-app.include_router(debug.auth_router)
-app.include_router(debug.router)
+# Debug and health routes (always last, hidden from OpenAPI schema)
+app.include_router(debug.auth_router, include_in_schema=False)
+app.include_router(debug.router, include_in_schema=False)
 
 # Mount Streaq task queue UI at /debug/tasks when workers are configured
 if settings.workers_available:
@@ -124,9 +153,10 @@ if settings.workers_available:
             prefix="/debug/tasks",
             dependencies=[Depends(debug.check_debug_access)],
             tags=["debug"],
+            include_in_schema=False,
         )
         logger.debug("Streaq task queue UI mounted at /debug/tasks")
     except ImportError:
         pass
 
-app.include_router(health.router)
+app.include_router(health.router, include_in_schema=False)

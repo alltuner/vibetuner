@@ -137,6 +137,7 @@ class TestVibetunerApp:
 
         assert app.models == []
         assert app.routes == []
+        assert app.api_routes == []
         assert app.middleware == []
         assert app.template_filters == {}
         assert app.frontend_lifespan is None

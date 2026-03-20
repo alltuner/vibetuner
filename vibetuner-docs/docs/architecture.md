@@ -194,11 +194,11 @@ Background job infrastructure built on Streaq and Redis:
 
 ### FastAPI Application
 
-The vibetuner framework handles application initialization automatically. Routes are
-**auto-discovered** from `src/app/frontend/routes/`:
+The vibetuner framework handles application initialization automatically. Define routes
+in `src/app/frontend/routes/` and register them in `tune.py`:
 
 ```python
-# src/app/frontend/routes/blog.py - automatically registered
+# src/app/frontend/routes/blog.py
 from fastapi import APIRouter
 
 router = APIRouter(prefix="/blog", tags=["blog"])
@@ -208,7 +208,9 @@ async def list_posts():
     return {"posts": []}
 ```
 
-The framework finds any `router` variable and registers it. No manual `include_router()` needed.
+Register in `tune.py` using `routes` for frontend/HTMX routes (hidden from
+OpenAPI docs) or `api_routes` for JSON API endpoints (visible in `/docs`).
+Framework routes (auth, debug, health, etc.) are always hidden from the schema.
 
 ### Database Layer
 

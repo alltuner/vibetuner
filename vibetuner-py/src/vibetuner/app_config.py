@@ -17,11 +17,12 @@ class VibetunerApp(BaseModel):
 
         from vibetuner import VibetunerApp
 
-        from myapp.frontend.routes import app_router
+        from myapp.frontend.routes import app_router, api_router
         from myapp.models import User, Post
 
         app = VibetunerApp(
-            routes=[app_router],
+            routes=[app_router],        # frontend/HTMX (hidden from /docs)
+            api_routes=[api_router],    # JSON API (visible in /docs)
             models=[User, Post],
         )
 
@@ -38,6 +39,7 @@ class VibetunerApp(BaseModel):
 
     # Frontend
     routes: list[APIRouter] = []
+    api_routes: list[APIRouter] = []
     middleware: list[Middleware] = []
     template_filters: dict[str, Callable[..., Any]] = {}
     frontend_lifespan: Callable[..., Any] | None = None

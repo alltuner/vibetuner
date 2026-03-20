@@ -967,14 +967,15 @@ from app.models.post import Post
 post_routes = create_crud_routes(Post, prefix="/posts", tags=["posts"])
 ```
 
-Include the router in your app (via `tune.py` routes or `app.include_router()`):
+Include the router in your app via `tune.py`. CRUD routes are JSON API
+endpoints, so use `api_routes` to keep them visible in `/docs`:
 
 ```python
 # src/app/tune.py
 from vibetuner import VibetunerApp
 from app.routes.posts import post_routes
 
-app = VibetunerApp(routes=[post_routes])
+app = VibetunerApp(api_routes=[post_routes])
 ```
 
 This generates five endpoints:
