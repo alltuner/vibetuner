@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.17.0](https://github.com/alltuner/vibetuner/compare/v9.16.0...v9.17.0) (2026-03-20)
+
+
+### Features
+
+* ergonomic way to include/exclude routes from OpenAPI schema ([#1517](https://github.com/alltuner/vibetuner/issues/1517)) ([fffd935](https://github.com/alltuner/vibetuner/commit/fffd9358560c3aade4df2c4a8e40f3f5c982468d))
+* expose __version__ attribute on the vibetuner package ([#1514](https://github.com/alltuner/vibetuner/issues/1514)) ([6e0227f](https://github.com/alltuner/vibetuner/commit/6e0227fcc688638dc3b2d6cbc2229a0e1509ae05))
+
 ## [9.16.0](https://github.com/alltuner/vibetuner/compare/v9.15.0...v9.16.0) (2026-03-19)
 
 
