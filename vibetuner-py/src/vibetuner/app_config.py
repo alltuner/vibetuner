@@ -38,6 +38,7 @@ class VibetunerApp(BaseModel):
 
     # Frontend
     routes: list[APIRouter] = []
+    api_routes: list[APIRouter] = []
     middleware: list[Middleware] = []
     template_filters: dict[str, Callable[..., Any]] = {}
     frontend_lifespan: Callable[..., Any] | None = None
