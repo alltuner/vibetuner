@@ -53,7 +53,8 @@ from myapp.frontend.routes.home import router as home_router
 from myapp.frontend.routes.api import router as api_router
 
 app = VibetunerApp(
-    routes=[home_router, api_router],
+    routes=[home_router],          # frontend/HTMX (hidden from /docs)
+    api_routes=[api_router],       # JSON API (visible in /docs)
 )
 ```
 

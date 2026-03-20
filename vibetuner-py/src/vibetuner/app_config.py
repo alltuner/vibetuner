@@ -17,11 +17,12 @@ class VibetunerApp(BaseModel):
 
         from vibetuner import VibetunerApp
 
-        from myapp.frontend.routes import app_router
+        from myapp.frontend.routes import app_router, api_router
         from myapp.models import User, Post
 
         app = VibetunerApp(
-            routes=[app_router],
+            routes=[app_router],        # frontend/HTMX (hidden from /docs)
+            api_routes=[api_router],    # JSON API (visible in /docs)
             models=[User, Post],
         )
 
