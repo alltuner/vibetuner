@@ -39,7 +39,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends git
 
 # Install UV package manager from official image
-COPY --from=ghcr.io/astral-sh/uv:0.10 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.11 /uv /uvx /bin/
 
 # Configure UV: pre-compile bytecode at build time for faster worker cold starts
 ENV UV_COMPILE_BYTECODE=1 \

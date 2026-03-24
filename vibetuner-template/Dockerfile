@@ -8,7 +8,7 @@ ARG PYTHON_VERSION=3.14
 FROM python:${PYTHON_VERSION}-slim AS python-base
 
 # Install UV package manager from official image
-COPY --from=ghcr.io/astral-sh/uv:0.10 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.11 /uv /uvx /bin/
 
 # Configure UV: pre-compile bytecode at build time for faster worker cold starts
 # ENVIRONMENT=prod ensures vibetuner skips dev-only git branch detection (no git binary needed)
