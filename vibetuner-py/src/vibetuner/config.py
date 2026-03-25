@@ -26,7 +26,23 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from vibetuner.logging import logger
 
-from .paths import config_vars as config_vars_path
+from .paths import PathSettings, config_vars as config_vars_path
+
+
+def _resolve_env_files() -> tuple[str, ...]:
+    """Resolve .env file paths relative to the project root.
+
+    Walks up from CWD to find the project root (like git finds .git/),
+    then returns absolute paths to .env and .env.local there.
+    Falls back to relative paths if no project root is found.
+    """
+    root = PathSettings._find_project_root()
+    if root is None:
+        return (".env", ".env.local")
+    return (str(root / ".env"), str(root / ".env.local"))
+
+
+_ENV_FILES = _resolve_env_files()
 
 
 class SQLiteDsn(AnyUrl):
@@ -72,7 +88,7 @@ class SecurityHeadersSettings(BaseSettings):
         case_sensitive=False,
         extra="ignore",
         env_prefix="CSP_",
-        env_file=(".env", ".env.local"),
+        env_file=_ENV_FILES,
     )
 
 
@@ -94,7 +110,7 @@ class RateLimitSettings(BaseSettings):
         case_sensitive=False,
         extra="ignore",
         env_prefix="RATE_LIMIT_",
-        env_file=(".env", ".env.local"),
+        env_file=_ENV_FILES,
     )
 
 
@@ -119,7 +135,7 @@ class LocaleDetectionSettings(BaseSettings):
         case_sensitive=False,
         extra="ignore",
         env_prefix="LOCALE_",
-        env_file=(".env", ".env.local"),
+        env_file=_ENV_FILES,
     )
 
 
@@ -139,7 +155,7 @@ class MailSettings(BaseSettings):
         case_sensitive=False,
         extra="ignore",
         env_prefix="MAIL_",
-        env_file=(".env", ".env.local"),
+        env_file=_ENV_FILES,
     )
 
 
@@ -355,7 +371,7 @@ class CoreConfiguration(BaseSettings):
         return f"{self.project.project_slug}:"
 
     model_config = SettingsConfigDict(
-        case_sensitive=False, extra="ignore", env_file=(".env", ".env.local")
+        case_sensitive=False, extra="ignore", env_file=_ENV_FILES
     )
 
 
