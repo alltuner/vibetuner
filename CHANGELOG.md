@@ -1,5 +1,39 @@
 # Changelog
 
+## [9.17.0](https://github.com/alltuner/vibetuner/compare/v9.16.0...v9.17.0) (2026-04-01)
+
+
+### Features
+
+* ergonomic way to include/exclude routes from OpenAPI schema ([#1517](https://github.com/alltuner/vibetuner/issues/1517)) ([fffd935](https://github.com/alltuner/vibetuner/commit/fffd9358560c3aade4df2c4a8e40f3f5c982468d))
+* expose __version__ attribute on the vibetuner package ([#1514](https://github.com/alltuner/vibetuner/issues/1514)) ([6e0227f](https://github.com/alltuner/vibetuner/commit/6e0227fcc688638dc3b2d6cbc2229a0e1509ae05))
+
+
+### Bug Fixes
+
+* resolve .env relative to project root, not CWD ([#1526](https://github.com/alltuner/vibetuner/issues/1526)) ([2efea2b](https://github.com/alltuner/vibetuner/commit/2efea2b6138f6d90246674ed2aa4e6669846b651))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump actions/configure-pages from 5 to 6 ([#1537](https://github.com/alltuner/vibetuner/issues/1537)) ([79fc6ff](https://github.com/alltuner/vibetuner/commit/79fc6ffa5c2b0cc2fa7f532ace1143070cef23b0))
+* **deps:** bump actions/deploy-pages from 4 to 5 ([#1536](https://github.com/alltuner/vibetuner/issues/1536)) ([a12b595](https://github.com/alltuner/vibetuner/commit/a12b59515fc2b8b04cb29f88bfcd99d3d2db98bf))
+* **deps:** bump cryptography from 46.0.5 to 46.0.6 ([#1531](https://github.com/alltuner/vibetuner/issues/1531)) ([a870761](https://github.com/alltuner/vibetuner/commit/a8707613ade7800a136f78d8cdabdf2d6879b856))
+* **deps:** bump cryptography from 46.0.5 to 46.0.6 in /vibetuner-py ([#1532](https://github.com/alltuner/vibetuner/issues/1532)) ([ebe2640](https://github.com/alltuner/vibetuner/commit/ebe2640a124f57539cd0c870e8b501bc0c1245e6))
+* **deps:** bump pygments from 2.19.2 to 2.20.0 ([#1534](https://github.com/alltuner/vibetuner/issues/1534)) ([3faddc3](https://github.com/alltuner/vibetuner/commit/3faddc3b0601b1a4b97c665c3447bfbed41effd0))
+* **deps:** bump pygments from 2.19.2 to 2.20.0 in /vibetuner-py ([#1535](https://github.com/alltuner/vibetuner/issues/1535)) ([df049e5](https://github.com/alltuner/vibetuner/commit/df049e579ac4c433137d35f9a820f09307f0b935))
+* **deps:** bump requests from 2.32.5 to 2.33.0 ([#1528](https://github.com/alltuner/vibetuner/issues/1528)) ([ee660ca](https://github.com/alltuner/vibetuner/commit/ee660ca9aed1e13a86b20c9d5df0892c3415f0b5))
+* **deps:** bump requests from 2.32.5 to 2.33.0 in /vibetuner-py ([#1529](https://github.com/alltuner/vibetuner/issues/1529)) ([b0b78de](https://github.com/alltuner/vibetuner/commit/b0b78de8492a7b50afdac81fe8501dc57321aa2c))
+* **deps:** bump resend from 2.25.0 to 2.26.0 in /vibetuner-py ([#1520](https://github.com/alltuner/vibetuner/issues/1520)) ([30f8260](https://github.com/alltuner/vibetuner/commit/30f8260552824e7006e76c4eb640fee32fc6e78c))
+* **deps:** bump ruff from 0.15.6 to 0.15.7 in /vibetuner-py ([#1522](https://github.com/alltuner/vibetuner/issues/1522)) ([ad2bb09](https://github.com/alltuner/vibetuner/commit/ad2bb0914915162507073d8f0a804984d26915cf))
+* **deps:** bump rumdl from 0.1.55 to 0.1.59 in /vibetuner-py ([#1521](https://github.com/alltuner/vibetuner/issues/1521)) ([4c0a926](https://github.com/alltuner/vibetuner/commit/4c0a926ae1cd9d2fc94be02d87db3ac900e37a01))
+* **deps:** bump ty from 0.0.23 to 0.0.24 in /vibetuner-py ([#1523](https://github.com/alltuner/vibetuner/issues/1523)) ([a445a68](https://github.com/alltuner/vibetuner/commit/a445a6896620eeff62557d58523975add72f1573))
+* **deps:** update actions/deploy-pages action to v5 ([#1527](https://github.com/alltuner/vibetuner/issues/1527)) ([855967b](https://github.com/alltuner/vibetuner/commit/855967b84c46ad249fe2a4d35f7c66f19e0f697d))
+* **deps:** update dependency cryptography to v46.0.6 [security] ([#1533](https://github.com/alltuner/vibetuner/issues/1533)) ([f7cef4b](https://github.com/alltuner/vibetuner/commit/f7cef4b5eb3c6090b9ec547197c42e373cde2f80))
+* **deps:** update dependency uv_build to &gt;=0.11,&lt;0.12 ([#1518](https://github.com/alltuner/vibetuner/issues/1518)) ([51528e9](https://github.com/alltuner/vibetuner/commit/51528e979d8f9c2fa685a8b0f637c50f5791032e))
+* **deps:** update ghcr.io/astral-sh/uv docker tag to v0.11 ([#1519](https://github.com/alltuner/vibetuner/issues/1519)) ([26c03f9](https://github.com/alltuner/vibetuner/commit/26c03f990e86d6b29bec45ee3092bb93bac0644c))
+* update dependencies and pre-commit hooks ([#1538](https://github.com/alltuner/vibetuner/issues/1538)) ([fbfe5c1](https://github.com/alltuner/vibetuner/commit/fbfe5c1204a15863480b3a14b9c341e89f16a63e))
+
 ## [9.16.0](https://github.com/alltuner/vibetuner/compare/v9.15.0...v9.16.0) (2026-03-19)
 
 
