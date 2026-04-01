@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.17.1](https://github.com/alltuner/vibetuner/compare/v9.17.0...v9.17.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* allow CLI to run outside a project directory ([#1539](https://github.com/alltuner/vibetuner/issues/1539)) ([06900b3](https://github.com/alltuner/vibetuner/commit/06900b3f7df663c40c6177f4ea0666f419b9a3f2))
+
 ## [9.17.0](https://github.com/alltuner/vibetuner/compare/v9.16.0...v9.17.0) (2026-04-01)
 
 
