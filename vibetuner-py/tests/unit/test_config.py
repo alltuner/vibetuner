@@ -160,6 +160,19 @@ class TestLocaleDetectionSettings:
         assert settings.accept_language is False
 
 
+class TestLoadProjectConfig:
+    """Test _load_project_config behavior outside a project directory."""
+
+    def test_returns_defaults_when_no_project_root(self):
+        """Config loading returns defaults when config_vars_path is None."""
+        with patch("vibetuner.config.config_vars_path", None):
+            from vibetuner.config import _load_project_config
+
+            result = _load_project_config()
+            assert isinstance(result, ProjectConfiguration)
+            assert result.project_slug == "default_project"
+
+
 class TestCoreConfigurationLocaleDetection:
     """Test locale_detection field in CoreConfiguration."""
 

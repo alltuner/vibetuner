@@ -160,12 +160,7 @@ class MailSettings(BaseSettings):
 
 
 def _load_project_config() -> "ProjectConfiguration":
-    if config_vars_path is None:
-        raise RuntimeError(
-            "Project root not detected. Cannot load project configuration. "
-            "Ensure you're running from within a project directory with .copier-answers.yml"
-        )
-    if not config_vars_path.exists():
+    if config_vars_path is None or not config_vars_path.exists():
         return ProjectConfiguration()
 
     yaml_data = yaml.safe_load(config_vars_path.read_text(encoding="utf-8"))
