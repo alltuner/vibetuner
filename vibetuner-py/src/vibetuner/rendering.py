@@ -739,6 +739,14 @@ def _datetime_context() -> dict[str, Any]:
 
 register_context_provider(_datetime_context)
 
+
+def _csp_nonce_context(request: Request) -> dict[str, Any]:
+    """Expose the CSP nonce so templates can use it for ``<style>`` tags or other elements."""
+    return {"csp_nonce": getattr(request.state, "csp_nonce", "")}
+
+
+register_context_provider(_csp_nonce_context)
+
 # Global Vars
 jinja_env.globals.update({"DEBUG": data_ctx.DEBUG})
 

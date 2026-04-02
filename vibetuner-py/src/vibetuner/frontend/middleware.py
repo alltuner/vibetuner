@@ -1,3 +1,4 @@
+import logging
 import re
 import secrets
 
@@ -106,7 +107,10 @@ class HtmxMiddleware:
         await self.app(scope, receive, send)
 
 
+_logger = logging.getLogger("vibetuner.security")
+
 _SCRIPT_WITHOUT_NONCE_RE = re.compile(rb"<script(?![^>]*\snonce=)", re.IGNORECASE)
+_EMPTY_NONCE_RE = re.compile(rb'<script[^>]*\snonce=""\s*', re.IGNORECASE)
 
 
 class SecurityHeadersMiddleware:
@@ -177,6 +181,12 @@ class SecurityHeadersMiddleware:
 
     @staticmethod
     def _inject_nonces(body: bytes, nonce: str) -> bytes:
+        if _EMPTY_NONCE_RE.search(body):
+            _logger.warning(
+                "Found <script> tag with empty nonce attribute. "
+                "CSP nonces are auto-injected by SecurityHeadersMiddleware; "
+                "do not add nonce= attributes manually in templates."
+            )
         replacement = f'<script nonce="{nonce}"'.encode()
         return _SCRIPT_WITHOUT_NONCE_RE.sub(replacement, body)
 
