@@ -1,4 +1,3 @@
-import logging
 import re
 import secrets
 
@@ -24,6 +23,7 @@ from starlette_htmx.middleware import HtmxDetails
 
 from vibetuner.config import settings
 from vibetuner.context import ctx
+from vibetuner.logging import logger
 from vibetuner.paths import locales as locales_path
 
 from .oauth import WebUser
@@ -107,8 +107,6 @@ class HtmxMiddleware:
         await self.app(scope, receive, send)
 
 
-_logger = logging.getLogger("vibetuner.security")
-
 _SCRIPT_WITHOUT_NONCE_RE = re.compile(rb"<script(?![^>]*\snonce=)", re.IGNORECASE)
 _EMPTY_NONCE_RE = re.compile(rb'<script[^>]*\snonce=""\s*', re.IGNORECASE)
 
@@ -182,7 +180,7 @@ class SecurityHeadersMiddleware:
     @staticmethod
     def _inject_nonces(body: bytes, nonce: str) -> bytes:
         if _EMPTY_NONCE_RE.search(body):
-            _logger.warning(
+            logger.warning(
                 "Found <script> tag with empty nonce attribute. "
                 "CSP nonces are auto-injected by SecurityHeadersMiddleware; "
                 "do not add nonce= attributes manually in templates."

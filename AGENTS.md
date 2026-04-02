@@ -180,6 +180,22 @@ doc = await MyDocument.get(PydanticObjectId(some_id))
 `PydanticObjectId` is still useful as a FastAPI path parameter type annotation (for request
 validation) and in explicit query filters, but `.get()` handles the conversion internally.
 
+## Logging
+
+All code in `vibetuner-py/src/vibetuner/` must use the project's Loguru-based logger:
+
+```python
+from vibetuner.logging import logger
+```
+
+Do **not** use `import logging` or `logging.getLogger(...)` directly. The only exception is
+`vibetuner/logging.py` itself, which defines the logging facility and necessarily imports the
+stdlib `logging` module.
+
+The `InterceptHandler` in `vibetuner/logging.py` routes stdlib logging through Loguru, so
+third-party libraries still work. But framework code should always use the Loguru `logger`
+directly for consistent formatting, request-ID injection, and log-level control.
+
 ## Markdown Line Length
 
 This project enforces a **120 character line limit** for markdown files using `rumdl`.
