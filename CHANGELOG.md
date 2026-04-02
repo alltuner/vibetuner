@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.17.2](https://github.com/alltuner/vibetuner/compare/v9.17.1...v9.17.2) (2026-04-02)
+
+
+### Code Refactoring
+
+* remove alltuner-specific infrastructure from compose.prod.yml ([#1541](https://github.com/alltuner/vibetuner/issues/1541)) ([d28fcb9](https://github.com/alltuner/vibetuner/commit/d28fcb90547fbba32bbe97ca55b550653b2ae3ec))
+
 ## [9.17.1](https://github.com/alltuner/vibetuner/compare/v9.17.0...v9.17.1) (2026-04-01)
 
 
