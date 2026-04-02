@@ -34,7 +34,7 @@ _project-vars:
     print(f"export COMPOSE_PROJECT_NAME={answers.get('project_slug', 'scaffolding').strip()}")
     print(f"export FQDN={answers.get('fqdn', '').strip()}")
     print(f"export ENABLE_WATCHTOWER={str(answers.get('enable_watchtower', False)).lower()}")
-    registry = os.environ.get('DOCKER_REGISTRY') or answers.get('docker_registry')
+    registry = os.environ.get('DOCKER_REGISTRY')
     if registry:
         print(f"export DOCKER_REGISTRY={registry.strip()}")
     PYEOF
