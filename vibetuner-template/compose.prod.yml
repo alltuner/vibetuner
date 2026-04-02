@@ -6,7 +6,6 @@ services:
       - .env
     command: ["prod", "worker"]
     labels:
-      managed_by: ${COMPOSE_PROJECT_NAME}
       com.centurylinklabs.watchtower.enable: "${ENABLE_WATCHTOWER:-false}"
   frontend:
     build:
@@ -42,5 +41,4 @@ services:
     env_file:
       - .env
     labels:
-      managed_by: ${COMPOSE_PROJECT_NAME}
       com.centurylinklabs.watchtower.enable: "${ENABLE_WATCHTOWER:-false}"
