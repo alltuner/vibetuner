@@ -45,7 +45,7 @@ project_description:
 
 fqdn:
   type: str
-  help: What's the fqdn of your website? (leaving empty disables all deployment and caddy stuff)
+  help: What's the fqdn of your website? (leaving empty disables deployment configuration)
   placeholder: subdomain.example.com
   default: ""
 
@@ -69,6 +69,13 @@ supported_languages:
   help: List of 2-letter lang codes of additional supported languages
   multiline: true
   default: []
+
+docker_registry:
+  type: str
+  help: Docker registry hostname for pushing/pulling images (e.g., registry.example.com:5000)
+  placeholder: registry.example.com:5000
+  default: "localhost:5050"
+  when: "{{ fqdn }}"
 
 enable_watchtower:
   type: bool
