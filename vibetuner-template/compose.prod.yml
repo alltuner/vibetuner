@@ -1,6 +1,6 @@
 services:
   worker:
-    image: ${DOCKER_REGISTRY}/${COMPOSE_PROJECT_NAME}:${VERSION:-latest}
+    image: ${DOCKER_REGISTRY:-localhost:5050}/${COMPOSE_PROJECT_NAME}:${VERSION:-latest}
     restart: unless-stopped
     env_file:
       - .env
@@ -20,9 +20,9 @@ services:
           - linux/arm64
         push: true
         tags:
-          - ${DOCKER_REGISTRY}/${COMPOSE_PROJECT_NAME}:${VERSION:-0.0.0}
-          - ${DOCKER_REGISTRY}/${COMPOSE_PROJECT_NAME}:latest
-    image: ${DOCKER_REGISTRY}/${COMPOSE_PROJECT_NAME}:${VERSION:-latest}
+          - ${DOCKER_REGISTRY:-localhost:5050}/${COMPOSE_PROJECT_NAME}:${VERSION:-0.0.0}
+          - ${DOCKER_REGISTRY:-localhost:5050}/${COMPOSE_PROJECT_NAME}:latest
+    image: ${DOCKER_REGISTRY:-localhost:5050}/${COMPOSE_PROJECT_NAME}:${VERSION:-latest}
     depends_on:
       - worker
     healthcheck:
