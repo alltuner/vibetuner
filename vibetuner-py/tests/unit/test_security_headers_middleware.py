@@ -2,6 +2,7 @@
 # ABOUTME: Verifies nonce generation, CSP directives, report-only mode, and bypass paths
 # ruff: noqa: S101
 
+import logging
 import re
 import secrets
 from dataclasses import dataclass, field
@@ -32,6 +33,9 @@ class _Settings:
 
 
 _SCRIPT_WITHOUT_NONCE_RE = re.compile(rb"<script(?![^>]*\snonce=)", re.IGNORECASE)
+_EMPTY_NONCE_RE = re.compile(rb'<script[^>]*\snonce=""\s*', re.IGNORECASE)
+
+_logger = logging.getLogger("vibetuner.security")
 
 
 class SecurityHeadersMiddleware:
@@ -101,6 +105,12 @@ class SecurityHeadersMiddleware:
 
     @staticmethod
     def _inject_nonces(body: bytes, nonce: str) -> bytes:
+        if _EMPTY_NONCE_RE.search(body):
+            _logger.warning(
+                "Found <script> tag with empty nonce attribute. "
+                "CSP nonces are auto-injected by SecurityHeadersMiddleware; "
+                "do not add nonce= attributes manually in templates."
+            )
         replacement = f'<script nonce="{nonce}"'.encode()
         return _SCRIPT_WITHOUT_NONCE_RE.sub(replacement, body)
 
@@ -389,3 +399,23 @@ class TestCspNonceAutoInjection:
         client = TestClient(app)
         resp = client.get("/")
         assert int(resp.headers["content-length"]) == len(resp.content)
+
+    def test_warns_on_empty_nonce_attribute(self, caplog):
+        """A <script nonce=""> triggers a warning about manual nonce usage."""
+        app = _make_app(
+            html_body='<html><script nonce="" src="app.js"></script></html>'
+        )
+        client = TestClient(app)
+        with caplog.at_level(logging.WARNING, logger="vibetuner.security"):
+            client.get("/")
+        assert any("empty nonce" in r.message for r in caplog.records)
+
+    def test_no_warning_for_valid_nonce(self, caplog):
+        """A <script nonce="real"> does not trigger a warning."""
+        app = _make_app(
+            html_body='<html><script nonce="real" src="app.js"></script></html>'
+        )
+        client = TestClient(app)
+        with caplog.at_level(logging.WARNING, logger="vibetuner.security"):
+            client.get("/")
+        assert not any("empty nonce" in r.message for r in caplog.records)

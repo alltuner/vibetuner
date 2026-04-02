@@ -54,9 +54,21 @@ Request/response middleware:
 
 - Rate limiting middleware (slowapi, ASGI-native, first in stack)
 - HTMX middleware (request/response helpers)
+- Security headers middleware (CSP with nonce, X-Frame-Options, etc.)
 - Session middleware (secure cookie-based sessions)
 - i18n middleware (internationalization)
 - Context middleware (request context variables)
+
+#### CSP Nonce Auto-Injection
+
+`SecurityHeadersMiddleware` generates a unique CSP nonce per request and automatically injects it
+into all `<script>` tags in HTML responses. **Do NOT manually add `nonce=` attributes to `<script>`
+tags** in templates. The middleware handles this. Adding `nonce="{{ csp_nonce }}"` to a script tag
+causes the middleware to skip injection (it sees `nonce=` already present), resulting in an empty
+nonce that silently breaks scripts in production while appearing to work in dev mode.
+
+For `<style>` tags or other elements that need the nonce, use `{{ csp_nonce }}` (available in all
+templates via context provider). Configure extra CSP sources via `CSP_*` env vars.
 
 ### oauth.py
 
