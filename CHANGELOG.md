@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.17.4](https://github.com/alltuner/vibetuner/compare/v9.17.3...v9.17.4) (2026-04-02)
+
+
+### Bug Fixes
+
+* document CSP nonce auto-injection and expose csp_nonce template variable ([#1547](https://github.com/alltuner/vibetuner/issues/1547)) ([207d0a1](https://github.com/alltuner/vibetuner/commit/207d0a16835fce2ded3a8430182b0005a1a62efb))
+
+
+### Code Refactoring
+
+* use vibetuner.logging instead of stdlib logging in middleware ([#1549](https://github.com/alltuner/vibetuner/issues/1549)) ([81f4216](https://github.com/alltuner/vibetuner/commit/81f4216aac42ad3f638073e70345c19a29636fc5))
+
 ## [9.17.3](https://github.com/alltuner/vibetuner/compare/v9.17.2...v9.17.3) (2026-04-02)
 
 
