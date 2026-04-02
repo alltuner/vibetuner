@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.17.3](https://github.com/alltuner/vibetuner/compare/v9.17.2...v9.17.3) (2026-04-02)
+
+
+### Bug Fixes
+
+* add localhost:5050 default for DOCKER_REGISTRY and drop copier question ([#1545](https://github.com/alltuner/vibetuner/issues/1545)) ([231ef01](https://github.com/alltuner/vibetuner/commit/231ef01f3e78a1cbc3bd4648324bf8337daa2255))
+
+
+### Code Refactoring
+
+* remove managed_by label from compose.prod.yml ([#1543](https://github.com/alltuner/vibetuner/issues/1543)) ([8fb9658](https://github.com/alltuner/vibetuner/commit/8fb9658850ddc620501f40fe7877dbef62e84cc8))
+
 ## [9.17.2](https://github.com/alltuner/vibetuner/compare/v9.17.1...v9.17.2) (2026-04-02)
 
 
