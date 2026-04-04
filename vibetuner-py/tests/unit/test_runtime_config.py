@@ -1,6 +1,6 @@
 # ABOUTME: Tests for the RuntimeConfig service.
 # ABOUTME: Validates layered config resolution, caching, and MongoDB persistence.
-# ruff: noqa: S101
+# ruff: noqa: S101, S105
 """Tests for the RuntimeConfig service."""
 
 from datetime import timedelta
@@ -383,6 +383,73 @@ class TestMongoDBIntegration:
 
         # Cache should still be updated
         assert RuntimeConfig._config_cache["test.key"] == "test_value"
+
+
+    @pytest.mark.asyncio
+    async def test_set_value_stores_secret_in_secret_value(self):
+        """set_value passes secret_value (not value) when is_secret=True."""
+        from vibetuner.runtime_config import RuntimeConfig
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        mock_model = MagicMock()
+        mock_instance = MagicMock()
+        mock_model.find_one = AsyncMock(return_value=None)
+        mock_instance.insert = AsyncMock()
+
+        with (
+            patch("vibetuner.runtime_config.settings") as mock_settings,
+            patch("vibetuner.models.config_entry.ConfigEntryModel", mock_model),
+        ):
+            mock_settings.mongodb_url = "mongodb://localhost:27017"
+            mock_model.return_value = mock_instance
+
+            await RuntimeConfig.set_value(
+                key="api.secret",
+                value="my-api-key",
+                value_type="str",
+                is_secret=True,
+            )
+
+        # Model should be constructed with value=None and secret_value set
+        call_kwargs = mock_model.call_args[1]
+        assert call_kwargs["value"] is None
+        assert call_kwargs["secret_value"] == '"my-api-key"'
+        assert call_kwargs["is_secret"] is True
+
+    @pytest.mark.asyncio
+    async def test_set_value_non_secret_has_no_secret_value(self):
+        """set_value passes value (not secret_value) when is_secret=False."""
+        from vibetuner.runtime_config import RuntimeConfig
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        mock_model = MagicMock()
+        mock_instance = MagicMock()
+        mock_model.find_one = AsyncMock(return_value=None)
+        mock_instance.insert = AsyncMock()
+
+        with (
+            patch("vibetuner.runtime_config.settings") as mock_settings,
+            patch("vibetuner.models.config_entry.ConfigEntryModel", mock_model),
+        ):
+            mock_settings.mongodb_url = "mongodb://localhost:27017"
+            mock_model.return_value = mock_instance
+
+            await RuntimeConfig.set_value(
+                key="app.name",
+                value="my-app",
+                value_type="str",
+                is_secret=False,
+            )
+
+        call_kwargs = mock_model.call_args[1]
+        assert call_kwargs["value"] == "my-app"
+        assert call_kwargs["secret_value"] is None
 
 
 class TestValueTypeValidation:

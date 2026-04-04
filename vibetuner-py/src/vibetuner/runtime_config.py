@@ -13,6 +13,11 @@ from vibetuner.logging import logger
 from vibetuner.time import now
 
 
+def _to_secret_value(value: Any) -> str:
+    """JSON-serialize a config value for encrypted storage."""
+    return json.dumps(value)
+
+
 ConfigValueType = Literal["str", "int", "float", "bool", "json"]
 
 # TTL for config cache in seconds
@@ -87,7 +92,7 @@ class RuntimeConfig:
 
                 entries = await ConfigEntryModel.find_all().to_list()
                 for entry in entries:
-                    cls._config_cache[entry.key] = entry.value
+                    cls._config_cache[entry.key] = entry.effective_value
                 logger.debug(f"Config cache refreshed with {len(entries)} entries")
             except Exception as e:
                 logger.warning(f"Failed to refresh config cache from MongoDB: {e}")
@@ -158,8 +163,16 @@ class RuntimeConfig:
             # Try to find existing entry
             existing = await ConfigEntryModel.find_one(ConfigEntryModel.key == key)
 
+            if is_secret:
+                stored_value = None
+                stored_secret = _to_secret_value(validated_value)
+            else:
+                stored_value = validated_value
+                stored_secret = None
+
             if existing:
-                existing.value = validated_value
+                existing.value = stored_value
+                existing.secret_value = stored_secret
                 existing.value_type = value_type
                 if description is not None:
                     existing.description = description
@@ -170,7 +183,8 @@ class RuntimeConfig:
             else:
                 entry = ConfigEntryModel(
                     key=key,
-                    value=validated_value,
+                    value=stored_value,
+                    secret_value=stored_secret,
                     value_type=value_type,
                     description=description,
                     category=category,
@@ -283,7 +297,7 @@ def register_config_value(
         value_type: Type for validation ('str', 'int', 'float', 'bool', 'json')
         description: Human-readable description
         category: Category for grouping in debug UI
-        is_secret: If True, value is masked in debug UI and cannot be edited
+        is_secret: If True, value is encrypted at rest, masked in debug UI, and cannot be edited
     """
     RuntimeConfig._config_registry[key] = ConfigRegistryEntry(
         default=default,
