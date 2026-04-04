@@ -147,7 +147,7 @@ register_config_value(
     value_type: str,       # "str", "int", "float", "bool", "json"
     description: str = None,  # Human-readable description
     category: str = "general",  # Category for grouping in debug UI
-    is_secret: bool = False,    # Mask value in UI, prevent editing
+    is_secret: bool = False,    # Encrypt at rest, mask in UI, prevent editing
 )
 ```
 
@@ -353,9 +353,28 @@ Config values from MongoDB are cached for 60 seconds to reduce database load:
 
 Mark sensitive values with `is_secret=True`:
 
+- Values are **encrypted at rest** in MongoDB using Fernet (symmetric encryption)
 - Values are masked (`*****`) in the debug UI
 - Values cannot be edited via the debug UI
-- Values are still accessible programmatically
+- Values are still accessible programmatically (decrypted transparently on load)
+
+Encryption requires the `FIELD_ENCRYPTION_KEY` environment variable. When set, secret config
+values are stored in an encrypted field (`secret_value`) rather than the plaintext `value`
+field. This uses the same `EncryptedFieldsMixin` / `EncryptedStr` mechanism used by other
+models (e.g., OAuth client secrets). When the key is not set, secret values are stored as
+plaintext.
+
+```python
+# Register a secret config value (encrypted at rest when FIELD_ENCRYPTION_KEY is set)
+register_config_value(
+    key="integrations.api_key",
+    default="",
+    value_type="str",
+    category="integrations",
+    description="Third-party API key",
+    is_secret=True,
+)
+```
 
 ### Debug UI Access
 
@@ -380,7 +399,8 @@ The debug routes at `/debug/*` are protected:
 
 3. **Document everything** with clear descriptions so other developers understand each setting
 
-4. **Mark secrets appropriately** to prevent accidental exposure in debug UI
+4. **Mark secrets appropriately** with `is_secret=True` to encrypt at rest and prevent exposure
+   in debug UI
 
 5. **Use appropriate types** for proper validation and UI rendering
 
