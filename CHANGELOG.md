@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.18.0](https://github.com/alltuner/vibetuner/compare/v9.17.4...v9.18.0) (2026-04-04)
+
+
+### Features
+
+* encrypt is_secret config values at rest using EncryptedStr ([#1557](https://github.com/alltuner/vibetuner/issues/1557)) ([9ced851](https://github.com/alltuner/vibetuner/commit/9ced85126a5811cd6c8f682f9e595df86ec97fa2))
+
 ## [9.17.4](https://github.com/alltuner/vibetuner/compare/v9.17.3...v9.17.4) (2026-04-02)
 
 
