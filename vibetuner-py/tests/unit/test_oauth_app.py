@@ -407,19 +407,20 @@ class TestOAuthAppEncryption:
         )
         assert app.client_secret == "plain-secret"
 
-    def test_encrypted_without_key_raises_on_load(self, monkeypatch):
-        """Loading an encrypted value with no key raises ValueError."""
+    def test_encrypted_without_key_passes_through_on_load(self, monkeypatch, log_sink):
+        """Loading an encrypted value with no key passes through with a warning."""
         from vibetuner.crypto import encrypt_value
 
         monkeypatch.setattr(settings, "field_encryption_key", None)
         ciphertext = encrypt_value("my-secret", self.PASSPHRASE)
-        with pytest.raises(ValueError, match="encrypted.*no.*key"):
-            OAuthProviderAppModel(
-                provider="google",
-                name="Test",
-                client_id="id",
-                client_secret=ciphertext,
-            )
+        app = OAuthProviderAppModel(
+            provider="google",
+            name="Test",
+            client_id="id",
+            client_secret=ciphertext,
+        )
+        assert app.client_secret == ciphertext
+        assert any("no encryption key" in m.lower() for m in log_sink)
 
     def test_no_double_encryption(self, monkeypatch):
         """Calling encrypt hook on an already-encrypted value is idempotent."""

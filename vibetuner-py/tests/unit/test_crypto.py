@@ -98,15 +98,19 @@ class TestDecryptOrPassthrough:
         ciphertext = encrypt_value("secret", "my-key")
         assert decrypt_or_passthrough(ciphertext, "my-key") == "secret"
 
-    def test_encrypted_value_without_key_raises(self):
+    def test_encrypted_value_without_key_passes_through(self, log_sink):
+        """When no key is configured, the encrypted value passes through with a warning."""
         ciphertext = encrypt_value("secret", "my-key")
-        with pytest.raises(ValueError, match="encrypted.*no.*key"):
-            decrypt_or_passthrough(ciphertext, None)
+        result = decrypt_or_passthrough(ciphertext, None)
+        assert result == ciphertext
+        assert any("no encryption key" in m.lower() for m in log_sink)
 
-    def test_encrypted_value_with_wrong_key_raises(self):
+    def test_encrypted_value_with_wrong_key_passes_through(self, log_sink):
+        """When the key is wrong, the encrypted value passes through with a warning."""
         ciphertext = encrypt_value("secret", "correct-key")
-        with pytest.raises(ValueError, match="decrypt"):
-            decrypt_or_passthrough(ciphertext, "wrong-key")
+        result = decrypt_or_passthrough(ciphertext, "wrong-key")
+        assert result == ciphertext
+        assert any("failed to decrypt" in m.lower() for m in log_sink)
 
 
 class TestWriteEnvVar:

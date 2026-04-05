@@ -7,6 +7,18 @@ from pathlib import Path
 from typing import Generator
 from unittest.mock import MagicMock
 
+import pytest
+from loguru import logger
+
+
+@pytest.fixture()
+def log_sink():
+    """Capture loguru output for assertion."""
+    messages: list[str] = []
+    sink_id = logger.add(lambda msg: messages.append(str(msg)), level="DEBUG")
+    yield messages
+    logger.remove(sink_id)
+
 
 def pytest_configure(config):
     """Configure pytest markers."""

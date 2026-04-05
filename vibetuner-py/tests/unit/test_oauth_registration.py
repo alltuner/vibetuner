@@ -4,7 +4,6 @@
 import copy
 
 import pytest
-from loguru import logger
 from pydantic import SecretStr
 from vibetuner.config import settings
 from vibetuner.frontend.oauth import (
@@ -26,15 +25,6 @@ def clean_provider_registry():
     yield
     _PROVIDERS.clear()
     PROVIDER_IDENTIFIERS.clear()
-
-
-@pytest.fixture()
-def log_sink():
-    """Capture loguru output for assertion."""
-    messages: list[str] = []
-    sink_id = logger.add(lambda msg: messages.append(str(msg)), level="DEBUG")
-    yield messages
-    logger.remove(sink_id)
 
 
 class TestBuiltinProviders:

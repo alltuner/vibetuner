@@ -8,6 +8,8 @@ from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
+from vibetuner.logging import logger
+
 
 FERNET_PREFIX = "gAAAAA"
 
@@ -47,24 +49,26 @@ def is_encrypted(value: str) -> bool:
 def decrypt_or_passthrough(value: str, passphrase: str | None) -> str:
     """Decrypt if the value is encrypted, otherwise pass through.
 
-    Raises ValueError if the value looks encrypted but no key is provided
-    or decryption fails.
+    When decryption fails (missing key, wrong key, corrupted data), logs a
+    warning and returns the raw ciphertext so that queries don't crash.
     """
     if not is_encrypted(value):
         return value
 
     if passphrase is None:
-        raise ValueError(
+        logger.warning(
             "Value appears encrypted but no encryption key is configured. "
             "Set FIELD_ENCRYPTION_KEY in your environment."
         )
+        return value
 
     try:
         return decrypt_value(value, passphrase)
     except InvalidToken:
-        raise ValueError(
+        logger.warning(
             "Failed to decrypt value. The encryption key may be incorrect."
-        ) from None
+        )
+        return value
 
 
 def write_env_var(env_file: Path, key: str, value: str) -> None:
