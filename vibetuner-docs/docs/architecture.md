@@ -125,7 +125,7 @@ return templates.TemplateResponse("blog/post.html.jinja", {
 
 ```text
 # MongoDB
-Route → Beanie ODM → Motor (async) → MongoDB
+Route → Beanie ODM → PyMongo (async) → MongoDB
 
 # SQL
 Route → SQLModel → SQLAlchemy (async) → PostgreSQL/MySQL/SQLite
