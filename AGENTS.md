@@ -180,6 +180,19 @@ doc = await MyDocument.get(PydanticObjectId(some_id))
 `PydanticObjectId` is still useful as a FastAPI path parameter type annotation (for request
 validation) and in explicit query filters, but `.get()` handles the conversion internally.
 
+### Ad-hoc collection access uses PyMongo, not Motor
+
+The project uses `pymongo` (not `motor`). For direct collection access, use
+`get_pymongo_collection()`:
+
+```python
+# Correct
+collection = MyDocument.get_pymongo_collection()
+
+# Wrong - motor was removed, this no longer exists
+collection = MyDocument.get_motor_collection()  # AttributeError
+```
+
 ## Logging
 
 All code in `vibetuner-py/src/vibetuner/` must use the project's Loguru-based logger:
