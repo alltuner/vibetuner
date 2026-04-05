@@ -180,6 +180,22 @@ doc = await MyDocument.get(PydanticObjectId(some_id))
 `PydanticObjectId` is still useful as a FastAPI path parameter type annotation (for request
 validation) and in explicit query filters, but `.get()` handles the conversion internally.
 
+### Event hook methods must NOT start with an underscore
+
+Beanie's `init_actions()` skips any method whose name starts with `_` when registering
+`@before_event` / `@after_event` hooks. A hook named `_encrypt_on_save` will silently
+never fire. Always use public names:
+
+```python
+# Correct - Beanie discovers and registers this hook
+@before_event(Insert)
+def encrypt_on_insert(self) -> None: ...
+
+# Wrong - silently ignored by Beanie's action registry
+@before_event(Insert)
+def _encrypt_on_insert(self) -> None: ...
+```
+
 ### Ad-hoc collection access uses PyMongo, not Motor
 
 The project uses `pymongo` (not `motor`). For direct collection access, use

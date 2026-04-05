@@ -63,7 +63,7 @@ class TestConfigEntryEncryption:
             is_secret=True,
             secret_value="super-secret-key",
         )
-        entry._encrypt_on_insert()
+        entry.encrypt_on_insert()
         assert is_encrypted(entry.secret_value)
 
     def test_secret_value_decrypted_on_load(self, monkeypatch):
@@ -85,7 +85,7 @@ class TestConfigEntryEncryption:
         entry = FakeConfigEntry(
             key="app.name", value="my-app", value_type="str", is_secret=False
         )
-        entry._encrypt_on_insert()
+        entry.encrypt_on_insert()
         assert entry.secret_value is None
         assert entry.value == "my-app"
 
@@ -99,7 +99,7 @@ class TestConfigEntryEncryption:
             is_secret=True,
             secret_value="plain-secret",
         )
-        entry._encrypt_on_insert()
+        entry.encrypt_on_insert()
         assert entry.secret_value == "plain-secret"
 
 
