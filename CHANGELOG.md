@@ -1,5 +1,19 @@
 # Changelog
 
+## [9.18.1](https://github.com/alltuner/vibetuner/compare/v9.18.0...v9.18.1) (2026-04-05)
+
+
+### Bug Fixes
+
+* handle pre-encrypted data and missing in-memory key in crypto set-key ([#1566](https://github.com/alltuner/vibetuner/issues/1566)) ([c86dc61](https://github.com/alltuner/vibetuner/commit/c86dc61a9cc002e59654f56c4ffd0f8534f201d8))
+* make decrypt_or_passthrough resilient to decryption failures ([#1567](https://github.com/alltuner/vibetuner/issues/1567)) ([54a00a0](https://github.com/alltuner/vibetuner/commit/54a00a0c040d821a4d218767493483926d41fda5))
+* rename underscore-prefixed Beanie event hooks so they actually fire ([#1568](https://github.com/alltuner/vibetuner/issues/1568)) ([cf2b0f0](https://github.com/alltuner/vibetuner/commit/cf2b0f0d2096ab96877fe03a2bd225355e0ef57b))
+
+
+### Documentation Updates
+
+* document pymongo migration - get_pymongo_collection() replaces get_motor_collection() ([#1562](https://github.com/alltuner/vibetuner/issues/1562)) ([9bc12d3](https://github.com/alltuner/vibetuner/commit/9bc12d3f6a4927828ee210f04f48083c64f62a63))
+
 ## [9.18.0](https://github.com/alltuner/vibetuner/compare/v9.17.4...v9.18.0) (2026-04-04)
 
 
