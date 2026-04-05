@@ -457,3 +457,12 @@ class TestEncryptedFieldsMixin:
         model = SecretModel(api_key="my-key", plain_field="visible")
         model._encrypt_on_insert()
         assert model.plain_field == "visible"
+
+    def test_encrypted_with_wrong_key_raises_on_load(self, monkeypatch):
+        """Loading an encrypted value with the wrong key raises ValueError."""
+        from vibetuner.crypto import encrypt_value
+
+        ciphertext = encrypt_value("my-key", self.PASSPHRASE)
+        monkeypatch.setattr(settings, "field_encryption_key", "wrong-key")
+        with pytest.raises(ValueError, match="decrypt"):
+            SecretModel(api_key=ciphertext)
