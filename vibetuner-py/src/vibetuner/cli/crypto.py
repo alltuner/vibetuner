@@ -14,12 +14,30 @@ crypto_app = typer.Typer(
 
 
 async def _set_key_impl(passphrase: str, env_file: Path) -> None:
+    from pydantic import ValidationError
+
+    from vibetuner.config import settings
     from vibetuner.crypto import encrypt_value, is_encrypted, write_env_var
     from vibetuner.models.oauth_app import OAuthProviderAppModel
     from vibetuner.mongo import init_mongodb
 
     await init_mongodb()
-    apps = await OAuthProviderAppModel.find_all().to_list()
+
+    # Set the key in memory so _decrypt_on_load / _encrypt_on_update hooks
+    # can use it when Beanie validates documents during load and save.
+    settings.field_encryption_key = passphrase
+
+    try:
+        apps = await OAuthProviderAppModel.find_all().to_list()
+    except (ValidationError, ValueError):
+        typer.echo(
+            "Error: The database contains fields encrypted with a different key.\n"
+            "Use 'vibetuner crypto set-key --key <existing-key>' to provide the "
+            "correct key, or 'vibetuner crypto rotate-key' if you already have "
+            "a working key configured.",
+            err=True,
+        )
+        raise typer.Exit(1) from None
 
     encrypted_count = 0
     for app in apps:
