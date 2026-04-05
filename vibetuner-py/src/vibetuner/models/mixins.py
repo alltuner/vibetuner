@@ -42,13 +42,13 @@ class TimeStampMixin(BaseModel):
 
     # ── Beanie hooks ────────────────────────────────────────────
     @before_event(Insert)
-    def _touch_on_insert(self) -> None:
+    def touch_on_insert(self) -> None:
         _now = now()
         self.db_insert_dt = _now
         self.db_update_dt = _now
 
     @before_event(Update, SaveChanges, Save, Replace)
-    def _touch_on_update(self) -> None:
+    def touch_on_update(self) -> None:
         self.db_update_dt = now()
 
     # ── Public helpers ──────────────────────────────────────────
@@ -154,11 +154,11 @@ class EncryptedFieldsMixin(BaseModel):
         return self
 
     @before_event(Insert)
-    def _encrypt_on_insert(self) -> None:
+    def encrypt_on_insert(self) -> None:
         self._encrypt_fields()
 
     @before_event(Update, SaveChanges, Save, Replace)
-    def _encrypt_on_update(self) -> None:
+    def encrypt_on_update(self) -> None:
         self._encrypt_fields()
 
     def _encrypt_fields(self) -> None:

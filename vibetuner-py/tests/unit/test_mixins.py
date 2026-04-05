@@ -52,30 +52,30 @@ class TestTimeStampMixin:
 
     @patch("vibetuner.models.mixins.now")
     def test_touch_on_insert(self, mock_now):
-        """Test that _touch_on_insert sets both timestamps."""
+        """Test that touch_on_insert sets both timestamps."""
         fixed_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
         mock_now.return_value = fixed_time
 
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         assert doc.db_insert_dt == fixed_time
         assert doc.db_update_dt == fixed_time
 
     @patch("vibetuner.models.mixins.now")
     def test_touch_on_update(self, mock_now):
-        """Test that _touch_on_update only updates db_update_dt."""
+        """Test that touch_on_update only updates db_update_dt."""
         insert_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
         update_time = datetime(2025, 1, 15, 13, 0, 0, tzinfo=UTC)
 
         # Create doc with fixed insert time
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         # Update with different time
         mock_now.return_value = update_time
-        doc._touch_on_update()
+        doc.touch_on_update()
 
         assert doc.db_insert_dt == insert_time  # Should not change
         assert doc.db_update_dt == update_time  # Should be updated
@@ -89,7 +89,7 @@ class TestTimeStampMixin:
         # Create doc
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         # Calculate age
         mock_now.return_value = current_time
@@ -108,10 +108,10 @@ class TestTimeStampMixin:
         # Create and update doc
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = update_time
-        doc._touch_on_update()
+        doc.touch_on_update()
 
         # Calculate age since update
         mock_now.return_value = current_time
@@ -127,7 +127,7 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = current_time
         age = doc.age()  # No 'since' parameter
@@ -144,7 +144,7 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = current_time
         age = doc.age_in(Unit.SECONDS)
@@ -159,7 +159,7 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = current_time
         age = doc.age_in(Unit.MINUTES)
@@ -174,7 +174,7 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = current_time
         age = doc.age_in(Unit.HOURS)
@@ -189,7 +189,7 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = current_time
         age = doc.age_in(Unit.DAYS)
@@ -204,7 +204,7 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = current_time
         age = doc.age_in(Unit.WEEKS)
@@ -219,7 +219,7 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = current_time
         age = doc.age_in()  # No unit parameter
@@ -235,10 +235,10 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = update_time
-        doc._touch_on_update()
+        doc.touch_on_update()
 
         mock_now.return_value = current_time
         age = doc.age_in(Unit.MINUTES, since=Since.UPDATE)
@@ -253,7 +253,7 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = current_time
         is_older = doc.is_older_than(timedelta(hours=1))
@@ -268,7 +268,7 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = current_time
         is_older = doc.is_older_than(timedelta(hours=1))
@@ -285,7 +285,7 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = current_time
         is_older = doc.is_older_than(timedelta(hours=1))
@@ -301,10 +301,10 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = update_time
-        doc._touch_on_update()
+        doc.touch_on_update()
 
         mock_now.return_value = current_time
         is_older = doc.is_older_than(timedelta(minutes=20), since=Since.UPDATE)
@@ -319,7 +319,7 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = touch_time
         result = doc.touch()
@@ -336,7 +336,7 @@ class TestTimeStampMixin:
 
         mock_now.return_value = insert_time
         doc = SampleModel()
-        doc._touch_on_insert()
+        doc.touch_on_insert()
 
         mock_now.return_value = touch_time
         returned_doc = doc.touch()
@@ -371,7 +371,7 @@ class TestEncryptedFieldsMixin:
         """before_event(Insert) encrypts plaintext fields when key is set."""
         monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
         model = SecretModel(api_key="my-key")
-        model._encrypt_on_insert()
+        model.encrypt_on_insert()
 
         from vibetuner.crypto import is_encrypted
 
@@ -381,7 +381,7 @@ class TestEncryptedFieldsMixin:
         """before_event(Update/Save/...) encrypts plaintext fields."""
         monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
         model = SecretModel(api_key="my-key")
-        model._encrypt_on_update()
+        model.encrypt_on_update()
 
         from vibetuner.crypto import is_encrypted
 
@@ -400,7 +400,7 @@ class TestEncryptedFieldsMixin:
         """Plaintext stays plaintext when no encryption key is configured."""
         monkeypatch.setattr(settings, "field_encryption_key", None)
         model = SecretModel(api_key="my-key")
-        model._encrypt_on_insert()
+        model.encrypt_on_insert()
         assert model.api_key == "my-key"
 
     def test_plaintext_passthrough_on_load(self, monkeypatch):
@@ -426,14 +426,14 @@ class TestEncryptedFieldsMixin:
         ciphertext = encrypt_value("my-key", self.PASSPHRASE)
         model = SecretModel(api_key="placeholder")
         model.api_key = ciphertext
-        model._encrypt_on_insert()
+        model.encrypt_on_insert()
         assert decrypt_value(model.api_key, self.PASSPHRASE) == "my-key"
 
     def test_multiple_fields_encrypted(self, monkeypatch):
         """All EncryptedStr fields are encrypted, not just the first one."""
         monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
         model = SecretModel(api_key="key-1", optional_token="token-2")
-        model._encrypt_on_insert()
+        model.encrypt_on_insert()
 
         from vibetuner.crypto import is_encrypted
 
@@ -444,7 +444,7 @@ class TestEncryptedFieldsMixin:
         """None values in optional EncryptedStr fields are left alone."""
         monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
         model = SecretModel(api_key="my-key", optional_token=None)
-        model._encrypt_on_insert()
+        model.encrypt_on_insert()
 
         from vibetuner.crypto import is_encrypted
 
@@ -455,7 +455,7 @@ class TestEncryptedFieldsMixin:
         """Non-EncryptedStr fields are never encrypted."""
         monkeypatch.setattr(settings, "field_encryption_key", self.PASSPHRASE)
         model = SecretModel(api_key="my-key", plain_field="visible")
-        model._encrypt_on_insert()
+        model.encrypt_on_insert()
         assert model.plain_field == "visible"
 
     def test_encrypted_with_wrong_key_raises_on_load(self, monkeypatch):

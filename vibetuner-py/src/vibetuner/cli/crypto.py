@@ -23,7 +23,7 @@ async def _set_key_impl(passphrase: str, env_file: Path) -> None:
 
     await init_mongodb()
 
-    # Set the key in memory so _decrypt_on_load / _encrypt_on_update hooks
+    # Set the key in memory so decrypt/encrypt hooks
     # can use it when Beanie validates documents during load and save.
     settings.field_encryption_key = passphrase
 

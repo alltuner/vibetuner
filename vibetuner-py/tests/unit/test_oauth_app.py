@@ -351,7 +351,7 @@ class TestOAuthAppEncryption:
             client_id="id",
             client_secret="my-secret",
         )
-        app._encrypt_on_insert()
+        app.encrypt_on_insert()
         from vibetuner.crypto import is_encrypted
 
         assert is_encrypted(app.client_secret)
@@ -365,7 +365,7 @@ class TestOAuthAppEncryption:
             client_id="id",
             client_secret="my-secret",
         )
-        app._encrypt_on_update()
+        app.encrypt_on_update()
         from vibetuner.crypto import is_encrypted
 
         assert is_encrypted(app.client_secret)
@@ -393,7 +393,7 @@ class TestOAuthAppEncryption:
             client_id="id",
             client_secret="my-secret",
         )
-        app._encrypt_on_insert()
+        app.encrypt_on_insert()
         assert app.client_secret == "my-secret"
 
     def test_plaintext_passthrough_on_load(self, monkeypatch):
@@ -435,7 +435,7 @@ class TestOAuthAppEncryption:
             client_secret="placeholder",
         )
         app.client_secret = ciphertext
-        app._encrypt_on_insert()
+        app.encrypt_on_insert()
         # Should still be the same ciphertext (not double-encrypted)
         from vibetuner.crypto import decrypt_value
 
