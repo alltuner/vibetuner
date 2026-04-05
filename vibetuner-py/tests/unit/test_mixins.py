@@ -5,7 +5,6 @@
 from datetime import UTC, datetime, timedelta
 from unittest.mock import patch
 
-import pytest
 from pydantic import Field
 from vibetuner.config import settings
 from vibetuner.models.mixins import (
@@ -409,14 +408,15 @@ class TestEncryptedFieldsMixin:
         model = SecretModel(api_key="plain-key")
         assert model.api_key == "plain-key"
 
-    def test_encrypted_without_key_raises_on_load(self, monkeypatch):
-        """Loading an encrypted value with no key raises ValueError."""
+    def test_encrypted_without_key_passes_through_on_load(self, monkeypatch, log_sink):
+        """Loading an encrypted value with no key passes through with a warning."""
         from vibetuner.crypto import encrypt_value
 
         monkeypatch.setattr(settings, "field_encryption_key", None)
         ciphertext = encrypt_value("my-key", self.PASSPHRASE)
-        with pytest.raises(ValueError, match="encrypted.*no.*key"):
-            SecretModel(api_key=ciphertext)
+        model = SecretModel(api_key=ciphertext)
+        assert model.api_key == ciphertext
+        assert any("no encryption key" in m.lower() for m in log_sink)
 
     def test_no_double_encryption(self, monkeypatch):
         """Calling encrypt hook on an already-encrypted value is idempotent."""
