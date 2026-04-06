@@ -62,7 +62,7 @@ async def vibetuner_db() -> AsyncGenerator[str, None]:
     """
     import vibetuner.mongo as mongo_mod
     from vibetuner.config import settings
-    from vibetuner.mongo import _ensure_client, get_all_models
+    from vibetuner.mongo import _ensure_client, get_all_models, teardown_mongodb
 
     test_db_name = f"test_{uuid.uuid4().hex[:12]}"
 
@@ -86,6 +86,7 @@ async def vibetuner_db() -> AsyncGenerator[str, None]:
     finally:
         if mongo_mod.mongo_client is not None:
             await mongo_mod.mongo_client.drop_database(test_db_name)
+        await teardown_mongodb()
         type(settings).mongo_dbname = original  # type: ignore[assignment]
         settings.__dict__.pop("mongo_dbname", None)
 
