@@ -25,14 +25,14 @@ done
 
 # --- Python dependencies ---
 if [ -f "pyproject.toml" ]; then
-    uv sync --frozen || echo "⚠ uv sync failed, continuing anyway"
+    uv sync --all-extras --all-groups --frozen || echo "⚠ uv sync failed, continuing anyway"
     echo "✓ Python dependencies installed"
 fi
 
 # --- JavaScript dependencies ---
 for dir in vibetuner-js vibetuner-template; do
     if [ -f "$dir/bun.lock" ] || [ -f "$dir/package.json" ]; then
-        (cd "$dir" && bun install) || echo "⚠ bun install failed in $dir, continuing anyway"
+        (cd "$dir" && bun install --frozen-lockfile) || echo "⚠ bun install failed in $dir, continuing anyway"
         echo "✓ Bun dependencies installed in $dir"
     fi
 done
