@@ -230,7 +230,6 @@ class CoreConfiguration(BaseSettings):
     debug: bool = False
     environment: Literal["dev", "prod"] = "dev"
     session_key: SecretStr = SecretStr("ct-!secret-must-change-me")
-    debug_access_token: str | None = None
 
     # Database and Cache URLs
     mongodb_url: MongoDsn | None = None

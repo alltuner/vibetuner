@@ -9,6 +9,7 @@ import typer
 
 from vibetuner.cli.crypto import crypto_app
 from vibetuner.cli.db import db_app
+from vibetuner.cli.debug import debug_app
 from vibetuner.cli.doctor import doctor_app
 from vibetuner.cli.run import run_app
 from vibetuner.cli.scaffold import scaffold_app
@@ -132,6 +133,7 @@ def version(
 
 app.add_typer(crypto_app, name="crypto")
 app.add_typer(db_app, name="db")
+app.add_typer(debug_app, name="debug")
 app.add_typer(doctor_app, name="doctor")
 app.add_typer(run_app, name="run")
 app.add_typer(scaffold_app, name="scaffold")

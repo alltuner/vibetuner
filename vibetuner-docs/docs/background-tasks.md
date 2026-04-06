@@ -446,8 +446,13 @@ When workers are configured, a built-in monitoring UI is available at
 
 The dashboard is protected by the same debug access controls as other
 `/debug/*` endpoints. In development mode (`DEBUG=true`), it is accessible
-without authentication. In production, use the
-`/_unlock-debug?token=<DEBUG_ACCESS_TOKEN>` endpoint to gain access.
+without authentication. In production, use the CLI to generate a magic link:
+
+```bash
+vibetuner debug open https://myapp.com
+```
+
+See the [CLI Reference](cli-reference.md#vibetuner-debug) for details.
 
 A standalone worker monitoring web UI also starts automatically on
 **port 11111** when you run the worker. Access it at

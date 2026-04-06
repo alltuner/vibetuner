@@ -226,6 +226,38 @@ Summary
 - **✗** (red) — error, must be fixed
 - **-** (dim) — skipped (not applicable)
 
+## `vibetuner debug`
+
+Access the debug dashboard on deployed applications using short-lived HMAC-signed links.
+
+### `open`
+
+```bash
+vibetuner debug open URL [--secret SECRET]
+```
+
+Generates a signed link that expires after 5 minutes and opens it in the default browser.
+On the server, the link grants an 8-hour debug session cookie.
+
+#### Arguments
+
+- `URL` — Base URL of the deployed application (e.g., `https://myapp.com`)
+
+#### Options
+
+- `--secret`, `-s` — Signing secret. Must match the `SESSION_KEY` configured on the server.
+  When omitted, reads `SESSION_KEY` from the local project config (`.env`).
+
+#### Examples
+
+```bash
+# From a project directory (reads SESSION_KEY from .env)
+vibetuner debug open https://myapp.com
+
+# From anywhere, no project checkout needed
+uvx vibetuner debug open https://myapp.com --secret mysecretkey
+```
+
 ## `vibetuner crypto`
 
 Manage encryption keys for OAuth app secrets stored in MongoDB.
