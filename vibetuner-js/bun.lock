@@ -9,7 +9,7 @@
         "@tailwindcss/typography": "^0.5.19",
         "concurrently": "^9.2.1",
         "daisyui": "^5.5.19",
-        "htmx.org": "4.0.0-alpha8",
+        "htmx.org": "4.0.0-beta1",
         "tailwindcss": "^4.2.2",
       },
     },
@@ -123,7 +123,7 @@
 
     "has-flag": ["has-flag@4.0.0", "", {}, "sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ=="],
 
-    "htmx.org": ["htmx.org@4.0.0-alpha8", "", { "dependencies": { "playwright": "^1.58.2" } }, "sha512-2lLFvSYgOMXrgFidWcC8CRc51bcsrvXBG9N2VaWBCdTIZJG2Wo3v5fJdi21AL2hPz6qotwZkWEnR5rS9QYO7oA=="],
+    "htmx.org": ["htmx.org@4.0.0-beta1", "", { "dependencies": { "playwright": "^1.58.2" } }, "sha512-vLcu7JswMeZ7qeJnVHqV1iWGr/C8Osc4+xt2kXBpOC1vG2EoPf8sDAl+xYKDwB/wsRZbCSPkfJLMlyxW7Oz6jw=="],
 
     "is-extglob": ["is-extglob@2.1.1", "", {}, "sha512-SbKbANkN603Vi4jEZv49LeVJMn4yGwsbzZworEoyEiutsN3nJYdbO36zfhGJ6QEDpOZIFkDtnq5JRxmvl3jsoQ=="],
 
