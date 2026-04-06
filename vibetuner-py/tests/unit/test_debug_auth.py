@@ -1,11 +1,12 @@
-# ABOUTME: Unit tests for debug route authentication and authorization
-# ABOUTME: Verifies that debug routes require proper token/cookie authentication in production
-# ruff: noqa: S101, S106
+# ABOUTME: Unit tests for debug route authentication and authorization.
+# ABOUTME: Verifies cookie-based access checks and HMAC-signed unlock validation.
+# ruff: noqa: S101, S105
 
 from unittest.mock import MagicMock
 
 import pytest
 from fastapi import HTTPException
+from vibetuner.debug_signing import generate_debug_url, verify_debug_signature
 
 
 MAGIC_COOKIE_NAME = "magic_access"
@@ -72,67 +73,76 @@ class TestCheckDebugAccess:
 class TestUnlockDebugAccess:
     """Test the /_unlock-debug endpoint logic.
 
-    These tests verify the token validation in unlock_debug_access from debug.py.
-    In DEBUG mode: no token required.
-    In production: token must match DEBUG_ACCESS_TOKEN (returns 404 on failure).
+    These tests verify the HMAC signature validation in unlock_debug_access.
+    In DEBUG mode: no signature required.
+    In production: requires a valid HMAC-signed link (returns 404 on failure).
     """
 
-    def _validate_unlock_token(
-        self, token: str | None, debug_mode: bool, configured_token: str | None
+    SECRET = "test-session-key"
+
+    def _parse_params(self, url: str) -> dict[str, str]:
+        from urllib.parse import parse_qs, urlparse
+
+        parsed = urlparse(url)
+        params = parse_qs(parsed.query)
+        return {k: v[0] for k, v in params.items()}
+
+    def _validate_unlock(
+        self,
+        debug_mode: bool,
+        ts: str | None = None,
+        nonce: str | None = None,
+        sig: str | None = None,
     ):
-        """Mirror the token validation logic from unlock_debug_access."""
+        """Mirror the HMAC validation logic from unlock_debug_access."""
         if debug_mode:
             return True
 
-        if configured_token is None:
+        if ts is None or nonce is None or sig is None:
             raise HTTPException(status_code=404, detail="Not found")
 
-        if token is None or token != configured_token:
+        if not verify_debug_signature(ts=ts, nonce=nonce, sig=sig, secret=self.SECRET):
             raise HTTPException(status_code=404, detail="Not found")
 
         return True
 
-    def test_debug_mode_no_token_required(self):
-        """In DEBUG mode, cookie can be set without any token."""
-        result = self._validate_unlock_token(
-            token=None, debug_mode=True, configured_token=None
-        )
+    def test_debug_mode_no_signature_required(self):
+        """In DEBUG mode, cookie can be set without any signature."""
+        result = self._validate_unlock(debug_mode=True)
         assert result is True
 
-    def test_production_missing_token_returns_404(self):
-        """In production without token, returns 404."""
+    def test_production_missing_params_returns_404(self):
+        """In production without HMAC params, returns 404."""
         with pytest.raises(HTTPException) as exc_info:
-            self._validate_unlock_token(
-                token=None, debug_mode=False, configured_token="secret-token-123"
-            )
-
+            self._validate_unlock(debug_mode=False)
         assert exc_info.value.status_code == 404
 
-    def test_production_wrong_token_returns_404(self):
-        """In production with wrong token, returns 404."""
+    def test_production_partial_params_returns_404(self):
+        """In production with only some HMAC params, returns 404."""
         with pytest.raises(HTTPException) as exc_info:
-            self._validate_unlock_token(
-                token="wrong-token",
-                debug_mode=False,
-                configured_token="secret-token-123",
-            )
-
+            self._validate_unlock(debug_mode=False, ts="123", nonce="abc")
         assert exc_info.value.status_code == 404
 
-    def test_production_correct_token_allows(self):
-        """In production with correct token, access is granted."""
-        result = self._validate_unlock_token(
-            token="secret-token-123",
-            debug_mode=False,
-            configured_token="secret-token-123",
-        )
+    def test_production_valid_signature_allows(self):
+        """In production with valid HMAC-signed params, access is granted."""
+        url = generate_debug_url("https://example.com", self.SECRET)
+        params = self._parse_params(url)
+        result = self._validate_unlock(debug_mode=False, **params)
         assert result is True
 
-    def test_production_no_token_configured_returns_404(self):
-        """If DEBUG_ACCESS_TOKEN not configured, debug access is disabled."""
+    def test_production_wrong_secret_returns_404(self):
+        """In production, a link signed with a different secret is rejected."""
+        url = generate_debug_url("https://example.com", "wrong-secret")
+        params = self._parse_params(url)
         with pytest.raises(HTTPException) as exc_info:
-            self._validate_unlock_token(
-                token="any-token", debug_mode=False, configured_token=None
-            )
+            self._validate_unlock(debug_mode=False, **params)
+        assert exc_info.value.status_code == 404
 
+    def test_production_tampered_signature_returns_404(self):
+        """In production, a tampered signature is rejected."""
+        url = generate_debug_url("https://example.com", self.SECRET)
+        params = self._parse_params(url)
+        params["sig"] = "tampered"
+        with pytest.raises(HTTPException) as exc_info:
+            self._validate_unlock(debug_mode=False, **params)
         assert exc_info.value.status_code == 404
