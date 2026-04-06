@@ -182,13 +182,22 @@ For more built-in providers, file an issue at
 
 ### Database-Backed OAuth Apps
 
-For scenarios where you need multiple sets of credentials per provider (e.g.,
-different LinkedIn apps for different organizations), vibetuner supports
-database-backed OAuth apps via `OAuthProviderAppModel`.
+`OAuthProviderAppModel` stores OAuth credentials (`client_id`, `client_secret`,
+scopes, metadata) in MongoDB with optional encryption at rest. It supports two
+usage patterns:
 
-Each app stores its own `client_id`, `client_secret`, optional scope overrides,
-and metadata in MongoDB. The underlying provider (endpoints, compliance fixes)
-is inherited from the registered `OauthProviderModel`.
+1. **Authlib-integrated login**: Register a provider via `oauth_providers` in
+   `tune.py`, then use `resolve_oauth_client()` for redirect-based login flows.
+   The model inherits endpoints and compliance fixes from the registered
+   `OauthProviderModel`.
+2. **Credentials store**: Use the model purely to store and retrieve
+   `client_id`/`client_secret` for platforms with non-standard auth flows
+   (e.g., Meta Graph API long-lived token exchange, Spotify client credentials
+   grant, YouTube Data API). Query credentials via `get_active_by_provider()`
+   without involving Authlib at all.
+
+Both patterns benefit from encrypted secret storage and the `is_active` flag
+for credential rotation.
 
 #### Creating an OAuth App
 
@@ -217,7 +226,7 @@ await app.insert()
 | `external_app_id` | `str \| None` | Provider's own identifier for this app |
 | `scopes` | `list[str]` | Scope overrides (empty = use provider defaults) |
 | `capabilities` | `list[str]` | Detected capabilities for this app |
-| `is_active` | `bool` | Whether available for OAuth flows (default `True`) |
+| `is_active` | `bool` | Whether available for use (default `True`) |
 | `metadata` | `dict` | Provider-specific extra data |
 
 #### Resolving OAuth Clients
@@ -265,6 +274,50 @@ route they would link to does not exist.
 When a user authenticates through a database-backed OAuth app, the `app_id`
 is stored on the `OAuthAccountModel`. This lets you trace which app was
 used for each OAuth account link.
+
+#### Using as a Credentials Store
+
+Not every platform uses standard redirect-based OAuth. For platforms like
+Meta Graph API (Instagram, Threads, Facebook), YouTube Data API, or Spotify
+(client credentials grant), you can use `OAuthProviderAppModel` purely as an
+encrypted credentials store, without registering the provider in Authlib.
+
+```python
+from vibetuner.models.oauth_app import OAuthProviderAppModel
+
+# Store credentials for a non-Authlib platform
+app = OAuthProviderAppModel(
+    provider="instagram",
+    name="My Instagram App",
+    client_id="ig-client-id",
+    client_secret="ig-client-secret",
+    metadata={"app_type": "business"},
+)
+await app.insert()
+```
+
+Retrieve credentials at runtime with `get_active_by_provider()`:
+
+```python
+from vibetuner.models.oauth_app import OAuthProviderAppModel
+
+apps = await OAuthProviderAppModel.get_active_by_provider("instagram")
+for app in apps:
+    # app.client_id and app.client_secret are available as plaintext
+    # (decrypted automatically if FIELD_ENCRYPTION_KEY is set)
+    client = SomeExternalSDK(
+        client_id=app.client_id,
+        client_secret=app.client_secret,
+    )
+```
+
+This pattern gives you the same benefits as the Authlib-integrated path
+(encrypted storage, `is_active` toggling, per-app metadata) without forcing
+the platform into a redirect-based flow.
+
+The `provider` field is a free-form string in this context. It does not need
+to match a registered `OauthProviderModel`; it only needs to be consistent
+so `get_active_by_provider()` returns the right credentials.
 
 ### Encrypting OAuth Secrets at Rest
 

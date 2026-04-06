@@ -40,7 +40,7 @@ class OAuthProviderAppModel(Document, TimeStampMixin, EncryptedFieldsMixin):
     )
     is_active: bool = Field(
         default=True,
-        description="Whether this app is available for OAuth flows",
+        description="Whether this app is available for use",
     )
     metadata: dict[str, Any] = Field(
         default_factory=dict,
