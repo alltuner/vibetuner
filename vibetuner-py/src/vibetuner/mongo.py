@@ -5,6 +5,7 @@ from typing import Optional
 from beanie import init_beanie
 from deprecated import deprecated
 from pymongo import AsyncMongoClient
+from pymongo.errors import ConnectionFailure
 
 from vibetuner.config import settings
 from vibetuner.loader import load_app_config
@@ -69,10 +70,19 @@ async def init_mongodb() -> None:
     all_models = get_all_models()
     logger.debug(f"Initializing Beanie with {len(all_models)} models")
 
-    await init_beanie(
-        database=mongo_client[settings.mongo_dbname],
-        document_models=all_models,
-    )
+    try:
+        await init_beanie(
+            database=mongo_client[settings.mongo_dbname],
+            document_models=all_models,
+        )
+    except ConnectionFailure as exc:
+        url = settings.mongodb_url
+        logger.error(
+            "Failed to connect to MongoDB at {}: {}",
+            f"{url.host}:{url.port}" if url else "unknown",
+            exc,
+        )
+        raise
 
     logger.info("MongoDB + Beanie initialized successfully.")
 
