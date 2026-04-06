@@ -1,5 +1,34 @@
 # Changelog
 
+## [10.0.0](https://github.com/alltuner/vibetuner/compare/v9.18.1...v10.0.0) (2026-04-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace static debug token with HMAC-signed magic links ([#1578](https://github.com/alltuner/vibetuner/issues/1578))
+
+### Features
+
+* replace static debug token with HMAC-signed magic links ([#1578](https://github.com/alltuner/vibetuner/issues/1578)) ([92bdb3b](https://github.com/alltuner/vibetuner/commit/92bdb3b7a7a99a36cd21f8ff7fd66b55ce3e6172))
+
+
+### Bug Fixes
+
+* **deps:** update dependency htmx.org to v4.0.0-beta1 ([#1569](https://github.com/alltuner/vibetuner/issues/1569)) ([05bc72f](https://github.com/alltuner/vibetuner/commit/05bc72fdc8262c7f253eb9c51f0763eddc5ba860))
+* improve MongoDB connection error handling during startup ([#1573](https://github.com/alltuner/vibetuner/issues/1573)) ([c958073](https://github.com/alltuner/vibetuner/commit/c958073b83e433c892ffc3c93dbaec92306bc6b0))
+* reset MongoDB client in vibetuner_db fixture teardown ([#1576](https://github.com/alltuner/vibetuner/issues/1576)) ([e7083e8](https://github.com/alltuner/vibetuner/commit/e7083e8270098b32eb411ca13ded3f6fbc9e0647))
+* update robust_task middleware for streaq TaskContext rename ([#1577](https://github.com/alltuner/vibetuner/issues/1577)) ([0cb6180](https://github.com/alltuner/vibetuner/commit/0cb6180eaa70bcd315694bc41a40637222d90a33))
+
+
+### Miscellaneous Chores
+
+* sync workspace hooks with template improvements ([#1570](https://github.com/alltuner/vibetuner/issues/1570)) ([b7e1bbc](https://github.com/alltuner/vibetuner/commit/b7e1bbc74876b26283eac53e01e9a3b6861c0247))
+
+
+### Documentation Updates
+
+* update htmx migration guide for 4.0.0-beta1 and remove stale config ([#1572](https://github.com/alltuner/vibetuner/issues/1572)) ([6fffe3d](https://github.com/alltuner/vibetuner/commit/6fffe3d6d3da6b55c99ea3cadae0babd49d3b7d6))
+
 ## [9.18.1](https://github.com/alltuner/vibetuner/compare/v9.18.0...v9.18.1) (2026-04-05)
 
 
