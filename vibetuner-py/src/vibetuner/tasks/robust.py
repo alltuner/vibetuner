@@ -72,6 +72,34 @@ async def _handle_permanent_failure(
             logger.exception("on_failure callback raised for %s", ctx.fn_name)
 
 
+async def _run_with_retries(
+    next_fn: Any, task_ctx: Any, config: _RobustConfig, *args: Any, **kwargs: Any
+) -> Any:
+    """Execute the task function with retry logic and dead-letter handling."""
+    from streaq import StreaqRetry
+
+    try:
+        return await next_fn(*args, **kwargs)
+    except StreaqRetry:
+        raise
+    except Exception as exc:
+        if task_ctx.tries < config.max_retries:
+            delay = min(config.backoff_base**task_ctx.tries, config.backoff_max)
+            logger.warning(
+                "Task %s[%s] failed (try %d/%d), retrying in %.0fs: %s",
+                task_ctx.fn_name,
+                task_ctx.task_id,
+                task_ctx.tries,
+                config.max_retries,
+                delay,
+                exc,
+            )
+            raise StreaqRetry(delay=int(delay)) from exc
+
+        await _handle_permanent_failure(task_ctx, config, exc)
+        raise
+
+
 def _ensure_middleware(worker: Any) -> None:
     """Register the robust task middleware once per worker."""
     global _middleware_registered
@@ -85,41 +113,24 @@ def _ensure_middleware(worker: Any) -> None:
         _middleware_registered = True
 
         try:
-            from streaq import StreaqRetry
-            from streaq.types import task_context
+            from streaq.types import TaskContext
 
             @worker.middleware
             def robust_retry_middleware(next_fn: Any) -> Any:
                 async def wrapper(*args: Any, **kwargs: Any) -> Any:
-                    ctx = task_context.get(None)
+                    ctx = next(
+                        (v for v in kwargs.values() if isinstance(v, TaskContext)),
+                        None,
+                    )
                     if ctx is None:
                         return await next_fn(*args, **kwargs)
                     config = _configs.get(ctx.fn_name)
                     if config is None:
                         return await next_fn(*args, **kwargs)
 
-                    try:
-                        return await next_fn(*args, **kwargs)
-                    except StreaqRetry:
-                        raise
-                    except Exception as exc:
-                        if ctx.tries < config.max_retries:
-                            delay = min(
-                                config.backoff_base**ctx.tries, config.backoff_max
-                            )
-                            logger.warning(
-                                "Task %s[%s] failed (try %d/%d), retrying in %.0fs: %s",
-                                ctx.fn_name,
-                                ctx.task_id,
-                                ctx.tries,
-                                config.max_retries,
-                                delay,
-                                exc,
-                            )
-                            raise StreaqRetry(delay=int(delay)) from exc
-
-                        await _handle_permanent_failure(ctx, config, exc)
-                        raise
+                    return await _run_with_retries(
+                        next_fn, ctx, config, *args, **kwargs
+                    )
 
                 return wrapper
         except Exception:
