@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.2.1](https://github.com/alltuner/vibetuner/compare/v10.2.0...v10.2.1) (2026-04-07)
+
+
+### Miscellaneous Chores
+
+* update build deps ([#1604](https://github.com/alltuner/vibetuner/issues/1604)) ([6377007](https://github.com/alltuner/vibetuner/commit/6377007dd4fb1afb356c6624a9f4bd28d8dae9f0))
+* update deps 2026-04-07 ([0c5bab4](https://github.com/alltuner/vibetuner/commit/0c5bab4044ccf7b46a089269c9999f7dedc05942))
+
 ## [10.2.0](https://github.com/alltuner/vibetuner/compare/v10.1.1...v10.2.0) (2026-04-07)
 
 
