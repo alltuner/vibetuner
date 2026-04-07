@@ -58,6 +58,13 @@ part of the job.
 
 ---
 
+## Project Conventions (`CONVENTIONS.md`)
+
+If `CONVENTIONS.md` exists at the project root, **read it before starting
+work**. It contains project-specific rules, patterns, and preferences that
+apply on top of this guide. Create it when you need persistent instructions
+that aren't covered here.
+
 ## Project Learnings (`LEARNINGS.md`)
 
 If `LEARNINGS.md` exists, **read it before starting work**. Add non-obvious
