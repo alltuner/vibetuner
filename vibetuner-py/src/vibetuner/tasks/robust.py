@@ -1,5 +1,5 @@
-# ABOUTME: Robust task decorator with retries, dead letters, and failure notifications.
-# ABOUTME: Wraps Streaq tasks with exponential backoff and MongoDB dead letter collection.
+# ABOUTME: Robust task and cron decorators with retries, dead letters, and failure notifications.
+# ABOUTME: Wraps Streaq tasks and cron jobs with exponential backoff and MongoDB dead letter collection.
 
 import asyncio
 import threading
@@ -194,6 +194,70 @@ def robust_task(
             max_tries=max_retries,
             timeout=timeout,
             **task_kwargs,
+        )(fn)
+
+    return decorator
+
+
+def robust_cron(
+    tab: str,
+    *,
+    max_retries: int = 3,
+    backoff_base: float = 2.0,
+    backoff_max: float = 300.0,
+    timeout: timedelta | int | None = None,
+    on_failure: Callable[..., Any] | None = None,
+    **cron_kwargs: Any,
+) -> Callable:
+    """Decorator that wraps a Streaq cron task with retry and failure handling.
+
+    Failed cron executions are stored in the ``dead_letters`` MongoDB collection
+    after all retries are exhausted.  An optional *on_failure* callback is
+    invoked on permanent failure and may be sync or async.
+
+    Usage::
+
+        from vibetuner.tasks.robust import robust_cron
+
+        @robust_cron("*/15 * * * *", max_retries=3, backoff_max=60)
+        async def refresh_stale_caches() -> dict[str, int]:
+            ...
+
+    Args:
+        tab: Crontab schedule expression (e.g. ``"*/15 * * * *"``).
+        max_retries: Maximum number of attempts before giving up.
+        backoff_base: Base for exponential backoff (delay = base ** tries).
+        backoff_max: Maximum backoff delay in seconds.
+        timeout: Task timeout (forwarded to ``worker.cron()``).
+        on_failure: Called on permanent failure with
+            ``(task_name: str, task_id: str, exc: Exception)``.  May be async.
+        **cron_kwargs: Extra keyword arguments forwarded to ``worker.cron()``.
+    """
+    task_name_arg = cron_kwargs.pop("name", None)
+    if task_name_arg is not None and not isinstance(task_name_arg, str):
+        raise TypeError(
+            f"task name must be a string, got {type(task_name_arg).__name__}"
+        )
+
+    from vibetuner.tasks.worker import get_worker
+
+    worker = get_worker()
+    _ensure_middleware(worker)
+
+    def decorator(fn: Callable) -> Any:
+        task_name = task_name_arg or fn.__name__
+        _configs[task_name] = _RobustConfig(
+            max_retries=max_retries,
+            backoff_base=backoff_base,
+            backoff_max=backoff_max,
+            on_failure=on_failure,
+        )
+        return worker.cron(
+            tab,
+            name=task_name,
+            max_tries=max_retries,
+            timeout=timeout,
+            **cron_kwargs,
         )(fn)
 
     return decorator
