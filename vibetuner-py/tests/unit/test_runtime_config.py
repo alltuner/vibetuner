@@ -251,6 +251,77 @@ class TestCacheManagement:
         assert RuntimeConfig.is_cache_stale() is True
 
 
+class TestGetRefreshesStaleCache:
+    """Tests that get() and get_all_config() refresh a stale cache."""
+
+    @pytest.mark.asyncio
+    async def test_get_refreshes_stale_cache(self):
+        """get() calls refresh_cache when cache is stale."""
+        from vibetuner.runtime_config import RuntimeConfig, register_config_value
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+        RuntimeConfig._cache_last_refresh = None  # stale
+
+        register_config_value(
+            key="test.refresh",
+            default="default",
+            value_type="str",
+        )
+
+        with patch.object(
+            RuntimeConfig, "refresh_cache", new_callable=AsyncMock
+        ) as mock_refresh:
+            await RuntimeConfig.get("test.refresh")
+            mock_refresh.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_get_skips_refresh_when_cache_fresh(self):
+        """get() does not call refresh_cache when cache is fresh."""
+        from vibetuner.runtime_config import RuntimeConfig, register_config_value
+        from vibetuner.time import now
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+        RuntimeConfig._cache_last_refresh = now()  # fresh
+
+        register_config_value(
+            key="test.fresh",
+            default="default",
+            value_type="str",
+        )
+
+        with patch.object(
+            RuntimeConfig, "refresh_cache", new_callable=AsyncMock
+        ) as mock_refresh:
+            await RuntimeConfig.get("test.fresh")
+            mock_refresh.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_get_all_config_refreshes_stale_cache(self):
+        """get_all_config() calls refresh_cache when cache is stale."""
+        from vibetuner.runtime_config import RuntimeConfig, register_config_value
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+        RuntimeConfig._cache_last_refresh = None  # stale
+
+        register_config_value(
+            key="test.all",
+            default="default",
+            value_type="str",
+        )
+
+        with patch.object(
+            RuntimeConfig, "refresh_cache", new_callable=AsyncMock
+        ) as mock_refresh:
+            await RuntimeConfig.get_all_config()
+            mock_refresh.assert_awaited_once()
+
+
 class TestGetAllConfig:
     """Tests for retrieving all config entries."""
 
