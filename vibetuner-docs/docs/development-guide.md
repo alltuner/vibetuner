@@ -286,6 +286,41 @@ await post.save()
 **CRUD factory:** The `DELETE` endpoint automatically performs a soft delete for models
 that use `DocumentWithSoftDelete`. No configuration needed.
 
+#### Encrypted Fields
+
+Encrypt sensitive fields at rest using `EncryptedFieldsMixin` and the
+`EncryptedStr` type. Fields are transparently encrypted before database
+writes and decrypted on load:
+
+```python
+from beanie import Document
+from pydantic import Field
+from vibetuner.models.mixins import EncryptedFieldsMixin, EncryptedStr
+
+class ApiCredential(Document, EncryptedFieldsMixin):
+    provider: str
+    api_key: EncryptedStr = Field(..., description="Encrypted API key")
+    token: EncryptedStr | None = Field(default=None)
+
+    class Settings:
+        name = "api_credentials"
+```
+
+```python
+# Usage — encryption/decryption is automatic
+cred = ApiCredential(provider="stripe", api_key="sk_live_xxx")
+await cred.insert()         # api_key is encrypted before write
+
+loaded = await ApiCredential.get(cred.id)
+print(loaded.api_key)       # "sk_live_xxx" — decrypted on load
+```
+
+Encryption requires the `FIELD_ENCRYPTION_KEY` environment variable
+(a Fernet key). When the key is not set, fields are stored as plaintext.
+Use `vibetuner crypto set-key` to generate and configure a key, and
+`vibetuner crypto rotate-key` to rotate it. See the
+[CLI Reference](cli-reference.md#vibetuner-crypto) for details.
+
 ### Creating Templates
 
 Add templates in `templates/frontend/`:
@@ -328,6 +363,25 @@ The same convention applies to `{% extends %}` and `{% include %}` inside templa
 {% extends "base/skeleton.html.jinja" %}          {# correct #}
 {% extends "frontend/base/skeleton.html.jinja" %} {# wrong #}
 ```
+
+### Built-in Template Globals
+
+Vibetuner provides these variables in every template automatically:
+
+| Variable | Type | Value |
+|----------|------|-------|
+| `now` | `datetime` | `datetime.now(timezone.utc)` — timezone-aware UTC datetime |
+| `today` | `str` | `date.today().isoformat()` — ISO date string (e.g., `"2026-04-07"`) |
+
+```html
+<p>Page rendered at {{ now | format_datetime }}</p>
+<p>Today is {{ today }}</p>
+<footer>&copy; {{ now.year }} My Company</footer>
+```
+
+These are re-evaluated on every render, so `now` reflects the current
+request time. For custom globals, see
+[Template Context Providers](#template-context-providers).
 
 ### Built-in Template Filters
 
@@ -464,6 +518,46 @@ Vibetuner uses Tailwind CSS + DaisyUI. Edit `assets/config.css` for custom style
 
 The build process automatically compiles to `assets/statics/css/bundle.css`.
 
+### Security Headers and CSP Nonce
+
+Vibetuner includes `SecurityHeadersMiddleware` that sets security headers
+(X-Content-Type-Options, X-Frame-Options, Referrer-Policy, etc.) and
+generates a Content Security Policy with a unique nonce per request.
+
+**Script tags** get the nonce auto-injected by the middleware. Do not add
+`nonce=` attributes to `<script>` tags manually:
+
+```html
+<!-- Correct — nonce is added automatically by middleware -->
+<script src="/static/app.js"></script>
+
+<!-- Wrong — manual nonce causes double-injection issues -->
+<script nonce="{{ csp_nonce }}" src="/static/app.js"></script>
+```
+
+**Style tags and other elements** that need the nonce must use the
+`{{ csp_nonce }}` template variable (available in all templates):
+
+```html
+<style nonce="{{ csp_nonce }}">
+    .highlight { color: red; }
+</style>
+```
+
+In debug mode, CSP uses `Content-Security-Policy-Report-Only` (violations
+are reported but not enforced). In production, CSP is fully enforced.
+
+Configure extra allowed sources via environment variables:
+
+| Variable | Description |
+|----------|-------------|
+| `CSP_EXTRA_SCRIPT_SRC` | Additional script sources |
+| `CSP_EXTRA_STYLE_SRC` | Additional style sources |
+| `CSP_EXTRA_IMG_SRC` | Additional image sources |
+| `CSP_EXTRA_CONNECT_SRC` | Additional connect sources |
+| `CSP_EXTRA_FONT_SRC` | Additional font sources |
+| `CSP_EXTRA_MEDIA_SRC` | Additional media sources |
+
 ## Working with HTMX
 
 Vibetuner uses HTMX for interactive features without JavaScript:
@@ -576,6 +670,36 @@ if you already have `REDIS_URL` configured.
 - Works with JSON, HTML, and dict responses
 - **Disabled by default in debug mode** — pass `force_caching=True` to override
 - If Redis is not configured or unavailable, the decorator is a transparent no-op
+
+**Request-dependent cache keys with `vary_on`:**
+
+Use `vary_on` to cache different responses for different users, tenants, or
+any other request-derived dimension:
+
+```python
+# Per-user cache — each user gets their own cached dashboard
+@router.get("/dashboard")
+@cache(expire=120, vary_on=lambda r: str(r.state.user.id))
+async def dashboard(request: Request):
+    return await render_dashboard(request)
+
+# Per-tenant cache
+@router.get("/reports")
+@cache(expire=300, vary_on=lambda r: r.state.tenant_id)
+async def reports(request: Request):
+    return await generate_reports(request)
+
+# Vary by header
+@router.get("/api/data")
+@cache(expire=60, vary_on=lambda r: r.headers.get("x-tenant", ""))
+async def data(request: Request):
+    return await fetch_data(request)
+```
+
+`vary_on` accepts a callable with signature `(Request) -> str`. The
+returned string is included in the cache key, so different values produce
+independent cache entries. When `None` (the default), all requests to the
+same path and query share one cache entry.
 
 **Cache invalidation:**
 

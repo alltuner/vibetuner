@@ -162,6 +162,28 @@ await get_config(
 ) -> Any
 ```
 
+### `set_config`
+
+Persist a configuration value, inferring metadata from the registry:
+
+```python
+from vibetuner.runtime_config import set_config
+
+await set_config("features.dark_mode", True)
+```
+
+```python
+await set_config(
+    key: str,              # Must be a registered config key
+    value: Any,            # Value to persist to MongoDB
+) -> None
+```
+
+The key must have been registered (via `register_config_value()`,
+`@config_value()`, or `ConfigGroup`). Raises `KeyError` if the key is not
+registered. For unregistered keys or explicit metadata, use
+`RuntimeConfig.set_value()` instead.
+
 ### `RuntimeConfig` Class
 
 For advanced usage, access the `RuntimeConfig` class directly:
@@ -304,6 +326,48 @@ ConfigField(
 
 All three APIs share the same underlying `RuntimeConfig` resolution and
 appear together in the debug UI at `/debug/config`.
+
+### Registration via `VibetunerApp`
+
+You can also register config values declaratively in `tune.py`:
+
+```python
+from vibetuner import VibetunerApp
+
+app = VibetunerApp(
+    runtime_config={
+        "features.dark_mode": {
+            "default": False,
+            "value_type": "bool",
+            "description": "Enable dark mode by default",
+            "category": "features",
+        },
+        "integrations.api_token": {
+            "default": "",
+            "value_type": "str",
+            "is_secret": True,
+            "description": "External API token (encrypted at rest)",
+            "category": "integrations",
+        },
+    },
+)
+```
+
+Each entry accepts the same parameters as `register_config_value()`:
+`default`, `value_type`, `description`, `category`, and `is_secret`.
+
+## CLI Management
+
+Use `vibetuner config` to manage runtime config values from the command line:
+
+```bash
+vibetuner config list                              # View all config values
+vibetuner config set features.dark_mode -v true    # Set a value
+vibetuner config set integrations.api_token        # Set a secret (hidden prompt)
+vibetuner config delete features.dark_mode --yes   # Delete, revert to default
+```
+
+See the [CLI Reference](cli-reference.md#vibetuner-config) for details.
 
 ## Debug UI
 

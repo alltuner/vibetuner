@@ -226,6 +226,80 @@ Summary
 - **✗** (red) — error, must be fixed
 - **-** (dim) — skipped (not applicable)
 
+## `vibetuner config`
+
+Manage runtime configuration values from the command line. All subcommands
+require a project directory with MongoDB configured.
+
+### `list`
+
+```bash
+vibetuner config list
+```
+
+Displays a table of all registered config keys with their current values,
+types, sources, and categories. Secret values are masked with `********`.
+
+### `set`
+
+```bash
+vibetuner config set KEY [--value VALUE]
+```
+
+Sets a config value and persists it to MongoDB.
+
+#### Arguments
+
+- `KEY` — Config key to set (e.g., `features.dark_mode`). Must be a
+  registered key.
+
+#### Options
+
+- `--value`, `-v` — Value to set. When omitted for secret keys, a hidden
+  input prompt is used (recommended to avoid shell history exposure). When
+  omitted for non-secret keys, a regular input prompt is used.
+
+#### Examples
+
+```bash
+# Set a non-secret value
+vibetuner config set features.dark_mode --value true
+
+# Set a secret value (hidden prompt, no shell history)
+vibetuner config set integrations.api_key
+```
+
+!!! warning
+    Passing secrets via `--value` exposes them in shell history. Omit
+    `--value` for secret keys to use the secure hidden prompt.
+
+### `delete`
+
+```bash
+vibetuner config delete KEY [--yes]
+```
+
+Deletes a config value from MongoDB, reverting the key to its registered
+default.
+
+#### Arguments
+
+- `KEY` — Config key to delete from MongoDB.
+
+#### Options
+
+- `--yes`, `-y` — Skip the confirmation prompt.
+
+#### Examples
+
+```bash
+# Delete with confirmation prompt
+vibetuner config delete features.dark_mode
+
+# Skip confirmation
+vibetuner config delete features.dark_mode --yes
+```
+
 ## `vibetuner debug`
 
 Access the debug dashboard on deployed applications using short-lived HMAC-signed links.

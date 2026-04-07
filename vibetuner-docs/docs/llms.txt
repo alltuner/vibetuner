@@ -46,6 +46,12 @@ Important notes:
 - **Block Rendering**: `render_template_block(template, block_name, request, ctx)`
   renders a single `{% block %}` for HTMX partials. `render_template_blocks()` renders
   multiple blocks for OOB swaps. No extra dependencies. Import from `vibetuner`
+- **`@cache` Decorator**: `@cache(expire=60)` caches route responses in Redis.
+  Key derived from path + query params. Use `vary_on=lambda r: str(r.state.user.id)`
+  for request-dependent keys (per-user, per-tenant). Disabled in debug mode
+  (override with `force_caching=True`). No-op if Redis unavailable.
+  `invalidate(path)` and `invalidate_pattern(path)` for cache busting.
+  Import from `vibetuner.cache`
 - **`@cache_control` Decorator**: `@cache_control(max_age=300, public=True)` sets
   `Cache-Control` headers declaratively. Supports `public`, `private`, `no_cache`,
   `no_store`, `max_age`, `s_maxage`, `must_revalidate`, `stale_while_revalidate`,
@@ -54,6 +60,11 @@ Important notes:
   `hx_push_url()`, `hx_reswap()`, `hx_retarget()`, `hx_refresh()`,
   `hx_replace_url()`, `hx_trigger_after_settle()`, `hx_trigger_after_swap()`.
   Handles JSON serialization internally. Import from `vibetuner.htmx`
+- **Built-in Template Globals**: `now` (UTC datetime) and `today` (ISO date string)
+  are available in all templates automatically
+- **Encrypted Fields**: `EncryptedFieldsMixin` and `EncryptedStr` type for
+  transparent Fernet encrypt-on-save / decrypt-on-load on any Beanie model field.
+  Import from `vibetuner.models.mixins`. Requires `FIELD_ENCRYPTION_KEY` env var
 - **Template Context Providers**: `register_globals()` and `@register_context_provider`
   inject variables into every template render
 - **Service DI**: `get_email_service()`, `get_blob_service()`, `get_runtime_config()`
@@ -70,10 +81,16 @@ Important notes:
   with service connectivity checks
 - **Robust Tasks**: `@robust_task()` decorator with exponential backoff retries and
   MongoDB dead letter collection
+- **Robust Cron**: `@robust_cron("*/15 * * * *")` decorator combines scheduled
+  execution with the same retry/dead letter support as `@robust_task()`.
+  Import from `vibetuner.tasks.robust`
 - **Streaq UI**: Task queue monitoring dashboard at `/debug/tasks`
 - **Doctor CLI**: `vibetuner doctor` validates project setup, services, and config
 - **Config Decorators**: `@config_value()` and `ConfigGroup` for type-safe runtime
-  configuration
+  configuration. `set_config(key, value)` persists values programmatically.
+  `VibetunerApp(runtime_config={...})` for declarative registration in `tune.py`
+- **Config CLI**: `vibetuner config list|set|delete` manages runtime config
+  values from the command line. Secret values use hidden input prompts
 - **Testing Fixtures**: `vibetuner_client`, `mock_auth`, `mock_tasks`,
   `override_config`, `vibetuner_db` pytest fixtures
 - **Error Messages**: Actionable error messages with env var examples, Docker
@@ -82,7 +99,9 @@ Important notes:
 ## Reference
 
 - [CLI Reference](https://vibetuner.alltuner.com/cli-reference/):
-  Commands for `vibetuner scaffold`, `vibetuner run`, `vibetuner db`, and `vibetuner doctor`
+  Commands for `vibetuner scaffold`, `vibetuner run`, `vibetuner db`,
+  `vibetuner doctor`, `vibetuner config`, `vibetuner debug`, `vibetuner crypto`,
+  and `vibetuner version`
 - [Scaffolding Reference](https://vibetuner.alltuner.com/scaffolding/):
   Template prompts, post-generation tasks, and updating existing projects
 - [Deployment](https://vibetuner.alltuner.com/deployment/):
