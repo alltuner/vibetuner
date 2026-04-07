@@ -1,3 +1,5 @@
+extend-exclude = ["vibetuner-template"]
+
 [lint]
 extend-select = [
   # E and F are enabled by default

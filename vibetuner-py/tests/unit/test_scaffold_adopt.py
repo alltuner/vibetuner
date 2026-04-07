@@ -15,10 +15,10 @@ from vibetuner.cli.scaffold import _get_git_config, _infer_project_data
 class TestGetGitConfig:
     """Test _get_git_config handles missing git gracefully."""
 
-    def test_returns_none_when_git_unavailable(self):
+    def test_returns_none_when_git_unavailable(self, tmp_path: Path):
         """Test that _get_git_config returns None when git module can't be imported."""
         with patch.dict(sys.modules, {"git": None}):
-            result = _get_git_config("user.name", Path("/tmp"))
+            result = _get_git_config("user.name", tmp_path)
             assert result is None
 
     def test_scaffold_module_loads_without_git(self):

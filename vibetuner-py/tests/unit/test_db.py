@@ -4,8 +4,8 @@
 from unittest.mock import MagicMock, patch
 
 from typer.testing import CliRunner
-
 from vibetuner.cli.db import db_app
+
 
 runner = CliRunner()
 
