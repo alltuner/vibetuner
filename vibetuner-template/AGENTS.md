@@ -24,6 +24,40 @@ Models: `src/app/models/` | App config: `src/app/tune.py` | CSS config: `config.
 
 ---
 
+## Reporting Framework Issues
+
+When you encounter problems with the vibetuner framework, **file an issue
+upstream** rather than working around it silently. Any friction in using
+the framework is signal, not noise.
+
+File to `alltuner/vibetuner` when you encounter:
+
+1. **Bugs** — crashes, unexpected behavior, incorrect results
+2. **Non-ergonomic APIs** — if something requires a workaround or
+   boilerplate, that's a framework issue
+3. **Missing features** — functionality that should exist in the
+   framework but doesn't
+4. **Documentation gaps** — missing, unclear, or incorrect docs
+5. **Agent rule improvements** — if instructions in this file or
+   `.claude/rules/` are misleading, incomplete, or could be better
+
+**Identify yourself**: Always include which coding agent you are
+(e.g., "Filed by Claude Code", "Filed by Cursor") at the end of
+the issue body so maintainers know the source.
+
+```bash
+gh issue create --repo alltuner/vibetuner \
+  --title "Brief description" \
+  --body "Steps to reproduce, expected vs actual behavior.
+
+Filed by [agent name]."
+```
+
+Do NOT silently work around framework issues. Filing the issue is
+part of the job.
+
+---
+
 ## Project Learnings (`LEARNINGS.md`)
 
 If `LEARNINGS.md` exists, **read it before starting work**. Add non-obvious
@@ -118,45 +152,6 @@ Key commands: `just format` (all code), `just lint` (all code),
 
 ---
 
-## Deployment
-
-### Docker Registry
-
-`DOCKER_REGISTRY` controls where images are pushed and pulled.
-Set via environment variable, `.copier-answers.yml`, or defaults
-to `localhost:5050` (for use with a local registry proxy).
-
-```bash
-# Build and push to the configured registry
-just release
-
-# Push to a local registry proxy instead (e.g., Switchyard)
-PUSH_REGISTRY=localhost:5050 just release
-```
-
-`PUSH_REGISTRY` overrides `DOCKER_REGISTRY` for the push target
-only. This is useful when a local registry proxy syncs to the
-central registry asynchronously, giving you fast local pushes.
-
-### Deploying
-
-`deploy-latest` pulls and runs the image on a remote host via SSH.
-It is decoupled from `release`, so you can push and deploy separately.
-
-```bash
-just deploy-latest user@myhost
-```
-
-### CI/CD Recipes
-
-- `just build-dev` - Build the dev Docker image
-- `just test-build-prod` - Test-build the prod image locally
-- `just build-prod` - Build the prod image (requires clean, tagged commit)
-- `just release` - Build and push (requires clean, tagged commit)
-- `just deploy-latest HOST` - Pull and run on a remote host
-
----
-
 ## Architecture
 
 ```text
@@ -182,7 +177,6 @@ templates, MongoDB setup. File issues, don't modify.
 ### Routes
 
 ```python
-# src/app/frontend/routes/dashboard.py
 from fastapi import APIRouter, Request, Depends
 from vibetuner import render_template
 from vibetuner.frontend.deps import get_current_user
@@ -193,12 +187,6 @@ router = APIRouter()
 async def dashboard(request: Request, user=Depends(get_current_user)):
     return render_template("dashboard.html.jinja", request, {"user": user})
 ```
-
-**Shorthand**: `@render("template.html.jinja")` decorator — return a dict
-instead of calling `render_template()`. Passes through `Response` objects
-unchanged.
-
-**Streaming**: `render_template_stream()` for large pages (improves TTFB).
 
 Register routes in `__init__.py` via `APIRouter.include_router()`, then
 list in `tune.py`.
@@ -221,286 +209,10 @@ class Post(Document, TimeStampMixin):
 
 Export from `__init__.py`, list in `tune.py` `models=[]`.
 
-**Soft delete**: Use `DocumentWithSoftDelete` instead of `Document`.
-`delete()` sets `deleted_at`, queries auto-filter deleted docs.
-`hard_delete()` for permanent removal.
-
-**Encrypted fields**: `EncryptedFieldsMixin` + `EncryptedStr` type
-for transparent encrypt-on-save / decrypt-on-load. Requires
-`FIELD_ENCRYPTION_KEY` env var. `vibetuner crypto set-key` to
-configure, `vibetuner crypto rotate-key` to rotate.
-
-### Services
-
-No registration needed — just import where used. Email via
-`vibetuner.services.email.EmailService`. Configure with
-`MAIL_RESEND_API_KEY` or `MAIL_MAILJET_API_KEY` /
-`MAIL_MAILJET_API_SECRET` in `.env`.
-
-### Template Filters
-
-Pass to `tune.py` as `template_filters={"name": func}`. Use
-`markupsafe.Markup` for filters returning HTML.
-
-### Middleware
-
-Create `Middleware` list, pass to `tune.py` as `middleware=[]`.
-
-### Rate Limiting
-
-Built-in, enabled by default.
-`from vibetuner.ratelimit import limiter`:
-
-```python
-@router.get("/api/search")
-@limiter.limit("10/minute")
-async def search(request: Request):  # request param required
-    return {"results": []}
-
-@router.get("/health")
-@limiter.exempt
-async def health(request: Request): ...
-```
-
-Configure via `RATE_LIMIT_*` env vars. Redis shares limits across
-workers; falls back to in-memory.
-
-### Background Tasks
-
-```python
-from vibetuner.tasks.worker import get_worker
-worker = get_worker()
-
-@worker.task()
-async def send_digest_email(user_id: str): ...
-```
-
-List in `tune.py` `tasks=[]`. Queue with
-`await send_digest_email.enqueue(user.id)`.
-
-**Robust tasks** (retries + dead letters):
-`from vibetuner.tasks.robust import robust_task, robust_cron`.
-`@robust_task(max_retries=3)` for enqueued tasks.
-`@robust_cron("*/15 * * * *", max_retries=3)` for scheduled tasks.
-Both support `backoff_base`, `backoff_max`, `timeout`, `on_failure`
-callback. Failed tasks stored in `dead_letters` MongoDB collection.
-
-**Cron** (no retries): `@worker.cron("0 9 * * *")`.
-
-### CLI Commands
-
-Use `vibetuner.AsyncTyper` (never re-export `vibetuner.cli.app`).
-Pass to `tune.py` `cli=`. Commands run as
-`uv run vibetuner app <command>`.
-
-### Custom Lifespan
-
-**Frontend**: `@asynccontextmanager`, receives `FastAPI` app, yields
-nothing. Wrap with `base_lifespan(app)`.
-**Worker**: Takes no args, yields `Context`. Wrap with
-`base_lifespan()`.
-
-### CRUD Factory
-
-```python
-from vibetuner.crud import create_crud_routes, Operation
-post_routes = create_crud_routes(
-    Post, prefix="/api/posts", tags=["posts"],
-    sortable_fields=["created_at"],
-    filterable_fields=["status"],
-    searchable_fields=["title", "content"],
-    page_size=25,
-)
-```
-
-Generates LIST/CREATE/READ/UPDATE/DELETE. Limit with `operations=`.
-Hooks: `pre_create`, `post_create`, `pre_update`, `post_update`,
-`pre_delete`, `post_delete` — all receive `request: Request`.
-
-### SSE
-
-**Import from `vibetuner.sse`** (NOT `vibetuner.frontend.sse`):
-
-```python
-from vibetuner.sse import sse_endpoint, broadcast
-
-@sse_endpoint(
-    "/events/notifications",
-    channel="notifications",
-    router=router,
-)
-async def notifications_stream(request: Request): pass
-
-# Dynamic: return channel name from function body
-# Broadcast: await broadcast("channel", "event",
-#   data="<html>" or template=..., ctx=...)
-# HTMX: <div sse-connect="/events/..." sse-swap="event-name">
-```
-
-### HTMX Response Headers
-
-From `vibetuner.htmx`: `hx_redirect(url)`,
-`hx_location(path, target=, swap=)`,
-`hx_trigger(response, event, detail)`, `hx_push_url`,
-`hx_replace_url`, `hx_reswap`, `hx_retarget`, `hx_refresh`,
-`hx_trigger_after_settle`, `hx_trigger_after_swap`.
-
-### HTMX 4 Event Handling
-
-htmx 4 changed event handling significantly. Key differences:
-
-**Event names** use colon-separated format (not camelCase):
-`htmx:after:request`, `htmx:before:swap`, `htmx:after:settle`.
-
-**`hx-on` attributes** — the `hx-on::` shorthand is broken in
-alpha8. Use the explicit long form:
-
-```html
-<!-- BROKEN: hx-on::after-request="..." -->
-<!-- WORKS: -->
-<form hx-on:htmx:after:request="this.reset()">
-```
-
-**`event.detail`** was restructured. `event.detail.successful` no
-longer exists. Use `event.detail.ctx.response` instead:
-
-```javascript
-// v2: event.detail.successful, event.detail.elt, event.detail.xhr
-// v4: event.detail.ctx.response, event.detail.ctx.sourceElement,
-//     event.detail.ctx.status
-```
-
-**Events do not bubble** to `document.body` in v4. Attach listeners
-directly to elements or use `hx-on` attributes.
-
-See the [HTMX migration guide](https://vibetuner.alltuner.com/htmx-migration/)
-for full details.
-
-### Response Caching (Server-Side)
-
-`from vibetuner.cache import cache, invalidate, invalidate_pattern`.
-`@cache(expire=60)` — Redis-backed, key from path+query params.
-`vary_on=lambda r: str(r.state.user.id)` for per-user/tenant keys.
-Disabled in debug mode (`force_caching=True` to override).
-No-op without Redis.
-
-### Cache Control (Browser-Side)
-
-`from vibetuner.decorators import cache_control`.
-`@cache_control(max_age=300, public=True)`. Supports: `public`,
-`private`, `no_cache`, `no_store`, `max_age`, `s_maxage`,
-`must_revalidate`, `stale_while_revalidate`, `immutable`.
-
-### Block Rendering for HTMX Partials
-
-`render_template_block("template.html.jinja", "block_name",
-request, ctx)` — renders a single `{% block %}`.
-`render_template_blocks(...)` (plural) for multi-block OOB swaps.
-
-### HTMX Request Detection
-
-`request.state.htmx` — truthy for HTMX requests. Properties:
-`.boosted`, `.target`, `.trigger`, `.trigger_name`, `.current_url`,
-`.prompt`. Use `Depends(require_htmx)` for HTMX-only routes.
-
-### Template Context Providers
-
-```python
-from vibetuner.rendering import register_globals
-from vibetuner.rendering import register_context_provider
-
-register_globals({"site_title": "My App"})
-
-@register_context_provider
-def dynamic_context() -> dict:
-    return {"feature_flags": get_flags()}
-```
-
-### Runtime Configuration
-
-`from vibetuner.runtime_config import register_config_value, get_config, set_config`.
-Register with `register_config_value(key=, default=, value_type=,
-category=, description=, is_secret=)`. Or declaratively in `tune.py`
-via `runtime_config={...}`. Read with `await get_config("key")`.
-Write with `await set_config("key", value)`.
-Debug UI at `/debug/config`. CLI: `vibetuner config list|set|delete`.
-
-**Built-in template globals**: `now` (UTC datetime), `today` (ISO
-date string) — available in all templates automatically.
-
-### Template Override
-
-Create files in `templates/frontend/` or `templates/email/` to override
-defaults.
-
-### Debugging
-
-`uv run vibetuner doctor` — validates project structure, config, env
-vars, services, models, templates, deps.
-
-`vibetuner debug open https://myapp.com` — generates HMAC-signed
-magic link for production debug access (8-hour session, 5-min link
-expiry). Uses `SESSION_KEY` from `.env`.
-
----
-
-## Testing
-
-Fixtures (auto-discovered): `vibetuner_client`, `vibetuner_app`,
-`vibetuner_db`, `mock_auth` (`.login()`/`.logout()`), `mock_tasks`,
-`override_config`.
-
-```python
-@pytest.mark.asyncio
-async def test_dashboard(vibetuner_client, mock_auth):
-    mock_auth.login(name="Alice", email="alice@example.com")
-    resp = await vibetuner_client.get("/dashboard")
-    assert resp.status_code == 200
-```
-
-Dev server must be running (`just local-all`). Playwright MCP available
-at `http://localhost:8000`.
-
----
-
-## Configuration
-
-**Env vars** (`.env`, not committed): `DATABASE_URL`, `REDIS_URL`,
-`SECRET_KEY`, `DEBUG`.
-
-**Settings**: `from vibetuner.config import settings` —
-`.environment`, `.debug`, `.resolved_port`, `.expose_url`,
-`.mongodb_url`, `.redis_url`, `.workers_available`,
-`.project.project_slug`, `.project.project_name`,
-`.project.supported_languages`, `.project.default_language`,
-`.project.fqdn`.
-
-### Security Headers
-
-CSP with nonce-based scripts enabled by default. The CSP nonce is
-auto-injected into all `<script>` tags in HTML responses, so you
-don't need to add it manually. For `<style>` tags, use
-`{{ csp_nonce }}` template variable. Debug mode = report-only.
-Configure via `CSP_*` env vars. Avoid inline event handlers
-(`onclick` etc.) — use HTMX attributes or `addEventListener`.
-
-### Request ID
-
-Auto-assigned `X-Request-ID` (UUID4), reuses incoming header if
-present. Access via `vibetuner.frontend.request_id.get_request_id()`
-or `request_id_dependency`.
-
----
-
-## Localization
-
-```bash
-just i18n                    # Full workflow
-just new-locale LANG         # New language
-```
-
-Templates: `{% trans %}Welcome{% endtrans %}`.
-Python: `from starlette_babel import gettext_lazy as _`.
+For detailed patterns (soft delete, encrypted fields, CRUD factory,
+SSE, HTMX helpers, caching, background tasks, deployment, testing,
+configuration, localization), see
+https://vibetuner.alltuner.com/llms.txt
 
 ---
 
@@ -515,14 +227,6 @@ extend `base/skeleton.html.jinja`.
 **Tailwind 4**: Use utility classes and arbitrary values
 (`text-[13px]`, `bg-[#1DB954]`). Define tokens in `config.css`
 `@theme {}`. No inline styles.
-
----
-
-## Ad-hoc Database Operations
-
-Uses `pymongo` (not `motor`). Use `AsyncMongoClient` and
-`get_pymongo_collection()`. Existing documents may have `None` for
-fields with Pydantic defaults — include `None` in filters.
 
 ---
 

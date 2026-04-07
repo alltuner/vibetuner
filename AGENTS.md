@@ -63,6 +63,25 @@ feat!: remove deprecated authentication system
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for detailed guidelines.
 
+## Documentation Requirements
+
+Every new feature or significant change **must** include documentation
+updates as part of the same PR, not as follow-up work. Update whichever
+of the following apply:
+
+- **Docs site** (`vibetuner-docs/docs/`) — the relevant page(s) for
+  the feature area
+- **`llms.txt`** (`vibetuner-docs/docs/llms.txt`) — concise feature
+  entry in the Features section
+- **`llms-full.txt`** (`vibetuner-docs/docs/llms-full.txt`) — detailed
+  documentation with code examples
+- **`vibetuner-template/AGENTS.md`** — if the feature affects
+  scaffolded projects (and the corresponding `.claude/rules/` file
+  if applicable)
+
+If you are unsure which docs to update, update all four. Omitting docs
+from a feature PR is a review blocker.
+
 ## Testing Scaffold Changes from a Branch
 
 When working on scaffold-related changes (template updates, CLI improvements), you can test
