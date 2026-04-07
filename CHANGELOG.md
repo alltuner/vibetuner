@@ -1,5 +1,18 @@
 # Changelog
 
+## [10.2.0](https://github.com/alltuner/vibetuner/compare/v10.1.1...v10.2.0) (2026-04-07)
+
+
+### Features
+
+* add robust_cron decorator for cron tasks with retry and dead letter support ([#1592](https://github.com/alltuner/vibetuner/issues/1592)) ([e03ee69](https://github.com/alltuner/vibetuner/commit/e03ee6971d88bbd76b71f2be716833663c95762b))
+
+
+### Documentation Updates
+
+* document recent features across docs site, llms.txt, and AGENTS.md ([#1597](https://github.com/alltuner/vibetuner/issues/1597)) ([2483cec](https://github.com/alltuner/vibetuner/commit/2483cec3abf2a75b5464c511f77590e32f47c3ed))
+* split template AGENTS.md into modular rules, add issue-filing and doc requirements ([#1600](https://github.com/alltuner/vibetuner/issues/1600)) ([ab29f58](https://github.com/alltuner/vibetuner/commit/ab29f5861b6c6c1d6fd18e1a4517aa5259edf185))
+
 ## [10.1.1](https://github.com/alltuner/vibetuner/compare/v10.1.0...v10.1.1) (2026-04-07)
 
 
