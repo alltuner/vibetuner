@@ -1,5 +1,22 @@
 # Changelog
 
+## [10.1.0](https://github.com/alltuner/vibetuner/compare/v10.0.0...v10.1.0) (2026-04-07)
+
+
+### Features
+
+* add CLI commands for managing runtime config values ([#1587](https://github.com/alltuner/vibetuner/issues/1587)) ([ee48710](https://github.com/alltuner/vibetuner/commit/ee487100cb7f4866438c39df17999d59289ab679))
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency @alltuner/vibetuner to v10 ([#1580](https://github.com/alltuner/vibetuner/issues/1580)) ([7904469](https://github.com/alltuner/vibetuner/commit/79044697be017de529ab8247aa395521dc78ac0c))
+
+
+### Documentation Updates
+
+* clarify OAuthProviderAppModel as general-purpose encrypted credential store ([#1584](https://github.com/alltuner/vibetuner/issues/1584)) ([4db3177](https://github.com/alltuner/vibetuner/commit/4db31778a51f05b4e3aff5e6dac6cfa4ff299167))
+
 ## [10.0.0](https://github.com/alltuner/vibetuner/compare/v9.18.1...v10.0.0) (2026-04-06)
 
 
