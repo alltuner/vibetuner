@@ -3,12 +3,9 @@
 # ruff: noqa: S101
 from unittest.mock import AsyncMock, patch
 
-from pydantic import Field
 from typer.testing import CliRunner
 from vibetuner.cli import app
 from vibetuner.config import settings
-from vibetuner.crypto import encrypt_value
-from vibetuner.models.mixins import EncryptedFieldsMixin, EncryptedStr
 
 
 runner = CliRunner()
@@ -23,17 +20,11 @@ class TestSetKeyEncryptedDataHandling:
         """When DB has data encrypted with an unknown key, print a clear error instead of crashing."""
         monkeypatch.setattr(settings, "field_encryption_key", None)
 
-        ciphertext = encrypt_value("secret", "original-key")
-
         async def mock_to_list():
-            """Simulate what Beanie does: model_validate triggers _decrypt_on_load."""
-
-            class FakeDoc(EncryptedFieldsMixin):
-                client_secret: EncryptedStr = Field(default="x")
-
-            # This triggers _decrypt_on_load, which will raise because the
-            # auto-generated key doesn't match the one used to encrypt
-            FakeDoc(client_secret=ciphertext)
+            """Simulate a decryption failure when loading documents."""
+            raise ValueError(
+                "Failed to decrypt value. The encryption key may be incorrect."
+            )
 
         env_file = tmp_path / ".env"
 
