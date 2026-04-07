@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.1.1](https://github.com/alltuner/vibetuner/compare/v10.1.0...v10.1.1) (2026-04-07)
+
+
+### Bug Fixes
+
+* refresh stale cache in RuntimeConfig.get() and get_all_config() ([#1589](https://github.com/alltuner/vibetuner/issues/1589)) ([91cb4bc](https://github.com/alltuner/vibetuner/commit/91cb4bc0bdd9503634654a0ba5362dfcdd4299d4))
+
 ## [10.1.0](https://github.com/alltuner/vibetuner/compare/v10.0.0...v10.1.0) (2026-04-07)
 
 
