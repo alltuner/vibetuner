@@ -113,6 +113,10 @@ class RuntimeConfig:
         if key in cls._runtime_overrides:
             return cls._runtime_overrides[key]
 
+        # Ensure MongoDB cache is populated
+        if cls.is_cache_stale():
+            await cls.refresh_cache()
+
         # 2. Check MongoDB cache
         if key in cls._config_cache:
             return cls._config_cache[key]
@@ -220,6 +224,9 @@ class RuntimeConfig:
     @classmethod
     async def get_all_config(cls) -> list[ConfigEntry]:
         """Get all config entries with their sources for debug display."""
+        if cls.is_cache_stale():
+            await cls.refresh_cache()
+
         entries: list[ConfigEntry] = []
 
         # Start with all registered configs
