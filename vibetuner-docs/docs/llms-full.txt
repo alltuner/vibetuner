@@ -304,6 +304,29 @@ Use `find_many_in_all()` to include them. `delete()` sets `deleted_at` instead o
 `hard_delete()` permanently removes it. To restore: `doc.deleted_at = None; await doc.save()`.
 The CRUD factory's DELETE endpoint automatically performs a soft delete for these models.
 
+**Encrypted Fields (MongoDB)**
+
+Encrypt sensitive fields at rest using `EncryptedFieldsMixin` and `EncryptedStr`:
+
+```python
+from beanie import Document
+from pydantic import Field
+from vibetuner.models.mixins import EncryptedFieldsMixin, EncryptedStr
+
+class ApiCredential(Document, EncryptedFieldsMixin):
+    provider: str
+    api_key: EncryptedStr = Field(..., description="Encrypted API key")
+    token: EncryptedStr | None = Field(default=None)
+
+    class Settings:
+        name = "api_credentials"
+```
+
+Fields are transparently encrypted before database writes and decrypted on load.
+Requires `FIELD_ENCRYPTION_KEY` environment variable (Fernet key). Use
+`vibetuner crypto set-key` to generate a key, `vibetuner crypto rotate-key` to
+rotate it.
+
 #### Creating Templates
 
 Add templates in `templates/`:
@@ -324,6 +347,18 @@ Add templates in `templates/`:
         </div>
     </div>
 {% endblock %}
+```
+
+#### Built-in Template Globals
+
+These variables are available in every template automatically:
+
+- `now` — `datetime.now(timezone.utc)`, timezone-aware UTC datetime
+- `today` — `date.today().isoformat()`, ISO date string (e.g., `"2026-04-07"`)
+
+```html
+<p>Page rendered at {{ now | format_datetime }}</p>
+<footer>&copy; {{ now.year }} My Company</footer>
 ```
 
 #### Built-in Template Filters
@@ -1118,6 +1153,49 @@ automatically bridged via Redis pub/sub for multi-worker support.
 </div>
 ```
 
+### Response Caching
+
+Cache route responses in Redis with `@cache`:
+
+```python
+from vibetuner.cache import cache
+
+@router.get("/api/stats")
+@cache(expire=60)  # cache for 60 seconds
+async def get_stats(request: Request):
+    return {"users": await count_users()}
+```
+
+Parameters: `expire` (TTL in seconds, default 60), `force_caching` (override
+debug mode disable, default False), `vary_on` (callable for request-dependent
+keys, default None).
+
+Cache key is derived from path + sorted query params. Disabled in debug mode.
+No-op if Redis is unavailable.
+
+**Request-dependent keys with `vary_on`:**
+
+```python
+# Per-user cache
+@router.get("/dashboard")
+@cache(expire=120, vary_on=lambda r: str(r.state.user.id))
+async def dashboard(request: Request):
+    return await render_dashboard(request)
+```
+
+`vary_on` accepts `Callable[[Request], str]`. The returned string is included
+in the cache key, so different values produce independent cache entries.
+
+**Cache invalidation:**
+
+```python
+from vibetuner.cache import invalidate, invalidate_pattern
+
+await invalidate("/api/stats")
+await invalidate("/api/stats", query_params="page=1")
+await invalidate_pattern("/api/*")
+```
+
 ### Template Context Providers
 
 Register static globals or dynamic context providers available in every template.
@@ -1355,6 +1433,35 @@ actionable error messages with:
 
 These errors are displayed as rich console panels via `vibetuner.services.errors`.
 
+### Security Headers and CSP Nonce
+
+`SecurityHeadersMiddleware` sets security headers and generates a Content
+Security Policy with a unique nonce per request.
+
+**Script tags** get the nonce auto-injected by the middleware. Do NOT add
+`nonce=` attributes to `<script>` tags manually:
+
+```html
+<!-- Correct — nonce added automatically -->
+<script src="/static/app.js"></script>
+
+<!-- Wrong — manual nonce breaks auto-injection -->
+<script nonce="{{ csp_nonce }}" src="/static/app.js"></script>
+```
+
+**Style tags** must use the `{{ csp_nonce }}` template variable:
+
+```html
+<style nonce="{{ csp_nonce }}">
+    .highlight { color: red; }
+</style>
+```
+
+In debug mode, CSP uses `Content-Security-Policy-Report-Only`. In production,
+CSP is fully enforced. Configure extra sources via `CSP_EXTRA_SCRIPT_SRC`,
+`CSP_EXTRA_STYLE_SRC`, `CSP_EXTRA_IMG_SRC`, `CSP_EXTRA_CONNECT_SRC`,
+`CSP_EXTRA_FONT_SRC`, `CSP_EXTRA_MEDIA_SRC` environment variables.
+
 ### Background Tasks
 
 Run long-running or scheduled work outside the request cycle using Vibetuner's
@@ -1457,7 +1564,33 @@ Parameters: `max_retries` (default 3), `backoff_base` (default 2.0),
 
 Failed tasks are stored in the `dead_letters` MongoDB collection.
 
+#### The `@robust_cron()` Decorator
+
+For scheduled tasks that need retries and dead letter tracking, use
+`@robust_cron()` instead of `@worker.cron()`:
+
+```python
+from vibetuner.tasks.robust import robust_cron
+
+@robust_cron("*/15 * * * *", max_retries=5, backoff_max=120)
+async def refresh_caches():
+    """Refresh external caches with retry on failure."""
+    import httpx
+    async with httpx.AsyncClient() as client:
+        resp = await client.get("https://api.example.com/cache/refresh")
+        resp.raise_for_status()
+```
+
+Parameters: `tab` (crontab expression, required), `max_retries` (default 3),
+`backoff_base` (default 2.0), `backoff_max` (default 300.0), `timeout`,
+`on_failure` callback, plus extra `**cron_kwargs` forwarded to `worker.cron()`.
+
+Retry behavior, dead letter collection, and failure callbacks work identically
+to `@robust_task()`.
+
 #### Scheduled Tasks (Cron)
+
+For simple scheduled tasks without retries, use `@worker.cron()`:
 
 ```python
 @worker.cron("0 9 * * *")  # Every day at 9:00 AM UTC
@@ -1632,6 +1765,45 @@ Each field is registered under `"{category}.{field_name}"`.
 | `register_config_value()` | Imperative registration at module level |
 | `@config_value()` | Single standalone config values with defaults |
 | `ConfigGroup` | Groups of related settings (feature flags, limits) |
+
+#### `set_config()` Convenience Function
+
+Persist a config value, inferring metadata from the registry:
+
+```python
+from vibetuner.runtime_config import set_config
+
+await set_config("features.dark_mode", True)
+```
+
+The key must be registered. Raises `KeyError` if not. For unregistered keys,
+use `RuntimeConfig.set_value()` with explicit metadata.
+
+#### Registration via `VibetunerApp`
+
+Register config values declaratively in `tune.py`:
+
+```python
+app = VibetunerApp(
+    runtime_config={
+        "features.dark_mode": {
+            "default": False,
+            "value_type": "bool",
+            "description": "Enable dark mode",
+            "category": "features",
+        },
+    },
+)
+```
+
+#### CLI Management
+
+```bash
+vibetuner config list                              # View all values
+vibetuner config set features.dark_mode -v true    # Set a value
+vibetuner config set integrations.api_token        # Set secret (hidden prompt)
+vibetuner config delete features.dark_mode --yes   # Delete, revert to default
+```
 
 #### MongoDB Persistence and Caching
 
@@ -1858,6 +2030,86 @@ vibetuner doctor
 Validates project structure, configuration, service connectivity, models,
 templates, dependencies, and port availability. Exits with code 1 if errors
 are found.
+
+#### `vibetuner config`
+
+Manage runtime configuration values. Requires a project directory with MongoDB.
+
+**`list`**
+
+```bash
+vibetuner config list
+```
+
+Displays all registered config keys with values, types, sources, and categories.
+Secret values are masked.
+
+**`set`**
+
+```bash
+vibetuner config set KEY [--value VALUE]
+```
+
+Sets a config value and persists to MongoDB. When `--value` is omitted for
+secret keys, a hidden input prompt is used (avoids shell history exposure).
+When omitted for non-secret keys, a regular prompt is used.
+
+**`delete`**
+
+```bash
+vibetuner config delete KEY [--yes]
+```
+
+Deletes a config value from MongoDB, reverting to the registered default.
+`--yes` skips the confirmation prompt.
+
+#### `vibetuner debug`
+
+Access debug dashboards on deployed applications.
+
+**`open`**
+
+```bash
+vibetuner debug open URL [--secret SECRET]
+```
+
+Generates an HMAC-signed link (expires after 5 minutes) and opens it in the
+default browser. Grants an 8-hour debug session cookie on the server.
+
+- `URL` — Base URL of the deployed application (e.g., `https://myapp.com`)
+- `--secret`, `-s` — Signing secret. Must match the server's `SESSION_KEY`.
+  Reads from local `.env` when omitted.
+
+```bash
+# From a project directory
+vibetuner debug open https://myapp.com
+
+# From anywhere
+uvx vibetuner debug open https://myapp.com --secret mysecretkey
+```
+
+#### `vibetuner crypto`
+
+Manage encryption keys for fields encrypted with `EncryptedFieldsMixin`.
+
+**`set-key`**
+
+```bash
+vibetuner crypto set-key [--key PASSPHRASE] [--env-file PATH]
+```
+
+Sets the encryption key and encrypts all existing plaintext secrets.
+A secure random key is generated if `--key` is omitted. Errors if a key
+is already configured (use `rotate-key` instead).
+
+**`rotate-key`**
+
+```bash
+vibetuner crypto rotate-key [--new-key PASSPHRASE] [--env-file PATH]
+```
+
+Decrypts all secrets with the current key and re-encrypts with a new one.
+Errors if no current key is configured (use `set-key` first).
 
 #### `vibetuner version`
 

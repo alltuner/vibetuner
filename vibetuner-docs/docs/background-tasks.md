@@ -245,9 +245,67 @@ async def critical_sync(data: dict):
     ...
 ```
 
+## The `@robust_cron()` Decorator
+
+For scheduled tasks that need the same retry and dead letter support as
+`@robust_task()`, use `@robust_cron()`:
+
+```python
+from vibetuner.tasks.robust import robust_cron
+
+@robust_cron("*/15 * * * *", max_retries=5, backoff_max=120)
+async def refresh_caches():
+    """Refresh external caches every 15 minutes with retry on failure."""
+    import httpx
+
+    async with httpx.AsyncClient() as client:
+        resp = await client.get("https://api.example.com/cache/refresh")
+        resp.raise_for_status()
+```
+
+### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `tab` | `str` | *(required)* | Crontab schedule expression (e.g., `"0 9 * * *"`) |
+| `max_retries` | `int` | `3` | Maximum attempts before giving up |
+| `backoff_base` | `float` | `2.0` | Base for exponential backoff (`delay = base ** tries`) |
+| `backoff_max` | `float` | `300.0` | Maximum backoff delay in seconds |
+| `timeout` | `timedelta \| int \| None` | `None` | Task timeout (forwarded to `worker.cron()`) |
+| `on_failure` | `Callable \| None` | `None` | Called on permanent failure (sync or async) |
+| `**cron_kwargs` | | | Extra keyword arguments forwarded to `worker.cron()` |
+
+The retry behavior, dead letter collection, and failure callback work
+identically to [`@robust_task()`](#the-robust_task-decorator). The only
+difference is that `@robust_cron()` runs on a schedule instead of being
+enqueued manually.
+
+```python
+async def alert_on_failure(task_name: str, task_id: str, exc: Exception):
+    await notify_ops_team(f"Cron {task_name} failed: {exc}")
+
+@robust_cron("0 0 * * *", max_retries=3, on_failure=alert_on_failure)
+async def nightly_sync():
+    """Nightly data sync with failure alerting."""
+    ...
+```
+
+Register cron tasks in `tune.py` the same way as regular tasks:
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.tasks.maintenance import refresh_caches, nightly_sync
+
+app = VibetunerApp(
+    tasks=[refresh_caches, nightly_sync],
+)
+```
+
 ## Scheduled Tasks (Cron)
 
-Use `@worker.cron()` to run tasks on a schedule:
+For simple scheduled tasks that don't need retries or dead letter tracking,
+use `@worker.cron()` directly:
 
 ```python
 from vibetuner.tasks.worker import get_worker

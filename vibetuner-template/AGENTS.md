@@ -62,7 +62,7 @@ app = VibetunerApp(
     routes=[app_router],          # frontend/HTMX (hidden from /docs)
     api_routes=[api_router],      # JSON API (visible in /docs)
     # Also supports: middleware, template_filters, frontend_lifespan,
-    # worker_lifespan, oauth_providers, tasks, cli
+    # worker_lifespan, oauth_providers, tasks, cli, runtime_config
 )
 ```
 
@@ -221,6 +221,15 @@ class Post(Document, TimeStampMixin):
 
 Export from `__init__.py`, list in `tune.py` `models=[]`.
 
+**Soft delete**: Use `DocumentWithSoftDelete` instead of `Document`.
+`delete()` sets `deleted_at`, queries auto-filter deleted docs.
+`hard_delete()` for permanent removal.
+
+**Encrypted fields**: `EncryptedFieldsMixin` + `EncryptedStr` type
+for transparent encrypt-on-save / decrypt-on-load. Requires
+`FIELD_ENCRYPTION_KEY` env var. `vibetuner crypto set-key` to
+configure, `vibetuner crypto rotate-key` to rotate.
+
 ### Services
 
 No registration needed — just import where used. Email via
@@ -268,6 +277,15 @@ async def send_digest_email(user_id: str): ...
 
 List in `tune.py` `tasks=[]`. Queue with
 `await send_digest_email.enqueue(user.id)`.
+
+**Robust tasks** (retries + dead letters):
+`from vibetuner.tasks.robust import robust_task, robust_cron`.
+`@robust_task(max_retries=3)` for enqueued tasks.
+`@robust_cron("*/15 * * * *", max_retries=3)` for scheduled tasks.
+Both support `backoff_base`, `backoff_max`, `timeout`, `on_failure`
+callback. Failed tasks stored in `dead_letters` MongoDB collection.
+
+**Cron** (no retries): `@worker.cron("0 9 * * *")`.
 
 ### CLI Commands
 
@@ -362,6 +380,7 @@ for full details.
 
 `from vibetuner.cache import cache, invalidate, invalidate_pattern`.
 `@cache(expire=60)` — Redis-backed, key from path+query params.
+`vary_on=lambda r: str(r.state.user.id)` for per-user/tenant keys.
 Disabled in debug mode (`force_caching=True` to override).
 No-op without Redis.
 
@@ -399,10 +418,15 @@ def dynamic_context() -> dict:
 
 ### Runtime Configuration
 
-`from vibetuner.runtime_config import register_config_value, get_config`.
+`from vibetuner.runtime_config import register_config_value, get_config, set_config`.
 Register with `register_config_value(key=, default=, value_type=,
-category=, description=)`. Read with `await get_config("key")`.
-Debug UI at `/debug/config`.
+category=, description=, is_secret=)`. Or declaratively in `tune.py`
+via `runtime_config={...}`. Read with `await get_config("key")`.
+Write with `await set_config("key", value)`.
+Debug UI at `/debug/config`. CLI: `vibetuner config list|set|delete`.
+
+**Built-in template globals**: `now` (UTC datetime), `today` (ISO
+date string) — available in all templates automatically.
 
 ### Template Override
 
@@ -413,6 +437,10 @@ defaults.
 
 `uv run vibetuner doctor` — validates project structure, config, env
 vars, services, models, templates, deps.
+
+`vibetuner debug open https://myapp.com` — generates HMAC-signed
+magic link for production debug access (8-hour session, 5-min link
+expiry). Uses `SESSION_KEY` from `.env`.
 
 ---
 
@@ -451,9 +479,10 @@ at `http://localhost:8000`.
 
 CSP with nonce-based scripts enabled by default. The CSP nonce is
 auto-injected into all `<script>` tags in HTML responses, so you
-don't need to add it manually. Debug mode = report-only. Configure
-via `CSP_*` env vars. Avoid inline event handlers (`onclick`
-etc.) — use HTMX attributes or `addEventListener`.
+don't need to add it manually. For `<style>` tags, use
+`{{ csp_nonce }}` template variable. Debug mode = report-only.
+Configure via `CSP_*` env vars. Avoid inline event handlers
+(`onclick` etc.) — use HTMX attributes or `addEventListener`.
 
 ### Request ID
 
