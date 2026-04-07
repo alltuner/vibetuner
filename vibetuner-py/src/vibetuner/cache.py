@@ -10,9 +10,13 @@ from typing import Any
 from vibetuner.logging import logger
 
 
-def _build_cache_key(prefix: str, path: str, query_params: str) -> str:
-    """Build a deterministic Redis key from route path and query string."""
+def _build_cache_key(
+    prefix: str, path: str, query_params: str, vary_value: str | None = None
+) -> str:
+    """Build a deterministic Redis key from route path, query string, and vary value."""
     raw = f"{path}?{query_params}" if query_params else path
+    if vary_value:
+        raw = f"{raw}|vary:{vary_value}"
     key_hash = hashlib.sha256(raw.encode()).hexdigest()[:16]
     return f"{prefix}cache:{key_hash}:{raw}"
 
@@ -21,6 +25,7 @@ def cache(
     expire: int = 60,
     *,
     force_caching: bool = False,
+    vary_on: Callable | None = None,
 ) -> Callable:
     """Decorator that caches route responses in Redis with a TTL.
 
@@ -37,6 +42,14 @@ def cache(
     Args:
         expire: Time-to-live in seconds for the cached response.
         force_caching: Enable caching even when ``DEBUG`` is ``True``.
+        vary_on: Optional callable ``(Request) -> str`` that returns an
+            additional cache key component derived from the request. Use
+            this to produce per-user, per-tenant, or per-locale cache
+            entries. The return value is appended to the cache key, so
+            different values yield independent cached responses.
+
+            When ``None`` (the default), the cache key is based solely on
+            the request path and query parameters.
 
     Example::
 
@@ -46,6 +59,18 @@ def cache(
         @cache(expire=60)
         async def get_stats():
             return {"users": await count_users()}
+
+        # Per-user caching (each user gets their own cached copy)
+        @router.get("/dashboard")
+        @cache(expire=120, vary_on=lambda r: str(r.state.user.id))
+        async def dashboard(request: Request):
+            return await render_dashboard(request)
+
+        # Per-tenant caching
+        @router.get("/reports")
+        @cache(expire=300, vary_on=lambda r: r.state.tenant_id)
+        async def reports(request: Request):
+            return await generate_reports(request)
     """
 
     def decorator(func: Callable) -> Callable:
@@ -63,7 +88,7 @@ def cache(
             if request is None:
                 return await _call_handler(func, *args, **kwargs)
 
-            return await _cached_call(func, args, kwargs, request, expire)
+            return await _cached_call(func, args, kwargs, request, expire, vary_on)
 
         return wrapper
 
@@ -76,6 +101,7 @@ async def _cached_call(
     kwargs: dict,
     request: Any,
     expire: int,
+    vary_on: Callable | None = None,
 ) -> Any:
     """Execute the handler with Redis caching, falling back on errors."""
     from vibetuner.config import settings
@@ -83,7 +109,10 @@ async def _cached_call(
 
     no_cache = request.headers.get("cache-control", "") == "no-cache"
     sorted_qs = "&".join(f"{k}={v}" for k, v in sorted(request.query_params.items()))
-    cache_key = _build_cache_key(settings.redis_key_prefix, request.url.path, sorted_qs)
+    vary_value = vary_on(request) if vary_on is not None else None
+    cache_key = _build_cache_key(
+        settings.redis_key_prefix, request.url.path, sorted_qs, vary_value
+    )
 
     try:
         client = await get_redis_client()

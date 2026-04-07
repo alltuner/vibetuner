@@ -303,3 +303,110 @@ class TestCacheDecorator:
 
         body = json.loads(result.body)
         assert body["sync"] is True
+
+
+class TestVaryOn:
+    """Test the vary_on parameter for request-dependent cache keying."""
+
+    @pytest.mark.asyncio
+    async def test_vary_on_produces_different_keys(self):
+        """Different vary_on values produce different cache keys."""
+        mock_client = AsyncMock()
+        mock_client.get = AsyncMock(return_value=None)
+        mock_client.set = AsyncMock()
+
+        captured_keys: list[str] = []
+        original_build = _build_cache_key
+
+        def spy_build(*args, **kwargs):
+            key = original_build(*args, **kwargs)
+            captured_keys.append(key)
+            return key
+
+        @cache(expire=60, vary_on=lambda r: r.headers.get("x-tenant", ""))
+        async def handler(request: Request):
+            return JSONResponse({"ok": True})
+
+        req_a = _make_request(headers={"x-tenant": "tenant-a"})
+        req_b = _make_request(headers={"x-tenant": "tenant-b"})
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=mock_client)),
+            patch(_RESET_CLIENT_PATH),
+            patch("vibetuner.cache._build_cache_key", side_effect=spy_build),
+        ):
+            await handler(request=req_a)
+            await handler(request=req_b)
+
+        assert len(captured_keys) == 2
+        assert captured_keys[0] != captured_keys[1]
+
+    @pytest.mark.asyncio
+    async def test_vary_on_same_value_hits_cache(self):
+        """Same vary_on value reuses the cached response."""
+        cached_data = json.dumps(
+            {"type": "json", "body": '{"cached": true}', "status": 200}
+        ).encode()
+
+        mock_client = AsyncMock()
+        mock_client.get = AsyncMock(return_value=cached_data)
+        call_count = 0
+
+        @cache(expire=60, vary_on=lambda r: r.headers.get("x-tenant", ""))
+        async def handler(request: Request):
+            nonlocal call_count
+            call_count += 1
+            return JSONResponse({"cached": False})
+
+        req = _make_request(headers={"x-tenant": "tenant-a"})
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=mock_client)),
+            patch(_RESET_CLIENT_PATH),
+        ):
+            await handler(request=req)
+            await handler(request=req)
+
+        assert call_count == 0  # Both served from cache
+
+    @pytest.mark.asyncio
+    async def test_vary_on_none_uses_path_only(self):
+        """When vary_on is None (default), cache key uses path only."""
+        key = _build_cache_key("p:", "/test", "", None)
+        key_explicit_none = _build_cache_key("p:", "/test", "", None)
+        assert key == key_explicit_none
+
+    @pytest.mark.asyncio
+    async def test_vary_on_empty_string_same_as_no_vary(self):
+        """A vary_on that returns empty string produces same key as no vary_on."""
+        key_no_vary = _build_cache_key("p:", "/test", "", None)
+        key_empty = _build_cache_key("p:", "/test", "", "")
+        assert key_no_vary == key_empty
+
+    @pytest.mark.asyncio
+    async def test_vary_on_value_included_in_key(self):
+        """The vary_on value is reflected in the cache key."""
+        key_a = _build_cache_key("p:", "/test", "", "user-123")
+        key_b = _build_cache_key("p:", "/test", "", "user-456")
+        assert key_a != key_b
+
+    @pytest.mark.asyncio
+    async def test_vary_on_with_debug_mode_skips_caching(self):
+        """vary_on is irrelevant when debug mode disables caching."""
+        call_count = 0
+
+        @cache(expire=60, vary_on=lambda r: "anything")
+        async def handler(request: Request):
+            nonlocal call_count
+            call_count += 1
+            return JSONResponse({"count": call_count})
+
+        request = _make_request()
+
+        with patch(_SETTINGS_PATH, _mock_settings(debug=True)):
+            await handler(request=request)
+            await handler(request=request)
+
+        assert call_count == 2
