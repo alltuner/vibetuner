@@ -1,0 +1,54 @@
+{% if enable_ci_docker %}
+name: Docker
+
+on:
+  release:
+    types: [published]
+
+env:
+  DOCKER_REGISTRY: {{ docker_registry }}
+  COMPOSE_PROJECT_NAME: {{ project_slug }}
+
+jobs:
+  build-and-push:
+    runs-on: {{ ci_runner_label }}
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Derive version from release tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Check registry credentials
+        id: creds
+        run: |
+          if [ -n "$USERNAME" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          USERNAME: {% raw %}${{ secrets.DOCKER_REGISTRY_USERNAME }}{% endraw %}
+
+      - name: Log in to Docker registry
+        if: {% raw %}steps.creds.outputs.available == 'true'{% endraw %}
+        uses: docker/login-action@v3
+        with:
+          registry: {{ docker_registry }}
+          username: {% raw %}${{ secrets.DOCKER_REGISTRY_USERNAME }}{% endraw %}
+          password: {% raw %}${{ secrets.DOCKER_REGISTRY_PASSWORD }}{% endraw %}
+
+      - name: Build and push
+        env:
+          VERSION: {% raw %}${{ steps.version.outputs.version }}{% endraw %}
+          PYTHON_VERSION: {{ python_version }}
+          ENVIRONMENT: prod
+        run: docker buildx bake -f compose.prod.yml --push
+{% endif %}
