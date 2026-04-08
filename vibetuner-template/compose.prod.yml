@@ -3,7 +3,8 @@ services:
     image: ${DOCKER_REGISTRY:-localhost:5050}/${COMPOSE_PROJECT_NAME}:${VERSION:-latest}
     restart: unless-stopped
     env_file:
-      - .env
+      - path: .env
+        required: false
     command: ["prod", "worker"]
     labels:
       com.centurylinklabs.watchtower.enable: "${ENABLE_WATCHTOWER:-false}"
@@ -39,6 +40,7 @@ services:
       start_period: 5s
     restart: unless-stopped
     env_file:
-      - .env
+      - path: .env
+        required: false
     labels:
       com.centurylinklabs.watchtower.enable: "${ENABLE_WATCHTOWER:-false}"
