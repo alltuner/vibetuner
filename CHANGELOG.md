@@ -1,5 +1,25 @@
 # Changelog
 
+## [10.3.0](https://github.com/alltuner/vibetuner/compare/v10.2.1...v10.3.0) (2026-04-08)
+
+
+### Features
+
+* add CI Docker build and push workflow to scaffolding ([#1615](https://github.com/alltuner/vibetuner/issues/1615)) ([90fabab](https://github.com/alltuner/vibetuner/commit/90fababaa87d6dcc07684d1656be53209b975cca))
+
+
+### Bug Fixes
+
+* locale_selector reads stripped path, set-language ignores session ([#1610](https://github.com/alltuner/vibetuner/issues/1610)) ([0859f7f](https://github.com/alltuner/vibetuner/commit/0859f7f58dd4ba9151d7cee3f0030b595fbe49d6))
+* pin claude-code-action to v1.0.88 to avoid symlink ENOENT bug ([#1613](https://github.com/alltuner/vibetuner/issues/1613)) ([b8846bb](https://github.com/alltuner/vibetuner/commit/b8846bb84d6958e468272f2201d9e5f238c89f7f))
+* use PyPI package for lint-po instead of git+https ([#1609](https://github.com/alltuner/vibetuner/issues/1609)) ([12fa28a](https://github.com/alltuner/vibetuner/commit/12fa28aaae5726280015dd028b2c459256926682))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump pytest from 9.0.2 to 9.0.3 in /vibetuner-py ([#1605](https://github.com/alltuner/vibetuner/issues/1605)) ([c99e9f3](https://github.com/alltuner/vibetuner/commit/c99e9f3575a8800f0ecdb5babaf63389e07a275e))
+* remove /update-scaffolding skill from scaffolded projects ([#1617](https://github.com/alltuner/vibetuner/issues/1617)) ([d4dd174](https://github.com/alltuner/vibetuner/commit/d4dd1748068ee83aa39e6a5c279dbbaad115b239))
+
 ## [10.2.1](https://github.com/alltuner/vibetuner/compare/v10.2.0...v10.2.1) (2026-04-07)
 
 
