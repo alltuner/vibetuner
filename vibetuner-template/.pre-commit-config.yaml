@@ -58,6 +58,6 @@ repos:
     hooks:
       - id: lint-po
         name: lint-po
-        entry: uvx --from "git+https://github.com/himdel/lint-po" lint-po
+        entry: uvx lint-po
         language: system
         files: \.po$
