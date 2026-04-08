@@ -548,7 +548,8 @@ services:
     image: your-registry/your-app:latest
     command: ["prod", "worker"]
     env_file:
-      - .env
+      - path: .env
+        required: false
 ```
 
 ```bash
