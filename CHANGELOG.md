@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.3.2](https://github.com/alltuner/vibetuner/compare/v10.3.1...v10.3.2) (2026-04-08)
+
+
+### Bug Fixes
+
+* trigger Docker workflow on version tag push instead of release event ([#1622](https://github.com/alltuner/vibetuner/issues/1622)) ([7896364](https://github.com/alltuner/vibetuner/commit/7896364234894c16bb713a18e873b0712dfe0715))
+* trigger Docker workflow via workflow_run instead of release event ([#1624](https://github.com/alltuner/vibetuner/issues/1624)) ([c432b8b](https://github.com/alltuner/vibetuner/commit/c432b8b60ea64855d61c6d5505124a08284cfed4))
+
 ## [10.3.1](https://github.com/alltuner/vibetuner/compare/v10.3.0...v10.3.1) (2026-04-08)
 
 
