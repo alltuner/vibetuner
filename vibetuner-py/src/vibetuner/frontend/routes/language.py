@@ -32,6 +32,10 @@ async def set_language(request: Request, lang: str, current: str) -> RedirectRes
     else:
         new_url = request.url_for("homepage").path
 
+    # Update session language so user_preference_selector picks up the change
+    if "user" in request.session and "settings" in request.session["user"]:
+        request.session["user"]["settings"]["language"] = lang
+
     response = RedirectResponse(url=new_url)
     response.set_cookie(key="language", value=lang, max_age=LANGUAGE_COOKIE_MAX_AGE)
 

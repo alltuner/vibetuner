@@ -34,17 +34,8 @@ LANGUAGE_COOKIE_MAX_AGE = 365 * 24 * 60 * 60  # 31536000
 
 
 def locale_selector(conn: HTTPConnection) -> str | None:
-    """
-    Selects the locale based on the first part of the path if it matches a 2-letter language code.
-    """
-
-    parts = conn.scope.get("path", "").strip("/").split("/")
-
-    # Check if first part is a 2-letter lowercase language code
-    if parts and len(parts[0]) == 2 and parts[0].islower() and parts[0].isalpha():
-        return parts[0]
-
-    return None
+    """Selects the locale from the language prefix extracted by LangPrefixMiddleware."""
+    return conn.scope.get("state", {}).get("lang_prefix")
 
 
 def user_preference_selector(conn: HTTPConnection) -> str | None:
