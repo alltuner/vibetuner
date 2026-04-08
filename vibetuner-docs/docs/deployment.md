@@ -413,29 +413,52 @@ Consider:
 
 ## CI/CD Pipeline
 
-### Basic GitHub Actions
+### Automated Docker Builds (Scaffolded)
 
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy
-on:
-  push:
-    tags:
-      - 'v*'
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Build and push Docker image
-      run: |
-        docker build -t myapp:${{ github.ref_name }} .
-        docker push myapp:${{ github.ref_name }}
-    - name: Deploy to server
-      run: |
-        # SSH into your server and pull the new image
-        ssh user@your-server "cd /app && docker compose pull && docker compose up -d"
+When you enable `enable_ci_docker` during scaffolding, a GitHub Actions workflow is
+generated that automatically builds and pushes Docker images when a release is
+published (via Release Please).
+
+**Scaffolding prompts:**
+
+- `enable_ci_docker` — enables the workflow (requires `fqdn` to be set)
+- `docker_registry` — registry to push to (e.g. `registry.example.com:5050`)
+- `ci_runner_label` — defaults to `ubuntu-latest`; set to a self-hosted runner
+  label for private registries
+
+**Required GitHub secrets** (if your registry needs authentication):
+
+- `DOCKER_REGISTRY_USERNAME`
+- `DOCKER_REGISTRY_PASSWORD`
+
+The workflow uses your existing `compose.prod.yml` bake configuration, so it
+builds the same multi-platform images (linux/amd64 + linux/arm64) as
+`just release`.
+
+#### Private Registries
+
+If your registry isn't exposed to the internet, use a self-hosted GitHub
+Actions runner on the same private network. Set `ci_runner_label` to your
+runner's label (e.g. `self-hosted,private-network`) during scaffolding.
+The workflow doesn't include any VPN or tunnel-specific configuration,
+keeping it generic.
+
+### Manual Build and Push
+
+```bash
+just release
 ```
+
+Builds the production image and pushes to your container registry. Requires a
+clean git state and a tagged commit.
+
+### Manual Deployment
+
+```bash
+just deploy-latest user@your-server
+```
+
+Pulls the latest image on the remote host and restarts services via SSH.
 
 ## Next Steps
 
