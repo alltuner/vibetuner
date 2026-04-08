@@ -8,7 +8,6 @@ FastAPI + MongoDB + HTMX web application scaffolded from AllTuner's template.
 ## Executive Summary
 
 **For frontend work**: Use the `/frontend-design` skill.
-**Update scaffolding**: Use the `/update-scaffolding` skill.
 
 **Key locations**:
 Routes: `src/app/frontend/routes/` | Templates: `templates/frontend/` |
@@ -121,23 +120,7 @@ via git tags + `uv-dynamic-versioning`.
 
 ## Updating Scaffolding
 
-Use the `/update-scaffolding` skill to update to the latest vibetuner
-template. It checks for upstream changes, applies them in an isolated
-worktree, resolves conflicts, and creates a PR.
-
-```bash
-# Interactive: invoke the skill inside Claude Code
-/update-scaffolding
-
-# Headless: run directly from the command line
-claude -p "run the /update-scaffolding skill"
-```
-
-The skill will stop early if the scaffolding is already up to date.
-If conflicts can't be auto-resolved, it leaves them flagged in the PR
-for manual resolution.
-
-For a one-command workflow that also updates dependencies:
+Update dependencies and scaffolding in one step:
 
 ```bash
 just deps-scaffolding-pr     # Update deps + scaffolding and open a PR
