@@ -2,9 +2,9 @@
 name: Docker
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed] 7994c06 (fix: trigger Docker workflow via workflow_run instead of release event)
 
 env:
   DOCKER_REGISTRY: {{ docker_registry }}
@@ -13,15 +13,29 @@ env:
 jobs:
   build-and-push:
     runs-on: {{ ci_runner_label }}
+    if: >-
+      {% raw %}github.event.workflow_run.conclusion == 'success'
+      && contains(github.event.workflow_run.head_branch, 'main'){% endraw %}
     permissions:
       contents: read
     steps:
+      - name: Get latest release tag
+        id: version
+        env:
+          GH_TOKEN: {% raw %}${{ secrets.GITHUB_TOKEN }}{% endraw %}
+        run: |
+          TAG=$(gh release view --repo {% raw %}${{ github.repository }}{% endraw %} --json tagName -q .tagName)
+          if [ -z "$TAG" ]; then
+            echo "No release found, skipping"
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Derive version from release tag
-        id: version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+        with:
+          ref: {% raw %}${{ steps.version.outputs.tag }}{% endraw %}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
