@@ -114,52 +114,25 @@ There are two supported update flows:
 Both commands update tracked files. Always commit or stash local changes before
 running them, review the results, and resolve any merge prompts Copier surfaces.
 
-## Automated Update with Claude Code
+## Automated Update
 
-Scaffolded projects ship with an `/update-scaffolding` Claude Code skill that
-automates the entire update-and-PR workflow. It:
-
-1. Checks upstream for a newer template version (stops early if already
-   up to date).
-2. Creates an isolated git worktree so your working tree is untouched.
-3. Updates dependencies (`just update-and-commit-repo-deps`).
-4. Applies the latest scaffolding (`just update-scaffolding`).
-5. Detects and resolves merge conflicts intelligently.
-6. Creates a PR with a summary of changes and any unresolved conflicts.
-
-### Using the Skill Interactively
-
-Open Claude Code in your project and run:
-
-```text
-/update-scaffolding
-```
-
-### Running from the Command Line (Headless)
-
-You can invoke the skill directly from your terminal without entering the
-Claude Code TUI:
+Scaffolded projects include a justfile command that updates dependencies
+and scaffolding in one step, creates a worktree, and opens a PR:
 
 ```bash
-claude -p "run the /update-scaffolding skill"
+just deps-scaffolding-pr
 ```
 
-This is useful for cron jobs, CI pipelines, or quick one-liners.
+This command:
 
-### Conflict Resolution
+1. Creates an isolated git worktree so your working tree is untouched.
+2. Updates dependencies (`just update-and-commit-repo-deps`).
+3. Applies the latest scaffolding (`just update-scaffolding`).
+4. Detects merge conflicts and flags them if present.
+5. Creates a PR with a summary of changes.
 
-The skill resolves most conflicts automatically:
-
-| File type | Strategy |
-|-----------|----------|
-| `pyproject.toml`, `package.json` | Keep newer upstream deps, preserve project additions |
-| Justfiles, CI workflows, Dockerfiles | Prefer upstream (infrastructure stays current) |
-| Templates (`.html.jinja`) | Prefer upstream structure, keep project content |
-| Source code (`src/app/`) | Prefer project version (user code wins) |
-
-If a conflict cannot be resolved with confidence, the skill leaves the
-conflict markers in place, flags the file in the PR description, and does
-**not** auto-merge. You resolve those files manually and push to the PR branch.
+If the scaffolding update produces conflicts, the command will print
+instructions for resolving them in the worktree before merging the PR.
 
 ## Recommended Workflow
 
@@ -170,9 +143,9 @@ conflict markers in place, flags the file in the PR description, and does
 3. Re-run tests (`just test-build-prod`, `just dev`) to confirm nothing broke.
 4. Commit the changes produced by the update.
 
-### With Claude Code
+### One Command
 
-1. Run `/update-scaffolding` (or `claude -p "run the /update-scaffolding skill"`).
+1. Run `just deps-scaffolding-pr`.
 2. Review the PR it creates.
 3. Resolve any flagged conflicts if needed.
 4. Merge the PR.
