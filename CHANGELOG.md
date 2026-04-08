@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.3.3](https://github.com/alltuner/vibetuner/compare/v10.3.2...v10.3.3) (2026-04-08)
+
+
+### Miscellaneous Chores
+
+* remove CI Docker build workflow from scaffolding template ([#1626](https://github.com/alltuner/vibetuner/issues/1626)) ([63db9c7](https://github.com/alltuner/vibetuner/commit/63db9c7ea21f1c15026e983c81376b514267b6c8))
+
 ## [10.3.2](https://github.com/alltuner/vibetuner/compare/v10.3.1...v10.3.2) (2026-04-08)
 
 
