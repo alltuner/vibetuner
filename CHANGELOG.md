@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.3.1](https://github.com/alltuner/vibetuner/compare/v10.3.0...v10.3.1) (2026-04-08)
+
+
+### Bug Fixes
+
+* add trailing newline to docker.yml.j2 template output ([#1619](https://github.com/alltuner/vibetuner/issues/1619)) ([e26f533](https://github.com/alltuner/vibetuner/commit/e26f533446c48478a93e42d08d10fc222a742f29))
+* bump actions/checkout to v6 in docker.yml.j2 template ([#1621](https://github.com/alltuner/vibetuner/issues/1621)) ([5cd699b](https://github.com/alltuner/vibetuner/commit/5cd699b30749de14119aaeaad65651a8e1b773ec))
+
 ## [10.3.0](https://github.com/alltuner/vibetuner/compare/v10.2.1...v10.3.0) (2026-04-08)
 
 
