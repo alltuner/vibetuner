@@ -70,25 +70,6 @@ supported_languages:
   multiline: true
   default: []
 
-enable_ci_docker:
-  type: bool
-  help: Enable GitHub Actions workflow to build and push Docker images on release?
-  default: false
-  when: "{{ fqdn }}"
-
-docker_registry:
-  type: str
-  help: Docker registry to push images to (e.g. registry.example.com:5050)
-  placeholder: registry.example.com:5050
-  default: ""
-  when: "{{ enable_ci_docker }}"
-
-ci_runner_label:
-  type: str
-  help: GitHub Actions runner label (use self-hosted label for private registries)
-  default: "ubuntu-latest"
-  when: "{{ enable_ci_docker }}"
-
 enable_watchtower:
   type: bool
   help: Do you want to enable watchtower (containers self-reload on update)?

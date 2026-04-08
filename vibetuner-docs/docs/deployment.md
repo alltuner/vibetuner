@@ -413,37 +413,7 @@ Consider:
 
 ## CI/CD Pipeline
 
-### Automated Docker Builds (Scaffolded)
-
-When you enable `enable_ci_docker` during scaffolding, a GitHub Actions workflow is
-generated that automatically builds and pushes Docker images when a release is
-published (via Release Please).
-
-**Scaffolding prompts:**
-
-- `enable_ci_docker` — enables the workflow (requires `fqdn` to be set)
-- `docker_registry` — registry to push to (e.g. `registry.example.com:5050`)
-- `ci_runner_label` — defaults to `ubuntu-latest`; set to a self-hosted runner
-  label for private registries
-
-**Required GitHub secrets** (if your registry needs authentication):
-
-- `DOCKER_REGISTRY_USERNAME`
-- `DOCKER_REGISTRY_PASSWORD`
-
-The workflow uses your existing `compose.prod.yml` bake configuration, so it
-builds the same multi-platform images (linux/amd64 + linux/arm64) as
-`just release`.
-
-#### Private Registries
-
-If your registry isn't exposed to the internet, use a self-hosted GitHub
-Actions runner on the same private network. Set `ci_runner_label` to your
-runner's label (e.g. `self-hosted,private-network`) during scaffolding.
-The workflow doesn't include any VPN or tunnel-specific configuration,
-keeping it generic.
-
-### Manual Build and Push
+### Build and Push
 
 ```bash
 just release

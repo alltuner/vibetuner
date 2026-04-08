@@ -95,9 +95,8 @@ Important notes:
   `override_config`, `vibetuner_db` pytest fixtures
 - **Error Messages**: Actionable error messages with env var examples, Docker
   commands, and documentation links
-- **CI Docker Builds**: Optional GitHub Actions workflow (`enable_ci_docker` scaffolding
-  prompt) that builds and pushes multi-platform Docker images on release. Supports
-  private registries via self-hosted runner labels (`ci_runner_label`)
+- **Docker Builds**: Multi-platform Docker image builds via `just release` using
+  `compose.prod.yml` bake configuration
 
 ## Reference
 
