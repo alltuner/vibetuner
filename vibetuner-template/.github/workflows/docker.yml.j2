@@ -51,4 +51,5 @@ jobs:
           PYTHON_VERSION: {{ python_version }}
           ENVIRONMENT: prod
         run: docker buildx bake -f compose.prod.yml --push
+
 {% endif %}
