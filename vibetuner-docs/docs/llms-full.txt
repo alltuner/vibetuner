@@ -2139,9 +2139,6 @@ vibetuner version [--app]
 - `redis_url` – default empty. Used when background jobs are enabled.
 - `mongodb_url` – default empty. MongoDB connection string written to `.env.local`.
 - `database_url` – default empty. SQL database connection string (PostgreSQL, MySQL, MariaDB, SQLite) written to `.env.local`.
-- `enable_ci_docker` – default `false`. Only prompted when `fqdn` is set; adds a GitHub Actions workflow that builds and pushes Docker images on release.
-- `docker_registry` – default empty. Only prompted when `enable_ci_docker` is true. The registry to push images to (e.g. `registry.example.com:5050`).
-- `ci_runner_label` – default `ubuntu-latest`. Only prompted when `enable_ci_docker` is true. Set to a self-hosted runner label for private registries.
 - `enable_watchtower` – default `false`. Only prompted when `fqdn` is set; adds Watchtower service to production Docker Compose.
 
 #### Updating Existing Projects
@@ -2181,29 +2178,6 @@ just release
 
 This builds the production image and pushes to your container registry.
 
-#### CI Docker Builds
-
-When `enable_ci_docker` is enabled during scaffolding, a GitHub Actions workflow
-(`docker.yml`) is generated. It triggers on `release: published` events (created by
-Release Please) and:
-
-1. Checks out the release tag
-2. Sets up QEMU and Docker Buildx for multi-platform builds
-3. Logs in to the configured `docker_registry` (skipped if no credentials are set)
-4. Runs `docker buildx bake -f compose.prod.yml --push`
-
-The workflow reuses the same bake configuration as `just release`, producing identical
-multi-platform images (linux/amd64 + linux/arm64).
-
-**Private registries:** Set `ci_runner_label` to a self-hosted runner label (e.g.
-`self-hosted,private-network`) for registries not exposed to the internet. The runner
-must be on the same network as the registry. No VPN or tunnel configuration is included
-in the workflow.
-
-**GitHub secrets** (if registry requires authentication):
-
-- `DOCKER_REGISTRY_USERNAME`
-- `DOCKER_REGISTRY_PASSWORD`
 
 #### Environment Configuration
 
