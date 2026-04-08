@@ -2,8 +2,9 @@
 name: Docker
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 
 env:
   DOCKER_REGISTRY: {{ docker_registry }}
