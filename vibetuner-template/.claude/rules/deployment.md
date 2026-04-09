@@ -11,8 +11,10 @@ description: Docker registry, CI/CD recipes, and deployment patterns
 ## Docker Registry
 
 `DOCKER_REGISTRY` controls where images are pushed and pulled.
-Set via environment variable, `.copier-answers.yml`, or defaults
-to `localhost:5050` (for use with a local registry proxy).
+Configured during scaffolding via the `docker_registry` copier
+question (stored in `.copier-answers.yml`). The `DOCKER_REGISTRY`
+environment variable overrides the stored value. Defaults to
+`localhost:5050` (for use with a local registry proxy).
 
 ```bash
 # Build and push to the configured registry
