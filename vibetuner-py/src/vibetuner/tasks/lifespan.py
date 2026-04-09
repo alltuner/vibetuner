@@ -3,10 +3,12 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
+from vibetuner.config import settings
 from vibetuner.context import Context, ctx
 from vibetuner.loader import load_app_config
 from vibetuner.logging import logger
 from vibetuner.mongo import init_mongodb, teardown_mongodb
+from vibetuner.runtime_config import RuntimeConfig
 from vibetuner.sqlmodel import init_sqlmodel, teardown_sqlmodel
 
 
@@ -17,6 +19,10 @@ async def base_lifespan() -> AsyncGenerator[Context, None]:
 
     await init_mongodb()
     await init_sqlmodel()
+
+    if settings.mongodb_url:
+        await RuntimeConfig.refresh_cache()
+        logger.debug("Runtime config cache initialized")
 
     yield ctx
 
