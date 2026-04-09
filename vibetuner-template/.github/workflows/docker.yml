@@ -19,7 +19,7 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch'
       || (github.event.workflow_run.conclusion == 'success'
-      && contains(github.event.workflow_run.head_branch, 'main'))
+      && github.event.workflow_run.head_branch == 'main')
     permissions:
       contents: read
     steps:
@@ -27,37 +27,70 @@ jobs:
         id: version
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          TAG=$(gh release view --repo ${{ github.repository }} --json tagName -q .tagName)
+          TAG=$(gh release view --repo "$REPO" --json tagName -q .tagName)
           if [ -z "$TAG" ]; then
             echo "No release found, skipping"
             exit 1
           fi
+
+          # For workflow_run events, verify the latest release tag points to
+          # the exact commit that triggered the Release workflow. This ensures
+          # we only build when Release Please actually created a new release,
+          # not on every push to main.
+          if [ "$EVENT_NAME" = "workflow_run" ]; then
+            REF_DATA=$(gh api "repos/$REPO/git/ref/tags/$TAG")
+            OBJ_SHA=$(echo "$REF_DATA" | jq -r '.object.sha')
+            OBJ_TYPE=$(echo "$REF_DATA" | jq -r '.object.type')
+
+            # Dereference annotated tags to get the underlying commit
+            if [ "$OBJ_TYPE" = "tag" ]; then
+              OBJ_SHA=$(gh api "repos/$REPO/git/tags/$OBJ_SHA" --jq '.object.sha')
+            fi
+
+            if [ "$OBJ_SHA" != "$HEAD_SHA" ]; then
+              echo "::notice::Latest release $TAG points to $OBJ_SHA, not $HEAD_SHA. No new release was created by this run. Skipping build."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            echo "Verified: release $TAG matches triggering commit $HEAD_SHA"
+          fi
+
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ steps.version.outputs.tag }}
-
       - name: Install uv
+        if: steps.version.outputs.skip != 'true'
         uses: astral-sh/setup-uv@v7
 
       - name: Read project config
+        if: steps.version.outputs.skip != 'true'
         id: config
         run: |
           echo "python_version=$(cat .python-version)" >> "$GITHUB_OUTPUT"
           registry=$(uv run --with pyyaml python -c "import yaml; print(yaml.safe_load(open('.copier-answers.yml')).get('docker_registry', 'localhost:5050'))")
           echo "docker_registry=$registry" >> "$GITHUB_OUTPUT"
 
+      - name: Checkout release tag
+        if: steps.version.outputs.skip != 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.version.outputs.tag }}
+
       - name: Set up QEMU
+        if: steps.version.outputs.skip != 'true'
         uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
+        if: steps.version.outputs.skip != 'true'
         uses: docker/setup-buildx-action@v4
 
       - name: Build and push
+        if: steps.version.outputs.skip != 'true'
         env:
           VERSION: ${{ steps.version.outputs.version }}
           PYTHON_VERSION: ${{ steps.config.outputs.python_version }}
