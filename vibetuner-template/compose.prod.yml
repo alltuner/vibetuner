@@ -44,3 +44,6 @@ services:
         required: false
     labels:
       com.centurylinklabs.watchtower.enable: "${ENABLE_WATCHTOWER:-false}"
+
+networks:
+  default:
