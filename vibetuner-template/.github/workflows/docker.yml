@@ -63,6 +63,12 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
 
+      - name: Checkout release tag
+        if: steps.version.outputs.skip != 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.version.outputs.tag }}
+
       - name: Install uv
         if: steps.version.outputs.skip != 'true'
         uses: astral-sh/setup-uv@v7
@@ -74,12 +80,6 @@ jobs:
           echo "python_version=$(cat .python-version)" >> "$GITHUB_OUTPUT"
           registry=$(uv run --with pyyaml python -c "import yaml; print(yaml.safe_load(open('.copier-answers.yml')).get('docker_registry', 'localhost:5050'))")
           echo "docker_registry=$registry" >> "$GITHUB_OUTPUT"
-
-      - name: Checkout release tag
-        if: steps.version.outputs.skip != 'true'
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ steps.version.outputs.tag }}
 
       - name: Set up QEMU
         if: steps.version.outputs.skip != 'true'
