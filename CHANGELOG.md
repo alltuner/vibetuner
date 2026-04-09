@@ -1,5 +1,29 @@
 # Changelog
 
+## [10.4.0](https://github.com/alltuner/vibetuner/compare/v10.3.3...v10.4.0) (2026-04-09)
+
+
+### Features
+
+* scaffold Docker build workflow for self-hosted runners ([#1640](https://github.com/alltuner/vibetuner/issues/1640)) ([cb0761c](https://github.com/alltuner/vibetuner/commit/cb0761c59d35125de25e67bc1d1decf91adbe557))
+
+
+### Bug Fixes
+
+* declare default network in compose.prod.yml for buildx bake ([#1636](https://github.com/alltuner/vibetuner/issues/1636)) ([1207ca6](https://github.com/alltuner/vibetuner/commit/1207ca696553b5367aae17bea0c6f75a684d54cf))
+* initialize runtime config cache in worker base_lifespan ([#1639](https://github.com/alltuner/vibetuner/issues/1639)) ([c5f9b22](https://github.com/alltuner/vibetuner/commit/c5f9b224a298d1f2849e3a70d6e0e3b79a3526b3))
+* make env_file optional in compose.prod.yml for CI builds ([#1631](https://github.com/alltuner/vibetuner/issues/1631)) ([1312d14](https://github.com/alltuner/vibetuner/commit/1312d148deb22320bf28de793668acdb954a487e))
+* restore .dockerignore removed with Docker CI workflow ([#1628](https://github.com/alltuner/vibetuner/issues/1628)) ([88cf1d0](https://github.com/alltuner/vibetuner/commit/88cf1d08ec687c92f7a3afcb74d27a2c6989f5ce))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump cryptography from 46.0.6 to 46.0.7 ([#1634](https://github.com/alltuner/vibetuner/issues/1634)) ([c5df762](https://github.com/alltuner/vibetuner/commit/c5df762cac9955eb6417731869504b3434cc46ce))
+* **deps:** bump cryptography from 46.0.6 to 46.0.7 in /vibetuner-py ([#1633](https://github.com/alltuner/vibetuner/issues/1633)) ([da0df92](https://github.com/alltuner/vibetuner/commit/da0df920e634ddc4b62d6b84559ad4bc3384bfa6))
+* **deps:** update dependency cryptography to v46.0.7 [security] ([#1635](https://github.com/alltuner/vibetuner/issues/1635)) ([74427f3](https://github.com/alltuner/vibetuner/commit/74427f303128bf1fb46905faaba52183a40c087e))
+* **deps:** update docker/setup-buildx-action action to v4 ([#1641](https://github.com/alltuner/vibetuner/issues/1641)) ([da757b4](https://github.com/alltuner/vibetuner/commit/da757b4d095fb3bebcf28bb718eef9124e197e1e))
+* **deps:** update docker/setup-qemu-action action to v4 ([#1642](https://github.com/alltuner/vibetuner/issues/1642)) ([59d71ec](https://github.com/alltuner/vibetuner/commit/59d71ec19cadb24a8e517b65d01b1071e6852f54))
+
 ## [10.3.3](https://github.com/alltuner/vibetuner/compare/v10.3.2...v10.3.3) (2026-04-08)
 
 
