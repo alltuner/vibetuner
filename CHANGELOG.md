@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.4.1](https://github.com/alltuner/vibetuner/compare/v10.4.0...v10.4.1) (2026-04-09)
+
+
+### Bug Fixes
+
+* clarify boundary comments in scaffolded config files ([#1644](https://github.com/alltuner/vibetuner/issues/1644)) ([371fb61](https://github.com/alltuner/vibetuner/commit/371fb61b2d293e5ab2689629083d3319590af344))
+
 ## [10.4.0](https://github.com/alltuner/vibetuner/compare/v10.3.3...v10.4.0) (2026-04-09)
 
 
