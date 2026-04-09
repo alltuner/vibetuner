@@ -6,7 +6,7 @@ _skip_if_exists:
 _subdirectory: vibetuner-template
 _templates_suffix: .j2
 _exclude:
-  - "{% if not use_self_hosted_runner %}.github/workflows/docker.yml.j2{% endif %}"
+  - "{% if not use_self_hosted_runner %}.github/workflows/docker.yml{% endif %}"
 
 company_name:
   type: str
