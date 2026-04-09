@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.4.2](https://github.com/alltuner/vibetuner/compare/v10.4.1...v10.4.2) (2026-04-09)
+
+
+### Bug Fixes
+
+* docker workflow fires on every main push and reads config from wrong ref ([#1648](https://github.com/alltuner/vibetuner/issues/1648)) ([d10abed](https://github.com/alltuner/vibetuner/commit/d10abedbaeecd48fdcc59f5d1ac73d8da9a8f49f))
+
 ## [10.4.1](https://github.com/alltuner/vibetuner/compare/v10.4.0...v10.4.1) (2026-04-09)
 
 
