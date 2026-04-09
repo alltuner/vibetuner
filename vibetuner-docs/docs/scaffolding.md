@@ -73,6 +73,11 @@ Watchtower, etc.).
 and `uv` settings.
 - `supported_languages` – default `[]`. JSON/YAML list of language codes (for
 example `["es", "fr"]`), adds translation skeletons.
+- `docker_registry` – default `localhost:5050`. Only prompted when `fqdn` is set.
+  Docker registry hostname for pushing and pulling production images.
+- `use_self_hosted_runner` – default `false`. Only prompted when `fqdn` is set.
+  Includes a GitHub Actions workflow for building and pushing Docker images on a
+  self-hosted runner, triggered by releases.
 - `enable_watchtower` – default `false`. Only prompted when `fqdn` is set; adds
   Watchtower service to production Docker Compose.
 

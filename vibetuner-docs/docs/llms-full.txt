@@ -2139,6 +2139,8 @@ vibetuner version [--app]
 - `redis_url` – default empty. Used when background jobs are enabled.
 - `mongodb_url` – default empty. MongoDB connection string written to `.env.local`.
 - `database_url` – default empty. SQL database connection string (PostgreSQL, MySQL, MariaDB, SQLite) written to `.env.local`.
+- `docker_registry` – default `localhost:5050`. Only prompted when `fqdn` is set. Docker registry hostname for pushing and pulling production images.
+- `use_self_hosted_runner` – default `false`. Only prompted when `fqdn` is set. Includes a GitHub Actions workflow for building and pushing Docker images on a self-hosted runner, triggered by releases.
 - `enable_watchtower` – default `false`. Only prompted when `fqdn` is set; adds Watchtower service to production Docker Compose.
 
 #### Updating Existing Projects

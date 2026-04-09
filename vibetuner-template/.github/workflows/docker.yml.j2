@@ -1,0 +1,65 @@
+{%- raw %}
+name: Build and Push Docker Images
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+
+concurrency:
+  group: docker-build
+  cancel-in-progress: true
+
+env:
+  DOCKER_REGISTRY: {% endraw %}{{ docker_registry }}{%- raw %}
+  COMPOSE_PROJECT_NAME: ${{ github.event.repository.name }}
+
+jobs:
+  build-and-push:
+    runs-on: self-hosted
+    if: >-
+      github.event_name == 'workflow_dispatch'
+      || (github.event.workflow_run.conclusion == 'success'
+      && contains(github.event.workflow_run.head_branch, 'main'))
+    permissions:
+      contents: read
+    steps:
+      - name: Get latest release tag
+        id: version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=$(gh release view --repo ${{ github.repository }} --json tagName -q .tagName)
+          if [ -z "$TAG" ]; then
+            echo "No release found, skipping"
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.version.outputs.tag }}
+
+      - name: Read Python version
+        id: python
+        run: echo "version=$(cat .python-version)" >> "$GITHUB_OUTPUT"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          PYTHON_VERSION: ${{ steps.python.outputs.version }}
+          ENVIRONMENT: prod
+        run: >-
+          docker buildx bake -f compose.prod.yml --push
+          --set "*.cache-from=type=registry,ref=$DOCKER_REGISTRY/$COMPOSE_PROJECT_NAME:buildcache"
+          --set "*.cache-to=type=registry,ref=$DOCKER_REGISTRY/$COMPOSE_PROJECT_NAME:buildcache,mode=max"
+{% endraw -%}

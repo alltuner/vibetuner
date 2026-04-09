@@ -5,6 +5,8 @@ _skip_if_exists:
   - "src/{{ project_slug | replace('-', '_') }}/__init__.py"
 _subdirectory: vibetuner-template
 _templates_suffix: .j2
+_exclude:
+  - "{% if not use_self_hosted_runner %}.github/workflows/docker.yml.j2{% endif %}"
 
 company_name:
   type: str
@@ -69,6 +71,19 @@ supported_languages:
   help: List of 2-letter lang codes of additional supported languages
   multiline: true
   default: []
+
+docker_registry:
+  type: str
+  help: Docker registry hostname for pushing and pulling images
+  placeholder: registry.example.com
+  default: "localhost:5050"
+  when: "{{ fqdn }}"
+
+use_self_hosted_runner:
+  type: bool
+  help: Include a GitHub Actions workflow for building Docker images on a self-hosted runner?
+  default: false
+  when: "{{ fqdn }}"
 
 enable_watchtower:
   type: bool
