@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.4.3](https://github.com/alltuner/vibetuner/compare/v10.4.2...v10.4.3) (2026-04-09)
+
+
+### Bug Fixes
+
+* checkout release tag before reading project config in docker workflow ([#1651](https://github.com/alltuner/vibetuner/issues/1651)) ([3d14a0e](https://github.com/alltuner/vibetuner/commit/3d14a0e081c038d4e6052325f786107316ad8f72))
+
+
+### Miscellaneous Chores
+
+* update deps 2026-04-09 ([e963d59](https://github.com/alltuner/vibetuner/commit/e963d596a1860cffa576f316d8717a22b4eca1f3))
+
 ## [10.4.2](https://github.com/alltuner/vibetuner/compare/v10.4.1...v10.4.2) (2026-04-09)
 
 
