@@ -2,6 +2,9 @@ version = 1
 revision = 3
 requires-python = ">=3.11"
 
+[manifest]
+constraints = [{ name = "coredis", specifier = "<6.5.0" }]
+
 [[package]]
 name = "aioboto3"
 version = "15.5.0"
