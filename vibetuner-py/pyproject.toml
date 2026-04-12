@@ -92,12 +92,6 @@ dev = [
 requires = ["uv_build>=0.11,<0.12"]
 build-backend = "uv_build"
 
-[tool.uv]
-# coredis 6.5.0+ pulls in opentelemetry-api, which crashes on Python 3.14
-# due to an unguarded StopIteration in its context loader fallback path.
-# See: https://github.com/alltuner/vibetuner/issues/1654
-constraint-dependencies = ["coredis<6.5.0"]
-
 [tool.uv.build-backend]
 # Exclude development documentation files from the built package
 # These files are for repository contributors, not end users
