@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.4.4](https://github.com/alltuner/vibetuner/compare/v10.4.3...v10.4.4) (2026-04-12)
+
+
+### Bug Fixes
+
+* preserve entry_points.txt in Dockerfile venv cleanup ([#1655](https://github.com/alltuner/vibetuner/issues/1655)) ([5d18964](https://github.com/alltuner/vibetuner/commit/5d18964907f639b8a1a6af33a008a10c95022745))
+
 ## [10.4.3](https://github.com/alltuner/vibetuner/compare/v10.4.2...v10.4.3) (2026-04-09)
 
 
