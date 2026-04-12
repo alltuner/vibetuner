@@ -51,7 +51,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=README.md,target=README.md \
     uv sync --frozen --no-group dev && \
     find .venv -type d -name 'tests' -exec rm -rf {} + 2>/dev/null || true && \
-    find .venv -type f \( -name '*.md' -o -name '*.rst' -o -name '*.txt' \) ! -path '*/METADATA' -delete 2>/dev/null || true
+    find .venv -type f \( -name '*.md' -o -name '*.rst' -o -name '*.txt' \) ! -path '*/METADATA' ! -name 'entry_points.txt' -delete 2>/dev/null || true
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 4: Compile Localization Files (parallel with frontend)
