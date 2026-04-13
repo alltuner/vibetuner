@@ -1,1 +1,0 @@
-../vibetuner-template/.hooks/superset-setup.sh

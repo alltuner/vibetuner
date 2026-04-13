@@ -1,1 +1,0 @@
-../vibetuner-template/.hooks/emdash-setup.sh

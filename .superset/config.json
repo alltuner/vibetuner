@@ -1,4 +1,0 @@
-{
-  "setup": [".hooks/superset-setup.sh"],
-  "teardown": []
-}
