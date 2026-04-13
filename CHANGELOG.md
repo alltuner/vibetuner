@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.4.5](https://github.com/alltuner/vibetuner/compare/v10.4.4...v10.4.5) (2026-04-13)
+
+
+### Bug Fixes
+
+* remove stale run scripts for coding agents ([#1658](https://github.com/alltuner/vibetuner/issues/1658)) ([3b8d880](https://github.com/alltuner/vibetuner/commit/3b8d880f919cbb32b087fb990495d567a28d8f03))
+
 ## [10.4.4](https://github.com/alltuner/vibetuner/compare/v10.4.3...v10.4.4) (2026-04-12)
 
 
