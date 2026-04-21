@@ -1,5 +1,29 @@
 # Changelog
 
+## [10.4.6](https://github.com/alltuner/vibetuner/compare/v10.4.5...v10.4.6) (2026-04-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency htmx.org to v4.0.0-beta2 ([#1663](https://github.com/alltuner/vibetuner/issues/1663)) ([aaea3da](https://github.com/alltuner/vibetuner/commit/aaea3da11c5dfe1c0585ee21c5a6c6617205d875))
+* relax pydantic-extra-types pin to 2.11.1 ([#1678](https://github.com/alltuner/vibetuner/issues/1678)) ([9a9f8f1](https://github.com/alltuner/vibetuner/commit/9a9f8f192aa03e8f27b403b067ec5e9d88c5baed))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump actions/upload-pages-artifact from 4 to 5 ([#1664](https://github.com/alltuner/vibetuner/issues/1664)) ([c702119](https://github.com/alltuner/vibetuner/commit/c702119a0607fb6214fb524dd50f4aab4aa38e71))
+* **deps:** bump authlib from 1.6.9 to 1.6.11 ([#1675](https://github.com/alltuner/vibetuner/issues/1675)) ([7cb5629](https://github.com/alltuner/vibetuner/commit/7cb562938d86fd618e533ff0687a56248f33e40d))
+* **deps:** bump authlib from 1.6.9 to 1.6.11 in /vibetuner-py ([#1674](https://github.com/alltuner/vibetuner/issues/1674)) ([d97172c](https://github.com/alltuner/vibetuner/commit/d97172c9acd9386c2e2c1469f09d2af797bb54a6))
+* **deps:** bump resend from 2.27.0 to 2.28.0 in /vibetuner-py ([#1666](https://github.com/alltuner/vibetuner/issues/1666)) ([b9ef0d7](https://github.com/alltuner/vibetuner/commit/b9ef0d7aac773a17e1c4de4ee7b7cf303daa5d40))
+* **deps:** bump rumdl from 0.1.70 to 0.1.72 in /vibetuner-py ([#1669](https://github.com/alltuner/vibetuner/issues/1669)) ([5548e4b](https://github.com/alltuner/vibetuner/commit/5548e4ba65e15fe72d0161f811745f84af8c48c1))
+* **deps:** bump types-authlib from 1.6.9.20260408 to 1.6.10.20260414 in /vibetuner-py ([#1665](https://github.com/alltuner/vibetuner/issues/1665)) ([2b6cd4e](https://github.com/alltuner/vibetuner/commit/2b6cd4e1cc9b5256b123b933c91f62939078620a))
+* update deps 2026-04-21 ([bed24bb](https://github.com/alltuner/vibetuner/commit/bed24bb9bed68a4207b3d816f7d24428865fbac6))
+
+
+### CI/CD Changes
+
+* skip claude-review for dependabot and renovate PRs ([#1677](https://github.com/alltuner/vibetuner/issues/1677)) ([c098624](https://github.com/alltuner/vibetuner/commit/c098624b434d6cc5000df928ff617b3231e5a336))
+
 ## [10.4.5](https://github.com/alltuner/vibetuner/compare/v10.4.4...v10.4.5) (2026-04-13)
 
 
