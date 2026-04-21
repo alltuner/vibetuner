@@ -482,7 +482,7 @@ jobs:
           echo "vibetuner.alltuner.com" > vibetuner-docs/site/CNAME
 
       - name: Upload docs artifacts
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: vibetuner-docs/site
 
