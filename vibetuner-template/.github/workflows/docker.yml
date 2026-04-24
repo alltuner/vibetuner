@@ -71,7 +71,7 @@ jobs:
 
       - name: Install uv
         if: steps.version.outputs.skip != 'true'
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
 
       - name: Read project config
         if: steps.version.outputs.skip != 'true'
