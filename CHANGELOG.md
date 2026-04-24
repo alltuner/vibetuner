@@ -1,5 +1,22 @@
 # Changelog
 
+## [10.5.0](https://github.com/alltuner/vibetuner/compare/v10.4.7...v10.5.0) (2026-04-24)
+
+
+### Features
+
+* **scaffolding:** reorder deps-scaffolding-pr and add deps-scaffolding variant ([#1686](https://github.com/alltuner/vibetuner/issues/1686)) ([5134f11](https://github.com/alltuner/vibetuner/commit/5134f11c77f9f4d1a5d40a2b74686ab8bab6cb4c))
+
+
+### Miscellaneous Chores
+
+* include commit authors in release-please changelog ([#1684](https://github.com/alltuner/vibetuner/issues/1684)) ([63c6402](https://github.com/alltuner/vibetuner/commit/63c6402fb9870715f72dffd5bdf00f0c9848d781))
+
+
+### CI/CD Changes
+
+* simplify template release workflow and clean actionlint warnings ([#1687](https://github.com/alltuner/vibetuner/issues/1687)) ([bbd5b59](https://github.com/alltuner/vibetuner/commit/bbd5b595b06125ab5c70e18902b6faf84ca7d890))
+
 ## [10.4.7](https://github.com/alltuner/vibetuner/compare/v10.4.6...v10.4.7) (2026-04-24)
 
 
