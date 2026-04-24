@@ -148,8 +148,8 @@ jobs:
             echo "Using release-please version: $VERSION"
           fi
 
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "version=$VERSION" >> $GITHUB_ENV
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_ENV"
 
           # Determine version type
           if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.0$ ]] && [[ "$VERSION" != ^1\.0\.0$ ]]; then
@@ -173,20 +173,22 @@ jobs:
             echo "🔍 Checking for meaningful changes in patch version..."
 
             # Check for changes in all packages (excluding version files)
-            PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "pyproject\.toml" | wc -l)
-            JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "package\.json" | wc -l)
-            TEMPLATE_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-template/" | grep -v -E "pyproject\.toml|package\.json" | wc -l)
-            DOCS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-docs/" | wc -l)
+            PYTHON_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-py/" | grep -vcE "pyproject\.toml")
+            JS_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-js/" | grep -vcE "package\.json")
+            TEMPLATE_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-template/" | grep -vcE "pyproject\.toml|package\.json")
+            DOCS_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -cE "^vibetuner-docs/")
 
             TOTAL_CHANGED=$((PYTHON_CHANGED + JS_CHANGED + TEMPLATE_CHANGED + DOCS_CHANGED))
 
             if [ "$TOTAL_CHANGED" -eq 0 ]; then
               echo "❌ No meaningful changes found in patch version"
               echo "Only version file changes detected - skipping release"
-              echo "version=" >> $GITHUB_OUTPUT
-              echo "python-needed=false" >> $GITHUB_OUTPUT
-              echo "js-needed=false" >> $GITHUB_OUTPUT
-              echo "docs-needed=false" >> $GITHUB_OUTPUT
+              {
+                echo "version="
+                echo "python-needed=false"
+                echo "js-needed=false"
+                echo "docs-needed=false"
+              } >> "$GITHUB_OUTPUT"
               exit 0
             else
               echo "✅ Found meaningful changes in patch version"
@@ -230,7 +232,7 @@ jobs:
             PYTHON_NEEDED="true"
             echo "✅ Building Python (major/minor version)"
           elif [ -n "$PREV_TAG" ]; then
-            PYTHON_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-py/" | grep -v -E "pyproject\.toml" | wc -l)
+            PYTHON_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-py/" | grep -vcE "pyproject\.toml")
             if [ "$PYTHON_CHANGED" -gt 0 ]; then
               PYTHON_NEEDED="true"
               echo "✅ Python has changes"
@@ -250,7 +252,7 @@ jobs:
             JS_NEEDED="true"
             echo "✅ Building JavaScript (major/minor version)"
           elif [ -n "$PREV_TAG" ]; then
-            JS_CHANGED=$(git diff --name-only $PREV_TAG..HEAD | grep -E "^vibetuner-js/" | grep -v -E "package\.json" | wc -l)
+            JS_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-js/" | grep -vcE "package\.json")
             if [ "$JS_CHANGED" -gt 0 ]; then
               JS_NEEDED="true"
               echo "✅ JavaScript has changes"
@@ -280,9 +282,11 @@ jobs:
             echo "❌ Not building documentation"
           fi
 
-          echo "python-needed=$PYTHON_NEEDED" >> $GITHUB_OUTPUT
-          echo "js-needed=$JS_NEEDED" >> $GITHUB_OUTPUT
-          echo "docs-needed=$DOCS_NEEDED" >> $GITHUB_OUTPUT
+          {
+            echo "python-needed=$PYTHON_NEEDED"
+            echo "js-needed=$JS_NEEDED"
+            echo "docs-needed=$DOCS_NEEDED"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
