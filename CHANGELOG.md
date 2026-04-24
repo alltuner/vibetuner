@@ -1,5 +1,14 @@
 # Changelog
 
+## [10.4.7](https://github.com/alltuner/vibetuner/compare/v10.4.6...v10.4.7) (2026-04-24)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump rumdl from 0.1.77 to 0.1.78 in /vibetuner-py ([#1680](https://github.com/alltuner/vibetuner/issues/1680)) ([50fc356](https://github.com/alltuner/vibetuner/commit/50fc3561c73ffa32e3c5a8d3ba8ec3a17f454c3e))
+* **deps:** update astral-sh/setup-uv action to v8 ([#1671](https://github.com/alltuner/vibetuner/issues/1671)) ([5272abd](https://github.com/alltuner/vibetuner/commit/5272abd16f831119292ff2f95faea6bbf63eb867))
+* **deps:** update googleapis/release-please-action action to v5 ([#1681](https://github.com/alltuner/vibetuner/issues/1681)) ([0417e51](https://github.com/alltuner/vibetuner/commit/0417e5138c511767c991e87960cd0624eeffc664))
+
 ## [10.4.6](https://github.com/alltuner/vibetuner/compare/v10.4.5...v10.4.6) (2026-04-21)
 
 
