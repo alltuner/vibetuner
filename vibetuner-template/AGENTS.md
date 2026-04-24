@@ -123,8 +123,14 @@ via git tags + `uv-dynamic-versioning`.
 Update dependencies and scaffolding in one step:
 
 ```bash
-just deps-scaffolding-pr     # Update deps + scaffolding and open a PR
+just deps-scaffolding-pr     # In a fresh worktree, then open a PR
+just deps-scaffolding        # On the current feature branch, no PR
 ```
+
+Both apply the latest scaffolding first (so Copier bumps `package.json`
+/ `pyproject.toml`), then run `bun update` / `uv lock --upgrade` against
+the bumped manifests. `deps-scaffolding` requires a clean working tree
+and refuses to run on the default branch.
 
 ---
 

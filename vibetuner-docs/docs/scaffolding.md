@@ -121,23 +121,48 @@ running them, review the results, and resolve any merge prompts Copier surfaces.
 
 ## Automated Update
 
-Scaffolded projects include a justfile command that updates dependencies
-and scaffolding in one step, creates a worktree, and opens a PR:
+Scaffolded projects ship two justfile commands that bundle the scaffolding
+update with the dependency bump. Pick the one that matches your workflow:
 
 ```bash
-just deps-scaffolding-pr
+just deps-scaffolding-pr   # Worktree + PR (full automation)
+just deps-scaffolding      # Current branch (no worktree, no PR)
 ```
 
-This command:
+### `deps-scaffolding-pr` (worktree + PR)
+
+Use this when you want a turnkey update PR off `main`.
 
 1. Creates an isolated git worktree so your working tree is untouched.
-2. Updates dependencies (`just update-and-commit-repo-deps`).
-3. Applies the latest scaffolding (`just update-scaffolding`).
-4. Detects merge conflicts and flags them if present.
-5. Creates a PR with a summary of changes.
+2. Applies the latest scaffolding (`just update-scaffolding`), so Copier's
+   manifest bumps (e.g. `package.json`, `pyproject.toml`) land first.
+3. Updates dependencies (`just update-and-commit-repo-deps`) so `bun update`
+   and `uv lock` resolve against the just-bumped manifests, keeping
+   lockfiles fully in sync.
+4. Detects merge conflicts and flags them if present (the worktree is left
+   in place for manual resolution; no half-baked PR is pushed).
+5. Pushes the branch and opens a PR with a summary of changes.
 
-If the scaffolding update produces conflicts, the command will print
-instructions for resolving them in the worktree before merging the PR.
+### `deps-scaffolding` (current branch, no PR)
+
+Use this when you want to drive the update yourself: you stay on a feature
+branch you already created and finish with the new commits ready to push.
+
+Pre-flight requirements:
+
+- The working tree must be clean (commit or stash first).
+- You must be on a non-default branch (the recipe refuses to run on
+  `main`).
+
+The command then runs the same two phases as the worktree variant:
+
+1. Applies the latest scaffolding and commits as `chore: update scaffolding`.
+2. Runs `just update-and-commit-repo-deps`, committing as
+   `chore: update dependencies` against the bumped manifests.
+
+If Copier produces conflict markers, the command bails (exit code `2`) and
+leaves the conflicted files in your working tree along with a manual
+resolution checklist.
 
 ## Recommended Workflow
 
@@ -148,12 +173,18 @@ instructions for resolving them in the worktree before merging the PR.
 3. Re-run tests (`just test-build-prod`, `just dev`) to confirm nothing broke.
 4. Commit the changes produced by the update.
 
-### One Command
+### One Command (PR)
 
 1. Run `just deps-scaffolding-pr`.
 2. Review the PR it creates.
 3. Resolve any flagged conflicts if needed.
 4. Merge the PR.
+
+### One Command (current branch)
+
+1. Check out a fresh feature branch with a clean working tree.
+2. Run `just deps-scaffolding`.
+3. Review the two new commits, then push and open a PR however you like.
 
 Refer back to this document whenever you need to adjust template answers,
 automate non-interactive scaffolding, or keep existing projects in sync with the
