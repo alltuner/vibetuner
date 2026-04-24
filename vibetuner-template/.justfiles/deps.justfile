@@ -14,7 +14,54 @@ update-and-commit-repo-deps: update-repo-deps
         pyproject.toml uv.lock bun.lock package.json .pre-commit-config.yaml \
         || echo "No changes to commit"
 
-# Create PR with updated dependencies and scaffolding
+# Update scaffolding and commit dependency bumps on the current branch (no PR).
+# Requires a clean working tree and refuses to run on the default branch.
+# Exits 2 (and leaves the conflicted worktree intact) if Copier produces conflict markers.
+[group('Dependencies')]
+deps-scaffolding:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null \
+        | sed 's@^refs/remotes/origin/@@' || echo main)
+    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    if [ "$CURRENT_BRANCH" = "$DEFAULT_BRANCH" ]; then
+        echo "Refusing to run on '$DEFAULT_BRANCH'. Switch to a feature branch first."
+        exit 1
+    fi
+
+    if [ -n "$(git status --porcelain)" ]; then
+        echo "Working tree is not clean. Commit or stash changes first."
+        git status --short
+        exit 1
+    fi
+
+    # Phase 1: Update scaffolding (copier bumps manifests like package.json and pyproject.toml)
+    just update-scaffolding
+
+    # Check for conflict markers in any file (tracked or new)
+    # Pattern is split to avoid matching itself when scanning for unresolved conflicts
+    CONFLICT_MARKER="<""<""<""<""<""<""<"
+    if grep -rl "$CONFLICT_MARKER" --exclude-dir=.git . >/dev/null 2>&1; then
+        echo ""
+        echo "Scaffolding update produced conflicts. Resolve them, then run:"
+        echo "  git add -A && git commit -m 'chore: update scaffolding'"
+        echo "  just update-and-commit-repo-deps"
+        exit 2
+    fi
+
+    # Commit scaffolding changes
+    git add -A
+    git diff --cached --quiet || git commit -m "chore: update scaffolding"
+
+    # Phase 2: Update dependencies (runs bun update / uv lock against the bumped manifests,
+    # so bun.lock's workspaces mirror resyncs to the committed package.json)
+    just update-and-commit-repo-deps
+
+    echo ""
+    echo "Done. Review the new commits before pushing."
+
+# Create PR with updated dependencies and scaffolding (uses an isolated worktree).
 [group('Dependencies')]
 deps-scaffolding-pr:
     #!/usr/bin/env bash
@@ -51,38 +98,26 @@ deps-scaffolding-pr:
 
     cd "$WORKTREE_DIR"
 
-    # Phase 1: Update scaffolding (copier bumps manifests like package.json and pyproject.toml)
-    just update-scaffolding
+    # Apply scaffolding + deps update inside the worktree. Exit 2 means Copier conflicts;
+    # leave the worktree intact so the user can resolve and drive the rest manually.
+    set +e
+    just deps-scaffolding
+    RC=$?
+    set -e
 
-    # Check for conflict markers in any file (tracked or new)
-    # Pattern is split to avoid matching itself when scanning for unresolved conflicts
-    CONFLICT_MARKER="<""<""<""<""<""<""<"
-    if grep -rl "$CONFLICT_MARKER" --exclude-dir=.git . >/dev/null 2>&1; then
-        # Leave the worktree and branch in place so the user can resolve conflicts
-        # and drive the remaining steps manually. Running the dependency update now
-        # would fail against manifests containing conflict markers.
+    if [ "$RC" -eq 2 ]; then
         trap - ERR INT TERM
         echo ""
-        echo "Scaffolding update produced conflicts. Next steps:"
-        echo ""
-        echo "1. cd $WORKTREE_DIR"
-        echo "2. Resolve conflicts (look for $CONFLICT_MARKER markers)"
-        echo "3. git add -A && git commit -m 'chore: update scaffolding'"
-        echo "4. just update-and-commit-repo-deps"
-        echo "5. git push -u origin $BRANCH"
-        echo "6. gh pr create --base main --title 'chore: update dependencies and scaffolding'"
-        echo "7. Merge the PR, then clean up:"
-        echo "   cd - && git worktree remove $WORKTREE_DIR"
+        echo "(Worktree left at $WORKTREE_DIR for conflict resolution.)"
+        echo "After committing the resolved scaffolding and running the deps update, finish with:"
+        echo "  git push -u origin $BRANCH"
+        echo "  gh pr create --base main --title 'chore: update dependencies and scaffolding'"
+        echo "Then clean up:"
+        echo "  cd - && git worktree remove $WORKTREE_DIR"
         exit 0
+    elif [ "$RC" -ne 0 ]; then
+        exit "$RC"
     fi
-
-    # Commit scaffolding changes
-    git add -A
-    git diff --cached --quiet || git commit -m "chore: update scaffolding"
-
-    # Phase 2: Update dependencies (runs bun update / uv lock against the bumped manifests,
-    # so bun.lock's workspaces mirror resyncs to the committed package.json)
-    just update-and-commit-repo-deps
 
     # Bail if nothing changed at all
     if [ "$(git rev-list origin/main..HEAD --count)" -eq 0 ]; then
