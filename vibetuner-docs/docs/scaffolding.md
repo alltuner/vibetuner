@@ -131,8 +131,11 @@ just deps-scaffolding-pr
 This command:
 
 1. Creates an isolated git worktree so your working tree is untouched.
-2. Updates dependencies (`just update-and-commit-repo-deps`).
-3. Applies the latest scaffolding (`just update-scaffolding`).
+2. Applies the latest scaffolding (`just update-scaffolding`), so Copier's
+   manifest bumps (e.g. `package.json`, `pyproject.toml`) land first.
+3. Updates dependencies (`just update-and-commit-repo-deps`) so `bun update`
+   and `uv lock` resolve against the just-bumped manifests, keeping
+   lockfiles fully in sync.
 4. Detects merge conflicts and flags them if present.
 5. Creates a PR with a summary of changes.
 
