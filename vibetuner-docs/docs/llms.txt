@@ -74,9 +74,10 @@ Important notes:
   manually add `nonce=` attributes to `<script>` tags in templates, the middleware handles
   this automatically. For `<style>` tags or other elements that need the nonce, use the
   `{{ csp_nonce }}` template variable (available in all templates via context provider).
-  In debug mode, CSP uses `Content-Security-Policy-Report-Only` (violations reported but
-  not enforced); in production, CSP is fully enforced. Configure extra sources via
-  `CSP_*` environment variables (e.g., `CSP_EXTRA_SCRIPT_SRC`)
+  CSP is enforced in both production and debug mode by default so violations break the
+  page locally; set `CSP_ENFORCE_CSP_IN_DEBUG=false` to fall back to
+  `Content-Security-Policy-Report-Only` in debug. Configure extra sources via `CSP_*`
+  environment variables (e.g., `CSP_EXTRA_SCRIPT_SRC`)
 - **Health Checks**: `/health`, `/health/ping`, `/health/ready`, `/health/id` endpoints
   with service connectivity checks
 - **Robust Tasks**: `@robust_task()` decorator with exponential backoff retries and

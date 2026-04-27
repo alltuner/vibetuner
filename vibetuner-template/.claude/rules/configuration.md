@@ -23,9 +23,11 @@ description: Environment variables, settings, security headers, and request ID
 CSP with nonce-based scripts enabled by default. The CSP nonce is
 auto-injected into all `<script>` tags in HTML responses, so you
 don't need to add it manually. For `<style>` tags, use
-`{{ csp_nonce }}` template variable. Debug mode = report-only.
-Configure via `CSP_*` env vars. Avoid inline event handlers
-(`onclick` etc.) — use HTMX attributes or `addEventListener`.
+`{{ csp_nonce }}` template variable. CSP is enforced in both debug
+and production by default; set `CSP_ENFORCE_CSP_IN_DEBUG=false` to
+revert debug to report-only. Configure via `CSP_*` env vars. Avoid
+inline event handlers (`onclick` etc.) — use HTMX attributes or
+`addEventListener`.
 
 ## Request ID
 

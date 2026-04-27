@@ -150,9 +150,10 @@ class SecurityHeadersMiddleware:
             directives.append(f"connect-src 'self' {config.extra_connect_src}")
 
         csp_value = "; ".join(directives)
+        report_only = settings.debug and not config.enforce_csp_in_debug
         csp_header = (
             "Content-Security-Policy-Report-Only"
-            if settings.debug
+            if report_only
             else "Content-Security-Policy"
         )
         headers[csp_header] = csp_value
