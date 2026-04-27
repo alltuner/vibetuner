@@ -1459,8 +1459,11 @@ Security Policy with a unique nonce per request.
 </style>
 ```
 
-In debug mode, CSP uses `Content-Security-Policy-Report-Only`. In production,
-CSP is fully enforced. Configure extra sources via `CSP_EXTRA_SCRIPT_SRC`,
+CSP is fully enforced in both production and debug mode by default, so
+"works locally, breaks in prod" violations are caught at write time rather
+than at deploy time. Set `CSP_ENFORCE_CSP_IN_DEBUG=false` to opt into the
+legacy soft mode where debug emits `Content-Security-Policy-Report-Only`
+instead. Configure extra sources via `CSP_EXTRA_SCRIPT_SRC`,
 `CSP_EXTRA_STYLE_SRC`, `CSP_EXTRA_IMG_SRC`, `CSP_EXTRA_CONNECT_SRC`,
 `CSP_EXTRA_FONT_SRC`, `CSP_EXTRA_MEDIA_SRC` environment variables.
 

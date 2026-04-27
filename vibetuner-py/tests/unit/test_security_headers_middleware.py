@@ -22,6 +22,7 @@ class _SecurityHeadersConfig:
     extra_img_src: str = ""
     extra_media_src: str = ""
     frame_ancestors: str = "'self'"
+    enforce_csp_in_debug: bool = True
 
 
 @dataclass
@@ -85,9 +86,10 @@ class SecurityHeadersMiddleware:
             directives.append(f"connect-src 'self' {config.extra_connect_src}")
 
         csp_value = "; ".join(directives)
+        report_only = self._settings.debug and not config.enforce_csp_in_debug
         csp_header = (
             "Content-Security-Policy-Report-Only"
-            if self._settings.debug
+            if report_only
             else "Content-Security-Policy"
         )
         headers[csp_header] = csp_value
@@ -220,9 +222,18 @@ class TestSecurityHeadersMiddleware:
         csp = resp.headers.get("Content-Security-Policy", "")
         assert f"'nonce-{nonce}'" in csp
 
-    def test_report_only_header_in_debug_mode(self):
-        """Debug mode uses Content-Security-Policy-Report-Only."""
+    def test_enforced_header_in_debug_mode_by_default(self):
+        """Debug mode enforces CSP by default so violations break the page locally."""
         app = _make_app(settings=_Settings(debug=True))
+        client = TestClient(app)
+        resp = client.get("/")
+        assert "Content-Security-Policy" in resp.headers
+        assert "Content-Security-Policy-Report-Only" not in resp.headers
+
+    def test_report_only_header_when_debug_opts_out(self):
+        """Debug mode falls back to report-only when enforce_csp_in_debug is False."""
+        config = _SecurityHeadersConfig(enforce_csp_in_debug=False)
+        app = _make_app(settings=_Settings(debug=True, security_headers=config))
         client = TestClient(app)
         resp = client.get("/")
         assert "Content-Security-Policy-Report-Only" in resp.headers
@@ -233,6 +244,15 @@ class TestSecurityHeadersMiddleware:
     def test_enforced_header_in_production(self):
         """Production mode uses enforced Content-Security-Policy."""
         app = _make_app(settings=_Settings(debug=False))
+        client = TestClient(app)
+        resp = client.get("/")
+        assert "Content-Security-Policy" in resp.headers
+        assert "Content-Security-Policy-Report-Only" not in resp.headers
+
+    def test_production_ignores_enforce_csp_in_debug_flag(self):
+        """The flag has no effect outside debug mode — CSP is always enforced."""
+        config = _SecurityHeadersConfig(enforce_csp_in_debug=False)
+        app = _make_app(settings=_Settings(debug=False, security_headers=config))
         client = TestClient(app)
         resp = client.get("/")
         assert "Content-Security-Policy" in resp.headers
@@ -339,10 +359,7 @@ class TestCspNonceAutoInjection:
         """All script tags without nonces get the nonce injected."""
         app = _make_app(
             html_body=(
-                "<html>"
-                '<script src="a.js"></script>'
-                '<script src="b.js"></script>'
-                "</html>"
+                '<html><script src="a.js"></script><script src="b.js"></script></html>'
             )
         )
         client = TestClient(app)
@@ -375,19 +392,15 @@ class TestCspNonceAutoInjection:
 
     def test_handles_inline_script_tags(self):
         """Inline script tags (no src) also get nonce injected."""
-        app = _make_app(
-            html_body="<html><script>alert('hi')</script></html>"
-        )
+        app = _make_app(html_body="<html><script>alert('hi')</script></html>")
         client = TestClient(app)
         resp = client.get("/")
         nonce = app._captured_nonces[0]
-        assert f'<script nonce="{nonce}">alert(\'hi\')</script>' in resp.text
+        assert f"<script nonce=\"{nonce}\">alert('hi')</script>" in resp.text
 
     def test_case_insensitive_script_tag(self):
         """Script tags with mixed case are handled."""
-        app = _make_app(
-            html_body='<html><Script src="app.js"></Script></html>'
-        )
+        app = _make_app(html_body='<html><Script src="app.js"></Script></html>')
         client = TestClient(app)
         resp = client.get("/")
         nonce = app._captured_nonces[0]

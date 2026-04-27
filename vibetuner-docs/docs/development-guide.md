@@ -545,8 +545,11 @@ generates a Content Security Policy with a unique nonce per request.
 </style>
 ```
 
-In debug mode, CSP uses `Content-Security-Policy-Report-Only` (violations
-are reported but not enforced). In production, CSP is fully enforced.
+CSP is fully enforced in both production and debug mode by default, so
+violations break the page locally and are caught before they ship. To
+fall back to the legacy soft mode (where debug emits
+`Content-Security-Policy-Report-Only`), set
+`CSP_ENFORCE_CSP_IN_DEBUG=false`.
 
 Configure extra allowed sources via environment variables:
 
@@ -558,6 +561,7 @@ Configure extra allowed sources via environment variables:
 | `CSP_EXTRA_CONNECT_SRC` | Additional connect sources |
 | `CSP_EXTRA_FONT_SRC` | Additional font sources |
 | `CSP_EXTRA_MEDIA_SRC` | Additional media sources |
+| `CSP_ENFORCE_CSP_IN_DEBUG` | Enforce CSP in debug mode (default: `true`) |
 
 ## Working with HTMX
 
