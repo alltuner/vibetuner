@@ -26,6 +26,7 @@ Important notes:
 - [Background Tasks](https://vibetuner.alltuner.com/background-tasks/): Background task system powered by Streaq and Redis with retries, cron scheduling, and SSE integration
 - [Runtime Configuration](https://vibetuner.alltuner.com/runtime-config/): Layered configuration system with MongoDB persistence, debug UI, and feature flags
 - [HTMX v2 to v4 Migration](https://vibetuner.alltuner.com/htmx-migration/): Breaking changes and migration guide for upgrading from HTMX v2 to v4
+- [Per-Tenant Theming](https://vibetuner.alltuner.com/theming/): Embedded `TenantTheme` model + opt-in `register_tenant_theme_provider()` helper + shipped `base/theme.html.jinja` partial that injects DaisyUI role-color overrides at request time
 
 ## Features
 
@@ -67,6 +68,13 @@ Important notes:
   Import from `vibetuner.models.mixins`. Requires `FIELD_ENCRYPTION_KEY` env var
 - **Template Context Providers**: `register_globals()` and `@register_context_provider`
   inject variables into every template render
+- **Per-Tenant Theming**: `TenantTheme` embedded model (`vibetuner.models.TenantTheme`)
+  with eight optional `#rrggbb` fields for DaisyUI role / role-content colors plus
+  `.overrides()` for the `{css_var: hex}` map. Wire it up with
+  `register_tenant_theme_provider(getter)` from `vibetuner` — opt-in, runs on every
+  render, fail-soft. Vibetuner's `base/skeleton.html.jinja` already includes
+  `base/theme.html.jinja`, which emits a CSP-noncified `<style>:root { ... }</style>`
+  block after `bundle.css`. `bundle.css` stays tenant-agnostic and cached
 - **Service DI**: `get_email_service()`, `get_blob_service()`, `get_runtime_config()`
   FastAPI dependency wrappers
 - **CSP Nonce Auto-Injection**: `SecurityHeadersMiddleware` generates a unique CSP nonce

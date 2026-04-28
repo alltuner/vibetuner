@@ -1231,6 +1231,105 @@ def analytics_context() -> dict:
 Values from providers and globals are merged into every `render_template()` call.
 User-provided context in the render call takes precedence.
 
+### Per-Tenant Theming
+
+Multi-tenant apps can swap DaisyUI role colors per tenant without rebuilding
+`bundle.css`. The bundle stays tenant-agnostic and cached; theming happens
+at request time via a small `<style>:root { ... }</style>` block injected
+after the stylesheet link.
+
+**1. Embed `TenantTheme` on your tenant document:**
+
+```python
+from beanie import Document
+from pydantic import Field
+from vibetuner.models import TenantTheme
+from vibetuner.models.mixins import TimeStampMixin
+
+
+class TenantModel(Document, TimeStampMixin):
+    name: str
+    slug: str
+    theme: TenantTheme = Field(default_factory=TenantTheme)
+```
+
+`TenantTheme` exposes eight optional `#rrggbb` fields — `primary`,
+`secondary`, `accent`, `neutral`, and their `*_content` foreground variants —
+mapping to `--color-primary`, `--color-secondary`, etc. The validator
+rejects anything that isn't a 7-character `#rrggbb` string.
+
+Existing tenant documents without the field are unaffected: MongoDB is
+schema-on-read, the default-constructed `TenantTheme` has all `None` fields,
+and `keep_nulls=False` keeps it out of the database until a value is set.
+
+**2. Register the opt-in provider:**
+
+```python
+from starlette.requests import Request
+from vibetuner import register_tenant_theme_provider
+
+
+def _tenant_from_request(request: Request):
+    # Tenant should already be on request.state by upstream middleware/dep.
+    return getattr(request.state, "tenant", None)
+
+
+register_tenant_theme_provider(_tenant_from_request)
+```
+
+The getter must be synchronous and cheap — it runs on every render. Do DB
+work in middleware. Pass `attribute="branding"` if your tenant uses a
+different attribute name.
+
+The provider is fail-soft: a getter exception, missing attribute, or a
+non-`TenantTheme` value is logged and the request renders with no overrides
+rather than 500ing.
+
+**3. Template partial.** Vibetuner's `base/skeleton.html.jinja` already
+includes `base/theme.html.jinja` between the bundled stylesheet link and
+`{% block head %}`. The partial emits:
+
+```html
+<style nonce="{{ csp_nonce }}">:root {
+    --color-primary: #009ddc;
+    --color-accent: #ff8800;
+}</style>
+```
+
+only when `theme_overrides` is non-empty. Apps that haven't registered the
+provider see no extra markup.
+
+If you've replaced the skeleton wholesale in your project, mirror the
+include order:
+
+```jinja
+<link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
+{% include "base/theme.html.jinja" %}
+{% block head %}{% endblock head %}
+```
+
+DaisyUI scopes its theme via `:where(:root)` (zero specificity), so a plain
+`:root { ... }` block always wins the cascade.
+
+**Footguns:**
+
+- **Build-time literals in custom tokens.** A `--shadow-glow-primary: 0 0
+  80px rgba(0, 157, 220, 0.2)` won't follow the theme. Use
+  `color-mix(in oklab, var(--color-primary) 20%, transparent)` so the
+  derived token tracks the role color.
+- **Hardcoded scale shades mixed into role-driven utilities.** `from-accent/70
+  to-tiger-flame-700` only themes one half of the gradient. Either keep it
+  role-only (`from-accent/70 to-accent/30`) or accept the scale shade as a
+  brand constant.
+- **Inline `<style>` without a CSP nonce.** The shipped partial sets it for
+  you; if you write a custom override template, do the same with
+  `{{ csp_nonce }}`.
+
+**Out of scope:** per-tenant fonts. Font swapping requires `@font-face`
+rules to load the binary before any `--font-display` variable can switch to
+it, which is a different mechanism. Tracked in
+[vibetuner#1705](https://github.com/alltuner/vibetuner/issues/1705).
+
 ### Service Dependency Injection
 
 Vibetuner provides FastAPI `Depends()` wrappers for built-in services:

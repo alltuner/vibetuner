@@ -11,6 +11,8 @@
             {% endblock title %}
         </title>
         <link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
+        {% include "base/theme.html.jinja" %}
+
         {% block scripts %}
             <script src="{{ url_for('js', path='bundle.js').path }}"></script>
         {% endblock scripts %}
