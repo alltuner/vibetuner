@@ -1,5 +1,5 @@
-# ABOUTME: Tests that the vibetuner_db fixture resets the MongoDB client on teardown.
-# ABOUTME: Prevents AsyncMongoClient from leaking across event loops in test runs.
+# ABOUTME: Tests that the per-test vibetuner_db fixture wires Beanie with
+# ABOUTME: skip_indexes, truncates collections, and resets the client on teardown.
 # ruff: noqa: S101
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -7,42 +7,47 @@ import pytest
 import vibetuner.mongo as mongo_mod
 
 
-async def _run_fixture_lifecycle():
-    """Run the vibetuner_db generator logic directly (bypassing pytest decorator).
+async def _run_function_fixture(session_db: str) -> str:
+    """Drive the per-test ``vibetuner_db`` body directly.
 
-    Duplicates the fixture body so the test doesn't depend on pytest fixture
-    internals, while still exercising the exact same teardown path.
+    Bypasses the pytest fixture decorator so the test exercises the exact
+    setup/teardown path without needing a session-scoped fixture in scope.
     """
-    # Import the same things the fixture does
     from vibetuner.testing import vibetuner_db
 
-    # Access the raw coroutine under the pytest_asyncio wrapper
-    gen = vibetuner_db.__wrapped__()
+    gen = vibetuner_db.__wrapped__(session_db)
     db_name = await gen.__anext__()
-
-    # Simulate teardown
     with pytest.raises(StopAsyncIteration):
         await gen.__anext__()
-
     return db_name
 
 
 @pytest.mark.unit
 class TestVibetunerDbFixtureCleanup:
-    """The vibetuner_db fixture must reset mongo_client on teardown.
+    """The per-test ``vibetuner_db`` fixture must:
 
-    When pytest-asyncio uses function-scoped event loops (the default),
-    each test gets a new loop. AsyncMongoClient binds to the loop it was
-    created on, so a stale client causes RuntimeError in the next test.
-    The fixture must close and reset the client during teardown.
+    - Reuse the session DB name (no per-test DB creation).
+    - Wire Beanie with ``skip_indexes=True`` (indexes live on the shared DB).
+    - Truncate non-system collections before AND after the test.
+    - Reset ``mongo_client`` on teardown so the next test's event loop gets
+      a fresh ``AsyncMongoClient``.
     """
 
-    async def test_mongo_client_is_none_after_teardown(self):
-        """After vibetuner_db yields and tears down, mongo_client must be None."""
+    async def test_function_fixture_truncates_and_resets_client(self):
+        mock_collection = MagicMock()
+        mock_collection.delete_many = AsyncMock()
+
+        mock_database = MagicMock()
+        mock_database.list_collection_names = AsyncMock(
+            return_value=["users", "posts", "system.indexes"]
+        )
+        mock_database.__getitem__ = MagicMock(return_value=mock_collection)
+
         mock_client = MagicMock()
-        mock_client.__getitem__ = MagicMock(return_value=MagicMock())
-        mock_client.drop_database = AsyncMock()
+        mock_client.__getitem__ = MagicMock(return_value=mock_database)
         mock_client.close = AsyncMock()
+
+        init_beanie_mock = AsyncMock()
 
         with (
             patch.object(mongo_mod, "mongo_client", None),
@@ -50,16 +55,21 @@ class TestVibetunerDbFixtureCleanup:
                 "vibetuner.mongo._ensure_client",
                 side_effect=lambda: setattr(mongo_mod, "mongo_client", mock_client),
             ),
-            patch("vibetuner.config.settings") as mock_settings,
-            patch("beanie.init_beanie", new_callable=AsyncMock),
+            patch("beanie.init_beanie", init_beanie_mock),
             patch("vibetuner.mongo.get_all_models", return_value=[]),
         ):
-            mock_settings.mongodb_url = "mongodb://localhost:27017"
-            type(mock_settings).mongo_dbname = property(lambda self: "original_db")
+            db_name = await _run_function_fixture("test_session_abcd1234")
 
-            db_name = await _run_fixture_lifecycle()
-            assert db_name.startswith("test_")
+            assert db_name == "test_session_abcd1234"
 
-            # The client must have been closed and reset
+            init_beanie_mock.assert_awaited_once()
+            assert init_beanie_mock.await_args.kwargs["skip_indexes"] is True
+
+            # Truncated twice (setup + teardown), skipping system.* collections.
+            assert mock_database.list_collection_names.await_count == 2
+            assert (
+                mock_collection.delete_many.await_count == 4
+            )  # 2 collections x 2 passes
+
             mock_client.close.assert_awaited_once()
             assert mongo_mod.mongo_client is None

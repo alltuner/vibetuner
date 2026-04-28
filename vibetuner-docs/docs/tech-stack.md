@@ -197,7 +197,7 @@ Vibetuner supports multiple database backends. All are optional - choose what fi
 **Why:** Test vibetuner apps without external services.
 
 - `vibetuner_client` — async HTTP client with full middleware stack
-- `vibetuner_db` — temporary MongoDB with auto-teardown
+- `vibetuner_db` — session-scoped MongoDB, truncated per test
 - `mock_auth` — patch authentication without sessions or cookies
 - `mock_tasks` — record background task enqueue calls without Redis
 - `override_config` — temporarily override runtime config values
