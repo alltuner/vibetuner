@@ -77,6 +77,12 @@ Important notes:
   block after `bundle.css`. `bundle.css` stays tenant-agnostic and cached
 - **Service DI**: `get_email_service()`, `get_blob_service()`, `get_runtime_config()`
   FastAPI dependency wrappers
+- **Email Providers**: Pluggable transactional email via Resend
+  (`MAIL_RESEND_API_KEY`), Mailjet (`MAIL_MAILJET_API_KEY` +
+  `MAIL_MAILJET_API_SECRET`), or Cloudflare Email Service
+  (`MAIL_CLOUDFLARE_API_TOKEN` + `MAIL_CLOUDFLARE_ACCOUNT_ID`). Auto-detected
+  from available credentials; `MAIL_PROVIDER=resend|mailjet|cloudflare` to
+  pick explicitly. Auto-detection priority: resend > mailjet > cloudflare
 - **CSP Nonce Auto-Injection**: `SecurityHeadersMiddleware` generates a unique CSP nonce
   per request and auto-injects it into all `<script>` tags in HTML responses. Do NOT
   manually add `nonce=` attributes to `<script>` tags in templates, the middleware handles

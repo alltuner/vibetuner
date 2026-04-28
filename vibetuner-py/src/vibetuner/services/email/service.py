@@ -1,9 +1,10 @@
 # ABOUTME: EmailService facade and provider resolution.
 # ABOUTME: Resolves the configured provider and delegates email sending.
 
-from typing import Any
+from collections.abc import Callable
+from typing import Any, NoReturn
 
-from vibetuner.config import settings
+from vibetuner.config import MailSettings, settings
 from vibetuner.services.email.base import (
     EmailAddress,
     EmailProvider,
@@ -11,44 +12,82 @@ from vibetuner.services.email.base import (
 )
 
 
-def _resolve_provider() -> EmailProvider:
-    """Resolve the email provider from settings."""
-    mail = settings.mail
-
-    # Explicit provider selection
-    provider = mail.provider
-
-    # Auto-detect from available credentials
-    if provider is None:
-        if mail.resend_api_key:
-            provider = "resend"
-        elif mail.mailjet_api_key and mail.mailjet_api_secret:
-            provider = "mailjet"
-
-    if provider == "resend":
-        if not mail.resend_api_key:
-            from vibetuner.services.errors import email_not_configured
-
-            raise EmailServiceNotConfiguredError(email_not_configured(log=False))
-        from vibetuner.services.email.resend import ResendEmailProvider
-
-        return ResendEmailProvider(api_key=mail.resend_api_key.get_secret_value())
-
-    if provider == "mailjet":
-        if not mail.mailjet_api_key or not mail.mailjet_api_secret:
-            from vibetuner.services.errors import email_not_configured
-
-            raise EmailServiceNotConfiguredError(email_not_configured(log=False))
-        from vibetuner.services.email.mailjet import MailjetEmailProvider
-
-        return MailjetEmailProvider(
-            api_key=mail.mailjet_api_key.get_secret_value(),
-            api_secret=mail.mailjet_api_secret.get_secret_value(),
-        )
-
+def _raise_not_configured() -> NoReturn:
     from vibetuner.services.errors import email_not_configured
 
     raise EmailServiceNotConfiguredError(email_not_configured(log=False))
+
+
+def _build_resend(mail: MailSettings) -> EmailProvider:
+    if not mail.resend_api_key:
+        _raise_not_configured()
+    from vibetuner.services.email.resend import ResendEmailProvider
+
+    return ResendEmailProvider(api_key=mail.resend_api_key.get_secret_value())
+
+
+def _build_mailjet(mail: MailSettings) -> EmailProvider:
+    if not mail.mailjet_api_key or not mail.mailjet_api_secret:
+        _raise_not_configured()
+    from vibetuner.services.email.mailjet import MailjetEmailProvider
+
+    return MailjetEmailProvider(
+        api_key=mail.mailjet_api_key.get_secret_value(),
+        api_secret=mail.mailjet_api_secret.get_secret_value(),
+    )
+
+
+def _build_cloudflare(mail: MailSettings) -> EmailProvider:
+    if not mail.cloudflare_api_token or not mail.cloudflare_account_id:
+        _raise_not_configured()
+    from vibetuner.services.email.cloudflare import CloudflareEmailProvider
+
+    return CloudflareEmailProvider(
+        api_token=mail.cloudflare_api_token.get_secret_value(),
+        account_id=mail.cloudflare_account_id,
+    )
+
+
+# Order defines auto-detection priority when MAIL_PROVIDER is unset.
+# Each entry is (name, predicate, builder). Adding a new provider is a single
+# entry plus its build_* helper.
+_PROVIDERS: list[
+    tuple[
+        str,
+        Callable[[MailSettings], bool],
+        Callable[[MailSettings], EmailProvider],
+    ]
+] = [
+    ("resend", lambda m: bool(m.resend_api_key), _build_resend),
+    (
+        "mailjet",
+        lambda m: bool(m.mailjet_api_key and m.mailjet_api_secret),
+        _build_mailjet,
+    ),
+    (
+        "cloudflare",
+        lambda m: bool(m.cloudflare_api_token and m.cloudflare_account_id),
+        _build_cloudflare,
+    ),
+]
+
+
+def _resolve_provider() -> EmailProvider:
+    """Resolve the email provider from settings."""
+    mail = settings.mail
+    name = mail.provider
+
+    if name is None:
+        for candidate, predicate, _ in _PROVIDERS:
+            if predicate(mail):
+                name = candidate
+                break
+
+    for candidate, _, builder in _PROVIDERS:
+        if candidate == name:
+            return builder(mail)
+
+    _raise_not_configured()
 
 
 class EmailService:

@@ -123,13 +123,22 @@ def s3_not_configured(*, log: bool = True) -> str:
 
 EMAIL_ERROR = _build_message(
     service="Email sending",
-    env_vars=["MAIL_RESEND_API_KEY", "MAIL_MAILJET_API_KEY", "MAIL_MAILJET_API_SECRET"],
+    env_vars=[
+        "MAIL_RESEND_API_KEY",
+        "MAIL_MAILJET_API_KEY",
+        "MAIL_MAILJET_API_SECRET",
+        "MAIL_CLOUDFLARE_API_TOKEN",
+        "MAIL_CLOUDFLARE_ACCOUNT_ID",
+    ],
     example_env=(
         "# Option A: Resend (recommended)\n"
         "MAIL_RESEND_API_KEY=re_xxxxxxxxxxxx\n\n"
         "# Option B: Mailjet\n"
         "MAIL_MAILJET_API_KEY=your-api-key\n"
-        "MAIL_MAILJET_API_SECRET=your-api-secret"
+        "MAIL_MAILJET_API_SECRET=your-api-secret\n\n"
+        "# Option C: Cloudflare Email Service (public beta)\n"
+        "MAIL_CLOUDFLARE_API_TOKEN=cf-token\n"
+        "MAIL_CLOUDFLARE_ACCOUNT_ID=your-account-id"
     ),
     disable_hint="Don't import EmailService or get_email_service if email isn't needed.",
     docs_path="configuration#email",

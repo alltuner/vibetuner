@@ -62,8 +62,9 @@ configure, `vibetuner crypto rotate-key` to rotate.
 
 No registration needed — just import where used. Email via
 `vibetuner.services.email.EmailService`. Configure with
-`MAIL_RESEND_API_KEY` or `MAIL_MAILJET_API_KEY` /
-`MAIL_MAILJET_API_SECRET` in `.env`.
+`MAIL_RESEND_API_KEY`, `MAIL_MAILJET_API_KEY` /
+`MAIL_MAILJET_API_SECRET`, or `MAIL_CLOUDFLARE_API_TOKEN` /
+`MAIL_CLOUDFLARE_ACCOUNT_ID` (public beta) in `.env`.
 
 ## Template Filters
 

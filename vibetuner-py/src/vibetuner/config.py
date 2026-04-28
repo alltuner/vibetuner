@@ -143,7 +143,7 @@ class LocaleDetectionSettings(BaseSettings):
 class MailSettings(BaseSettings):
     """Mail provider configuration. Read from MAIL_* env vars."""
 
-    provider: Literal["resend", "mailjet"] | None = None
+    provider: Literal["resend", "mailjet", "cloudflare"] | None = None
 
     # Resend
     resend_api_key: SecretStr | None = None
@@ -151,6 +151,10 @@ class MailSettings(BaseSettings):
     # Mailjet
     mailjet_api_key: SecretStr | None = None
     mailjet_api_secret: SecretStr | None = None
+
+    # Cloudflare Email Service
+    cloudflare_api_token: SecretStr | None = None
+    cloudflare_account_id: str | None = None
 
     model_config = SettingsConfigDict(
         case_sensitive=False,
