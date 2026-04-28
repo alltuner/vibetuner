@@ -4,7 +4,7 @@
   },
   "dependencies": {},
   "scripts": {
-    "setup-tw-sources": "[ -L .core-templates ] || (rm -rf .core-templates && ln -s \"$(uv run --frozen python -c \"import vibetuner; print(vibetuner.__path__[0])\")/templates/frontend\" .core-templates)",
+    "setup-tw-sources": "TARGET=$(uv run --frozen vibetuner core-templates-path) && { [ -L .core-templates ] && [ \"$(readlink .core-templates)\" = \"$TARGET\" ] || (rm -rf .core-templates && ln -s \"$TARGET\" .core-templates); }",
     "build:css": "bun tailwindcss -i config.css -o assets/statics/css/bundle.css",
     "build:js": "bun build config.js --outdir=assets/statics/js --entry-naming=\"bundle.[ext]\" --sourcemap",
     "dev:css": "bun tailwindcss -w=always -i config.css -o assets/statics/css/bundle.css",

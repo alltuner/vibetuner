@@ -113,7 +113,7 @@ Important notes:
 - [CLI Reference](https://vibetuner.alltuner.com/cli-reference/):
   Commands for `vibetuner scaffold`, `vibetuner run`, `vibetuner db`,
   `vibetuner doctor`, `vibetuner config`, `vibetuner debug`, `vibetuner crypto`,
-  and `vibetuner version`
+  `vibetuner version`, and `vibetuner core-templates-path`
 - [Scaffolding Reference](https://vibetuner.alltuner.com/scaffolding/):
   Template prompts, post-generation tasks, and updating existing projects
 - [Deployment](https://vibetuner.alltuner.com/deployment/):
