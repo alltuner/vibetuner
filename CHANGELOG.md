@@ -1,5 +1,18 @@
 # Changelog
 
+## [10.7.0](https://github.com/alltuner/vibetuner/compare/v10.6.0...v10.7.0) (2026-04-28)
+
+
+### Features
+
+* add Cloudflare Email Service provider ([#1709](https://github.com/alltuner/vibetuner/issues/1709)) ([1107c66](https://github.com/alltuner/vibetuner/commit/1107c66b7945c36322f4bfa34b34926d4d50136e))
+* skeleton extension points (blocks + context vars) ([#1713](https://github.com/alltuner/vibetuner/issues/1713)) ([ff9c5ca](https://github.com/alltuner/vibetuner/commit/ff9c5cae4420d5950e00f4f711cd329c121ee3fe))
+
+
+### Bug Fixes
+
+* /health/ready crashed on stale settings.mailjet_api_key reference ([#1711](https://github.com/alltuner/vibetuner/issues/1711)) ([98f2b44](https://github.com/alltuner/vibetuner/commit/98f2b445b8ae48497505e440c02a9580a39b20e0))
+
 ## [10.6.0](https://github.com/alltuner/vibetuner/compare/v10.5.0...v10.6.0) (2026-04-28)
 
 
