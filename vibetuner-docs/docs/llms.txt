@@ -68,6 +68,13 @@ Important notes:
   context variables (`color_scheme`, `canonical_url`, `font_preloads`) so
   projects can extend instead of wholesale-overriding the skeleton —
   upstream changes (CSP nonce, theming, etc.) flow through automatically
+- **Brand Configuration**: `BRAND_PRIMARY_COLOR`, `BRAND_BROWSER_THEME_COLOR`,
+  `BRAND_EMAIL_BUTTON_COLOR` env vars drive favicon meta tags, the PWA
+  manifest's `theme_color`/`background_color`, and the magic-link email button
+  — surfaces where DaisyUI/CSS-variable theming can't reach (favicon meta
+  is read before CSS runs; email clients ignore CSS variables). Accepts
+  pydantic-Color inputs (named, `rgb()`, hex). For per-tenant in-page
+  colors use `TenantTheme`; `BrandSettings` is deliberately app-level
 - **Encrypted Fields**: `EncryptedFieldsMixin` and `EncryptedStr` type for
   transparent Fernet encrypt-on-save / decrypt-on-load on any Beanie model field.
   Import from `vibetuner.models.mixins`. Requires `FIELD_ENCRYPTION_KEY` env var

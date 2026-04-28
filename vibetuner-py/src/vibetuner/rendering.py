@@ -747,6 +747,21 @@ def _csp_nonce_context(request: Request) -> dict[str, Any]:
 
 register_context_provider(_csp_nonce_context)
 
+
+def _brand_context() -> dict[str, Any]:
+    """Expose app-level brand colors (``settings.brand``) to every template.
+
+    See :class:`vibetuner.config.BrandSettings` for the underlying env vars.
+    Templates can reference ``{{ brand.primary_color }}``,
+    ``{{ brand.browser_theme_color }}``, and ``{{ brand.email_button }}``.
+    """
+    from vibetuner.config import settings
+
+    return {"brand": settings.brand}
+
+
+register_context_provider(_brand_context)
+
 # Global Vars
 jinja_env.globals.update({"DEBUG": data_ctx.DEBUG})
 

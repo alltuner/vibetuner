@@ -63,18 +63,29 @@ def _render_template_with_env(
     lang: str | None,
     context: dict[str, Any],
 ) -> str:
-    """Render template using Jinja environment with language fallback."""
-    # Try language-specific folder first
-    if lang:
-        try:
-            template = env.get_template(f"{lang}/{jinja_template_name}")
-            return template.render(**context)
-        except TemplateNotFound:
-            pass
+    """Render template using Jinja environment with language fallback.
 
-    # Fallback to default folder
-    template = env.get_template(f"default/{jinja_template_name}")
-    return template.render(**context)
+    Lookup order, first match wins:
+
+    1. ``<lang>/<name>`` when *lang* is provided.
+    2. ``default/<name>`` (legacy convention with a per-language tree).
+    3. ``<name>`` directly (flat layout — what the framework ships today
+       for email templates).
+    """
+    candidates: list[str] = []
+    if lang:
+        candidates.append(f"{lang}/{jinja_template_name}")
+    candidates.append(f"default/{jinja_template_name}")
+    candidates.append(jinja_template_name)
+
+    for candidate in candidates:
+        try:
+            template = env.get_template(candidate)
+        except TemplateNotFound:
+            continue
+        return template.render(**context)
+
+    raise TemplateNotFound(jinja_template_name)
 
 
 def render_static_template(

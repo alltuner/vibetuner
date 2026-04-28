@@ -1494,6 +1494,75 @@ Need native names but want a single source of truth? Call
 `language_picker(code)` once per language instead of reading
 `locale_names`.
 
+### Brand Configuration
+
+`TenantTheme` covers in-page DaisyUI role colors, but a few surfaces are
+out of reach of CSS variables:
+
+- **Favicon meta tags** (`mask-icon`, `msapplication-TileColor`,
+  `theme-color`) are read by the browser before any CSS runs.
+- **PWA manifest** (`theme_color`, `background_color`) is consumed by the
+  OS install UI, also before CSS.
+- **Magic-link emails** render in clients (Gmail, Outlook) that strip
+  `<style>` blocks and ignore CSS variables, so the button color must be
+  inlined at render time.
+
+`BrandSettings` is an app-level pydantic-settings surface that drives those
+specific surfaces. It is deliberately **not** per-tenant: favicon assets
+are static files served before the request hits any tenant resolver, and
+the email service does not see request context. For per-tenant in-page
+colors, keep using `TenantTheme`.
+
+**Configuration via environment variables:**
+
+```bash
+# Defaults shown; all three are optional.
+BRAND_PRIMARY_COLOR=#5b2333
+BRAND_BROWSER_THEME_COLOR=#ffffff
+BRAND_EMAIL_BUTTON_COLOR=  # falls back to BRAND_PRIMARY_COLOR when unset
+```
+
+`BRAND_PRIMARY_COLOR` drives the Safari pinned-tab `mask-icon` color,
+the Windows tile color (`browserconfig.xml`), and the magic-link email
+button (when `BRAND_EMAIL_BUTTON_COLOR` is unset).
+`BRAND_BROWSER_THEME_COLOR` drives the mobile browser chrome
+(`<meta name="theme-color">`) and the PWA manifest's `theme_color` /
+`background_color`. `BRAND_EMAIL_BUTTON_COLOR` is the override slot for
+when your brand button needs to differ from the favicon brand color
+(e.g. for contrast on the email's white background).
+
+**Inputs accept any pydantic-Color form:**
+
+```bash
+BRAND_PRIMARY_COLOR="#1DB954"          # hex (long or short)
+BRAND_PRIMARY_COLOR="rgb(29, 185, 84)" # rgb()
+BRAND_PRIMARY_COLOR="dodgerblue"       # CSS named colors
+```
+
+All values are canonicalised to long-form `#rrggbb` lowercase before
+rendering. The underlying type is `HexColor`, a `pydantic_extra_types.color.Color`
+subclass that pins `__str__` to `as_hex(format="long")` so HTML
+interpolation is predictable (the bare `Color` type would render
+`#ffffff` as the string `white`).
+
+**Programmatic access:**
+
+```python
+from vibetuner.config import settings
+
+settings.brand.primary_color       # HexColor("#5b2333")
+settings.brand.browser_theme_color # HexColor("#ffffff")
+settings.brand.email_button        # property: email_button_color or primary_color
+```
+
+`settings.brand` is exposed in every Jinja render via the shipped
+`_brand_context` provider, so templates can read `{{ brand.primary_color }}`
+without wiring anything up. The framework's bundled
+`base/favicons.html.jinja`, `meta/site.webmanifest.jinja`, and
+`meta/browserconfig.xml.jinja` already do this; the magic-link email
+template receives `button_color=settings.brand.email_button` from
+`send_magic_link_email()`.
+
 ### Service Dependency Injection
 
 Vibetuner provides FastAPI `Depends()` wrappers for built-in services:

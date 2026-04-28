@@ -4,7 +4,7 @@
         <tile>
             <square150x150logo
                 src="{{ url_for('favicons', path='mstile-150x150.png').path }}" />
-            <TileColor>#5b2333</TileColor>
+            <TileColor>{{ brand.primary_color }}</TileColor>
         </tile>
     </msapplication>
 </browserconfig>

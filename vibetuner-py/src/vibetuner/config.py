@@ -21,12 +21,32 @@ from pydantic import (
     computed_field,
     model_validator,
 )
+from pydantic_extra_types.color import Color as _PydanticColor
 from pydantic_extra_types.language_code import LanguageAlpha2
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from vibetuner.logging import logger
 
 from .paths import PathSettings, config_vars as config_vars_path
+
+
+class HexColor(_PydanticColor):
+    """Subtype of :class:`pydantic_extra_types.color.Color` that always
+    renders as long-form ``#rrggbb`` hex.
+
+    Pydantic ``Color`` accepts named colors, ``rgb()``, ``hsl()``, hex
+    shorthand etc., which is great for input flexibility. But its default
+    ``__str__`` returns the named form when one matches (e.g.
+    ``str(Color("#ffffff")) == "white"``), which is awkward when the value
+    is interpolated into HTML attributes via Jinja's ``{{ color }}``.
+
+    ``HexColor`` keeps all of ``Color``'s parsing (so ``"red"``,
+    ``"rgb(255,0,0)"`` and ``"#f00"`` all work as input) but pins
+    ``str(self)`` to ``#rrggbb`` so templates render predictably.
+    """
+
+    def __str__(self) -> str:  # type: ignore[override]
+        return self.as_hex(format="long")
 
 
 def _resolve_env_files() -> tuple[str, ...]:
@@ -140,6 +160,49 @@ class LocaleDetectionSettings(BaseSettings):
     )
 
 
+class BrandSettings(BaseSettings):
+    """App-level brand colors for surfaces CSS variables can't reach.
+
+    Read from ``BRAND_*`` env vars. These cover three places where
+    DaisyUI/CSS-variable theming doesn't apply:
+
+    - ``<link rel="mask-icon" color>`` (Safari pinned tab) and
+      ``<meta msapplication-TileColor>`` (Windows tile) — both driven by
+      :attr:`primary_color`.
+    - ``<meta theme-color>`` (browser chrome / Android status bar) and the
+      PWA webmanifest's ``theme_color`` / ``background_color`` — driven by
+      :attr:`browser_theme_color`.
+    - Inline button color in HTML emails (e.g. magic-link CTA) — driven by
+      :attr:`email_button_color`, which falls back to :attr:`primary_color`.
+
+    For per-tenant theming of in-page colors, use
+    :class:`vibetuner.models.TenantTheme` instead. ``BrandSettings`` is
+    deliberately app-level: favicon meta is set before CSS runs, and the
+    email-sending code path doesn't currently see per-request context.
+    """
+
+    primary_color: HexColor = HexColor("#5b2333")
+    browser_theme_color: HexColor = HexColor("#ffffff")
+    email_button_color: HexColor | None = None  # falls back to primary_color
+
+    @property
+    def email_button(self) -> HexColor:
+        """The color used for HTML-email CTA buttons.
+
+        Falls back to :attr:`primary_color` when ``BRAND_EMAIL_BUTTON_COLOR``
+        is not set, so a single ``BRAND_PRIMARY_COLOR`` covers both surfaces
+        in the common case.
+        """
+        return self.email_button_color or self.primary_color
+
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        extra="ignore",
+        env_prefix="BRAND_",
+        env_file=_ENV_FILES,
+    )
+
+
 class MailSettings(BaseSettings):
     """Mail provider configuration. Read from MAIL_* env vars."""
 
@@ -243,6 +306,10 @@ class CoreConfiguration(BaseSettings):
 
     # Mail provider settings (MAIL_* env vars)
     mail: MailSettings = Field(default_factory=MailSettings)
+
+    # App-level brand colors (BRAND_* env vars). Used in places CSS variables
+    # can't reach: favicon meta, webmanifest theme/background, email buttons.
+    brand: BrandSettings = Field(default_factory=BrandSettings)
 
     r2_default_bucket_name: str | None = None
     r2_bucket_endpoint_url: HttpUrl | None = None

@@ -22,6 +22,7 @@ async def send_magic_link_email(
         context={
             "login_url": str(login_url),
             "project_name": project_name,
+            "button_color": settings.brand.email_button,
         },
     )
 
