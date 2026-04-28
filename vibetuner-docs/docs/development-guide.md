@@ -365,6 +365,79 @@ The same convention applies to `{% extends %}` and `{% include %}` inside templa
 {% extends "frontend/base/skeleton.html.jinja" %} {# wrong #}
 ```
 
+#### Skeleton Extension Points
+
+The shipped `base/skeleton.html.jinja` exposes blocks and context variables so
+projects can slot in customisations without copying the whole skeleton.
+Extending it is preferable to overriding it: upstream changes (CSP nonce,
+theming, etc.) flow through automatically.
+
+**Blocks** (override in any child template):
+
+| Block | Position | Use for |
+| --- | --- | --- |
+| `extra_head_links` | After `<title>`, before `bundle.css` | `<link rel="alternate">` feeds, RSS, custom meta tags |
+| `extra_scripts` | After the bundled `<script>` (and optional umami) | Per-app scripts that don't replace `bundle.js` |
+| `before_main` | Inside `<body>`, before `block body` | Dev banners, sticky overlays |
+| `after_main` | Inside `<body>`, after `block body` | Persistent mini-players, floating toolbars |
+
+Existing blocks already there: `title`, `head`, `scripts`, `start_of_body`,
+`header`, `body`, `content`, `footer`, `end_of_body`.
+
+**Context variables** (set via `register_globals`, a context provider, or
+per-render `ctx`):
+
+| Variable | Type | Default | Effect |
+| --- | --- | --- | --- |
+| `color_scheme` | `str` | `"light"` | Sets `<meta name="color-scheme">` content |
+| `canonical_url` | `str \| None` | `None` | When set, renders `<link rel="canonical" href="…">` |
+| `font_preloads` | `list[dict]` | `[]` | Each entry renders `<link rel="preload" as="font" href="…" type="…" [crossorigin="…"]>` |
+
+```python
+# tune.py
+from vibetuner import register_globals
+
+register_globals({"color_scheme": "dark"})  # whole site is dark
+```
+
+```python
+# Per-page canonical URL
+return render_template(
+    "blog/post.html.jinja",
+    request,
+    {"canonical_url": str(request.url_for("blog_post", slug=post.slug))},
+)
+```
+
+```python
+# Self-hosted brand fonts (preload-scanner picks these up before bundle.css)
+register_globals({
+    "font_preloads": [
+        {"href": "/static/fonts/brand.woff2", "type": "font/woff2", "crossorigin": "anonymous"},
+    ],
+})
+```
+
+```html
+<!-- templates/frontend/base/skeleton.html.jinja override -->
+{% extends "base/skeleton.html.jinja" %}
+
+{% block extra_head_links %}
+    <link rel="alternate" type="application/rss+xml"
+          title="My App" href="{{ url_for('rss').path }}" />
+{% endblock extra_head_links %}
+
+{% block after_main %}
+    {# Persistent player survives HTMX boost swaps #}
+    {% include "components/player.html.jinja" %}
+{% endblock after_main %}
+```
+
+If you do need to override the whole skeleton (e.g. to wrap the body in an
+HTMX-boost container, change the `<html>` attributes, or add markup before
+`<head>`), prefer the smallest possible override and keep the upstream
+blocks intact so future framework changes still apply.
+
 ### Built-in Template Globals
 
 Vibetuner provides these variables in every template automatically:

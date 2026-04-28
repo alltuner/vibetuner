@@ -5,11 +5,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="{{ meta_description | default('') }}" />
         <meta name="keywords" content="{{ meta_keywords | default('') }}" />
-        <meta name="color-scheme" content="light" />
+        <meta name="color-scheme" content="{{ color_scheme | default('light') }}" />
         <title>
             {% block title %}
             {% endblock title %}
         </title>
+        {% if canonical_url %}<link rel="canonical" href="{{ canonical_url }}" />{% endif %}
+        {% for fp in font_preloads | default([]) %}
+            <link rel="preload"
+                  as="font"
+                  href="{{ fp.href }}"
+                  type="{{ fp.type }}"
+                  {% if fp.crossorigin %}crossorigin="{{ fp.crossorigin }}"{% endif %} />
+        {% endfor %}
+        {% block extra_head_links %}
+        {% endblock extra_head_links %}
         <link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
         {% include "base/theme.html.jinja" %}
 
@@ -19,6 +29,8 @@
         {% if umami_website_id and not DEBUG %}
             <script defer src="/meta.js" data-website-id="{{ umami_website_id }}"></script>
         {% endif %}
+        {% block extra_scripts %}
+        {% endblock extra_scripts %}
         {% include "base/favicons.html.jinja" %}
         {% include "base/opengraph.html.jinja" %}
 
@@ -34,10 +46,14 @@
 
             {% endif %}
         {% endblock header %}
+        {% block before_main %}
+        {% endblock before_main %}
         {% block body %}
             {% block content %}
             {% endblock content %}
         {% endblock body %}
+        {% block after_main %}
+        {% endblock after_main %}
         {% block footer %}
             {% if not SKIP_FOOTER %}
                 {% include "base/footer.html.jinja" %}
