@@ -91,6 +91,8 @@ def health_instance_id():
 
 async def _check_all_services() -> dict[str, dict[str, Any]]:
     """Run health checks for all configured services."""
+    from vibetuner.services.email.service import configured_provider
+
     services: dict[str, dict[str, Any]] = {}
 
     if settings.mongodb_url is not None:
@@ -102,8 +104,9 @@ async def _check_all_services() -> dict[str, dict[str, Any]]:
     if settings.r2_bucket_endpoint_url is not None:
         services["s3"] = _check_s3()
 
-    if settings.mailjet_api_key is not None:
-        services["email"] = _check_email()
+    email_provider = configured_provider()
+    if email_provider is not None:
+        services["email"] = _check_email(email_provider)
 
     return services
 
@@ -161,9 +164,9 @@ def _check_s3() -> dict[str, Any]:
     }
 
 
-def _check_email() -> dict[str, Any]:
+def _check_email(provider: str) -> dict[str, Any]:
     """Report email service configuration status."""
     return {
         "status": "configured",
-        "provider": "mailjet",
+        "provider": provider,
     }
