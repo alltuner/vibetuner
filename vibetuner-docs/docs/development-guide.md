@@ -1752,10 +1752,11 @@ async def test_homepage(vibetuner_client):
 
 Override `vibetuner_app` fixture to supply a custom FastAPI app instance.
 
-#### `vibetuner_db` — Temporary MongoDB Database
+#### `vibetuner_db` — Shared MongoDB Test Database
 
-Creates a unique test database, initialises Beanie with all registered
-models, and drops the database on teardown:
+Creates a single MongoDB database for the whole test session, runs Beanie
+index registration once, and **truncates every non-system collection
+before and after each test** so each test starts with empty collections:
 
 ```python
 async def test_create_post(vibetuner_db):
@@ -1765,6 +1766,19 @@ async def test_create_post(vibetuner_db):
 ```
 
 Skips the test automatically if `MONGODB_URL` is not set.
+
+**Caveats:**
+
+- All tests in a session share the same database. Don't assert on
+  database-level state (existence, name, full collection drops) or on
+  indexes being absent.
+- Indexes (including unique constraints) are built once at session
+  scope and persist across tests. `DuplicateKeyError` is still raised
+  by unique violations.
+- Concurrent runs need `pytest-xdist`; the session DB name includes
+  the worker id (`PYTEST_XDIST_WORKER`) so workers don't collide.
+- If a test crashes mid-run, the next test re-truncates on setup so
+  state is self-healing.
 
 #### `mock_auth` — Authentication Mocking
 

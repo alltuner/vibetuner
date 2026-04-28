@@ -1,5 +1,6 @@
 # ABOUTME: Pytest fixtures and testing utilities for vibetuner applications.
 # ABOUTME: Provides test client, mock auth, mock DB, mock tasks, and config overrides.
+import os
 import uuid
 from typing import Any, AsyncGenerator
 from unittest.mock import AsyncMock, patch
@@ -8,6 +9,8 @@ import pytest
 import pytest_asyncio
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
+from pymongo import AsyncMongoClient
+from pymongo.asynchronous.database import AsyncDatabase
 from starlette.authentication import AuthCredentials
 
 from vibetuner.frontend.oauth import WebUser
@@ -52,43 +55,117 @@ async def vibetuner_client(
 # ---------------------------------------------------------------------------
 
 
-@pytest_asyncio.fixture
-async def vibetuner_db() -> AsyncGenerator[str, None]:
-    """Temporary MongoDB test database with Beanie initialised.
+async def _truncate_collections(database: AsyncDatabase) -> None:
+    """Delete every document from every non-system collection."""
+    for name in await database.list_collection_names():
+        if name.startswith("system."):
+            continue
+        await database[name].delete_many({})
 
-    Creates a uniquely-named database, initialises Beanie with all
-    registered models, yields the DB name, and drops the database on
-    teardown. Skips the test if ``MONGODB_URL`` is not set.
+
+@pytest_asyncio.fixture(scope="session", loop_scope="session")
+async def _vibetuner_db_session() -> AsyncGenerator[str, None]:
+    """Session-scoped MongoDB test database with indexes built once.
+
+    Creates a uniquely-named database (namespaced per ``pytest-xdist``
+    worker so parallel runs don't collide), runs ``init_beanie`` with
+    full index registration once for the entire session, yields the DB
+    name, and drops the database on session teardown.
+
+    The ``AsyncMongoClient`` used here lives only on the session event
+    loop; per-test fixtures create their own function-loop clients and
+    re-wire Beanie via ``init_beanie(skip_indexes=True)``. Sharing the
+    client across loops is impossible (pymongo binds it on first use),
+    so the only thing shared across tests is the database itself
+    (collections + indexes living server-side).
+
+    Skips the session if ``MONGODB_URL`` is not set.
     """
-    import vibetuner.mongo as mongo_mod
+    from beanie import init_beanie
+
     from vibetuner.config import settings
+    from vibetuner.mongo import get_all_models
+
+    if settings.mongodb_url is None:
+        pytest.skip("MongoDB not configured (MONGODB_URL not set)")
+
+    worker_id = os.environ.get("PYTEST_XDIST_WORKER", "main")
+    test_db_name = f"test_{worker_id}_{uuid.uuid4().hex[:8]}"
+
+    # Make every consumer of ``settings.mongo_dbname`` (framework code,
+    # user code) target the session test database for the whole run.
+    original = type(settings).mongo_dbname
+    type(settings).mongo_dbname = property(lambda self: test_db_name)  # type: ignore[assignment]
+    settings.__dict__.pop("mongo_dbname", None)
+
+    session_client: AsyncMongoClient = AsyncMongoClient(
+        host=str(settings.mongodb_url),
+        compressors=["zstd"],
+    )
+    try:
+        await init_beanie(
+            database=session_client[test_db_name],
+            document_models=get_all_models(),
+        )
+        yield test_db_name
+    finally:
+        try:
+            await session_client.drop_database(test_db_name)
+        finally:
+            await session_client.close()
+            type(settings).mongo_dbname = original  # type: ignore[assignment]
+            settings.__dict__.pop("mongo_dbname", None)
+
+
+@pytest_asyncio.fixture
+async def vibetuner_db(_vibetuner_db_session: str) -> AsyncGenerator[str, None]:
+    """MongoDB test database wired to the current event loop with clean
+    collections.
+
+    Backed by a session-scoped database whose indexes are built once
+    (see ``_vibetuner_db_session``). Each test creates its own
+    ``AsyncMongoClient`` on the function event loop, wires Beanie to
+    that client with ``skip_indexes=True`` (the indexes already exist
+    on the shared DB), and truncates every non-system collection both
+    before and after the test. Truncating twice makes the fixture
+    self-healing if a previous test crashed before its own teardown
+    ran.
+
+    Skips the test if ``MONGODB_URL`` is not set.
+
+    Caveats:
+        - All tests in a session share the same database. Tests must not
+          assert on database-level state (existence, name, full collection
+          drops) or on indexes being absent.
+        - Concurrent runs need ``pytest-xdist``; the session DB name
+          includes the worker id so each worker is isolated.
+    """
+    from beanie import init_beanie
+
+    import vibetuner.mongo as mongo_mod
     from vibetuner.mongo import _ensure_client, get_all_models, teardown_mongodb
 
-    test_db_name = f"test_{uuid.uuid4().hex[:12]}"
+    test_db_name = _vibetuner_db_session
 
     _ensure_client()
     if mongo_mod.mongo_client is None:
         pytest.skip("MongoDB not configured (MONGODB_URL not set)")
 
-    # Override the DB name used by all framework code
-    original = type(settings).mongo_dbname
-    type(settings).mongo_dbname = property(lambda self: test_db_name)  # type: ignore[assignment]
-    settings.__dict__.pop("mongo_dbname", None)
+    database = mongo_mod.mongo_client[test_db_name]
+    await init_beanie(
+        database=database,
+        document_models=get_all_models(),
+        skip_indexes=True,
+    )
+    await _truncate_collections(database)
 
     try:
-        from beanie import init_beanie
-
-        await init_beanie(
-            database=mongo_mod.mongo_client[test_db_name],
-            document_models=get_all_models(),
-        )
         yield test_db_name
     finally:
-        if mongo_mod.mongo_client is not None:
-            await mongo_mod.mongo_client.drop_database(test_db_name)
-        await teardown_mongodb()
-        type(settings).mongo_dbname = original  # type: ignore[assignment]
-        settings.__dict__.pop("mongo_dbname", None)
+        try:
+            await _truncate_collections(database)
+        finally:
+            await teardown_mongodb()
 
 
 # ---------------------------------------------------------------------------

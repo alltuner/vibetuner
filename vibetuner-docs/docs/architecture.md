@@ -403,7 +403,7 @@ Pytest fixtures for testing vibetuner applications without external services:
 |---------|---------|
 | `vibetuner_client` | Async HTTP test client (httpx + ASGITransport) |
 | `vibetuner_app` | Overridable FastAPI app fixture |
-| `vibetuner_db` | Temporary MongoDB database with auto-teardown |
+| `vibetuner_db` | Session-scoped MongoDB database, truncated per test |
 | `mock_auth` | Patch authentication (login/logout without sessions) |
 | `mock_tasks` | Record `enqueue` calls without Redis |
 | `override_config` | Override `RuntimeConfig` values with auto-cleanup |
