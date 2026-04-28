@@ -1545,14 +1545,14 @@ wheels = [
 
 [[package]]
 name = "mailjet-rest"
-version = "1.5.1"
+version = "1.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/41/76/047f63be44f14bd9d84153bf355d8cfb32571052f0bf386fb45bed9bee1f/mailjet_rest-1.5.1.tar.gz", hash = "sha256:8705efb05ca2faab4be93c490296855182ca08a2e7deb86bf25c8a38f39804d9", size = 42445, upload-time = "2025-07-14T15:51:18.464Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/21/9d/da11994307d39ee627ecea393dd8ae16ee77dc776897c8d0b301f16f4eb8/mailjet_rest-1.6.0.tar.gz", hash = "sha256:0afe56d1776226acd9ba25b90bbe57deef124daa5ed6a64f2a88cb464d6ef635", size = 69730, upload-time = "2026-04-27T12:10:06.822Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/57/c3/571e92ccb6edcda528f14864b04111adc2e19ab500f12a4ec4628176bc3e/mailjet_rest-1.5.1-py3-none-any.whl", hash = "sha256:4473ac614142e1bbd50f18c485cff4ec032f7d864cf1c9ac8d675830da579288", size = 28664, upload-time = "2025-07-14T15:51:17.119Z" },
+    { url = "https://files.pythonhosted.org/packages/ce/29/f03f7096184893229f62f57596a73adc25e14c3044bfcca2ca1c5bbcaf6f/mailjet_rest-1.6.0-py3-none-any.whl", hash = "sha256:3c2165385a76d3752d961c3241dae5adb270e2aab56e0f7c13f71b5ea68a4f4b", size = 53240, upload-time = "2026-04-27T12:10:05.704Z" },
 ]
 
 [[package]]
