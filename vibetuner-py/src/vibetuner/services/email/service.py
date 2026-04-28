@@ -72,19 +72,43 @@ _PROVIDERS: list[
 ]
 
 
+def configured_provider() -> str | None:
+    """Return the configured email provider name, or ``None`` if not set.
+
+    Resolution mirrors :func:`_resolve_provider`: an explicit ``MAIL_PROVIDER``
+    wins, otherwise the registry's first entry whose predicate matches is
+    selected. The provider's credentials must satisfy its predicate to count
+    as configured — if ``MAIL_PROVIDER`` names a provider but its credentials
+    are missing, this returns ``None`` rather than the bare name.
+
+    Useful for health checks and capability reporting that need to know
+    whether email sending is wired up without paying the cost of importing
+    the provider's SDK.
+    """
+    mail = settings.mail
+    explicit = mail.provider
+    for candidate, predicate, _ in _PROVIDERS:
+        if explicit is None:
+            if predicate(mail):
+                return candidate
+        elif candidate == explicit and predicate(mail):
+            return candidate
+    return None
+
+
 def _resolve_provider() -> EmailProvider:
     """Resolve the email provider from settings."""
     mail = settings.mail
-    name = mail.provider
+    explicit = mail.provider
 
-    if name is None:
-        for candidate, predicate, _ in _PROVIDERS:
-            if predicate(mail):
-                name = candidate
-                break
+    if explicit is not None:
+        for candidate, _, builder in _PROVIDERS:
+            if candidate == explicit:
+                return builder(mail)
+        _raise_not_configured()
 
-    for candidate, _, builder in _PROVIDERS:
-        if candidate == name:
+    for _candidate, predicate, builder in _PROVIDERS:
+        if predicate(mail):
             return builder(mail)
 
     _raise_not_configured()

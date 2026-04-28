@@ -485,3 +485,52 @@ def test_resolve_resend_wins_over_cloudflare_when_both_configured():
     ):
         provider = _resolve_provider()
     assert isinstance(provider, ResendEmailProvider)
+
+
+# ── configured_provider() helper tests ───────────────────────────────
+
+
+def test_configured_provider_returns_none_when_unset():
+    from vibetuner.services.email.service import configured_provider
+
+    with _patch_mail_settings():
+        assert configured_provider() is None
+
+
+def test_configured_provider_auto_detects_each_backend():
+    from vibetuner.services.email.service import configured_provider
+
+    with _patch_mail_settings(resend_api_key=_secret("re_xxx")):
+        assert configured_provider() == "resend"
+
+    with _patch_mail_settings(
+        mailjet_api_key=_secret("k"), mailjet_api_secret=_secret("s")
+    ):
+        assert configured_provider() == "mailjet"
+
+    with _patch_mail_settings(
+        cloudflare_api_token=_secret("cf-token"),
+        cloudflare_account_id="acct-xyz",
+    ):
+        assert configured_provider() == "cloudflare"
+
+
+def test_configured_provider_honours_explicit_selection():
+    """Explicit MAIL_PROVIDER wins over auto-detect order."""
+    from vibetuner.services.email.service import configured_provider
+
+    with _patch_mail_settings(
+        provider="cloudflare",
+        resend_api_key=_secret("re_xxx"),
+        cloudflare_api_token=_secret("cf-token"),
+        cloudflare_account_id="acct-xyz",
+    ):
+        assert configured_provider() == "cloudflare"
+
+
+def test_configured_provider_returns_none_when_explicit_missing_creds():
+    """Explicit provider name without credentials reports as not configured."""
+    from vibetuner.services.email.service import configured_provider
+
+    with _patch_mail_settings(provider="cloudflare"):
+        assert configured_provider() is None
