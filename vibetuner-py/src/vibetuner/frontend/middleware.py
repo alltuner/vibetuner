@@ -384,13 +384,16 @@ def _build_locale_selectors() -> list:
 
     Selectors are evaluated in order. The first one that returns
     a valid locale wins. Order is fixed by design:
+    0. user-registered resolvers (vibetuner.i18n.register_locale_resolver)
     1. query_param - ?l=ca query parameter
     2. url_prefix - /ca/... path prefix
     3. user_session - authenticated user's stored preference
     4. cookie - language cookie
     5. accept_language - browser Accept-Language header
     """
-    selectors: list = []
+    from vibetuner.i18n import combined_locale_selector
+
+    selectors: list = [combined_locale_selector]
     config = settings.locale_detection
 
     if config.query_param:

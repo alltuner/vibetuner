@@ -80,6 +80,15 @@ Important notes:
   render, fail-soft. Vibetuner's `base/skeleton.html.jinja` already includes
   `base/theme.html.jinja`, which emits a CSP-noncified `<style>:root { ... }</style>`
   block after `bundle.css`. `bundle.css` stays tenant-agnostic and cached
+- **i18n Primitives**: `vibetuner.i18n` ships
+  `register_locale_resolver(getter, *, priority=0)` to inject custom selectors
+  at the front of `LocaleMiddleware`'s chain (per-tenant locale becomes a
+  one-liner), `set_request_language(request, code)` to update both the Babel
+  context and `request.state.language` in one call, and `language_picker(display_locale=None)`
+  returning `[{code, name}]` with names rendered in the current request's locale
+  (browsing in Spanish gives "inglés / español / catalán"; never English-only).
+  A built-in context provider exposes the picker output as `supported_languages`
+  in every template — drop it into a `<select>` to get a generic switcher
 - **Service DI**: `get_email_service()`, `get_blob_service()`, `get_runtime_config()`
   FastAPI dependency wrappers
 - **Email Providers**: Pluggable transactional email via Resend

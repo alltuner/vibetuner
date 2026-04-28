@@ -1389,6 +1389,97 @@ rules to load the binary before any `--font-display` variable can switch to
 it, which is a different mechanism. Tracked in
 [vibetuner#1705](https://github.com/alltuner/vibetuner/issues/1705).
 
+### i18n Primitives
+
+`vibetuner.i18n` exposes three primitives for apps that need to override
+locale detection or render language switchers without hardcoding language
+lists.
+
+#### `register_locale_resolver(getter, *, priority=0)`
+
+Inject a custom selector at the **front** of `LocaleMiddleware`'s chain.
+Resolvers receive the `HTTPConnection` and return either a locale code or
+`None` to defer to the next resolver. All registered resolvers run before
+the built-in chain (query param → URL prefix → user session → cookie →
+`Accept-Language`). Within the registered group, lower `priority` runs
+first; ties fall back to insertion order.
+
+```python
+from vibetuner.i18n import register_locale_resolver
+
+
+def tenant_locale(conn):
+    tenant = conn.scope.get("state", {}).get("tenant")
+    return tenant.language if tenant else None
+
+
+register_locale_resolver(tenant_locale)
+```
+
+The combined selector is fail-soft: a resolver that raises is logged and
+the chain falls through. Resolvers must be synchronous — do DB lookups in
+upstream middleware that already attached the tenant to `request.state`.
+
+#### `set_request_language(request, code)`
+
+Force the active language for the rest of the request. Updates **both**
+the Babel context (drives `{% trans %}`) and `request.state.language`
+(drives `<html lang>` and `Content-Language`) so all three stay in sync.
+Use this for the late-bound case — e.g. switching to the user's preferred
+language right after a session login.
+
+```python
+from vibetuner.i18n import set_request_language
+
+
+@router.post("/login")
+async def login(request: Request, ...):
+    user = await authenticate(...)
+    if user.preferred_language:
+        set_request_language(request, user.preferred_language)
+    ...
+```
+
+The code is normalized to lowercase and validated with
+`babel.Locale.parse`; an invalid code raises `ValueError`.
+
+#### `language_picker(display_locale=None, *, supported_languages=None)`
+
+Returns a sorted `[{"code", "name"}, ...]` list. Names are rendered in
+`display_locale` so the dropdown shows itself in the user's current
+language. Browsing in Spanish gives "inglés / español / catalán";
+browsing in Catalan gives "anglès / espanyol / català". When
+`display_locale` is omitted, the current Babel context locale is used.
+
+```python
+from vibetuner.i18n import language_picker
+
+picker = language_picker()  # display in current request's locale
+es = language_picker(display_locale="es")  # always in Spanish
+```
+
+The function is also exposed automatically as the `supported_languages`
+template variable via a built-in context provider — drop it into a
+`<select>` to get a generic switcher:
+
+```jinja
+<select name="language">
+    {% for entry in supported_languages %}
+        <option value="{{ entry.code }}"
+                {% if entry.code == language %}selected{% endif %}>
+            {{ entry.name }}
+        </option>
+    {% endfor %}
+</select>
+```
+
+**Migration note:** prior to this change, `supported_languages` in
+templates was a `set[str]` of language codes. It is now a list of
+`{code, name}` dicts. Templates that just want codes can use
+`{% for entry in supported_languages %}{{ entry.code }}{% endfor %}`.
+The `locale_names` template variable (locale-independent native names) is
+unchanged.
+
 ### Service Dependency Injection
 
 Vibetuner provides FastAPI `Depends()` wrappers for built-in services:

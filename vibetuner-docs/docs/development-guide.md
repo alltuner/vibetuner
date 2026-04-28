@@ -963,25 +963,33 @@ The following language-related variables are available in templates:
 | Variable | Type | Description |
 |----------|------|-------------|
 | `default_language` | `str` | Default language code (e.g., "en") |
-| `supported_languages` | `set[str]` | Set of supported language codes |
+| `supported_languages` | `list[{code, name}]` | Languages with names rendered in the current locale |
 | `locale_names` | `dict[str, str]` | Language codes to native display names |
+| `language` | `str` | The active language for the current request |
 
-#### Using `locale_names` for Language Selectors
+#### Using `supported_languages` for Language Selectors
 
-The `locale_names` dict maps language codes to their native display names, sorted alphabetically:
+`supported_languages` is the output of `vibetuner.i18n.language_picker()`. Names are
+rendered in the **current request's locale** so the dropdown shows itself in the user's
+current language. Browsing in Spanish gives "inglés / español / catalán"; browsing in
+Catalan gives "anglès / espanyol / català".
 
 ```html
 <select name="language">
-    {% for code, name in locale_names.items() %}
-        <option value="{{ code }}"
-                {% if code == current_language %}selected{% endif %}>
-            {{ name }}
+    {% for entry in supported_languages %}
+        <option value="{{ entry.code }}"
+                {% if entry.code == language %}selected{% endif %}>
+            {{ entry.name }}
         </option>
     {% endfor %}
 </select>
 ```
 
-Example output: `{"ca": "Català", "en": "English", "es": "Español"}`
+#### Using `locale_names` for native names
+
+`locale_names` is locale-independent — each language is shown in its own native name
+(e.g. `{"ca": "Català", "en": "English", "es": "Español"}`). Use this when you want a
+consistent display regardless of the user's current language.
 
 ### SEO-Friendly Language URLs
 
@@ -1005,12 +1013,64 @@ The `LangPrefixMiddleware` handles path-prefix language routing:
 
 Languages are detected in this order (first match wins):
 
-1. Query parameter (`?l=es`)
-2. URL path prefix (`/ca/...`)
-3. User preference (from session, for authenticated users)
-4. Cookie (`language` cookie)
-5. Accept-Language header (browser preference)
-6. Default language
+1. **Custom resolvers** registered via
+   [`register_locale_resolver`](#custom-locale-resolvers-register_locale_resolver)
+2. Query parameter (`?l=es`)
+3. URL path prefix (`/ca/...`)
+4. User preference (from session, for authenticated users)
+5. Cookie (`language` cookie)
+6. Accept-Language header (browser preference)
+7. Default language
+
+#### Custom Locale Resolvers (`register_locale_resolver`)
+
+For per-tenant or domain-specific locale rules, register a custom resolver at
+startup. Resolvers run **before** all built-in selectors and the first one to
+return a non-`None` value wins. Within the registered group, resolvers are
+ordered by `priority` ascending (lower runs first).
+
+```python
+from vibetuner.i18n import register_locale_resolver
+
+def tenant_locale(conn):
+    tenant = getattr(conn.scope.get("state", {}), "tenant", None)
+    return tenant.language if tenant else None
+
+register_locale_resolver(tenant_locale)
+```
+
+Resolvers must be synchronous (do any I/O upstream in middleware). If a
+resolver raises, the exception is logged and the chain falls through to the
+next resolver — a bad lookup never produces a 500.
+
+#### Forcing a Language Mid-Request (`set_request_language`)
+
+To change the active language partway through a request (e.g. right after a
+session login), use `set_request_language`. It updates both the Babel context
+(drives `{% trans %}`) and `request.state.language` (drives `<html lang>` and
+the `Content-Language` header) in one call so they stay in sync.
+
+```python
+from vibetuner.i18n import set_request_language
+
+set_request_language(request, user.preferred_language)
+```
+
+The code is normalized to lowercase and validated; an invalid code raises
+`ValueError`.
+
+#### Programmatic Language Picker (`language_picker`)
+
+When you need the picker output outside a template (e.g. JSON endpoint, email
+rendering), call `language_picker` directly. By default the names are
+rendered in the current request's locale.
+
+```python
+from vibetuner.i18n import language_picker
+
+choices = language_picker()  # display in current locale
+es_choices = language_picker(display_locale="es")  # always in Spanish
+```
 
 #### Redirect Behavior
 

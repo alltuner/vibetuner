@@ -185,9 +185,9 @@
                         </label>
                         <div class="flex flex-wrap gap-2">
                             {% for lang in supported_languages %}
-                                <div class="badge badge-outline {{ 'badge-primary' if lang == default_language else '' }}">
-                                    {{ lang }}
-                                    {% if lang == default_language %}
+                                <div class="badge badge-outline {{ 'badge-primary' if lang.code == default_language else '' }}">
+                                    {{ lang.code }}
+                                    {% if lang.code == default_language %}
                                         <svg class="w-3 h-3 ml-1"
                                              fill="none"
                                              stroke="currentColor"
