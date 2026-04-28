@@ -1,5 +1,36 @@
 # Changelog
 
+## [10.8.0](https://github.com/alltuner/vibetuner/compare/v10.7.0...v10.8.0) (2026-04-28)
+
+
+### Features
+
+* add BrandSettings env-var surface for favicon and email branding ([#1720](https://github.com/alltuner/vibetuner/issues/1720)) ([3d22717](https://github.com/alltuner/vibetuner/commit/3d22717636a99365ccbce1ccde27e5562bcc70f1))
+* i18n primitives for per-tenant locale flows ([#1718](https://github.com/alltuner/vibetuner/issues/1718)) ([177fe5e](https://github.com/alltuner/vibetuner/commit/177fe5ea44010b94219e15d56c45d46b6b805dd3))
+
+
+### Bug Fixes
+
+* restore gettext plural-form support in lint-po ([#1725](https://github.com/alltuner/vibetuner/issues/1725)) ([fe0dacb](https://github.com/alltuner/vibetuner/commit/fe0dacbb5a49bd0f9fd8dcb2f7483524ccf38cdb))
+* **template:** scope babel.cfg python extraction to src/ ([#1722](https://github.com/alltuner/vibetuner/issues/1722)) ([b729964](https://github.com/alltuner/vibetuner/commit/b729964b53bc3e017ab7d6b7125fd833f53bec61))
+* theme default screens with DaisyUI semantic tokens ([#1714](https://github.com/alltuner/vibetuner/issues/1714)) ([4467168](https://github.com/alltuner/vibetuner/commit/4467168536e5570b330acabc5b692d3c7f7e3613))
+
+
+### Performance Improvements
+
+* **testing:** share MongoDB across vibetuner_db tests ([#1726](https://github.com/alltuner/vibetuner/issues/1726)) ([c9064e4](https://github.com/alltuner/vibetuner/commit/c9064e407d72df057b12d6955d9e825e7853c3ec))
+
+
+### Miscellaneous Chores
+
+* **py:** use PEP 639 SPDX license expression ([#1727](https://github.com/alltuner/vibetuner/issues/1727)) ([855f9f4](https://github.com/alltuner/vibetuner/commit/855f9f4237e79173d7550abf5374447ecdc0838c))
+
+
+### Documentation Updates
+
+* **i18n:** clarify locale_names vs language_picker overlap ([#1723](https://github.com/alltuner/vibetuner/issues/1723)) ([87733bd](https://github.com/alltuner/vibetuner/commit/87733bde7549c8fe777c2793665bd7418936d8c5))
+* **template:** document i18n primitives in scaffolded agent rules ([#1724](https://github.com/alltuner/vibetuner/issues/1724)) ([27a3b98](https://github.com/alltuner/vibetuner/commit/27a3b98c815b23486211f4d636a7070b2ed12446))
+
 ## [10.7.0](https://github.com/alltuner/vibetuner/compare/v10.6.0...v10.7.0) (2026-04-28)
 
 
