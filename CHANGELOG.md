@@ -1,5 +1,20 @@
 # Changelog
 
+## [10.6.0](https://github.com/alltuner/vibetuner/compare/v10.5.0...v10.6.0) (2026-04-28)
+
+
+### Features
+
+* enforce CSP in debug by default with opt-out flag ([#1702](https://github.com/alltuner/vibetuner/issues/1702)) ([2d939ea](https://github.com/alltuner/vibetuner/commit/2d939eafa8abd261b3e3b371f4a1dcb7ac06750c))
+* per-tenant theming via runtime CSS-variable injection ([#1707](https://github.com/alltuner/vibetuner/issues/1707)) ([6a44e6c](https://github.com/alltuner/vibetuner/commit/6a44e6c7e643c29e55f98075a698b43a368ad2be))
+
+
+### Miscellaneous Chores
+
+* add `vibetuner core-templates-path` CLI for setup-tw-sources ([#1708](https://github.com/alltuner/vibetuner/issues/1708)) ([b095d32](https://github.com/alltuner/vibetuner/commit/b095d322e9d384fdd9bb2a8160f20fdf8f30d917))
+* **deps:** bump gitpython from 3.1.46 to 3.1.47 ([#1689](https://github.com/alltuner/vibetuner/issues/1689)) ([b44149d](https://github.com/alltuner/vibetuner/commit/b44149da4c92de0aea32b25fd0e776dcc0dc1a3f))
+* **deps:** bump gitpython from 3.1.46 to 3.1.47 in /vibetuner-py ([#1688](https://github.com/alltuner/vibetuner/issues/1688)) ([14aaf96](https://github.com/alltuner/vibetuner/commit/14aaf96b51235318a199106b232f29560c4f6d05))
+
 ## [10.5.0](https://github.com/alltuner/vibetuner/compare/v10.4.7...v10.5.0) (2026-04-24)
 
 
