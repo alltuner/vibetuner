@@ -755,6 +755,12 @@ jinja_env.globals.update({"lang_url_for": lang_url_for})
 jinja_env.globals.update({"url_for_language": url_for_language})
 jinja_env.globals.update({"hreflang_tags": hreflang_tags})
 
+# Language picker (lazy import to avoid circular dependency on vibetuner.i18n)
+from vibetuner.i18n import language_picker as _language_picker  # noqa: E402
+
+
+jinja_env.globals.update({"language_picker": _language_picker})
+
 # Date Filters
 jinja_env.filters["timeago"] = timeago
 jinja_env.filters["format_date"] = format_date
