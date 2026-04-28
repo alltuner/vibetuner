@@ -413,8 +413,16 @@ MAIL_RESEND_API_KEY=re_xxxxxxxxxxxx
 # MAIL_MAILJET_API_KEY=your-api-key
 # MAIL_MAILJET_API_SECRET=your-api-secret
 
+# Option C: Cloudflare Email Service (public beta)
+# MAIL_CLOUDFLARE_API_TOKEN=cf-token
+# MAIL_CLOUDFLARE_ACCOUNT_ID=your-account-id
+
 FROM_EMAIL=noreply@example.com
 ```
+
+When multiple providers are configured, auto-detection prefers Resend, then
+Mailjet, then Cloudflare. Set `MAIL_PROVIDER=cloudflare` (or `resend` /
+`mailjet`) to pick explicitly.
 
 ### How It Works
 
@@ -631,7 +639,7 @@ Ensure callback URLs exactly match in:
 
 Check:
 
-1. Email provider credentials are correct (MAIL_RESEND_API_KEY or MAIL_MAILJET_API_KEY)
+1. Email provider credentials are correct (MAIL_RESEND_API_KEY, MAIL_MAILJET_API_KEY, or MAIL_CLOUDFLARE_API_TOKEN + MAIL_CLOUDFLARE_ACCOUNT_ID)
 2. Email is being sent (check logs)
 3. Token hasn't expired (15 minutes default)
 4. Email isn't in spam folder
