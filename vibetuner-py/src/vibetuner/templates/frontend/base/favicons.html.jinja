@@ -15,6 +15,6 @@
 <link rel="manifest" href="{{ url_for('site_webmanifest').path }}" />
 <link rel="mask-icon"
       href="{{ url_for('favicons', path='safari-pinned-tab.svg').path }}"
-      color="#5b2333" />
-<meta name="msapplication-TileColor" content="#5b2333" />
-<meta name="theme-color" content="#ffffff" />
+      color="{{ brand.primary_color }}" />
+<meta name="msapplication-TileColor" content="{{ brand.primary_color }}" />
+<meta name="theme-color" content="{{ brand.browser_theme_color }}" />

@@ -592,6 +592,49 @@ Vibetuner uses Tailwind CSS + DaisyUI. Edit `assets/config.css` for custom style
 
 The build process automatically compiles to `assets/statics/css/bundle.css`.
 
+### Brand Configuration
+
+DaisyUI tokens and CSS variables cover everything that renders inside the
+page, but a few brand surfaces are read before any CSS runs (favicon meta
+tags, the PWA manifest) or in clients that ignore CSS variables (email
+clients). `BrandSettings` is an app-level pydantic-settings surface that
+drives those specific surfaces:
+
+```bash
+# .env (all three are optional; defaults shown)
+BRAND_PRIMARY_COLOR=#5b2333
+BRAND_BROWSER_THEME_COLOR=#ffffff
+BRAND_EMAIL_BUTTON_COLOR=  # falls back to BRAND_PRIMARY_COLOR when unset
+```
+
+- `BRAND_PRIMARY_COLOR` — Safari pinned-tab `mask-icon` color, Windows
+  tile color (`browserconfig.xml`), and the magic-link email button when
+  no override is set.
+- `BRAND_BROWSER_THEME_COLOR` — mobile browser chrome
+  (`<meta name="theme-color">`) and the PWA manifest's `theme_color` /
+  `background_color`.
+- `BRAND_EMAIL_BUTTON_COLOR` — override slot for the magic-link email
+  button when it needs to differ from the primary brand color.
+
+Inputs accept any pydantic `Color` form (named, `rgb()`, hex short or
+long); values canonicalise to long-form `#rrggbb` lowercase before
+rendering.
+
+```python
+from vibetuner.config import settings
+
+settings.brand.primary_color        # HexColor("#5b2333")
+settings.brand.browser_theme_color  # HexColor("#ffffff")
+settings.brand.email_button         # email_button_color or primary_color
+```
+
+`settings.brand` is exposed in every Jinja render via the shipped
+`_brand_context` provider, so templates read `{{ brand.primary_color }}`
+without wiring anything up. `BrandSettings` is deliberately app-level
+(favicon assets are static files served before tenant resolution; the
+email service does not see request context). For per-tenant in-page
+colors, use `TenantTheme`.
+
 ### Security Headers and CSP Nonce
 
 Vibetuner includes `SecurityHeadersMiddleware` that sets security headers
