@@ -13,6 +13,7 @@ from vibetuner.rendering import (
     render_template_stream,
     render_template_string,
 )
+from vibetuner.theming import register_tenant_theme_provider
 
 
 __version__ = version("vibetuner")
@@ -32,6 +33,7 @@ __all__ = [
     "VibetunerApp",
     "register_context_provider",
     "register_globals",
+    "register_tenant_theme_provider",
     "render",
     "render_template",
     "render_template_block",

@@ -1,0 +1,20 @@
+{# Per-tenant theme override partial.
+   Emits a CSP-noncified <style>:root { ... }</style> block when
+   `theme_overrides` is a non-empty mapping of {css_var: hex_value}.
+
+   Render order matters: include this *after* the bundle.css <link> in
+   skeleton.html.jinja so the :root rule wins the cascade. DaisyUI scopes
+   its theme variables under :where(:root), which has zero specificity, so
+   a plain :root { ... } block always overrides them.
+
+   Hex values are validated by vibetuner.models.TenantTheme to match
+   #rrggbb. We escape them again here defensively in case a caller
+   bypasses the helper. -#}
+{% if theme_overrides %}
+    <style nonce="{{ csp_nonce }}">:root {
+        {%- for css_var, hex_value in theme_overrides.items() %}
+            {{- css_var | e }}: {{ hex_value | e }};
+        {%- endfor %}
+        }
+    </style>
+{% endif %}

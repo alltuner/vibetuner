@@ -78,6 +78,7 @@ nav:
       - Runtime Configuration: runtime-config.md
       - Deployment: deployment.md
       - URL Routing: url-routing.md
+      - Per-Tenant Theming: theming.md
       - HTMX v2 → v4 Migration: htmx-migration.md
   - Contributing:
       - Development Workflow: development.md
