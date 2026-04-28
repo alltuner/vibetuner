@@ -969,6 +969,21 @@ The following language-related variables are available in templates:
 
 A `language_picker()` Jinja global is also available — see below.
 
+#### When to use which
+
+`locale_names` and `language_picker()` overlap but solve different problems:
+
+- **`locale_names`** — locale-independent map of native names, frozen at app startup
+  and sorted by name. Use it when every language must always render in its own script
+  (e.g. a footer that reads "English / Català / Español" regardless of the visitor's
+  language).
+- **`language_picker()`** — `[{code, name}]` list with names rendered in the current
+  request locale (or an explicit `display_locale`). Use it for switchers that should
+  render themselves in the user's active language.
+
+If you want native names but prefer a single source of truth, call
+`language_picker(code)` once per language instead of reading `locale_names`.
+
 #### Using `language_picker()` for Locale-Aware Switchers
 
 `language_picker()` is a Jinja global (also importable as

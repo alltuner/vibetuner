@@ -1481,6 +1481,19 @@ The existing `locale_names` template variable (locale-independent native
 names — `{"ca": "Català", "en": "English"}`) and the `supported_languages`
 template variable (set of codes) are unchanged.
 
+`locale_names` and `language_picker()` overlap but cover different cases:
+
+- `locale_names` — each language always rendered in its own script,
+  regardless of the request locale. Use for footers or chrome that must
+  read the same in every locale.
+- `language_picker()` — names rendered in the active (or explicit)
+  display locale. Use for switchers that should render themselves in
+  the user's current language.
+
+Need native names but want a single source of truth? Call
+`language_picker(code)` once per language instead of reading
+`locale_names`.
+
 ### Service Dependency Injection
 
 Vibetuner provides FastAPI `Depends()` wrappers for built-in services:
