@@ -58,6 +58,6 @@ repos:
     hooks:
       - id: lint-po
         name: lint-po
-        entry: uvx lint-po
+        entry: uv run --frozen lint-po
         language: system
         files: \.po$
