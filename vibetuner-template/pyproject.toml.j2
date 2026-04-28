@@ -25,6 +25,7 @@ vibetuner = "vibetuner.cli:app"
 [dependency-groups]
 dev = [
   "vibetuner[dev]",
+  "lint-po",
 ]
 
 [build-system]
@@ -38,6 +39,10 @@ testpaths = ["tests"]
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }]
 
+[tool.uv.sources]
+# Pin to upstream master until himdel/lint-po cuts a PyPI release
+# that includes gettext plural-form support (PRs #3 and #4).
+lint-po = { git = "https://github.com/himdel/lint-po", rev = "efadbcaa50f84135ee4f16efa44d99d2662a74b4" }
+
 # To develop against a local copy of vibetuner-py, add:
-# [tool.uv.sources]
 # vibetuner = { path = "packages/vibetuner-py", editable = true }
