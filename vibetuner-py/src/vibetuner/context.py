@@ -24,7 +24,14 @@ class Context(BaseModel):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def locale_names(self) -> dict[str, str]:
-        """Language codes mapped to native display names, sorted alphabetically."""
+        """Language codes mapped to native display names, sorted alphabetically.
+
+        Locale-independent: each language renders in its own script (e.g.
+        ``{"ca": "Català", "en": "English"}``). For names rendered in the
+        active request locale, use :func:`vibetuner.i18n.language_picker`;
+        call ``language_picker(code)`` per language for native names from
+        a single source of truth.
+        """
         if self._locale_names_cache is None:
             self._locale_names_cache = dict(
                 sorted(
