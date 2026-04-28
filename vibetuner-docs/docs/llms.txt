@@ -63,6 +63,11 @@ Important notes:
   Handles JSON serialization internally. Import from `vibetuner.htmx`
 - **Built-in Template Globals**: `now` (UTC datetime) and `today` (ISO date string)
   are available in all templates automatically
+- **Skeleton Extension Points**: `base/skeleton.html.jinja` exposes blocks
+  (`extra_head_links`, `extra_scripts`, `before_main`, `after_main`) and
+  context variables (`color_scheme`, `canonical_url`, `font_preloads`) so
+  projects can extend instead of wholesale-overriding the skeleton —
+  upstream changes (CSP nonce, theming, etc.) flow through automatically
 - **Encrypted Fields**: `EncryptedFieldsMixin` and `EncryptedStr` type for
   transparent Fernet encrypt-on-save / decrypt-on-load on any Beanie model field.
   Import from `vibetuner.models.mixins`. Requires `FIELD_ENCRYPTION_KEY` env var

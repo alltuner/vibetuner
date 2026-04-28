@@ -351,6 +351,54 @@ Add templates in `templates/`:
 {% endblock %}
 ```
 
+#### Skeleton Extension Points
+
+`base/skeleton.html.jinja` exposes blocks and context variables so projects
+can slot in customisations without copying the whole skeleton. Extending it
+is preferable to overriding it: upstream changes (CSP nonce, theming, etc.)
+flow through automatically.
+
+**Blocks** (override in any child template):
+
+- `extra_head_links` — after `<title>`, before `bundle.css`. For
+  `<link rel="alternate">` feeds, RSS, custom meta tags.
+- `extra_scripts` — after the bundled `<script>` (and optional umami). For
+  per-app scripts that don't replace `bundle.js`.
+- `before_main` — inside `<body>`, before `block body`. For dev banners,
+  sticky overlays.
+- `after_main` — inside `<body>`, after `block body`. For persistent
+  mini-players, floating toolbars.
+
+Existing blocks already there: `title`, `head`, `scripts`, `start_of_body`,
+`header`, `body`, `content`, `footer`, `end_of_body`.
+
+**Context variables** (set via `register_globals`, a context provider, or
+per-render `ctx`):
+
+- `color_scheme` — `str`, defaults to `"light"`. Sets
+  `<meta name="color-scheme">` content.
+- `canonical_url` — `str | None`, defaults to `None`. When set, renders
+  `<link rel="canonical" href="…">`.
+- `font_preloads` — `list[dict]`, defaults to `[]`. Each entry renders
+  `<link rel="preload" as="font" href="…" type="…" [crossorigin="…"]>`.
+  Listed before `bundle.css` so the preload scanner picks them up early.
+
+Example: a project skeleton override that adds an RSS feed and a persistent
+player without touching upstream markup:
+
+```html
+{% extends "base/skeleton.html.jinja" %}
+
+{% block extra_head_links %}
+    <link rel="alternate" type="application/rss+xml"
+          title="My App" href="{{ url_for('rss').path }}" />
+{% endblock extra_head_links %}
+
+{% block after_main %}
+    {% include "components/player.html.jinja" %}
+{% endblock after_main %}
+```
+
 #### Built-in Template Globals
 
 These variables are available in every template automatically:
