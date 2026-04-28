@@ -87,8 +87,8 @@ Important notes:
   context and `request.state.language` in one call, and `language_picker(display_locale=None)`
   returning `[{code, name}]` with names rendered in the current request's locale
   (browsing in Spanish gives "inglés / español / catalán"; never English-only).
-  A built-in context provider exposes the picker output as `supported_languages`
-  in every template — drop it into a `<select>` to get a generic switcher
+  `language_picker` is also registered as a Jinja global so templates can call
+  it directly without overriding any existing template variable
 - **Service DI**: `get_email_service()`, `get_blob_service()`, `get_runtime_config()`
   FastAPI dependency wrappers
 - **Email Providers**: Pluggable transactional email via Resend

@@ -410,9 +410,7 @@ def url_for_language(request: Request, lang: str, name: str, **path_params) -> s
 
 
 def hreflang_tags(
-    request: Request,
-    supported_languages: set[str] | list[dict[str, str]] | None = None,
-    default_lang: str | None = None,
+    request: Request, supported_languages: set[str], default_lang: str
 ) -> str:
     """Generate hreflang link tags for SEO.
 
@@ -421,28 +419,15 @@ def hreflang_tags(
 
     Args:
         request: FastAPI Request object
-        supported_languages: Either a set of codes (e.g. ``{"en", "ca", "es"}``)
-            or a list of ``{"code", "name"}`` dicts (the
-            :func:`vibetuner.i18n.language_picker` shape, which is also the
-            template variable). Defaults to ``ctx.supported_languages``.
-        default_lang: Default language code for x-default tag. Defaults to
-            ``ctx.default_language``.
+        supported_languages: Set of supported language codes (e.g., {"en", "ca", "es"})
+        default_lang: Default language code for x-default tag
 
     Returns:
         str: HTML string with hreflang link tags, one per line
 
     Example:
-        {{ hreflang_tags(request)|safe }}
+        {{ hreflang_tags(request, supported_languages, default_language)|safe }}
     """
-    if supported_languages is None:
-        supported_languages = data_ctx.supported_languages
-    if default_lang is None:
-        default_lang = data_ctx.default_language
-
-    if supported_languages and isinstance(next(iter(supported_languages)), dict):
-        codes = {entry["code"] for entry in supported_languages}  # type: ignore[index]
-    else:
-        codes = set(supported_languages)  # type: ignore[arg-type]
     path = request.url.path
 
     # If accessed with lang prefix, get the base path
@@ -456,7 +441,7 @@ def hreflang_tags(
     base_url = str(request.base_url).rstrip("/")
 
     tags = []
-    for lang in sorted(codes):
+    for lang in sorted(supported_languages):
         url = f"{base_url}/{lang}{path}"
         tags.append(f'<link rel="alternate" hreflang="{lang}" href="{url}" />')
 
@@ -769,6 +754,12 @@ jinja_env.globals.update({"DEBUG": data_ctx.DEBUG})
 jinja_env.globals.update({"lang_url_for": lang_url_for})
 jinja_env.globals.update({"url_for_language": url_for_language})
 jinja_env.globals.update({"hreflang_tags": hreflang_tags})
+
+# Language picker (lazy import to avoid circular dependency on vibetuner.i18n)
+from vibetuner.i18n import language_picker as _language_picker  # noqa: E402
+
+
+jinja_env.globals.update({"language_picker": _language_picker})
 
 # Date Filters
 jinja_env.filters["timeago"] = timeago

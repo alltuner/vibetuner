@@ -1458,13 +1458,13 @@ picker = language_picker()  # display in current request's locale
 es = language_picker(display_locale="es")  # always in Spanish
 ```
 
-The function is also exposed automatically as the `supported_languages`
-template variable via a built-in context provider — drop it into a
-`<select>` to get a generic switcher:
+The function is also registered as a Jinja global so templates can call
+it directly — no new context variable, no override of the existing
+`supported_languages` template var (which stays a `set[str]` of codes):
 
 ```jinja
 <select name="language">
-    {% for entry in supported_languages %}
+    {% for entry in language_picker() %}
         <option value="{{ entry.code }}"
                 {% if entry.code == language %}selected{% endif %}>
             {{ entry.name }}
@@ -1473,12 +1473,13 @@ template variable via a built-in context provider — drop it into a
 </select>
 ```
 
-**Migration note:** prior to this change, `supported_languages` in
-templates was a `set[str]` of language codes. It is now a list of
-`{code, name}` dicts. Templates that just want codes can use
-`{% for entry in supported_languages %}{{ entry.code }}{% endfor %}`.
-The `locale_names` template variable (locale-independent native names) is
-unchanged.
+Pass an explicit `display_locale` to override the default of "current
+request locale": `{% for e in language_picker("es") %}` always renders
+in Spanish.
+
+The existing `locale_names` template variable (locale-independent native
+names — `{"ca": "Català", "en": "English"}`) and the `supported_languages`
+template variable (set of codes) are unchanged.
 
 ### Service Dependency Injection
 

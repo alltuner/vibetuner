@@ -171,3 +171,8 @@ class TestLanguagePicker:
         result = i18n.language_picker(display_locale="en")
         assert isinstance(result, list)
         assert all("code" in e and "name" in e for e in result)
+
+    def test_exposed_as_jinja_global(self):
+        from vibetuner.rendering import jinja_env
+
+        assert jinja_env.globals.get("language_picker") is i18n.language_picker

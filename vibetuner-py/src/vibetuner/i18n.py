@@ -17,13 +17,13 @@ user-driven language flows:
   switcher, with names rendered in the *current* display locale (not
   hard-coded to English).
 
-A built-in context provider also exposes ``supported_languages`` (the
-picker's output) to every template so a header partial can drop in a
-generic dropdown without per-project plumbing.
+``language_picker`` is also exposed as a Jinja global so templates can
+call it directly — no new context variable, no override of the existing
+``supported_languages`` template var (which stays a ``set[str]`` of
+codes).
 """
 
 from collections.abc import Callable
-from typing import Any
 
 from babel import Locale, UnknownLocaleError
 from fastapi.requests import HTTPConnection
@@ -32,7 +32,6 @@ from starlette_babel import get_locale, set_locale
 
 from vibetuner.context import ctx
 from vibetuner.logging import logger
-from vibetuner.rendering import register_context_provider
 
 
 __all__ = [
@@ -228,18 +227,3 @@ def language_picker(
 
     entries.sort(key=lambda entry: entry["name"].casefold())
     return entries
-
-
-def _supported_languages_context(request: Request) -> dict[str, Any]:
-    """Expose ``supported_languages`` (picker output) in every template."""
-    language = getattr(request.state, "language", None)
-    try:
-        return {
-            "supported_languages": language_picker(display_locale=language),
-        }
-    except Exception as exc:
-        logger.error(f"supported_languages context provider failed: {exc!r}")
-        return {}
-
-
-register_context_provider(_supported_languages_context)

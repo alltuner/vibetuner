@@ -963,20 +963,23 @@ The following language-related variables are available in templates:
 | Variable | Type | Description |
 |----------|------|-------------|
 | `default_language` | `str` | Default language code (e.g., "en") |
-| `supported_languages` | `list[{code, name}]` | Languages with names rendered in the current locale |
+| `supported_languages` | `set[str]` | Set of supported language codes |
 | `locale_names` | `dict[str, str]` | Language codes to native display names |
 | `language` | `str` | The active language for the current request |
 
-#### Using `supported_languages` for Language Selectors
+A `language_picker()` Jinja global is also available — see below.
 
-`supported_languages` is the output of `vibetuner.i18n.language_picker()`. Names are
-rendered in the **current request's locale** so the dropdown shows itself in the user's
-current language. Browsing in Spanish gives "inglés / español / catalán"; browsing in
-Catalan gives "anglès / espanyol / català".
+#### Using `language_picker()` for Locale-Aware Switchers
+
+`language_picker()` is a Jinja global (also importable as
+`vibetuner.i18n.language_picker`) that returns a sorted list of
+`{code, name}` entries with names rendered in the **current request's
+locale**. Browsing in Spanish gives "inglés / español / catalán";
+browsing in Catalan gives "anglès / espanyol / català".
 
 ```html
 <select name="language">
-    {% for entry in supported_languages %}
+    {% for entry in language_picker() %}
         <option value="{{ entry.code }}"
                 {% if entry.code == language %}selected{% endif %}>
             {{ entry.name }}
@@ -984,6 +987,9 @@ Catalan gives "anglès / espanyol / català".
     {% endfor %}
 </select>
 ```
+
+Pass an explicit `display_locale` to render names in a specific language
+regardless of the request locale: `{% for e in language_picker("es") %}`.
 
 #### Using `locale_names` for native names
 
