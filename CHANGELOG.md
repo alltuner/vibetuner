@@ -1,5 +1,22 @@
 # Changelog
 
+## [10.8.1](https://github.com/alltuner/vibetuner/compare/v10.8.0...v10.8.1) (2026-05-03)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump click from 8.3.2 to 8.3.3 in /vibetuner-py ([#1729](https://github.com/alltuner/vibetuner/issues/1729)) ([222553a](https://github.com/alltuner/vibetuner/commit/222553aa1cd7a68819631ed3c1067f171dcd3339))
+* **deps:** bump gitpython from 3.1.47 to 3.1.48 in /vibetuner-py ([#1732](https://github.com/alltuner/vibetuner/issues/1732)) ([71613d5](https://github.com/alltuner/vibetuner/commit/71613d5189429d68d4456af891e8550cfee9f74f))
+* **deps:** bump mailjet-rest from 1.5.1 to 1.6.0 in /vibetuner-py ([#1728](https://github.com/alltuner/vibetuner/issues/1728)) ([a85c5c3](https://github.com/alltuner/vibetuner/commit/a85c5c3f3ed4230ebadefd2514c911d6da94e65d))
+* **deps:** bump ruff from 0.15.11 to 0.15.12 in /vibetuner-py ([#1731](https://github.com/alltuner/vibetuner/issues/1731)) ([07fc245](https://github.com/alltuner/vibetuner/commit/07fc24581b34beafb0d15012c67a3e0d7d17c1cb))
+* **deps:** bump ty from 0.0.32 to 0.0.33 in /vibetuner-py ([#1730](https://github.com/alltuner/vibetuner/issues/1730)) ([7106995](https://github.com/alltuner/vibetuner/commit/71069951ce4a37cedce85f8086675ab5ef1517a9))
+* update dep versions ([#1737](https://github.com/alltuner/vibetuner/issues/1737)) ([f3021dd](https://github.com/alltuner/vibetuner/commit/f3021dd53bcd06471f4c576824482eeed49edb28))
+
+
+### CI/CD Changes
+
+* allow revert as a conventional PR title type ([#1736](https://github.com/alltuner/vibetuner/issues/1736)) ([1fb0ae2](https://github.com/alltuner/vibetuner/commit/1fb0ae2448333d275f8de716f29c6cc774deaeae))
+
 ## [10.8.0](https://github.com/alltuner/vibetuner/compare/v10.7.0...v10.8.0) (2026-04-28)
 
 
