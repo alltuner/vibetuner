@@ -27,6 +27,7 @@ jobs:
             perf
             ci
             build
+            revert
           # Require a colon after the type
           requireScope: false
           # Allow uppercase in subject (e.g., "API" is fine)
