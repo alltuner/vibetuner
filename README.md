@@ -1,219 +1,177 @@
-# Vibetuner
+<p align="center">
+  <img src="https://brand.alltuner.com/logos/vibetuner/horizontal.png" alt="Vibetuner" width="500">
+</p>
 
-## Production-ready FastAPI web application scaffolding in seconds
+<p align="center">
+  <strong>Production-ready FastAPI scaffolding in seconds.</strong><br>
+  Authentication, database, frontend, Docker, and CLI tools, pre-configured.
+</p>
 
-Vibetuner generates full-stack web applications with authentication, database,
-frontend, Docker deployment, and CLI tools pre-configured.
+<p align="center">
+  <a href="https://github.com/alltuner/vibetuner/tree/main/vibetuner-docs/docs">Docs</a> &middot;
+  <a href="https://alltuner.com/sponsor">Sponsor</a>
+</p>
 
-Built by [All Tuner Labs](https://www.alltuner.com) for rapid iteration and modern development.
+<p align="center">
+  <img src="https://img.shields.io/pypi/v/vibetuner?color=5B2333" alt="PyPI">
+  <img src="https://img.shields.io/npm/v/@alltuner/vibetuner?color=5B2333" alt="npm">
+  <img src="https://img.shields.io/github/license/alltuner/vibetuner?color=5B2333" alt="License">
+  <img src="https://img.shields.io/github/stars/alltuner/vibetuner?color=5B2333" alt="Stars">
+</p>
 
-## ✨ What You Get
+---
 
-### Option 1: Just add the package
+## Get Started
+
+### Option 1: just add the package
 
 ```bash
 uv add vibetuner
 vibetuner run dev
-# → Working app at http://localhost:8000
+# → working app at http://localhost:8000
 ```
 
-### Option 2: Full project scaffolding
+### Option 2: full project scaffolding
 
 ```bash
 uvx vibetuner scaffold new my-project
 cd my-project && just dev
-# → Full application with Docker, CI/CD, and more
+# → full application with Docker, CI/CD, and more
 ```
 
-**What vibetuner provides immediately (no scaffolding needed)**:
+What you get out of the package alone:
 
-- ✅ FastAPI backend with async support
-- ✅ OAuth + magic link authentication
-- ✅ Default templates and styles
-- ✅ Hot reload in development
-- ✅ Auto-discovery of your routes, models, and tasks
+- FastAPI backend with async support.
+- OAuth + magic-link authentication.
+- Default templates and styles.
+- Hot reload in development.
+- Auto-discovery of routes, models, and tasks.
 
-**What scaffolding adds**:
+What scaffolding adds:
 
-- ✅ **Flexible database**: MongoDB (Beanie) or SQL (SQLModel/SQLAlchemy)
-- ✅ HTMX reactive frontend
-- ✅ Tailwind CSS + DaisyUI styling
-- ✅ Docker dev/prod environments
-- ✅ Background jobs with Redis (optional)
-- ✅ i18n support
-- ✅ CI/CD workflows
+- Flexible database: MongoDB (Beanie) or SQL (SQLModel/SQLAlchemy).
+- HTMX reactive frontend.
+- Tailwind CSS + DaisyUI styling.
+- Docker dev/prod environments.
+- Background jobs with Redis (optional).
+- i18n support.
+- CI/CD workflows.
 
-## 🚀 Quick Start
+---
 
-### Installation
+## What is Vibetuner?
 
-**No installation needed** - use `uvx`:
+Vibetuner is the scaffolding All Tuner Labs uses to spin up new web applications. It packages a FastAPI backend, an HTMX/Tailwind frontend, OAuth + magic-link auth, optional MongoDB or SQL persistence, and Docker for both dev and production into a single installable framework. The scaffolder generates the project; the framework runs it.
 
-```bash
-uvx vibetuner scaffold new my-app
-```
+### Core principles
 
-Or install globally:
+- **Simplicity** — minimal boilerplate, clear conventions, obvious patterns.
+- **Speed** — sub-second hot reload, one command to start.
+- **Modern stack** — async-first, current stable versions.
+- **Assistant-friendly** — works well with Claude, Cursor, and other coding agents.
 
-```bash
-uv tool install vibetuner
-vibetuner scaffold new my-app
-```
-
-### Your First Project
-
-```bash
-# Create project (interactive)
-uvx vibetuner scaffold new my-app
-
-# Or skip questions with defaults
-uvx vibetuner scaffold new my-app --defaults
-
-# Start developing
-cd my-app
-just dev              # Docker mode with hot reload
-```
-
-Visit `http://localhost:8000` - your app is running!
-
-## 🎯 Core Principles
-
-**Born from real needs** at [All Tuner Labs](https://alltuner.com) when spawning new projects:
-
-- **Simplicity**: Minimal boilerplate, clear conventions, obvious patterns
-- **Speed**: Sub-second hot reload, one command to start, fast iteration
-- **Modern Stack**: Latest stable versions, async-first, production-tested
-- **Assistant-Friendly**: Works great with Claude, Cursor, and other coding AI
-
-## 📦 Tech Stack
+## Tech stack
 
 ### Backend
 
-- **[FastAPI](https://fastapi.tiangolo.com/)** - Modern async web framework
-- **[Granian](https://github.com/emmett-framework/granian)** - High-performance ASGI server
+- **[FastAPI](https://fastapi.tiangolo.com/)** — async web framework.
+- **[Granian](https://github.com/emmett-framework/granian)** — Rust-based ASGI server.
 
-### Database (choose your stack)
+### Database (pick what fits)
 
-- **[MongoDB](https://www.mongodb.com/)** + **[Beanie ODM](https://beanie-odm.dev/)** - Document database (optional)
-- **[SQLModel](https://sqlmodel.tiangolo.com/)** / **[SQLAlchemy](https://www.sqlalchemy.org/)** - SQL databases: PostgreSQL, MySQL, MariaDB, SQLite (optional)
-- **[Redis](https://redis.io/)** + **[Streaq](https://github.com/tastyware/streaq)** - Caching and background jobs (optional)
+- **[MongoDB](https://www.mongodb.com/) + [Beanie ODM](https://beanie-odm.dev/)** — document database (optional).
+- **[SQLModel](https://sqlmodel.tiangolo.com/) / [SQLAlchemy](https://www.sqlalchemy.org/)** — PostgreSQL, MySQL, MariaDB, SQLite (optional).
+- **[Redis](https://redis.io/) + [Streaq](https://github.com/tastyware/streaq)** — caching and background jobs (optional).
 
 ### Frontend
 
-- **[HTMX](https://htmx.org/)** - Dynamic HTML without complex JavaScript
-- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
-- **[DaisyUI](https://daisyui.com/)** - Beautiful Tailwind components
-- **[Jinja2](https://jinja.palletsprojects.com/)** - Template engine with i18n
+- **[HTMX](https://htmx.org/)** — dynamic HTML without a separate JS build step.
+- **[Tailwind CSS](https://tailwindcss.com/)** — utility-first CSS framework.
+- **[DaisyUI](https://daisyui.com/)** — Tailwind component set.
+- **[Jinja2](https://jinja.palletsprojects.com/)** — template engine with i18n.
 
 ### DevOps
 
-- **[Docker](https://www.docker.com/)** - Multi-stage builds for dev/prod
-- **[uv](https://docs.astral.sh/uv/)** - Fast Python package management
-- **[bun](https://bun.sh/)** - Fast JavaScript tooling
-- **[just](https://just.systems/)** - Command runner
+- **[Docker](https://www.docker.com/)** — multi-stage builds for dev/prod.
+- **[uv](https://docs.astral.sh/uv/)** — Python package management.
+- **[bun](https://bun.sh/)** — JavaScript tooling.
+- **[just](https://just.systems/)** — command runner.
 
-### Why These Choices?
+## Development
 
-**FastAPI**: Async-first, automatic API docs, Pydantic validation, type hints everywhere.
-
-**Flexible databases**: Start with MongoDB for rapid prototyping, or use PostgreSQL/MySQL/SQLite
-with SQLModel for relational data. Both are optional - use what fits your project.
-
-**HTMX over React/Vue**: Simplicity wins. Server-rendered HTML with sprinkles
-of interactivity. Less complexity, faster development, easier to reason about.
-
-**Tailwind + DaisyUI**: Utility-first CSS is fast once you learn it. DaisyUI
-provides components without JavaScript bloat.
-
-**Docker-first**: Consistent environments, easy deployment, no "works on my
-machine" problems.
-
-**uv + bun**: Speed matters. Both are order-of-magnitude faster than pip/npm.
-Fast lockfiles, fast installs, fast everything.
-
-## 💻 Development
-
-### Local Development
+### Local
 
 ```bash
-just local-all        # Runs server + assets with auto-port (recommended)
+just local-all        # server + assets with auto-port (recommended)
 ```
 
-### Docker Development
+### Docker
 
 ```bash
-just dev              # All-in-one with hot reload
-just worker-dev       # Background worker (if enabled)
+just dev              # all-in-one with hot reload
+just worker-dev       # background worker (if enabled)
 ```
 
-### Common Commands
+### Common commands
 
 ```bash
-just install-deps     # Install dependencies from lockfiles
-just format           # Format code
-just test-build-prod  # Test production build locally
+just install-deps     # install dependencies from lockfiles
+just format           # format code
+just test-build-prod  # test production build locally
 ```
 
-## 🏗️ Project Structure
+## Project structure
 
-The `vibetuner` package is installed as a dependency. Your application code lives under `src/`
-in a directory named after your project slug (shown as `app` below):
+The `vibetuner` package is installed as a dependency. Your application code lives under `src/` in a directory named after your project slug (shown as `app` below):
 
 ```text
 my-app/
-├── src/app/                # Your application code (you create this)
-│   ├── config.py           # App configuration (optional)
-│   ├── cli/                # Your CLI commands (auto-discovered)
-│   ├── frontend/           # Your web routes
-│   │   └── routes/        # (auto-discovered)
-│   ├── models/             # Your database models (auto-discovered)
-│   ├── services/           # Your business logic
-│   └── tasks/              # Your background jobs (auto-discovered)
+├── src/app/                # your application code (you create this)
+│   ├── config.py           # app configuration (optional)
+│   ├── cli/                # your CLI commands (auto-discovered)
+│   ├── frontend/           # your web routes
+│   │   └── routes/         # (auto-discovered)
+│   ├── models/             # your database models (auto-discovered)
+│   ├── services/           # your business logic
+│   └── tasks/              # your background jobs (auto-discovered)
 ├── templates/              # Jinja2 templates
-│   ├── frontend/           # Web templates (override defaults)
-│   ├── email/              # Email templates
-│   └── markdown/           # Markdown templates
-├── assets/statics/         # Static files (css, js, img, fonts)
+│   ├── frontend/           # web templates (override defaults)
+│   ├── email/              # email templates
+│   └── markdown/           # markdown templates
+├── assets/statics/         # static files (css, js, img, fonts)
 ├── locales/                # i18n translation files
-└── Dockerfile              # Production deployment
+└── Dockerfile              # production deployment
 ```
 
-**vibetuner** (installed package) handles auth, database, email, auto-discovery, and more.
-Your code goes in `src/<your_package>/` (scaffolded projects). No boilerplate `__init__.py`
-files needed.
+The framework auto-discovers code from your package directory. Scaffolded projects use `src/<project_slug>/`; non-scaffolded projects can use any structure.
 
-**Flexible project structures**: The framework auto-discovers code from your package directory.
-Scaffolded projects use `src/<project_slug>/`; non-scaffolded projects can use any structure.
+## Authentication
 
-## 🔐 Authentication
+Built-in, zero config:
 
-Built-in authentication with zero config:
+- **OAuth** — Google, GitHub, and more via Authlib.
+- **Magic links** — passwordless email authentication.
+- **Sessions** — secure cookie-based sessions.
+- **Extensible** — add providers or custom auth easily.
 
-- **OAuth**: Google, GitHub, and more via Authlib
-- **Magic Links**: Passwordless email authentication
-- **Sessions**: Secure cookie-based sessions
-- **Extensible**: Add providers or custom auth easily
-
-## 🌍 Internationalization
-
-Full i18n support:
+## Internationalization
 
 ```bash
-just extract-translations    # Extract strings
-just compile-locales         # Compile translations
+just extract-translations    # extract strings
+just compile-locales         # compile translations
 ```
 
 ```jinja
 {% trans %}Welcome to {{ app_name }}{% endtrans %}
 ```
 
-## 🐳 Deployment
+## Deployment
 
-### Docker Production
+### Docker production
 
 ```bash
-just test-build-prod    # Test locally
-just release            # Build and push
+just test-build-prod    # test locally
+just release            # build and push
 ```
 
 ### Configuration
@@ -224,7 +182,7 @@ Environment variables via `.env`:
 # MongoDB (optional)
 MONGODB_URL=mongodb://localhost:27017/mydb
 
-# SQL database (optional) - PostgreSQL, MySQL, or SQLite
+# SQL database (optional) — PostgreSQL, MySQL, or SQLite
 DATABASE_URL=postgresql+asyncpg://user:pass@localhost/mydb
 # DATABASE_URL=sqlite+aiosqlite:///./data.db
 
@@ -234,78 +192,47 @@ REDIS_URL=redis://localhost:6379
 SECRET_KEY=your-secret-key
 ```
 
-## 📚 Documentation
+## Updating projects
 
-- **[Development Guide](vibetuner-docs/docs/development-guide.md)** – Daily workflow for generated projects
-- **[CLI Reference](vibetuner-docs/docs/cli-reference.md)** – Usage for `vibetuner scaffold` and `vibetuner run`
-- **[Scaffolding Reference](vibetuner-docs/docs/scaffolding.md)** – Copier prompts and update commands
-- **[Changelog](vibetuner-docs/docs/changelog.md)** – Version history and release notes
-- **[Contributing](./CONTRIBUTING.md)** – Contribution guidelines
-- **[Assistant Guidance](./CLAUDE.md)** – Tips for AI coding partners
-
-## 📦 Packages
-
-Vibetuner consists of three packages:
-
-| Package | Description | Published |
-|---------|-------------|-----------|
-| [`vibetuner`](https://pypi.org/project/vibetuner/) | Python framework | PyPI |
-| [`@alltuner/vibetuner`](https://www.npmjs.com/package/@alltuner/vibetuner) | Frontend dependencies | npm |
-| Scaffolding template | Copier template | GitHub |
-
-All version-locked and tested together.
-
-## 🔄 Updating Projects
-
-Update existing projects to the latest template:
+Update an existing project to the latest template:
 
 ```bash
 cd my-app
 vibetuner scaffold update
 ```
 
-## 🤝 Contributing
+## Documentation
 
-We welcome contributions that align with our core principles! See [CONTRIBUTING.md](./CONTRIBUTING.md).
+- **[Development guide](vibetuner-docs/docs/development-guide.md)** — daily workflow for generated projects.
+- **[CLI reference](vibetuner-docs/docs/cli-reference.md)** — `vibetuner scaffold` and `vibetuner run` usage.
+- **[Scaffolding reference](vibetuner-docs/docs/scaffolding.md)** — Copier prompts and update commands.
+- **[Changelog](vibetuner-docs/docs/changelog.md)** — version history and release notes.
+- **[Contributing](./CONTRIBUTING.md)** — contribution guidelines.
+- **[Assistant guidance](./CLAUDE.md)** — tips for AI coding partners.
 
-Built for All Tuner Labs' internal needs, shared publicly because it might help you too.
+## Packages
 
-## 📄 License
+Vibetuner ships as three coordinated packages, version-locked and tested together:
 
-MIT License - Copyright (c) 2026 All Tuner Labs, S.L.
+| Package | Description | Registry |
+|---|---|---|
+| [`vibetuner`](https://pypi.org/project/vibetuner/) | Python framework | PyPI |
+| [`@alltuner/vibetuner`](https://www.npmjs.com/package/@alltuner/vibetuner) | Frontend dependencies | npm |
+| Scaffolding template | Copier template | GitHub |
 
-See [LICENSE](./LICENSE) for details.
+## License
 
-## 🔗 Links
-
-- **Repository**: <https://github.com/alltuner/vibetuner>
-- **Changelog**: <https://github.com/alltuner/vibetuner/blob/main/CHANGELOG.md>
-- **Issues**: <https://github.com/alltuner/vibetuner/issues>
-- **PyPI**: <https://pypi.org/project/vibetuner/>
-- **npm**: <https://www.npmjs.com/package/@alltuner/vibetuner>
-
-## 👨‍💻 Credits
-
-Created and maintained by [All Tuner Labs, S.L.](https://alltuner.com) and
-David Poblador i Garcia ([@davidpoblador](https://github.com/davidpoblador) |
-[davidpoblador.com](https://davidpoblador.com/))
+[MIT](LICENSE)
 
 ## Support the project
 
 Vibetuner is an open source project built by [David Poblador i Garcia](https://davidpoblador.com/) through [All Tuner Labs](https://www.alltuner.com/).
 
-If this project helped you ship faster or prototype with confidence, consider supporting its development.
-
-❤️ **Sponsor development**
-https://github.com/sponsors/alltuner
-
-☕ **One-time support**
-https://buymeacoffee.com/alltuner
-
-Your support helps fund the continued development of Vibetuner and other open source developer tools such as [Factory Floor](https://github.com/alltuner/factoryfloor).
+If this project was useful to you, [consider supporting its development](https://alltuner.com/sponsor).
 
 ---
 
-Made with ❤️ for rapid prototyping and production deployments
-
-![All Tuner Labs](https://alltuner.com/statics/img/vibetuner-horizontal-logo.png)
+<p align="center">
+  Built by <a href="https://davidpoblador.com">David Poblador i Garcia</a> with the support of <a href="https://alltuner.com">All Tuner Labs</a>.<br>
+  Made with ❤️ in Poblenou, Barcelona.
+</p>
