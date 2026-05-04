@@ -218,15 +218,15 @@ Vibetuner ships as three coordinated packages, version-locked and tested togethe
 | [`@alltuner/vibetuner`](https://www.npmjs.com/package/@alltuner/vibetuner) | Frontend dependencies | npm |
 | Scaffolding template | Copier template | GitHub |
 
+## License
+
+[MIT](LICENSE)
+
 ## Support the project
 
 Vibetuner is an open source project built by [David Poblador i Garcia](https://davidpoblador.com/) through [All Tuner Labs](https://www.alltuner.com/).
 
 If this project was useful to you, [consider supporting its development](https://alltuner.com/sponsor).
-
-## License
-
-[MIT](LICENSE)
 
 ---
 
