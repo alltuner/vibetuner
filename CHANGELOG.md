@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.8.2](https://github.com/alltuner/vibetuner/compare/v10.8.1...v10.8.2) (2026-05-04)
+
+
+### Documentation Updates
+
+* standardize README to alltuner brand structure ([#1738](https://github.com/alltuner/vibetuner/issues/1738)) ([3ba3886](https://github.com/alltuner/vibetuner/commit/3ba388614011f3a936b99616e5c440e6f09eae40))
+
 ## [10.8.1](https://github.com/alltuner/vibetuner/compare/v10.8.0...v10.8.1) (2026-05-03)
 
 
