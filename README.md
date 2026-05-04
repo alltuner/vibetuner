@@ -1,4 +1,6 @@
-<h1 align="center">Vibetuner</h1>
+<p align="center">
+  <img src="https://brand.alltuner.com/logos/vibetuner/horizontal.png" alt="Vibetuner" width="500">
+</p>
 
 <p align="center">
   <strong>Production-ready FastAPI scaffolding in seconds.</strong><br>
