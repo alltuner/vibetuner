@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.8.3](https://github.com/alltuner/vibetuner/compare/v10.8.2...v10.8.3) (2026-05-04)
+
+
+### Miscellaneous Chores
+
+* update deps 2026-05-04 ([d345d46](https://github.com/alltuner/vibetuner/commit/d345d464c24e0f85439037859f2c1f136a7db140))
+
 ## [10.8.2](https://github.com/alltuner/vibetuner/compare/v10.8.1...v10.8.2) (2026-05-04)
 
 
