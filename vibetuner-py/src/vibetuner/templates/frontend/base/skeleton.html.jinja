@@ -20,6 +20,12 @@
         {% endfor %}
         {% block extra_head_links %}
         {% endblock extra_head_links %}
+        {# Reserve the vertical scrollbar gutter so centered chrome doesn't
+           shift horizontally when navigating between short and long pages.
+           Inline (with the CSP nonce) rather than in bundle.css so the rule
+           applies to existing projects on framework upgrade without
+           rebuilding their CSS bundle. -#}
+        <style nonce="{{ csp_nonce }}">html { scrollbar-gutter: stable; }</style>
         <link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
         {% include "base/theme.html.jinja" %}
 
