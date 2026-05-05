@@ -231,3 +231,32 @@ def test_before_main_and_after_main_wrap_body():
     body = out.index("<!-- BODY -->")
     post = out.index("<!-- POST -->")
     assert pre < body < post
+
+
+# ── scrollbar gutter ─────────────────────────────────────────────────
+
+
+class TestScrollbarGutter:
+    def test_emits_stable_gutter_rule(self):
+        out = _render(_make_env())
+        compact = "".join(out.split())
+        assert "html{scrollbar-gutter:stable" in compact
+
+    def test_uses_csp_nonce(self):
+        out = _render(_make_env())
+        # The inline <style> for the gutter rule must carry the nonce so it
+        # passes the CSP style-src directive.
+        assert 'nonce="n"' in out
+        # Locate the gutter rule and check the nearest preceding <style> tag
+        # carries a nonce attribute.
+        gutter_idx = out.index("scrollbar-gutter")
+        style_open = out.rfind("<style", 0, gutter_idx)
+        assert style_open != -1
+        style_close = out.index(">", style_open)
+        assert "nonce=" in out[style_open:style_close]
+
+    def test_renders_before_bundle_css(self):
+        """Inline gutter rule must precede bundle.css so the user bundle wins
+        the cascade if a project chooses to override it."""
+        out = _render(_make_env())
+        assert out.index("scrollbar-gutter") < out.index("bundle.css")
