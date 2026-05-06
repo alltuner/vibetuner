@@ -168,15 +168,28 @@ jobs:
 
           echo "Version type: major=$IS_MAJOR, minor=$IS_MINOR, patch=$IS_PATCH"
 
-          # For patch versions, check if there are meaningful changes
+          # Get previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            echo "🎉 First release detected"
+            BUILD_ALL="true"
+          else
+            echo "Comparing changes from $PREV_TAG to HEAD"
+            BUILD_ALL="false"
+          fi
+
+          # For patch versions, check if there are meaningful changes.
+          # `grep -c` / `grep -vc` exits non-zero when no lines match, which would
+          # crash this `bash -e` step via the `var=$(...)` simple-command rule, so
+          # each count pipeline ends with `|| true` to keep the assignment alive.
           if [ "$IS_PATCH" = "true" ] && [ -n "$PREV_TAG" ]; then
             echo "🔍 Checking for meaningful changes in patch version..."
 
             # Check for changes in all packages (excluding version files)
-            PYTHON_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-py/" | grep -vcE "pyproject\.toml")
-            JS_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-js/" | grep -vcE "package\.json")
-            TEMPLATE_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-template/" | grep -vcE "pyproject\.toml|package\.json")
-            DOCS_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -cE "^vibetuner-docs/")
+            PYTHON_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-py/" | grep -vcE "pyproject\.toml" || true)
+            JS_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-js/" | grep -vcE "package\.json" || true)
+            TEMPLATE_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-template/" | grep -vcE "pyproject\.toml|package\.json" || true)
+            DOCS_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -cE "^vibetuner-docs/" || true)
 
             TOTAL_CHANGED=$((PYTHON_CHANGED + JS_CHANGED + TEMPLATE_CHANGED + DOCS_CHANGED))
 
@@ -203,16 +216,6 @@ jobs:
 
           echo "🔍 Force flags: python=$FORCE_PYTHON, js=$FORCE_JS, docs=$FORCE_DOCS"
 
-          # Get previous tag
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          if [ -z "$PREV_TAG" ]; then
-            echo "🎉 First release detected"
-            BUILD_ALL="true"
-          else
-            echo "Comparing changes from $PREV_TAG to HEAD"
-            BUILD_ALL="false"
-          fi
-
           # Major/minor versions build everything
           if [ "$IS_MAJOR" = "true" ] || [ "$IS_MINOR" = "true" ]; then
             BUILD_ALL="true"
@@ -232,7 +235,7 @@ jobs:
             PYTHON_NEEDED="true"
             echo "✅ Building Python (major/minor version)"
           elif [ -n "$PREV_TAG" ]; then
-            PYTHON_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-py/" | grep -vcE "pyproject\.toml")
+            PYTHON_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-py/" | grep -vcE "pyproject\.toml" || true)
             if [ "$PYTHON_CHANGED" -gt 0 ]; then
               PYTHON_NEEDED="true"
               echo "✅ Python has changes"
@@ -252,7 +255,7 @@ jobs:
             JS_NEEDED="true"
             echo "✅ Building JavaScript (major/minor version)"
           elif [ -n "$PREV_TAG" ]; then
-            JS_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-js/" | grep -vcE "package\.json")
+            JS_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-js/" | grep -vcE "package\.json" || true)
             if [ "$JS_CHANGED" -gt 0 ]; then
               JS_NEEDED="true"
               echo "✅ JavaScript has changes"
