@@ -1,5 +1,25 @@
 # Changelog
 
+## [10.8.4](https://github.com/alltuner/vibetuner/compare/v10.8.3...v10.8.4) (2026-05-06)
+
+
+### Bug Fixes
+
+* reserve scrollbar gutter to prevent horizontal layout shift ([#1744](https://github.com/alltuner/vibetuner/issues/1744)) ([6878bf6](https://github.com/alltuner/vibetuner/commit/6878bf6a93867608fcceddc41007de2b0bfbf438))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump cryptography from 47.0.0 to 48.0.0 ([#1751](https://github.com/alltuner/vibetuner/issues/1751)) ([6768455](https://github.com/alltuner/vibetuner/commit/6768455e59f06f729761fc7d584612fe0556c4bb))
+* **deps:** bump cryptography from 47.0.0 to 48.0.0 in /vibetuner-py ([#1747](https://github.com/alltuner/vibetuner/issues/1747)) ([d5525d3](https://github.com/alltuner/vibetuner/commit/d5525d3223d57c3eb792f83cdb3dcc701b2e2ba7))
+* **deps:** bump resend from 2.29.0 to 2.30.0 ([#1750](https://github.com/alltuner/vibetuner/issues/1750)) ([dfcd20b](https://github.com/alltuner/vibetuner/commit/dfcd20ba70fac92b395351ebe6000cbdc2a35d8f))
+* **deps:** bump resend from 2.29.0 to 2.30.0 in /vibetuner-py ([#1749](https://github.com/alltuner/vibetuner/issues/1749)) ([a724ba1](https://github.com/alltuner/vibetuner/commit/a724ba1550245d6fde878ff2a099096223726ad4))
+* **deps:** bump rumdl from 0.1.87 to 0.1.88 ([#1752](https://github.com/alltuner/vibetuner/issues/1752)) ([aa9d738](https://github.com/alltuner/vibetuner/commit/aa9d738d25549c538bf34f954efa6cf36215b6ed))
+* **deps:** bump rumdl from 0.1.87 to 0.1.88 in /vibetuner-py ([#1748](https://github.com/alltuner/vibetuner/issues/1748)) ([ff2a8cc](https://github.com/alltuner/vibetuner/commit/ff2a8cc872a609f41bc67f45d0c8080f7acf48ec))
+* **deps:** drop lint-po git pin in favor of PyPI 0.1.5 ([#1745](https://github.com/alltuner/vibetuner/issues/1745)) ([add3c9b](https://github.com/alltuner/vibetuner/commit/add3c9b6d57eb9d6798156321661ef9350dedb45))
+* **deps:** update mongo docker tag to v8.3 ([#1753](https://github.com/alltuner/vibetuner/issues/1753)) ([1cb20d0](https://github.com/alltuner/vibetuner/commit/1cb20d0eac915a9a925ad93f6744702d2bb06385))
+* update deps 2026-05-06 ([fb303df](https://github.com/alltuner/vibetuner/commit/fb303df54ca722ccc72c059521c8ab731633d485))
+
 ## [10.8.3](https://github.com/alltuner/vibetuner/compare/v10.8.2...v10.8.3) (2026-05-04)
 
 
