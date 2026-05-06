@@ -27,7 +27,7 @@ _check-last-commit-tagged:
 _project-vars:
     #!/usr/bin/env bash
     uv run --frozen python << 'PYEOF'
-    import tomllib, yaml, os
+    import hashlib, tomllib, yaml, os
     answers = yaml.safe_load(open('.copier-answers.yml')) if os.path.exists('.copier-answers.yml') else {}
     print(f"export VERSION={tomllib.load(open('pyproject.toml', 'rb'))['project']['version']}")
     print(f"export PYTHON_VERSION={open('.python-version').read().strip()}")
@@ -37,4 +37,10 @@ _project-vars:
     registry = os.environ.get('DOCKER_REGISTRY') or answers.get('docker_registry', '')
     if registry:
         print(f"export DOCKER_REGISTRY={registry.strip()}")
+    # Per-project host port for `just dev`, deterministic from CWD.
+    # Uses the 14000-17999 band so it never collides with vibetuner's
+    # in-process auto-port (10000-13999) used by `just local-all`,
+    # nor its derived worker port (20000-23999).
+    cwd_hash = int.from_bytes(hashlib.sha256(os.getcwd().encode()).digest()[:4], 'big')
+    print(f"export HOST_PORT={14000 + (cwd_hash % 4000)}")
     PYEOF
