@@ -1,0 +1,32 @@
+{
+  "name": "@alltuner/vibetuner-jinja",
+  "version": "10.8.5",
+  "description": "Vibetuner core jinja templates, packaged for tailwind class scanning at frontend build time",
+  "keywords": [
+    "vibetuner",
+    "tailwindcss",
+    "jinja",
+    "templates",
+    "build-tools"
+  ],
+  "license": "MIT",
+  "author": "All Tuner Labs, S.L.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alltuner/vibetuner",
+    "directory": "vibetuner-jinja"
+  },
+  "homepage": "https://vibetuner.alltuner.com/",
+  "bugs": {
+    "url": "https://github.com/alltuner/vibetuner/issues"
+  },
+  "files": [
+    "templates/"
+  ],
+  "scripts": {
+    "prepare": "bash scripts/sync.sh"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

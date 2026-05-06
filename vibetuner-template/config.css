@@ -3,7 +3,7 @@
 @import "tailwindcss" source(none);
 @source "templates";
 @source "assets/statics/js";
-@source ".core-templates";
+@source "node_modules/@alltuner/vibetuner-jinja/templates";
 @plugin "daisyui";
 /* Do not change anything between this comment and the one above */
 

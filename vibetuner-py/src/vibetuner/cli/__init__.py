@@ -132,25 +132,6 @@ def version(
     console.print(table)
 
 
-@app.command("core-templates-path")
-def core_templates_path() -> None:
-    """Print the absolute path to the framework's frontend templates directory.
-
-    Used by frontend builds (e.g. ``vibetuner-template/package.json``'s
-    ``setup-tw-sources``) to point Tailwind's ``@source`` directive at the
-    package-shipped templates without resorting to inline
-    ``python -c "import vibetuner; ..."`` invocations.
-
-    Output is plain stdout (no log noise) and is suitable for use in shell
-    command substitution (``$(vibetuner core-templates-path)``).
-    """
-    import sys
-
-    from vibetuner.paths import package_templates
-
-    sys.stdout.write(f"{(package_templates / 'frontend').resolve()}\n")
-
-
 app.add_typer(config_app, name="config")
 app.add_typer(crypto_app, name="crypto")
 app.add_typer(db_app, name="db")

@@ -32,10 +32,6 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=README.md,target=README.md \
     uv sync --frozen --no-install-project --no-group dev
 
-# Extract vibetuner core templates for frontend build (Tailwind class scanning)
-# Done here rather than python-app so frontend-build can start without waiting for project install
-RUN cp -r $(.venv/bin/python -c "import vibetuner; print(vibetuner.__path__[0])")/templates/frontend .core-templates
-
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 3: Install Project (editable mode for source access)
 # ────────────────────────────────────────────────────────────────────────────────
@@ -88,9 +84,10 @@ RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
 # ────────────────────────────────────────────────────────────────────────────────
 FROM --platform=$BUILDPLATFORM frontend-deps AS frontend-build
 
-# Copy templates for Tailwind CSS class scanning
+# Copy templates for Tailwind CSS class scanning. The vibetuner core
+# templates come from @alltuner/vibetuner-jinja, already inside node_modules
+# from the frontend-deps stage, so config.css can @source them directly.
 COPY templates/frontend/ templates/frontend/
-COPY --from=python-deps /app/.core-templates/ .core-templates/
 
 # Build production assets with Bun
 RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
@@ -146,3 +143,19 @@ ENV PATH="/app/.venv/bin:$PATH" \
 EXPOSE 8000
 
 ENTRYPOINT ["/start.sh"]
+
+# ────────────────────────────────────────────────────────────────────────────────
+# Stage 8: Dev Runtime (extends runtime with bun + watcher inputs for asset rebuild)
+# ────────────────────────────────────────────────────────────────────────────────
+FROM runtime AS dev-runtime
+
+# Bun binary for tailwind/bundler watchers. oven/bun:1 is debian-glibc, matching
+# python:slim, so the static binary works without extra libs.
+COPY --link --from=oven/bun:1 /usr/local/bin/bun /usr/local/bin/bun
+
+# Frontend dependencies (resolved against the committed bun.lock) and inputs
+# bun dev:css / dev:js need at runtime. node_modules carries
+# @alltuner/vibetuner-jinja so config.css's @source path resolves.
+COPY --link --from=frontend-deps /app/node_modules/ node_modules/
+COPY --link package.json bun.lock ./
+COPY --link config.css config.js ./

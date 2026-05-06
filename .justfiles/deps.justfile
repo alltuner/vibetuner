@@ -1,4 +1,13 @@
 
+# Sync vibetuner core jinja templates into vibetuner-jinja so the
+# npm package mirrors the canonical copy in vibetuner-py. Idempotent:
+# skips if the destination is already up-to-date with the source. The
+# same script runs as the package's npm `prepare` lifecycle hook, so
+# `bun install` at the workspace root keeps things in sync automatically.
+[group('Dependencies')]
+sync-jinja:
+    @bash vibetuner-jinja/scripts/sync.sh
+
 # Update JavaScript dependencies in vibetuner-js
 [group('Dependencies')]
 update-js:

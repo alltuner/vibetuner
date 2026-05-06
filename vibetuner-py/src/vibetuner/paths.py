@@ -36,38 +36,6 @@ def _get_package_statics_path() -> Path:
         ) from None
 
 
-def create_core_templates_symlink(target: Path) -> None:
-    """Create or update a 'core' symlink pointing to the package templates directory."""
-
-    try:
-        source = _get_package_templates_path().resolve()
-    except RuntimeError as e:
-        logger.error(f"Cannot create symlink: {e}")
-        return
-
-    # Case 1: target is already a symlink → check if it needs updating
-    if target.is_symlink():
-        if target.resolve() != source:
-            target.unlink()
-            target.symlink_to(source, target_is_directory=True)
-            logger.info(f"Updated symlink '{target}' → '{source}'")
-        else:
-            logger.debug(f"Symlink '{target}' already points to '{source}'")
-        return
-
-    # Case 2: target does not exist → create symlink
-    if not target.exists():
-        target.symlink_to(source, target_is_directory=True)
-        logger.info(f"Created symlink '{target}' → '{source}'")
-        return
-
-    # Case 3: exists but is not a symlink → error
-    logger.error(f"Cannot create symlink: '{target}' exists and is not a symlink.")
-    raise FileExistsError(
-        f"Cannot create symlink: '{target}' exists and is not a symlink."
-    )
-
-
 # Package templates and statics always available
 package_templates = _get_package_templates_path()
 package_statics = _get_package_statics_path()
