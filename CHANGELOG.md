@@ -1,5 +1,30 @@
 # Changelog
 
+## [10.10.0](https://github.com/alltuner/vibetuner/compare/v10.9.0...v10.10.0) (2026-05-06)
+
+
+### Features
+
+* **ci:** make all publish jobs idempotent on duplicate versions ([#1764](https://github.com/alltuner/vibetuner/issues/1764)) ([db945a8](https://github.com/alltuner/vibetuner/commit/db945a8cd8919d4fa2dfc9b552db87b467372389))
+
+
+### Bug Fixes
+
+* **ci:** expose jinja-needed as plan-release job output ([#1762](https://github.com/alltuner/vibetuner/issues/1762)) ([a69a464](https://github.com/alltuner/vibetuner/commit/a69a46461ca5d2cd6671d582063d7c4f1329b79b))
+* **ci:** make deps-pr cleanup robust and PR self-documenting ([#1768](https://github.com/alltuner/vibetuner/issues/1768)) ([8dfbd4c](https://github.com/alltuner/vibetuner/commit/8dfbd4c3d5a89872af5dec509028d4202c65dec5))
+
+
+### Miscellaneous Chores
+
+* update deps 2026-05-06 ([d8cf79f](https://github.com/alltuner/vibetuner/commit/d8cf79fa980faac3692f0a11547600f268b0575d))
+
+
+### Documentation Updates
+
+* note stale-CI-on-release-PR wart and the App-token escape hatch ([#1766](https://github.com/alltuner/vibetuner/issues/1766)) ([8bbcf3c](https://github.com/alltuner/vibetuner/commit/8bbcf3cfdb7d23ea324f045cc5756ad6d6f0bd53))
+* note tailwind v4 config.css watch quirk in template AGENTS.md ([#1765](https://github.com/alltuner/vibetuner/issues/1765)) ([6f2602a](https://github.com/alltuner/vibetuner/commit/6f2602a3707ebb556f831dcdd8cea6c183671e7a))
+* sync references to today's package + dev-loop changes ([#1769](https://github.com/alltuner/vibetuner/issues/1769)) ([5cb2d0a](https://github.com/alltuner/vibetuner/commit/5cb2d0ab0bc2e56db6a0e8d77015021f7581413f))
+
 ## [10.9.0](https://github.com/alltuner/vibetuner/compare/v10.8.5...v10.9.0) (2026-05-06)
 
 
