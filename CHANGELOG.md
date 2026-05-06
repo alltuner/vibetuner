@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.9.0](https://github.com/alltuner/vibetuner/compare/v10.8.5...v10.9.0) (2026-05-06)
+
+
+### Features
+
+* docker compose up --watch dev iteration + @alltuner/vibetuner-jinja package ([#1759](https://github.com/alltuner/vibetuner/issues/1759)) ([8cb3ebe](https://github.com/alltuner/vibetuner/commit/8cb3ebe90f78ea9c35428f836b8bdd8c344ccf63))
+
+
+### Bug Fixes
+
+* **release:** track vibetuner-jinja/package.json in extra-files ([#1761](https://github.com/alltuner/vibetuner/issues/1761)) ([3a8ab41](https://github.com/alltuner/vibetuner/commit/3a8ab41f614ecf2156ad2ece43bd9b23fa73eb3e))
+
 ## [10.8.5](https://github.com/alltuner/vibetuner/compare/v10.8.4...v10.8.5) (2026-05-06)
 
 
