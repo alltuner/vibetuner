@@ -24,9 +24,23 @@ This starts:
 - Database (MongoDB or SQL, if configured)
 - Redis (if background jobs enabled)
 - FastAPI application with auto-reload
-- Frontend asset compilation with watch mode
+- Frontend asset compilation with watch mode (tailwind + bundler watchers
+  spawned inside the app container)
 
-Changes to Python code, templates, and assets automatically reload.
+Changes to Python code, templates, and assets automatically reload — the
+container syncs from the host via `docker compose up --watch`, granian
+restarts workers on Python edits, and bun watchers rebuild
+`bundle.css`/`bundle.js` on template/JS edits.
+
+The host port is **derived deterministically from the project directory**
+(in the 14000–17999 band), so two scaffolded projects can run `just dev`
+side-by-side without colliding on `8000`. The mapped port is printed when
+the container starts; `docker compose -f compose.dev.yml ps` also shows it.
+
+> **Tailwind v4 quirk:** edits to `config.css` itself don't trigger a
+> rebuild — restart `just dev` after changing it. Edits to templates and
+> other `@source`-watched directories rebuild without restart. See
+> [tailwindlabs/tailwindcss#14726](https://github.com/tailwindlabs/tailwindcss/issues/14726).
 
 ### Local Development
 
@@ -40,6 +54,12 @@ just local-all-with-worker   # Includes background worker (requires Redis)
 
 A database (MongoDB or SQL) is required if using database features. Redis is only required if
 background jobs are enabled.
+
+`local-all` also derives a deterministic port (in the 10000–13999 band for
+the frontend, 20000–23999 for the worker UI), distinct from `just dev`'s
+14000–17999 docker band. So `just local-all` (running against your shared
+prod-style services) and `just dev` (running fully containerized against
+local mongo/redis) can be alive simultaneously without port conflict.
 
 ## Justfile Commands Reference
 

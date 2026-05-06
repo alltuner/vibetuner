@@ -148,13 +148,17 @@ For complete documentation, guides, and examples, see the main Vibetuner reposit
 
 ## Package Ecosystem
 
-Vibetuner consists of three packages that work together:
+Vibetuner consists of four packages that work together:
 
 1. **vibetuner** (this package): Python framework and dependencies
-2. **[@alltuner/vibetuner](https://www.npmjs.com/package/@alltuner/vibetuner)**: JavaScript/CSS build dependencies
-3. **Scaffolding template**: Copier template for project generation
+2. **[@alltuner/vibetuner](https://www.npmjs.com/package/@alltuner/vibetuner)**:
+   JavaScript/CSS build dependencies (tailwind, daisyui, htmx, etc.)
+3. **[@alltuner/vibetuner-jinja](https://www.npmjs.com/package/@alltuner/vibetuner-jinja)**:
+   npm-shipped mirror of this package's frontend jinja templates so tailwind
+   can `@source` them at frontend build time without shelling out to Python
+4. **Scaffolding template**: Copier template for project generation
 
-All three are version-locked and tested together to ensure compatibility.
+All four are version-locked and tested together to ensure compatibility.
 
 ## Contributing
 
