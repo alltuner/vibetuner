@@ -608,7 +608,11 @@ jobs:
         uses: astral-sh/setup-uv@v8.1.0
 
       - name: Publish to PyPI
-        run: uv publish
+        # `--check-url` makes uv consult the PyPI simple index for an existing
+        # release of the same version+filename and skip the upload if it's
+        # already there. Keeps force-rerun and split-failure-then-rerun
+        # idempotent (see issue #1758).
+        run: uv publish --check-url https://pypi.org/simple/
 
   # Publish JavaScript package
   publish-js:
@@ -640,6 +644,13 @@ jobs:
           NPM_CONFIG_PROVENANCE: true
         run: |
           TARBALL=$(ls alltuner-vibetuner-*.tgz | grep -v '^alltuner-vibetuner-jinja-')
+          # Look up the version from the tarball-internal package.json so the
+          # idempotent skip applies to the exact target we'd otherwise publish.
+          VERSION=$(tar -xOf "$TARBALL" package/package.json | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')
+          if npm view "@alltuner/vibetuner@$VERSION" version >/dev/null 2>&1; then
+            echo "@alltuner/vibetuner@$VERSION already on npm — skipping (issue #1758 guard)"
+            exit 0
+          fi
           echo "Publishing $TARBALL with trusted publishing"
           npm publish "./$TARBALL" --access public
 
@@ -673,6 +684,11 @@ jobs:
           NPM_CONFIG_PROVENANCE: true
         run: |
           TARBALL=$(ls alltuner-vibetuner-jinja-*.tgz)
+          VERSION=$(tar -xOf "$TARBALL" package/package.json | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')
+          if npm view "@alltuner/vibetuner-jinja@$VERSION" version >/dev/null 2>&1; then
+            echo "@alltuner/vibetuner-jinja@$VERSION already on npm — skipping (issue #1758 guard)"
+            exit 0
+          fi
           echo "Publishing $TARBALL with trusted publishing"
           npm publish "./$TARBALL" --access public
 
