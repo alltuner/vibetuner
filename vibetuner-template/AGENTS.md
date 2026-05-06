@@ -116,6 +116,17 @@ Add `!` for breaking changes (e.g., `feat!:`). PR titles become squash
 commit messages. Release Please auto-generates changelogs. Versioning
 via git tags + `uv-dynamic-versioning`.
 
+> **Stale CI on release PRs:** the scaffolded `release.yml` regenerates
+> `uv.lock` after Release Please bumps `pyproject.toml`, then pushes the
+> fix back to the PR branch with the default `GITHUB_TOKEN`. GitHub's
+> anti-loop protection swallows that push, so no fresh CI runs on the
+> lock-update commit — the PR's checks reflect the *pre*-regeneration
+> state. Harmless if your merge gates aren't lockfile-sensitive.
+> If you gate merge on `uv sync --frozen` (or any check that reads
+> `uv.lock`), swap `GITHUB_TOKEN` for a [GitHub App token](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation)
+> via [`actions/create-github-app-token`](https://github.com/actions/create-github-app-token)
+> in the checkout + push steps so the regenerated commit triggers CI normally.
+
 ---
 
 ## Updating Scaffolding
