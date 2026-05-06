@@ -102,6 +102,7 @@ jobs:
       version: ${{ steps.plan.outputs.version }}
       python-needed: ${{ steps.plan.outputs.python-needed }}
       js-needed: ${{ steps.plan.outputs.js-needed }}
+      jinja-needed: ${{ steps.plan.outputs.jinja-needed }}
       docs-needed: ${{ steps.plan.outputs.docs-needed }}
     permissions:
       contents: read
