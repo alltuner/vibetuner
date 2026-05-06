@@ -42,8 +42,3 @@ if [ -f ".pre-commit-config.yaml" ] && command -v uv >/dev/null 2>&1; then
     uv tool run prek install || echo "⚠ prek install failed, continuing anyway"
     echo "✓ Pre-commit hooks installed"
 fi
-
-# --- Tailwind sources ---
-if command -v bun >/dev/null 2>&1 && bun run --silent setup-tw-sources 2>/dev/null; then
-    echo "✓ Tailwind sources configured"
-fi

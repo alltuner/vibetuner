@@ -1,16 +1,16 @@
 {
   "devDependencies": {
-    "@alltuner/vibetuner": "^10.8.3"
+    "@alltuner/vibetuner": "^10.8.3",
+    "@alltuner/vibetuner-jinja": "^10.8.5"
   },
   "dependencies": {},
   "scripts": {
-    "setup-tw-sources": "TARGET=$(uv run --frozen vibetuner core-templates-path) && { [ -L .core-templates ] && [ \"$(readlink .core-templates)\" = \"$TARGET\" ] || (rm -rf .core-templates && ln -s \"$TARGET\" .core-templates); }",
     "build:css": "bun tailwindcss -i config.css -o assets/statics/css/bundle.css",
     "build:js": "bun build config.js --outdir=assets/statics/js --entry-naming=\"bundle.[ext]\" --sourcemap",
     "dev:css": "bun tailwindcss -w=always -i config.css -o assets/statics/css/bundle.css",
     "dev:js": "bun build config.js --watch --outdir=assets/statics/js --entry-naming=\"bundle.[ext]\" --sourcemap",
-    "dev": "bun run setup-tw-sources && bun run --parallel build:js build:css && bun run --parallel dev:css dev:js",
-    "build-prod:css": "bun run setup-tw-sources && bun tailwindcss -i config.css --minify -o assets/statics/css/bundle.css",
+    "dev": "bun run --parallel build:js build:css && bun run --parallel dev:css dev:js",
+    "build-prod:css": "bun tailwindcss -i config.css --minify -o assets/statics/css/bundle.css",
     "build-prod:js": "bun build config.js --minify --outdir=assets/statics/js --entry-naming=\"bundle.[ext]\"",
     "build-prod": "bun run --parallel build-prod:css build-prod:js"
   }

@@ -25,11 +25,13 @@ services:
       start_period: 5s
 
   app:
+    pull_policy: build
     build:
       context: .
+      target: dev-runtime
       args:
         PYTHON_VERSION: ${PYTHON_VERSION}
-        ENVIRONMENT: ${ENVIRONMENT:-development}
+        ENVIRONMENT: ${ENVIRONMENT:-dev}
         VERSION: ${VERSION:-0.0.0}
     image: ${COMPOSE_PROJECT_NAME}:dev
     depends_on:
@@ -50,7 +52,7 @@ services:
       retries: 3
       start_period: 5s
     ports:
-      - "8000:8000"
+      - "${HOST_PORT:-8000}:8000"
     environment:
       - DEBUG=true
       - DEV_PORT=8000

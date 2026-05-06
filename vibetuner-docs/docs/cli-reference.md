@@ -376,26 +376,6 @@ vibetuner version [--app]
 
 - `--app`, `-a` – Show app settings version even if not in a project directory.
 
-## `vibetuner core-templates-path`
-
-Print the absolute path to the framework's frontend templates directory on a
-single line. Used by frontend builds (notably `vibetuner-template`'s
-`setup-tw-sources` script) to point Tailwind's `@source` directive at the
-package-shipped templates.
-
-```bash
-vibetuner core-templates-path
-# /…/site-packages/vibetuner/templates/frontend
-```
-
-Output is plain stdout (logs go to stderr), so the command is safe to use in
-shell command substitution:
-
-```bash
-TARGET=$(uv run --frozen vibetuner core-templates-path)
-ln -sfn "$TARGET" .core-templates
-```
-
 ## Custom CLI Commands
 
 You can extend the vibetuner CLI with your own commands using `AsyncTyper`. Commands are
