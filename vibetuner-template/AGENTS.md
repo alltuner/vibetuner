@@ -157,6 +157,14 @@ just dev                     # Docker development
 Key commands: `just format` (all code), `just lint` (all code),
 `just format-py` (Python only), `just i18n` (translations).
 
+`just dev` builds an all-in-one dev container (Python + bun + watchers)
+and brings up mongo/redis alongside. Edits to `src/`, `templates/`, or
+asset sources sync into the container via `docker compose up --watch`;
+granian reloads on Python edits and the in-container bun watchers rebuild
+`bundle.css`/`bundle.js` on template / asset edits — no host-side bun is
+needed. The mapped host port is deterministic per project directory (in
+the 14000–17999 band), so two scaffolded projects can run side-by-side.
+
 > **Tailwind v4 watcher quirk:** if you edit `config.css`, restart
 > `just dev` / `just local-all` — Tailwind v4 doesn't watch its own
 > input file. Edits to templates and other `@source`-listed

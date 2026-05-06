@@ -4,7 +4,7 @@
 
 Important notes:
 
-- Vibetuner consists of three packages: a Python framework (`vibetuner`), a JavaScript package (`@alltuner/vibetuner`), and a Copier scaffolding template
+- Vibetuner consists of four packages: a Python framework (`vibetuner`), a JavaScript build-deps package (`@alltuner/vibetuner`), an npm-shipped mirror of the framework's jinja templates for tailwind class scanning (`@alltuner/vibetuner-jinja`), and a Copier scaffolding template
 - The framework separates immutable framework code (`vibetuner` package) from your application code (`src/app/`) for clean updates
 - In all examples, `app` refers to your project's Python package (the directory under `src/`). The actual name depends on your project slug (e.g., `src/myproject/` for a project named "myproject")
 - HTMX is used instead of React/Vue for simplicity - server-rendered HTML with sprinkles of interactivity
@@ -20,7 +20,7 @@ Important notes:
 ## Core Documentation
 
 - [Development Guide](https://vibetuner.alltuner.com/development-guide/): Daily development workflow, adding routes, models, templates, and background jobs
-- [Architecture](https://vibetuner.alltuner.com/architecture/): System design, three-package architecture, request flow, and core components
+- [Architecture](https://vibetuner.alltuner.com/architecture/): System design, four-package architecture, request flow, and core components
 - [Tech Stack](https://vibetuner.alltuner.com/tech-stack/): Detailed information about all technologies used and why they were chosen
 - [Authentication](https://vibetuner.alltuner.com/authentication/): OAuth and magic link authentication setup and configuration
 - [Background Tasks](https://vibetuner.alltuner.com/background-tasks/): Background task system powered by Streaq and Redis with retries, cron scheduling, and SSE integration
@@ -155,5 +155,6 @@ Important notes:
 ## Packages
 
 - [Python Package](https://pypi.org/project/vibetuner/): Core framework published to PyPI
-- [JavaScript Package](https://www.npmjs.com/package/@alltuner/vibetuner): Frontend dependencies published to npm
+- [JavaScript Package](https://www.npmjs.com/package/@alltuner/vibetuner): Frontend build dependencies published to npm
+- [Tailwind Source Package](https://www.npmjs.com/package/@alltuner/vibetuner-jinja): npm-shipped mirror of the framework's frontend jinja templates so tailwind can `@source` them at frontend build time without shelling out to Python
 - [Repository](https://github.com/alltuner/vibetuner): Source code and issue tracking
