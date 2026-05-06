@@ -146,6 +146,12 @@ just dev                     # Docker development
 Key commands: `just format` (all code), `just lint` (all code),
 `just format-py` (Python only), `just i18n` (translations).
 
+> **Tailwind v4 watcher quirk:** if you edit `config.css`, restart
+> `just dev` / `just local-all` — Tailwind v4 doesn't watch its own
+> input file. Edits to templates and other `@source`-listed
+> directories rebuild correctly without restart. Tracked upstream at
+> [tailwindlabs/tailwindcss#14726](https://github.com/tailwindlabs/tailwindcss/issues/14726).
+
 ---
 
 ## Architecture
