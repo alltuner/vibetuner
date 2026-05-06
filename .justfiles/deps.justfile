@@ -62,11 +62,20 @@ deps-pr:
     #!/usr/bin/env bash
     set -euo pipefail
 
+    # Capture the repo root before any cd. The cleanup trap needs a git
+    # repo in cwd to invoke `git worktree remove`; cd-ing to / (as we did
+    # previously) put the trap outside any repo and it bailed with exit
+    # 128 on every run, leaving worktrees and local branches behind.
+    REPO_ROOT=$(git rev-parse --show-toplevel)
     DATE_STAMP=$(date +%Y-%m-%d)
     BRANCH="chore/update-deps-${DATE_STAMP}-$(date +%H%M)"
     WORKTREE_DIR=$(mktemp -d)
 
-    cleanup() { cd /; git worktree remove --force "$WORKTREE_DIR" 2>/dev/null; git branch -D "$BRANCH" 2>/dev/null || true; }
+    cleanup() {
+        cd "$REPO_ROOT"
+        git worktree remove --force "$WORKTREE_DIR" || true
+        git branch -D "$BRANCH" 2>/dev/null || true
+    }
     trap cleanup EXIT
 
     git fetch origin main
@@ -81,7 +90,22 @@ deps-pr:
         exit 0
     fi
 
+    # Build a self-documenting PR body: the commit subjects produced by
+    # update-and-commit (one for prek auto-update, one for the actual
+    # dependency bumps) plus a diffstat against main so reviewers can see
+    # at a glance which lockfiles / manifests moved.
+    PR_BODY=$(printf "## Updated\n\n%s\n\n## Files\n\n\`\`\`\n%s\n\`\`\`\n" \
+        "$(git log --reverse --pretty=format:'- %s' "origin/main..HEAD")" \
+        "$(git diff --stat "origin/main..HEAD")")
+
     git push -u origin "$BRANCH"
-    gh pr create --title "chore: update deps ${DATE_STAMP}" --body "" --base main
-    gh pr merge --squash --subject "chore: update deps ${DATE_STAMP}"
+    gh pr create --title "chore: update deps ${DATE_STAMP}" --body "$PR_BODY" --base main
+    # --auto queues the squash-merge for when required checks pass. Today
+    # nothing required-blocks merge so this returns immediately, but it
+    # makes the recipe robust against future branch protection rules.
+    gh pr merge --auto --squash --subject "chore: update deps ${DATE_STAMP}"
+    # Remote branch deletion is handled by GitHub's auto-delete-on-merge
+    # setting; if it's off this is the fallback. Failure is fine — the
+    # branch may already be gone or the merge may not have completed yet
+    # (under --auto we return before merge lands).
     git push origin --delete "$BRANCH" 2>/dev/null || true
