@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.8.5](https://github.com/alltuner/vibetuner/compare/v10.8.4...v10.8.5) (2026-05-06)
+
+
+### CI/CD Changes
+
+* stop plan-release crashing on empty grep counts ([#1755](https://github.com/alltuner/vibetuner/issues/1755)) ([ad3dfc8](https://github.com/alltuner/vibetuner/commit/ad3dfc817ddd5d79a4441f3b349b570af7ecb5f8))
+
 ## [10.8.4](https://github.com/alltuner/vibetuner/compare/v10.8.3...v10.8.4) (2026-05-06)
 
 
