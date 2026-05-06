@@ -34,7 +34,15 @@ project_name:
 project_slug:
   type: str
   help: What is the slug (code friendly) of your project?
-  default: "{{ _folder_name }}"
+  # Sanitise the auto-derived default so folder names with caps, dots, or
+  # leading non-letters (e.g. `mktemp -d` output, `2025-launch`) produce a
+  # valid slug instead of bouncing off the validator. Users can still
+  # override interactively.
+  default: >-
+    {{ (_folder_name | lower
+        | regex_replace('[^a-z0-9]+', '-')
+        | regex_replace('^-+|-+$', '')
+        | regex_replace('^[^a-z]+', '')) or 'app' }}
   validator: >-
     {% if not (project_slug | regex_search('^[a-z][a-z0-9\-]*[a-z0-9]$')) %}
     project_slug must start with a letter, followed one or more letters, digits or dashes all lowercase ending with a letter or digit.

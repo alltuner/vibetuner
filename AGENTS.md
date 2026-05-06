@@ -135,7 +135,15 @@ just update-py               # Update Python dependencies in vibetuner-py
 just update-js               # Update JavaScript dependencies in vibetuner-js
 just update-template         # Update dependencies in vibetuner-template
 just update-root             # Update root scaffolding dependencies
+just sync-jinja              # Refresh vibetuner-jinja/templates from vibetuner-py
 ```
+
+The `sync-jinja` recipe mirrors `vibetuner-py/src/vibetuner/templates/frontend/`
+into `vibetuner-jinja/templates/`, the npm package that ships the framework's
+core jinja templates so tailwind can `@source` them at frontend build time. The
+same script runs as the package's `prepare` lifecycle hook, so workspace `bun
+install` and `npm publish` keep things in sync automatically — `just sync-jinja`
+is just the manual entry point.
 
 ### Documentation
 
