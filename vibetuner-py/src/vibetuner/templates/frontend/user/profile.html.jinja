@@ -108,7 +108,8 @@
                                 <button class="btn btn-primary"
                                         hx-get="/user/edit"
                                         hx-target="#main-content"
-                                        hx-swap="innerHTML">{{ _("Edit Profile") }}</button>
+                                        hx-swap="innerHTML"
+                                        hx-nonce="{{ csp_nonce }}">{{ _("Edit Profile") }}</button>
                                 <a href="{{ url_for('auth_logout') }}" class="btn btn-outline btn-error">{{ _("Sign Out") }}</a>
                             </div>
                         </div>
