@@ -67,6 +67,17 @@ directly to elements or use `hx-on` attributes.
 See the [HTMX migration guide](https://vibetuner.alltuner.com/htmx-migration/)
 for full details.
 
+## htmx Nonce Protection (opt-in)
+
+The `hx-nonce` extension (htmx 4.0.0-beta3+) gates htmx attribute
+processing behind the page CSP nonce. Framework templates already
+stamp `hx-nonce="{{ csp_nonce }}"` on htmx-bearing elements; mirror
+that pattern in your own templates if you enable the extension.
+Add `import "./node_modules/htmx.org/dist/ext/hx-nonce.js";` to your
+`config.js` custom imports section. Elements without a matching
+`hx-nonce` will be stripped (fail-closed). See the
+[CSP/htmx docs](https://vibetuner.alltuner.com/development-guide/#htmx-nonce-protection-opt-in).
+
 ## Response Caching (Server-Side)
 
 `from vibetuner.cache import cache, invalidate, invalidate_pattern`.

@@ -699,6 +699,54 @@ Configure extra allowed sources via environment variables:
 | `CSP_EXTRA_MEDIA_SRC` | Additional media sources |
 | `CSP_ENFORCE_CSP_IN_DEBUG` | Enforce CSP in debug mode (default: `true`) |
 
+### htmx Nonce Protection (opt-in)
+
+htmx 4.0.0-beta3 ships an `hx-nonce` extension that gates htmx attribute
+processing behind the page CSP nonce. Elements without a matching
+`hx-nonce` attribute are stripped at init time, providing a
+defence-in-depth layer against HTML injection attacks: even if an
+attacker manages to inject HTML, the browser will not honour any
+`hx-get`/`hx-post`/etc. attributes on injected elements.
+
+The framework's templates already stamp `hx-nonce="{{ csp_nonce }}"` on
+their htmx-bearing elements, so the extension is safe to enable from a
+fresh project as soon as you mirror the pattern in your own templates.
+
+**To enable:**
+
+1. Add the import to your `config.js` custom imports section:
+
+    ```javascript
+    // Add your custom imports below:
+    import "./node_modules/htmx.org/dist/ext/hx-nonce.js";
+    ```
+
+2. Add `hx-nonce="{{ csp_nonce }}"` to every element in your templates
+   that uses any `hx-*` attribute:
+
+    ```html
+    <button hx-post="/save"
+            hx-target="#main-content"
+            hx-nonce="{{ csp_nonce }}">Save</button>
+    ```
+
+The extension reads the page nonce from the first `<script nonce>`
+element on the page. Vibetuner's `SecurityHeadersMiddleware` already
+stamps that nonce on your bundle script, so no extra wiring is required.
+
+**Trusted Types (further hardening):** Once the extension is enabled
+you can also tell the browser to refuse non-htmx HTML sinks by adding
+`require-trusted-types-for 'script'; trusted-types htmx` to your CSP.
+Configure this via `CSP_EXTRA_*` if you need to merge it with other
+directives, or extend `SecurityHeadersMiddleware` directly.
+
+**Safe eval:** vibetuner's CSP does not include `'unsafe-eval'`, so any
+htmx feature that requires `eval` (e.g. `hx-vals` with the `js:` prefix,
+`hx-on:` handlers that reference globals) will be blocked by default.
+If you use those features, set `safeEval:true` in your htmx config —
+the extension replaces htmx's `new Function()` eval with nonce-based
+script injection so the features work without `unsafe-eval`.
+
 ## Working with HTMX
 
 Vibetuner uses HTMX for interactive features without JavaScript:
