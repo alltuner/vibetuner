@@ -104,6 +104,7 @@ class SecurityHeadersSettings(BaseSettings):
     extra_media_src: str = ""
     frame_ancestors: str = "'self'"
     enforce_csp_in_debug: bool = True
+    style_src_strict: bool = False
 
     model_config = SettingsConfigDict(
         case_sensitive=False,
