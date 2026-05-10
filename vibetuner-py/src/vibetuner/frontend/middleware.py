@@ -122,7 +122,10 @@ class SecurityHeadersMiddleware:
         if config.extra_script_src:
             script_src += f" {config.extra_script_src}"
 
-        style_src = "'self' 'unsafe-inline'"
+        if config.style_src_strict:
+            style_src = f"'self' 'nonce-{nonce}'"
+        else:
+            style_src = "'self' 'unsafe-inline'"
         if config.extra_style_src:
             style_src += f" {config.extra_style_src}"
 

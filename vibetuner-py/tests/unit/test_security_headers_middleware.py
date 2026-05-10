@@ -23,6 +23,7 @@ class _SecurityHeadersConfig:
     extra_media_src: str = ""
     frame_ancestors: str = "'self'"
     enforce_csp_in_debug: bool = True
+    style_src_strict: bool = False
 
 
 @dataclass
@@ -58,7 +59,10 @@ class SecurityHeadersMiddleware:
         if config.extra_script_src:
             script_src += f" {config.extra_script_src}"
 
-        style_src = "'self' 'unsafe-inline'"
+        if config.style_src_strict:
+            style_src = f"'self' 'nonce-{nonce}'"
+        else:
+            style_src = "'self' 'unsafe-inline'"
         if config.extra_style_src:
             style_src += f" {config.extra_style_src}"
 
@@ -331,6 +335,37 @@ class TestSecurityHeadersMiddleware:
         resp = client.get("/")
         csp = resp.headers["Content-Security-Policy"]
         assert "'strict-dynamic'" in csp
+
+    def test_style_src_default_allows_unsafe_inline(self):
+        """By default, style-src includes 'unsafe-inline' for backwards compatibility."""
+        app = _make_app()
+        client = TestClient(app)
+        resp = client.get("/")
+        csp = resp.headers["Content-Security-Policy"]
+        assert "style-src 'self' 'unsafe-inline'" in csp
+
+    def test_style_src_strict_uses_nonce(self):
+        """When style_src_strict is enabled, style-src uses the request nonce instead of 'unsafe-inline'."""
+        config = _SecurityHeadersConfig(style_src_strict=True)
+        app = _make_app(settings=_Settings(security_headers=config))
+        client = TestClient(app)
+        resp = client.get("/")
+        csp = resp.headers["Content-Security-Policy"]
+        assert "'unsafe-inline'" not in csp.split("style-src")[1].split(";")[0]
+        assert re.search(r"style-src 'self' 'nonce-[\w-]+'", csp)
+
+    def test_style_src_strict_appends_extra_style_src(self):
+        """Extra style-src sources are appended in strict mode too."""
+        config = _SecurityHeadersConfig(
+            style_src_strict=True,
+            extra_style_src="https://fonts.googleapis.com",
+        )
+        app = _make_app(settings=_Settings(security_headers=config))
+        client = TestClient(app)
+        resp = client.get("/")
+        csp = resp.headers["Content-Security-Policy"]
+        assert "https://fonts.googleapis.com" in csp
+        assert "'unsafe-inline'" not in csp.split("style-src")[1].split(";")[0]
 
 
 class TestCspNonceAutoInjection:

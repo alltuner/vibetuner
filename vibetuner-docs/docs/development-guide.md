@@ -698,6 +698,34 @@ Configure extra allowed sources via environment variables:
 | `CSP_EXTRA_FONT_SRC` | Additional font sources |
 | `CSP_EXTRA_MEDIA_SRC` | Additional media sources |
 | `CSP_ENFORCE_CSP_IN_DEBUG` | Enforce CSP in debug mode (default: `true`) |
+| `CSP_STYLE_SRC_STRICT` | Use the request nonce on `style-src` instead of `'unsafe-inline'` (default: `false`) |
+
+### Strict `style-src` (opt-in)
+
+By default, `style-src` is `'self' 'unsafe-inline'` so that inline
+`style="..."` attributes and unnonced `<style>` tags work. This is the
+permissive baseline that lets existing templates ship without changes.
+
+Set `CSP_STYLE_SRC_STRICT=true` to switch `style-src` to
+`'self' 'nonce-<request-nonce>'`. This is a meaningful hardening:
+inline `style="..."` attributes will be **blocked by the browser**,
+and every `<style>` tag must carry `nonce="{{ csp_nonce }}"`.
+
+The framework's own templates already follow this pattern (the inline
+styles in `skeleton.html.jinja` and `theme.html.jinja` are nonced; the
+htmx 4.0.0-beta3 indicator stylesheet uses a constructable
+`CSSStyleSheet` which does not need `'unsafe-inline'`). Before flipping
+this flag in your project:
+
+1. Audit your templates for `style="..."` attributes — convert to
+   utility classes or scoped `<style>` blocks.
+2. Make sure every `<style>` tag carries `nonce="{{ csp_nonce }}"`.
+3. Test interactively: open the browser devtools and look for CSP
+   violations on hover/focus/error states (these often have inline
+   styles set by JS).
+
+This default may flip to `true` in a future major version once the
+ecosystem has had time to migrate.
 
 ## Working with HTMX
 
