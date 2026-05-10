@@ -1,8 +1,9 @@
 # HTMX v2 to v4 Migration Guide
 
 This guide covers the breaking changes when upgrading from htmx v2 to v4
-in Vibetuner projects. It also documents what changed between htmx 4 alpha
-releases and beta1, so users on any pre-release version can migrate.
+in Vibetuner projects. It also documents what changed between htmx 4
+pre-release versions (alpha → beta1 → beta3), so users on any
+pre-release can migrate.
 
 ## Quick Start
 
@@ -287,8 +288,12 @@ Key renames:
 | `htmx:beforeRequest` | `htmx:before:request` |
 | `htmx:beforeSwap` | `htmx:before:swap` |
 | `htmx:configRequest` | `htmx:config:request` |
+| `htmx:responseError` | `htmx:response:error` (added in beta3) |
 
-All error events are consolidated to `htmx:error`.
+All error events are consolidated to `htmx:error`. As of beta3, the
+specific `htmx:response:error` event also fires for 4xx/5xx responses,
+restoring the convenience of htmx 2's `htmx:responseError` for handlers
+that only care about HTTP error status codes.
 
 !!! warning
     Events no longer bubble to `document.body` in v4. You must attach listeners
@@ -381,6 +386,11 @@ Several config keys were renamed:
 | `includeIndicatorStyles` | `includeIndicatorCSS` |
 | `timeout` | `defaultTimeout` |
 
+As of beta3, **`htmx.config.prefix`** defaults to `"data-hx-"`, so
+both `hx-*` and `data-hx-*` attributes work out of the box (matching
+htmx 2 behavior). Set to `""` to disable the data-prefixed alias.
+Vibetuner templates use the canonical `hx-*` form; no change needed.
+
 Changed defaults:
 
 | Config | htmx 2 | htmx 4 |
@@ -423,7 +433,12 @@ CSS transition rules per the
 | `hx-inherit` | Not needed (inheritance is explicit) |
 | `hx-request` | `hx-config` |
 | `hx-history` | Removed (no localStorage in v4) |
-| `hx-history-elt` | Removed |
+
+!!! note
+    `hx-history-elt` was removed in earlier 4.x pre-releases but
+    **restored in beta3** alongside an improved `hx-history-cache`
+    extension. Use it as you did in htmx 2 to mark the element whose
+    inner HTML is captured for history snapshots.
 
 ## New Attributes
 
@@ -451,6 +466,8 @@ htmx 4 ships with these core extensions. All auto-register when imported.
 | `ptag` | Per-element polling tags to skip unchanged content |
 | `alpine-compat` | Alpine.js compatibility |
 | `htmx-2-compat` | Backward compatibility layer for htmx 2.x code |
+| `nonce` | CSP nonce-based protection for inline scripts and `eval`-style code paths (beta3) |
+| `live` | DOM-reactivity via `hx-live` and richer `hx-on` helpers: `q()`, `toggle()`, `debounce()` (beta3) |
 
 htmx also provides an `htmax` bundle (`htmax.min.js`) that includes htmx
 plus the most popular extensions (SSE, WebSockets, preload,
@@ -495,6 +512,78 @@ what changed specifically between the alpha series and beta1:
 - **New extensions added**: `history-cache`, `ptag`, `targets`, `download`.
 - **`htmax` bundle available**: Single-file bundle with htmx + popular
   extensions.
+
+## Beta1 to Beta3 Changes
+
+If you are upgrading from htmx 4 beta1 or beta2 (not from v2), here are
+the changes specific to beta3 (which is the 4.0 release candidate).
+
+### New Extensions
+
+- **`hx-nonce`**: CSP nonce-based protection for inline scripts and
+  `eval`-style code paths. Blocks elements without a matching `hx-nonce`
+  attribute, integrates with TrustedTypes, and defends against
+  `js:`/`javascript:` action URLs and unnonced boosted-form submitters.
+  Vibetuner enforces nonce-based CSP by default, so this extension is a
+  natural fit. See the
+  [vibetuner CSP docs](development-guide.md#security-headers-and-csp-nonce).
+- **`hx-live`**: DOM-reactivity via `hx-live="..."` (a JS expression
+  re-evaluated whenever any DOM input/change/mutation event fires) plus
+  a richer JavaScript surface inside `hx-on`: `q(selector)` jQuery-like
+  proxy, sigil-syntax `toggle('@attr')` / `toggle('*display=none|block')`,
+  per-element `debounce(ms[, fn])`, and `htmx.live.q` /
+  `htmx.live.take(target, className, source)` outside expression scope.
+
+### New Swap Style: `outerSync`
+
+```html
+<div hx-swap="outerSync"></div>
+```
+
+Copies attributes onto the existing target and replaces children. Useful
+for clean `<body>` swaps in history replacement where you want to update
+the body's attributes without losing the element identity.
+
+### Restored Attribute: `hx-history-elt`
+
+`hx-history-elt` is back. Mark the element whose inner HTML is captured
+for history snapshots, the same as in htmx 2.
+
+### Behavior Changes
+
+- **`htmx.config.prefix` defaults to `"data-hx-"`**: Both `hx-*` and
+  `data-hx-*` work out of the box, matching htmx 2 behavior. Set to
+  `""` to disable the data-prefixed alias.
+- **`htmx:response:error` event added**: Fires for HTTP 4xx/5xx
+  responses, restoring the convenience of htmx 2's `htmx:responseError`.
+- **`hx-download` auto-detection**: The `hx-download` extension now
+  auto-detects downloads via the `Content-Disposition` response header,
+  so you no longer need an `hx-download` attribute on each triggering
+  element.
+- **`hx-preload` boost knobs**: Added `boostEvent`, `boostTimeout`, and
+  `autoBoost` config keys for tighter integration with `hx-boost`.
+
+### Security Hardening
+
+- **`hx-config` no longer accepts request `mode` overrides**: Removes a
+  privilege-escalation surface where a swap could downgrade origin
+  enforcement.
+- **Constructable stylesheet for indicator CSS**: The runtime indicator
+  CSS now uses a `CSSStyleSheet` constructor instead of an injected
+  `<style>` tag, avoiding CSP `unsafe-inline` violations on
+  `style-src`. With this change, CSP-strict deployments can drop
+  `'unsafe-inline'` from `style-src` (Vibetuner is moving in this
+  direction).
+- **Pantry element switched from inline `style` to `hidden`**: Resolves
+  another CSP `unsafe-inline` violation.
+
+### Breaking JavaScript API Changes
+
+`htmx.takeClass()` and `htmx.forEvent()` moved out of htmx core into
+the new `hx-live` extension and are exposed via the `htmx.live`
+namespace (e.g. `htmx.live.take(target, className, source)`). If you
+were calling them directly, import the `hx-live` extension or migrate
+to native equivalents.
 
 ## Common Migration Issues
 
