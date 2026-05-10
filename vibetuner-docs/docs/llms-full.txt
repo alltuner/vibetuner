@@ -1816,6 +1816,22 @@ instead. Configure extra sources via `CSP_EXTRA_SCRIPT_SRC`,
 `CSP_EXTRA_STYLE_SRC`, `CSP_EXTRA_IMG_SRC`, `CSP_EXTRA_CONNECT_SRC`,
 `CSP_EXTRA_FONT_SRC`, `CSP_EXTRA_MEDIA_SRC` environment variables.
 
+**Strict `style-src` (opt-in):** Set `CSP_STYLE_SRC_STRICT=true` to drop
+`'unsafe-inline'` from `style-src` and use the request nonce instead.
+Inline `style="..."` attributes will be blocked by the browser and every
+`<style>` tag must carry `nonce="{{ csp_nonce }}"`. Framework templates
+already follow this pattern; htmx 4.0.0-beta3's indicator stylesheet
+uses a constructable `CSSStyleSheet` so no inline style is needed there
+either. Audit user templates for inline `style="..."` before flipping.
+
+**htmx Nonce Protection (opt-in):** htmx 4.0.0-beta3 ships an `hx-nonce`
+extension that strips htmx attributes from elements without a matching
+`hx-nonce`. Stamp `hx-nonce="{{ csp_nonce }}"` on every htmx-bearing
+element and add `import "htmx.org/dist/ext/hx-nonce.js";` to `config.js`
+custom imports. Framework templates already include the attribute. Useful
+defence-in-depth even though vibetuner already enforces strict
+script-src.
+
 ### Background Tasks
 
 Run long-running or scheduled work outside the request cycle using Vibetuner's
@@ -2232,6 +2248,46 @@ import "htmx.org/dist/ext/hx-preload.js";
 - Update JS imports to use default import and `window.htmx = htmx`
 - Update preload extension import path
 - Remove `htmx-ext-sse` and `htmx-ext-preload` from `package.json`
+
+#### Beta3 Additions
+
+htmx 4.0.0-beta3 (the 4.0 release candidate) ships several additions
+relevant to vibetuner projects:
+
+- **`hx-nonce` extension** — gates htmx attribute processing behind the
+  page CSP nonce. Stamp `hx-nonce="{{ csp_nonce }}"` on every htmx-bearing
+  element and import `htmx.org/dist/ext/hx-nonce.js` in `config.js` to
+  enable. Framework templates already follow the pattern. Elements
+  without a matching nonce are stripped (fail-closed)
+- **`hx-live` extension** — DOM-reactivity via `hx-live="..."` plus a
+  richer `hx-on` JS surface (`q()`, `toggle()`, `debounce()`). Note:
+  `htmx.takeClass` and `htmx.forEvent` moved out of core into this
+  extension (now `htmx.live.take(...)` etc.)
+- **`hx-history-elt` restored** — was removed in earlier 4.x pre-releases,
+  brought back in beta3 alongside an improved `hx-history-cache`
+  extension
+- **`htmx:response:error` event** — fires for HTTP 4xx/5xx responses,
+  restoring htmx 2's `htmx:responseError` convenience
+- **`outerSync` swap style** — copies attributes onto target and replaces
+  children, useful for clean `<body>` swaps in history replacement
+- **`htmx.config.prefix` defaults to `"data-hx-"`** — both `hx-*` and
+  `data-hx-*` work out of the box. Framework uses the canonical `hx-*`;
+  no change needed
+- **`hx-download` auto-detection** — extension now triggers a download
+  when the response carries a `Content-Disposition` header, no per-element
+  attribute required
+- **`hx-preload` boost knobs** — added `boostEvent`, `boostTimeout`,
+  `autoBoost` config keys for tighter `hx-boost` integration
+- **Constructable indicator stylesheet** — htmx now uses a
+  `CSSStyleSheet` instance for its indicator CSS, removing the last
+  htmx-side reason to allow `'unsafe-inline'` on `style-src`. Pair with
+  `CSP_STYLE_SRC_STRICT=true` to drop `'unsafe-inline'`
+- **`hx-config` mode override removed** — security fix preventing a
+  swap from downgrading origin enforcement
+- **`hx-on::` shorthand fixed** — works in beta1+ (was broken in alpha8)
+
+See [HTMX v2 to v4 Migration Guide](https://vibetuner.alltuner.com/htmx-migration/)
+for the full list and the dedicated "Beta1 to Beta3 Changes" section.
 
 ### Import Ordering in tune.py
 

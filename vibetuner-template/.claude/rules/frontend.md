@@ -43,13 +43,12 @@ htmx 4 changed event handling significantly. Key differences:
 **Event names** use colon-separated format (not camelCase):
 `htmx:after:request`, `htmx:before:swap`, `htmx:after:settle`.
 
-**`hx-on` attributes** — the `hx-on::` shorthand is broken in
-alpha8. Use the explicit long form:
+**`hx-on` attributes** — the `hx-on::` shorthand works in beta1+
+(it was broken in alpha8). Both forms are valid:
 
 ```html
-<!-- BROKEN: hx-on::after-request="..." -->
-<!-- WORKS: -->
 <form hx-on:htmx:after:request="this.reset()">
+<form hx-on::after-request="this.reset()">
 ```
 
 **`event.detail`** was restructured. `event.detail.successful` no
