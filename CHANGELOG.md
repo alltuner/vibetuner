@@ -1,5 +1,26 @@
 # Changelog
 
+## [10.11.0](https://github.com/alltuner/vibetuner/compare/v10.10.0...v10.11.0) (2026-05-11)
+
+
+### Features
+
+* **htmx:** prepare framework templates for hx-nonce extension ([#1773](https://github.com/alltuner/vibetuner/issues/1773)) ([16137e8](https://github.com/alltuner/vibetuner/commit/16137e8db76ffd174f129b226eb3f370d22c29d0))
+* **security:** add CSP_STYLE_SRC_STRICT to drop 'unsafe-inline' from style-src ([#1774](https://github.com/alltuner/vibetuner/issues/1774)) ([3f74886](https://github.com/alltuner/vibetuner/commit/3f7488619b9dd638ebd65f9b983e48f98a8aa34e))
+
+
+### Bug Fixes
+
+* **deps:** update dependency htmx.org to v4.0.0-beta3 ([#1770](https://github.com/alltuner/vibetuner/issues/1770)) ([d21d883](https://github.com/alltuner/vibetuner/commit/d21d883c6d1798369b0089994a86637f1c3ba482))
+
+
+### Documentation Updates
+
+* gate htmx-nonce + strict style-src behind a min-version note ([#1779](https://github.com/alltuner/vibetuner/issues/1779)) ([bc6d365](https://github.com/alltuner/vibetuner/commit/bc6d3653ee3cdc5118b52f49b0aa67fa15d87ac9))
+* **htmx:** document beta3 features and correct migration guide ([#1771](https://github.com/alltuner/vibetuner/issues/1771)) ([2921dbc](https://github.com/alltuner/vibetuner/commit/2921dbce9a71dbadd34d8823444dd85c4f5daa5e))
+* put htmx Nonce Protection before Strict style-src ([#1775](https://github.com/alltuner/vibetuner/issues/1775)) ([d1254c9](https://github.com/alltuner/vibetuner/commit/d1254c9e2c8e54e605ebbef1eca7496b17782cfd))
+* sync llms.txt, llms-full.txt, and frontend rules with htmx beta3 ([#1776](https://github.com/alltuner/vibetuner/issues/1776)) ([b486470](https://github.com/alltuner/vibetuner/commit/b48647055f47d6a0f6f92987456ecb7ca8ac7f08))
+
 ## [10.10.0](https://github.com/alltuner/vibetuner/compare/v10.9.0...v10.10.0) (2026-05-06)
 
 
