@@ -114,12 +114,15 @@ Important notes:
   `Content-Security-Policy-Report-Only` in debug. Configure extra sources via `CSP_*`
   environment variables (e.g., `CSP_EXTRA_SCRIPT_SRC`). Set `CSP_STYLE_SRC_STRICT=true`
   to drop `'unsafe-inline'` from `style-src` and require nonces on `<style>` tags
-  (opt-in hardening; framework templates already nonce every `<style>`)
+  (opt-in hardening; framework templates already nonce every `<style>`). Requires
+  `vibetuner` ≥ 10.11.0 (older releases silently ignore the env var)
 - **htmx Nonce Protection (opt-in)**: htmx 4.0.0-beta3 ships an `hx-nonce` extension
   that gates htmx attribute processing behind the page CSP nonce. Framework templates
   stamp `hx-nonce="{{ csp_nonce }}"` on htmx-bearing elements; mirror that pattern in
   user templates and add `import "htmx.org/dist/ext/hx-nonce.js";` to `config.js` to
-  enable. Elements without a matching `hx-nonce` are stripped (fail-closed)
+  enable. Elements without a matching `hx-nonce` are stripped (fail-closed). Requires
+  `@alltuner/vibetuner` ≥ 10.11.0 (older releases pull `htmx.org@4.0.0-beta2` which
+  does not ship the extension file)
 - **Health Checks**: `/health`, `/health/ping`, `/health/ready`, `/health/id` endpoints
   with service connectivity checks
 - **Robust Tasks**: `@robust_task()` decorator with exponential backoff retries and

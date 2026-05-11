@@ -1816,21 +1816,27 @@ instead. Configure extra sources via `CSP_EXTRA_SCRIPT_SRC`,
 `CSP_EXTRA_STYLE_SRC`, `CSP_EXTRA_IMG_SRC`, `CSP_EXTRA_CONNECT_SRC`,
 `CSP_EXTRA_FONT_SRC`, `CSP_EXTRA_MEDIA_SRC` environment variables.
 
-**Strict `style-src` (opt-in):** Set `CSP_STYLE_SRC_STRICT=true` to drop
-`'unsafe-inline'` from `style-src` and use the request nonce instead.
-Inline `style="..."` attributes will be blocked by the browser and every
-`<style>` tag must carry `nonce="{{ csp_nonce }}"`. Framework templates
-already follow this pattern; htmx 4.0.0-beta3's indicator stylesheet
-uses a constructable `CSSStyleSheet` so no inline style is needed there
-either. Audit user templates for inline `style="..."` before flipping.
+**Strict `style-src` (opt-in, requires `vibetuner` ≥ 10.11.0):** Set
+`CSP_STYLE_SRC_STRICT=true` to drop `'unsafe-inline'` from `style-src`
+and use the request nonce instead. Inline `style="..."` attributes will
+be blocked by the browser and every `<style>` tag must carry
+`nonce="{{ csp_nonce }}"`. Framework templates already follow this
+pattern; htmx 4.0.0-beta3's indicator stylesheet uses a constructable
+`CSSStyleSheet` so no inline style is needed there either. Audit user
+templates for inline `style="..."` before flipping. On older releases
+the env var is silently ignored, so bump `vibetuner` in `pyproject.toml`
+and re-run `uv sync` first.
 
-**htmx Nonce Protection (opt-in):** htmx 4.0.0-beta3 ships an `hx-nonce`
-extension that strips htmx attributes from elements without a matching
-`hx-nonce`. Stamp `hx-nonce="{{ csp_nonce }}"` on every htmx-bearing
-element and add `import "htmx.org/dist/ext/hx-nonce.js";` to `config.js`
-custom imports. Framework templates already include the attribute. Useful
-defence-in-depth even though vibetuner already enforces strict
-script-src.
+**htmx Nonce Protection (opt-in, requires `@alltuner/vibetuner` ≥ 10.11.0):**
+htmx 4.0.0-beta3 ships an `hx-nonce` extension that strips htmx
+attributes from elements without a matching `hx-nonce`. Stamp
+`hx-nonce="{{ csp_nonce }}"` on every htmx-bearing element and add
+`import "htmx.org/dist/ext/hx-nonce.js";` to `config.js` custom imports.
+Framework templates already include the attribute. Useful defence-in-depth
+even though vibetuner already enforces strict script-src. The extension
+file only ships with `htmx.org@4.0.0-beta3`, pulled transitively by
+`@alltuner/vibetuner` 10.11.0+; on older versions the bundler errors
+with `Could not resolve "./node_modules/htmx.org/dist/ext/hx-nonce.js"`.
 
 ### Background Tasks
 
