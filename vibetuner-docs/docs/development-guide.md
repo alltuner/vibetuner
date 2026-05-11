@@ -702,6 +702,14 @@ Configure extra allowed sources via environment variables:
 
 ### htmx Nonce Protection (opt-in)
 
+!!! note "Requires `@alltuner/vibetuner` ≥ 10.11.0"
+    The `hx-nonce` extension file ships with `htmx.org@4.0.0-beta3`, which
+    is pulled transitively by `@alltuner/vibetuner@10.11.0` and later. On
+    older versions the bundler will fail with
+    `Could not resolve "./node_modules/htmx.org/dist/ext/hx-nonce.js"`.
+    Bump `@alltuner/vibetuner` in `package.json` and re-run `bun install`
+    before enabling.
+
 htmx 4.0.0-beta3 ships an `hx-nonce` extension that gates htmx attribute
 processing behind the page CSP nonce. Elements without a matching
 `hx-nonce` attribute are stripped at init time, providing a
@@ -749,6 +757,14 @@ the extension replaces htmx's `new Function()` eval with nonce-based
 script injection so the features work without `unsafe-eval`.
 
 ### Strict `style-src` (opt-in)
+
+!!! note "Requires `vibetuner` ≥ 10.11.0"
+    `SecurityHeadersSettings` only learned about `CSP_STYLE_SRC_STRICT`
+    in 10.11.0. On older releases the env var is silently ignored
+    (pydantic's `extra="ignore"` discards unknown CSP options), so the
+    `style-src` directive keeps emitting `'unsafe-inline'` without any
+    warning. Bump `vibetuner` in `pyproject.toml` and re-run `uv sync`
+    before relying on the flag.
 
 By default, `style-src` is `'self' 'unsafe-inline'` so that inline
 `style="..."` attributes and unnonced `<style>` tags work. This is the
