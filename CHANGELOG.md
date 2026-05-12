@@ -1,5 +1,14 @@
 # Changelog
 
+## [10.11.1](https://github.com/alltuner/vibetuner/compare/v10.11.0...v10.11.1) (2026-05-12)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump urllib3 from 2.6.3 to 2.7.0 ([#1780](https://github.com/alltuner/vibetuner/issues/1780)) ([98c01c3](https://github.com/alltuner/vibetuner/commit/98c01c3bf128200be0b7643d14d1f49d40aafcfa))
+* **deps:** bump urllib3 from 2.6.3 to 2.7.0 in /vibetuner-py ([#1781](https://github.com/alltuner/vibetuner/issues/1781)) ([ef72344](https://github.com/alltuner/vibetuner/commit/ef72344020144c1ae74ca402b534bc70a801db77))
+* update deps 2026-05-12 ([ad43826](https://github.com/alltuner/vibetuner/commit/ad4382665be4486f429cab48896d4747a4a81fe2))
+
 ## [10.11.0](https://github.com/alltuner/vibetuner/compare/v10.10.0...v10.11.0) (2026-05-11)
 
 
