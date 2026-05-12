@@ -1,7 +1,7 @@
 {
   "devDependencies": {
-    "@alltuner/vibetuner": "^10.9.0",
-    "@alltuner/vibetuner-jinja": "^10.9.0"
+    "@alltuner/vibetuner": "^10.11.0",
+    "@alltuner/vibetuner-jinja": "^10.11.0"
   },
   "dependencies": {},
   "scripts": {
