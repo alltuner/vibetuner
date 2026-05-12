@@ -39,10 +39,21 @@ deps-scaffolding:
     # Phase 1: Update scaffolding (copier bumps manifests like package.json and pyproject.toml)
     just update-scaffolding
 
-    # Check for conflict markers in any file (tracked or new)
-    # Pattern is split to avoid matching itself when scanning for unresolved conflicts
+    # Check for conflict markers in any file (tracked or new).
+    # Pattern is split to avoid matching itself when scanning for unresolved conflicts.
+    # `update-scaffolding` above ran `bun install` / `uv sync`, so `.venv/` and
+    # `node_modules/` are populated and would otherwise yield false positives
+    # (copier's own conflict-marker code, beartype, precompiled binaries).
+    # `-I` skips binary files; the directory excludes drop the generated trees.
     CONFLICT_MARKER="<""<""<""<""<""<""<"
-    if grep -rl "$CONFLICT_MARKER" --exclude-dir=.git . >/dev/null 2>&1; then
+    if grep -rIl "$CONFLICT_MARKER" \
+        --exclude-dir=.git \
+        --exclude-dir=.venv \
+        --exclude-dir=node_modules \
+        --exclude-dir=.tmp \
+        --exclude-dir=dist \
+        --exclude-dir=build \
+        . >/dev/null 2>&1; then
         echo ""
         echo "Scaffolding update produced conflicts. Resolve them, then run:"
         echo "  git add -A && git commit -m 'chore: update scaffolding'"
