@@ -19,7 +19,6 @@ from pydantic import (
     SecretStr,
     UrlConstraints,
     computed_field,
-    model_validator,
 )
 from pydantic_extra_types.color import Color as _PydanticColor
 from pydantic_extra_types.language_code import LanguageAlpha2
@@ -391,16 +390,6 @@ class CoreConfiguration(BaseSettings):
     # When set, OAuth flows use this stable URL instead of the app's own URL.
     # Example: "https://oauth.localdev.alltuner.com:28000"
     oauth_relay_url: HttpUrl | None = None
-
-    # External URL where this app is reachable (e.g. via Tailscale expose).
-    # Read from EXPOSE_URL env var. When unset, defaults to http://localhost:{port}.
-    expose_url: HttpUrl | None = None
-
-    @model_validator(mode="after")
-    def _default_expose_url(self) -> "CoreConfiguration":
-        if self.expose_url is None:
-            self.expose_url = HttpUrl(f"http://localhost:{self.resolved_port}")
-        return self
 
     @cached_property
     def trusted_proxy_hosts_list(self) -> list[str]:

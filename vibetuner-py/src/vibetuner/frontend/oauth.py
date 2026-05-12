@@ -1,6 +1,7 @@
 # ABOUTME: OAuth provider integration using Authlib.
 # ABOUTME: Handles provider registration, builtin configs, and auth flow handlers.
 from typing import TYPE_CHECKING, Any, Optional
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from authlib.integrations.base_client.errors import OAuthError
 from authlib.integrations.starlette_client import OAuth
@@ -325,6 +326,23 @@ async def _create_new_user_with_oauth(
     return account
 
 
+def _wrap_oauth_relay_state(location: str, public_origin: str) -> str:
+    """Prefix the OAuth ``state`` param with the app's public origin so the
+    relay can redirect back to the originating app after authentication.
+
+    The relay parses ``state`` as ``{return_url}|{original_state}``. Returns
+    the location unchanged if no ``state`` param is present.
+    """
+    parsed = urlparse(location)
+    params = parse_qs(parsed.query, keep_blank_values=True)
+    if "state" not in params:
+        return location
+    original_state = params["state"][0]
+    params["state"] = [f"{public_origin}|{original_state}"]
+    new_query = urlencode(params, doseq=True)
+    return urlunparse(parsed._replace(query=new_query))
+
+
 def _create_auth_login_handler(provider_name: str):
     async def auth_login(
         request: Request, next: str | None = None, app_id: str | None = None
@@ -352,19 +370,15 @@ def _create_auth_login_handler(provider_name: str):
             response = await client.authorize_redirect(
                 request, redirect_uri, hl=request.state.language
             )
-            # Wrap the state param with the app URL so the relay
-            # can redirect back: {scheme}://{host}:{port}|{original_state}
-            from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
-
+            # Derive the return URL from the incoming request so ad-hoc tunnels
+            # (frpc subdomain mode, ngrok, Cloudflare quick tunnels, tailscale
+            # funnel) that publish a public URL after the app boots work
+            # without injecting it into the environment.
+            public_origin = str(request.base_url).rstrip("/")
             location = response.headers.get("location", "")
-            parsed = urlparse(location)
-            params = parse_qs(parsed.query, keep_blank_values=True)
-            if "state" in params:
-                original_state = params["state"][0]
-                params["state"] = [f"{settings.expose_url}|{original_state}"]
-                new_query = urlencode(params, doseq=True)
-                new_location = urlunparse(parsed._replace(query=new_query))
-                response.headers["location"] = new_location
+            response.headers["location"] = _wrap_oauth_relay_state(
+                location, public_origin
+            )
             return response
 
         redirect_uri = request.url_for(f"auth_with_{provider_name}")
