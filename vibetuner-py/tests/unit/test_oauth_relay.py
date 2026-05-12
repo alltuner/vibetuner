@@ -3,7 +3,27 @@
 # ruff: noqa: S101
 from urllib.parse import parse_qs, urlparse
 
-from vibetuner.frontend.oauth import _wrap_oauth_relay_state
+from starlette.requests import Request
+from vibetuner.frontend.oauth import (
+    _public_origin_for_relay,
+    _wrap_oauth_relay_state,
+)
+
+
+def _request(scheme: str, host_header: str) -> Request:
+    scope = {
+        "type": "http",
+        "method": "GET",
+        "scheme": scheme,
+        "path": "/auth/google",
+        "raw_path": b"/auth/google",
+        "query_string": b"",
+        "headers": [(b"host", host_header.encode("latin-1"))],
+        "server": (host_header.split(":")[0], None),
+        "client": ("127.0.0.1", 12345),
+        "root_path": "",
+    }
+    return Request(scope)
 
 
 class TestWrapOauthRelayState:
@@ -18,14 +38,10 @@ class TestWrapOauthRelayState:
             "&redirect_uri=https://relay.example.com/auth/provider/google"
         )
 
-        wrapped = _wrap_oauth_relay_state(
-            location, "https://app.tunnel.example.com"
-        )
+        wrapped = _wrap_oauth_relay_state(location, "https://app.tunnel.example.com")
 
         params = parse_qs(urlparse(wrapped).query)
-        assert params["state"] == [
-            "https://app.tunnel.example.com|opaque-token"
-        ]
+        assert params["state"] == ["https://app.tunnel.example.com|opaque-token"]
 
     def test_preserves_other_query_params(self):
         location = (
@@ -51,11 +67,45 @@ class TestWrapOauthRelayState:
         assert wrapped == location
 
     def test_handles_localhost_origin(self):
-        location = (
-            "https://accounts.google.com/o/oauth2/v2/auth?state=opaque-token"
-        )
+        location = "https://accounts.google.com/o/oauth2/v2/auth?state=opaque-token"
 
         wrapped = _wrap_oauth_relay_state(location, "http://localhost:28000")
 
         params = parse_qs(urlparse(wrapped).query)
         assert params["state"] == ["http://localhost:28000|opaque-token"]
+
+
+class TestPublicOriginForRelay:
+    """Tests for _public_origin_for_relay()."""
+
+    def test_forces_https_for_public_tunnel_host(self):
+        # frpc/ngrok/cloudflare deliver the request as plain http internally,
+        # but the public edge is always TLS; the state must reflect https.
+        request = _request("http", "sturdy-ferret-f5df.lab.alltuner.com")
+
+        assert (
+            _public_origin_for_relay(request)
+            == "https://sturdy-ferret-f5df.lab.alltuner.com"
+        )
+
+    def test_forces_https_even_when_host_has_port(self):
+        request = _request("http", "app.tunnel.example.com:8443")
+
+        assert (
+            _public_origin_for_relay(request) == "https://app.tunnel.example.com:8443"
+        )
+
+    def test_keeps_http_for_localhost(self):
+        request = _request("http", "localhost:8000")
+
+        assert _public_origin_for_relay(request) == "http://localhost:8000"
+
+    def test_keeps_http_for_loopback_ipv4(self):
+        request = _request("http", "127.0.0.1:8000")
+
+        assert _public_origin_for_relay(request) == "http://127.0.0.1:8000"
+
+    def test_keeps_http_for_loopback_ipv6(self):
+        request = _request("http", "[::1]:8000")
+
+        assert _public_origin_for_relay(request) == "http://[::1]:8000"

@@ -203,11 +203,6 @@ just local-dev
 
 A database (MongoDB or SQL) is required if using database features. Redis is only required if background jobs are enabled.
 
-**HTTPS via Tailscale Expose**
-
-Use `just dev-exposed` to run the dev server with HTTPS via Tailscale Serve.
-This wraps `just local-all` with automatic tailscale serve setup/teardown.
-
 #### Adding New Routes
 
 Create a new file in `src/app/frontend/routes/`:
