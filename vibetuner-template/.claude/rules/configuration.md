@@ -12,7 +12,7 @@ description: Environment variables, settings, security headers, and request ID
 `SECRET_KEY`, `DEBUG`.
 
 **Settings**: `from vibetuner.config import settings` —
-`.environment`, `.debug`, `.resolved_port`, `.expose_url`,
+`.environment`, `.debug`, `.resolved_port`,
 `.mongodb_url`, `.redis_url`, `.workers_available`,
 `.project.project_slug`, `.project.project_name`,
 `.project.supported_languages`, `.project.default_language`,

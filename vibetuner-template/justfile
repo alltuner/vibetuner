@@ -4,7 +4,6 @@ _default:
 import '.justfiles/helpers.justfile'
 import '.justfiles/deps.justfile'
 import '.justfiles/localdev.justfile'
-import '.justfiles/expose.justfile'
 import '.justfiles/cicd.justfile'
 import '.justfiles/i18n.justfile'
 import '.justfiles/linting.justfile'

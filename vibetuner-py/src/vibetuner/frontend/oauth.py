@@ -326,6 +326,28 @@ async def _create_new_user_with_oauth(
     return account
 
 
+_LOOPBACK_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
+
+
+def _public_origin_for_relay(request: Request) -> str:
+    """Compute the public origin that the relay should redirect back to.
+
+    For non-loopback hosts, forces ``https`` because the relay branch is
+    opt-in via ``oauth_relay_url``, which implies the request reached us
+    through a public TLS tunnel. The scheme on the incoming request only
+    reflects the tunnel-to-app hop, which is plain HTTP for most tunnels
+    (e.g. frpc's vhost-http port), so it is not a reliable source of
+    truth. The ``Host`` header — and therefore ``request.url.netloc`` —
+    does reflect the public hostname (with port if non-default).
+
+    Loopback hosts keep the request's scheme so direct ``localhost`` access
+    still produces a usable return URL.
+    """
+    if (request.url.hostname or "") in _LOOPBACK_HOSTS:
+        return f"{request.url.scheme}://{request.url.netloc}"
+    return f"https://{request.url.netloc}"
+
+
 def _wrap_oauth_relay_state(location: str, public_origin: str) -> str:
     """Prefix the OAuth ``state`` param with the app's public origin so the
     relay can redirect back to the originating app after authentication.
@@ -370,11 +392,7 @@ def _create_auth_login_handler(provider_name: str):
             response = await client.authorize_redirect(
                 request, redirect_uri, hl=request.state.language
             )
-            # Derive the return URL from the incoming request so ad-hoc tunnels
-            # (frpc subdomain mode, ngrok, Cloudflare quick tunnels, tailscale
-            # funnel) that publish a public URL after the app boots work
-            # without injecting it into the environment.
-            public_origin = str(request.base_url).rstrip("/")
+            public_origin = _public_origin_for_relay(request)
             location = response.headers.get("location", "")
             response.headers["location"] = _wrap_oauth_relay_state(
                 location, public_origin
