@@ -1,6 +1,6 @@
 {
   "name": "@alltuner/vibetuner-jinja",
-  "version": "10.11.2",
+  "version": "10.11.3",
   "description": "Vibetuner core jinja templates, packaged for tailwind class scanning at frontend build time",
   "keywords": [
     "vibetuner",
