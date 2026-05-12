@@ -19,8 +19,3 @@ pr TITLE:
       --base main \
       --title "{{ TITLE }}" \
       --body "$(git log origin/main..HEAD --pretty=format:'- %s')"
-
-# Merge PR using squash
-[group('gitflow')]
-merge:
-    gh pr merge --squash --delete-branch
