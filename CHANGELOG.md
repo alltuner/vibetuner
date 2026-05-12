@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.11.4](https://github.com/alltuner/vibetuner/compare/v10.11.3...v10.11.4) (2026-05-12)
+
+
+### Bug Fixes
+
+* **oauth:** force https scheme for relay state behind public tunnels ([#1794](https://github.com/alltuner/vibetuner/issues/1794)) ([7b50c9a](https://github.com/alltuner/vibetuner/commit/7b50c9a2ee816d0bb68e6e594d5a33fa0f4b8d69))
+
 ## [10.11.3](https://github.com/alltuner/vibetuner/compare/v10.11.2...v10.11.3) (2026-05-12)
 
 
