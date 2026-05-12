@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.11.3](https://github.com/alltuner/vibetuner/compare/v10.11.2...v10.11.3) (2026-05-12)
+
+
+### Bug Fixes
+
+* **scaffolding:** exclude .venv/node_modules from deps-scaffolding conflict scan ([#1792](https://github.com/alltuner/vibetuner/issues/1792)) ([42a1668](https://github.com/alltuner/vibetuner/commit/42a1668db73924d8144de1929375ddca57e5efe9))
+
 ## [10.11.2](https://github.com/alltuner/vibetuner/compare/v10.11.1...v10.11.2) (2026-05-12)
 
 
