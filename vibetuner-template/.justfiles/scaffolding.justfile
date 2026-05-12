@@ -6,9 +6,11 @@ update-scaffolding:
     @echo "Updating project scaffolding..."
     @uvx copier update -A --trust
 
-    # Check package.json and conditionally install
+    # Check package.json and conditionally install.
+    # Pattern is split via adjacent quoted strings so this file doesn't match
+    # itself when deps-scaffolding scans the worktree for conflict markers.
     @if [ -f package.json ]; then \
-        if grep -q "<<<<<<<\|=======\|>>>>>>>" package.json; then \
+        if grep -q "<""<""<""<""<""<""<\|=""=""=""=""=""=""=\|>"">"">"">"">"">"">" package.json; then \
             echo "⚠️  Conflicts detected in package.json - skipping bun install"; \
             echo "Please resolve conflicts manually and run: bun install"; \
         else \
@@ -19,7 +21,7 @@ update-scaffolding:
 
     # Check pyproject.toml and conditionally sync
     @if [ -f pyproject.toml ]; then \
-        if grep -q "<<<<<<<\|=======\|>>>>>>>" pyproject.toml; then \
+        if grep -q "<""<""<""<""<""<""<\|=""=""=""=""=""=""=\|>"">"">"">"">"">"">" pyproject.toml; then \
             echo "⚠️  Conflicts detected in pyproject.toml - skipping uv sync"; \
             echo "Please resolve conflicts manually and run: uv sync --all-extras"; \
         else \
