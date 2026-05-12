@@ -1,5 +1,18 @@
 # Changelog
 
+## [10.11.2](https://github.com/alltuner/vibetuner/compare/v10.11.1...v10.11.2) (2026-05-12)
+
+
+### Bug Fixes
+
+* derive OAuth relay return URL from incoming request ([#1790](https://github.com/alltuner/vibetuner/issues/1790)) ([0fd843c](https://github.com/alltuner/vibetuner/commit/0fd843ca1dfbfdc64a351ff451464220818b7bb6))
+* **scaffolding:** stop deps-scaffolding from matching its own grep pattern ([#1787](https://github.com/alltuner/vibetuner/issues/1787)) ([018aa95](https://github.com/alltuner/vibetuner/commit/018aa95d35902e4ab9a762111f3f089687bdf8e9))
+
+
+### Miscellaneous Chores
+
+* **scaffolding:** remove broken just merge recipe from gitflow.justfile ([#1791](https://github.com/alltuner/vibetuner/issues/1791)) ([344bcc6](https://github.com/alltuner/vibetuner/commit/344bcc6caca23c5ab17c84ccd7b25a2bb06b54d1))
+
 ## [10.11.1](https://github.com/alltuner/vibetuner/compare/v10.11.0...v10.11.1) (2026-05-12)
 
 
