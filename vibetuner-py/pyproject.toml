@@ -36,10 +36,10 @@ dependencies = [
   "httpx[http2]>=0.28.1",
   "itsdangerous>=2.2.0",
   "loguru>=0.7.3",
-  "pydantic[email]>=2.13.3",
+  "pydantic[email]>=2.13.4",
   "resend>=2.30.0",
   "pydantic-extra-types[pycountry]>=2.11.1",
-  "pydantic-settings>=2.14.0",
+  "pydantic-settings>=2.14.1",
   "pyyaml>=6.0.3",
   "redis[hiredis]>=7.4.0",
   "rich>=15.0.0",
@@ -72,20 +72,20 @@ vibetuner = "vibetuner.testing"
 dev = [
   # These are the development dependencies of AllTuner's blessed stack
   "babel>=2.18.0",
-  "cloudflare>=5.0.0",
+  "cloudflare>=5.1.0",
   "djlint>=1.36.4",
   "granian[pname,reload]>=2.7.4",
   "pytest>=9.0.3",
   "pytest-asyncio>=1.3.0",
   "ruff>=0.15.12",
   "testcontainers[mongodb]>=4.14.2",
-  "rumdl>=0.1.89",
+  "rumdl>=0.1.91",
   "semver>=3.0.4",
   "taplo>=0.9.3",
-  "ty>=0.0.34",
+  "ty>=0.0.35",
   "types-aioboto3[s3]>=15.5.0",
-  "types-authlib>=1.6.11.20260418",
-  "types-pyyaml>=6.0.12.20260408",
+  "types-authlib>=1.6.11.20260512",
+  "types-pyyaml>=6.0.12.20260510",
 ]
 
 [build-system]
