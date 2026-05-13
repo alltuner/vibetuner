@@ -90,6 +90,7 @@ the **PR title becomes the commit message** that determines version bumps and ch
 |------|-------------|----------------|
 | `feat` | New features | **MINOR** |
 | `fix` | Bug fixes | **PATCH** |
+| `revert` | Reverts of previous changes | **PATCH** |
 | `docs` | Documentation changes | **PATCH** |
 | `chore` | Maintenance, dependencies | **PATCH** |
 | `refactor` | Code refactoring | **PATCH** |
@@ -106,6 +107,20 @@ Add `!` to indicate breaking changes (triggers **MAJOR** version):
 - `feat!: remove deprecated API`
 - `fix!: change database schema`
 
+### Reverting Changes
+
+To make sure a revert appears in the changelog (and offsets the original entry),
+the PR title must start with `revert:` — not the default `Revert "feat: ..."`
+subject that `git revert` produces.
+
+- Preferred: open a PR whose title is `revert: <subject of the reverted change>`
+  (optionally `revert(scope): ...`). The squash commit then matches the
+  conventional-commits revert type and Release Please picks it up under the
+  **Reverts** section.
+- If you ran `git revert` locally, follow up with `git commit --amend` to
+  rewrite the subject to `revert: ...` before pushing, or just rename the PR
+  title — squash merges use the PR title, so that is what Release Please sees.
+
 ### Examples
 
 #### ✅ Good PR Titles
@@ -113,6 +128,7 @@ Add `!` to indicate breaking changes (triggers **MAJOR** version):
 ```text
 feat: add OAuth authentication support
 fix: resolve Docker build failure
+revert: drop OAuth authentication support
 docs: update installation guide
 chore: bump FastAPI dependency
 feat(auth): add Google OAuth provider
@@ -144,7 +160,7 @@ OAuth implementation
 feat: add new feature
 feat(scope): specific feature
 
-# Bug Fixes → PATCH release  
+# Bug Fixes → PATCH release
 fix: resolve issue
 fix(scope): specific fix
 

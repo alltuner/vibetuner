@@ -2712,6 +2712,7 @@ This project uses **Release Please** for automated changelog generation. Since w
 |------|-------------|----------------|
 | `feat` | New features | **MINOR** |
 | `fix` | Bug fixes | **PATCH** |
+| `revert` | Reverts of previous changes | **PATCH** |
 | `docs` | Documentation changes | **PATCH** |
 | `chore` | Maintenance, dependencies | **PATCH** |
 | `refactor` | Code refactoring | **PATCH** |
@@ -2720,6 +2721,10 @@ This project uses **Release Please** for automated changelog generation. Since w
 | `perf` | Performance improvements | **MINOR** |
 | `ci` | CI/CD changes | **PATCH** |
 | `build` | Build system changes | **PATCH** |
+
+When reverting a change, the PR title must start with `revert:` (not the default
+`Revert "..."` subject `git revert` produces). Otherwise Release Please silently
+drops the entry and the changelog still shows the reverted feature as added.
 
 **Breaking Changes**
 

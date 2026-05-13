@@ -20,6 +20,7 @@ When creating PRs, use **conventional commit format** for PR titles:
 
 - `feat:` New features (triggers MINOR version)
 - `fix:` Bug fixes (triggers PATCH version)
+- `revert:` Reverts of previous changes (triggers PATCH version)
 - `docs:` Documentation changes (triggers PATCH version)
 - `chore:` Maintenance, dependencies (triggers PATCH version)
 - `refactor:` Code refactoring (triggers PATCH version)
@@ -28,6 +29,10 @@ When creating PRs, use **conventional commit format** for PR titles:
 - `perf:` Performance improvements (triggers MINOR version)
 - `ci:` CI/CD changes (triggers PATCH version)
 - `build:` Build system changes (triggers PATCH version)
+
+When reverting a change, use `revert:` (not the default `Revert "..."` subject)
+so Release Please records it under the **Reverts** section of the changelog.
+See `CONTRIBUTING.md` for the full revert workflow.
 
 ### Breaking Changes
 

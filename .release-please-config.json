@@ -18,6 +18,10 @@
           "section": "Bug Fixes"
         },
         {
+          "type": "revert",
+          "section": "Reverts"
+        },
+        {
           "type": "refactor",
           "section": "Code Refactoring"
         },
