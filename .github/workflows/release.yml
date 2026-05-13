@@ -480,11 +480,15 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Install dependencies
+      - name: Build tarball
         id: build
         working-directory: vibetuner-js
         run: |
-          bun install
+          # `bun pm pack` packs the existing source tree — vibetuner-js has no
+          # build step, no prepare hook, and no bundled output. Running
+          # `bun install` here would hit the public npm registry to resolve
+          # the exact-pinned `@alltuner/vibetuner-jinja@X.Y.Z`, which races
+          # `publish-jinja` and reliably fails on every release (#1817).
           bun pm pack
           echo "Build completed successfully"
 
