@@ -1,10 +1,8 @@
 /* Start of File: do not remove this comment and don't add anything above */
 /* Do not change anything between this comment and the next comment */
-@import "tailwindcss" source(none);
+@import "@alltuner/vibetuner/core.css";
 @source "templates";
 @source "assets/statics/js";
-@source "node_modules/@alltuner/vibetuner-jinja/templates";
-@plugin "daisyui";
 /* Do not change anything between this comment and the one above */
 
 /* Add your custom styles below: */

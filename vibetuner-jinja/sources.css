@@ -1,0 +1,4 @@
+/* ABOUTME: Tailwind @source directive that registers this package's templates for class scanning. */
+/* ABOUTME: Imported via @import "@alltuner/vibetuner-jinja/sources.css" so paths stay relative to here. */
+
+@source "./templates";

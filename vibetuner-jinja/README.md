@@ -20,14 +20,19 @@ module resolution.
 
 ## How to use it
 
-In your project's `config.css`:
+You almost certainly don't install this package directly. It's pulled in
+as a transitive dependency of `@alltuner/vibetuner`, and projects using
+the vibetuner template `@import "@alltuner/vibetuner/core.css"` from
+their `config.css` — that core file in turn imports this package's
+`sources.css`, which contains the one-line `@source "./templates"`
+directive needed for tailwind class scanning.
+
+If you do need to wire it up manually (e.g. you're building a non-template
+consumer):
 
 ```css
-@source "node_modules/@alltuner/vibetuner-jinja/templates";
+@import "@alltuner/vibetuner-jinja/sources.css";
 ```
-
-That's the entire integration. Tailwind treats the templates the same way
-it treats any other `@source`-listed directory.
 
 ## Source of truth
 

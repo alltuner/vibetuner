@@ -4,7 +4,7 @@
 
 Important notes:
 
-- Vibetuner consists of four packages: a Python framework (`vibetuner`), a JavaScript build-deps package (`@alltuner/vibetuner`), an npm-shipped mirror of the framework's jinja templates for tailwind class scanning (`@alltuner/vibetuner-jinja`), and a Copier scaffolding template
+- Vibetuner consists of four packages: a Python framework (`vibetuner`), a JavaScript build-deps package (`@alltuner/vibetuner`) which bundles tailwind, daisyui, htmx and an npm-shipped mirror of the framework's jinja templates (`@alltuner/vibetuner-jinja`, pulled in as a transitive — consumers don't install it directly), and a Copier scaffolding template
 - The framework separates immutable framework code (`vibetuner` package) from your application code (`src/app/`) for clean updates
 - In all examples, `app` refers to your project's Python package (the directory under `src/`). The actual name depends on your project slug (e.g., `src/myproject/` for a project named "myproject")
 - HTMX is used instead of React/Vue for simplicity - server-rendered HTML with sprinkles of interactivity
@@ -166,5 +166,5 @@ Important notes:
 
 - [Python Package](https://pypi.org/project/vibetuner/): Core framework published to PyPI
 - [JavaScript Package](https://www.npmjs.com/package/@alltuner/vibetuner): Frontend build dependencies published to npm
-- [Tailwind Source Package](https://www.npmjs.com/package/@alltuner/vibetuner-jinja): npm-shipped mirror of the framework's frontend jinja templates so tailwind can `@source` them at frontend build time without shelling out to Python
+- [Tailwind Source Package](https://www.npmjs.com/package/@alltuner/vibetuner-jinja): npm-shipped mirror of the framework's frontend jinja templates, pulled in transitively by `@alltuner/vibetuner` so tailwind can `@source` them at frontend build time without shelling out to Python
 - [Repository](https://github.com/alltuner/vibetuner): Source code and issue tracking

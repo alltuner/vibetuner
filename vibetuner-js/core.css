@@ -1,0 +1,6 @@
+/* ABOUTME: Tailwind + daisyui setup shipped with vibetuner-js, imported by scaffolded projects' config.css. */
+/* ABOUTME: Lives inside this package so tailwindcss, daisyui, and vibetuner-jinja resolve from here. */
+
+@import "tailwindcss" source(none);
+@import "@alltuner/vibetuner-jinja/sources.css";
+@plugin "daisyui";
