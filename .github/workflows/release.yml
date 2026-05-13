@@ -299,6 +299,16 @@ jobs:
             echo "✅ Building Jinja (first release)"
           fi
 
+          # vibetuner-js exact-pins vibetuner-jinja to the matching release
+          # version (see vibetuner-js/package.json), so any release that
+          # publishes js MUST also publish jinja — otherwise the transitive
+          # dep resolves to a non-existent registry entry and `bun install`
+          # 404s in scaffolded projects.
+          if [ "$JS_NEEDED" = "true" ] && [ "$JINJA_NEEDED" != "true" ]; then
+            JINJA_NEEDED="true"
+            echo "✅ Building Jinja (linked to JS — exact-pin invariant)"
+          fi
+
           # Documentation (build for releases and workflow dispatch)
           if [ "$FORCE_DOCS" = "true" ]; then
             DOCS_NEEDED="true"
