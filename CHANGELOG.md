@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.14.0](https://github.com/alltuner/vibetuner/compare/v10.13.0...v10.14.0) (2026-05-13)
+
+
+### Features
+
+* replace concurrently with bun run --parallel in localdev ([#1815](https://github.com/alltuner/vibetuner/issues/1815)) ([f54f9c2](https://github.com/alltuner/vibetuner/commit/f54f9c2588ba19e1bda477350afaa1fbe3ccc0e0))
+
+
+### Bug Fixes
+
+* **vibetuner-js:** pin vibetuner-jinja to the matching release version ([#1814](https://github.com/alltuner/vibetuner/issues/1814)) ([930b6d2](https://github.com/alltuner/vibetuner/commit/930b6d2e0ce0c53c0370d0d66ff959629c96762d))
+
 ## [10.13.0](https://github.com/alltuner/vibetuner/compare/v10.12.0...v10.13.0) (2026-05-13)
 
 
