@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.14.1](https://github.com/alltuner/vibetuner/compare/v10.14.0...v10.14.1) (2026-05-13)
+
+
+### Bug Fixes
+
+* **ci:** drop bun install from build-js to avoid race with publish-jinja ([#1818](https://github.com/alltuner/vibetuner/issues/1818)) ([a8f4116](https://github.com/alltuner/vibetuner/commit/a8f41163e83a257f9ca485ffa7c2a031062c8e96))
+
 ## [10.14.0](https://github.com/alltuner/vibetuner/compare/v10.13.0...v10.14.0) (2026-05-13)
 
 
