@@ -259,6 +259,26 @@ import "htmx-ext-preload";
 import "@alltuner/vibetuner/htmx/preload";
 ```
 
+### SSE Extension
+
+The SSE extension also moved from a separate package to a built-in module.
+
+**Before (v2):**
+
+```javascript
+import "htmx-ext-sse";
+```
+
+**After (v4):**
+
+```javascript
+import "@alltuner/vibetuner/htmx/sse";
+```
+
+Use `hx-sse:connect="/events"` (and `hx-sse:swap`, `hx-sse:close`) on elements
+that should subscribe to a server-sent events stream. The `hx-ext="sse"`
+attribute is no longer needed — the extension auto-registers on import.
+
 ## Event Names Changed from camelCase to Colon-Separated
 
 All htmx event names switched from camelCase to a colon-separated

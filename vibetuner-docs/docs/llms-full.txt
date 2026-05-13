@@ -2241,6 +2241,11 @@ window.htmx = htmx;
 // Before: import "htmx-ext-preload";
 // After:
 import "@alltuner/vibetuner/htmx/preload";
+
+// SSE extension:
+// Before: import "htmx-ext-sse";
+// After:
+import "@alltuner/vibetuner/htmx/sse";
 ```
 
 `@alltuner/vibetuner` re-exports htmx as a subpath, so scaffolded projects don't need
@@ -2255,7 +2260,7 @@ manager linker mode (Bun hoisted or isolated, pnpm-style stores, npm v9+ isolate
 - Replace `hx-disable` with `hx-ignore`
 - Add `:inherited` modifier to attributes that rely on inheritance
 - Update JS imports to use default import and `window.htmx = htmx`
-- Update preload extension import path
+- Update preload and SSE extension import paths
 - Remove `htmx-ext-sse` and `htmx-ext-preload` from `package.json`
 
 #### Beta3 Additions
