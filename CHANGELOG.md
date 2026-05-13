@@ -1,5 +1,25 @@
 # Changelog
 
+## [10.12.0](https://github.com/alltuner/vibetuner/compare/v10.11.4...v10.12.0) (2026-05-13)
+
+
+### Features
+
+* bundle vibetuner-jinja with vibetuner-js and ship core.css ([#1803](https://github.com/alltuner/vibetuner/issues/1803)) ([02a7ab3](https://github.com/alltuner/vibetuner/commit/02a7ab3cb9f6e151c95a50e0416ce8d8128cbe51))
+* **vibetuner-js:** expose tailwindcss bin via wrapper ([#1806](https://github.com/alltuner/vibetuner/issues/1806)) ([f3cfacb](https://github.com/alltuner/vibetuner/commit/f3cfacb47c560de39f369cbca5a3ba27b555697b))
+* **vibetuner-js:** re-export htmx via package subpaths ([#1804](https://github.com/alltuner/vibetuner/issues/1804)) ([a65b117](https://github.com/alltuner/vibetuner/commit/a65b117c7df37f3f27ae94fde07a3deba2a4424c))
+
+
+### Miscellaneous Chores
+
+* **deps:** add 2-day cooldown for Renovate and Dependabot ([#1799](https://github.com/alltuner/vibetuner/issues/1799)) ([964da82](https://github.com/alltuner/vibetuner/commit/964da82c2566729f127fcb1f300e5450678bfd03))
+* include revert commits in CHANGELOG ([#1805](https://github.com/alltuner/vibetuner/issues/1805)) ([829e2bb](https://github.com/alltuner/vibetuner/commit/829e2bb264c234029ec7288d2b8100a1d688cbd5))
+
+
+### CI/CD Changes
+
+* add Dependabot watch with 2-day cooldown for Dockerfile and Compose ([#1800](https://github.com/alltuner/vibetuner/issues/1800)) ([d480d56](https://github.com/alltuner/vibetuner/commit/d480d56a9d9a11341b6398b30b024635af903680))
+
 ## [10.11.4](https://github.com/alltuner/vibetuner/compare/v10.11.3...v10.11.4) (2026-05-12)
 
 
