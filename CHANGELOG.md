@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.13.0](https://github.com/alltuner/vibetuner/compare/v10.12.0...v10.13.0) (2026-05-13)
+
+
+### Features
+
+* **vibetuner-js:** re-export htmx hx-sse via package subpath ([#1809](https://github.com/alltuner/vibetuner/issues/1809)) ([51a2d50](https://github.com/alltuner/vibetuner/commit/51a2d5094ece62d938abc4ac7320b484085ef3d3))
+
+
+### Bug Fixes
+
+* format .copier-answers.yml after scaffold/update ([#1810](https://github.com/alltuner/vibetuner/issues/1810)) ([a69958f](https://github.com/alltuner/vibetuner/commit/a69958f2ea1e289a1f570ff0a852081690321f44))
+
 ## [10.12.0](https://github.com/alltuner/vibetuner/compare/v10.11.4...v10.12.0) (2026-05-13)
 
 
