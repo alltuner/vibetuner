@@ -84,11 +84,9 @@ RUN --mount=type=cache,id=bun,target=/root/.bun/install/cache \
 # ────────────────────────────────────────────────────────────────────────────────
 FROM --platform=$BUILDPLATFORM frontend-deps AS frontend-build
 
-# Copy templates for Tailwind CSS class scanning. The vibetuner core
-# templates come from @alltuner/vibetuner-jinja (a transitive of
-# @alltuner/vibetuner), already inside node_modules from the frontend-deps
-# stage. They're scanned via @alltuner/vibetuner/core.css → vibetuner-jinja's
-# sources.css, so this stage doesn't need to wire them up explicitly.
+# Copy project templates for Tailwind class scanning. Framework templates
+# come via @alltuner/vibetuner-jinja (transitive of @alltuner/vibetuner)
+# and are scanned through node_modules — nothing extra to wire up here.
 COPY templates/frontend/ templates/frontend/
 
 # Build production assets with Bun
@@ -155,10 +153,10 @@ FROM runtime AS dev-runtime
 # python:slim, so the static binary works without extra libs.
 COPY --link --from=oven/bun:1 /usr/local/bin/bun /usr/local/bin/bun
 
-# Frontend dependencies (resolved against the committed bun.lock) and inputs
-# bun dev:css / dev:js need at runtime. node_modules carries
-# @alltuner/vibetuner-jinja as a transitive of @alltuner/vibetuner so the
-# @import "@alltuner/vibetuner/core.css" chain resolves.
+# Frontend deps (resolved against bun.lock) and watcher inputs for bun
+# dev:css/dev:js. node_modules carries @alltuner/vibetuner-jinja as a
+# transitive of @alltuner/vibetuner so the @import chain in config.css
+# resolves at watcher time.
 COPY --link --from=frontend-deps /app/node_modules/ node_modules/
 COPY --link package.json bun.lock ./
 COPY --link config.css config.js ./
