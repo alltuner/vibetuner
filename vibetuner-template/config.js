@@ -1,8 +1,8 @@
 // Start of File: do not remove this comment (do not add anything before)
 // Do not change anything between this comment and the next comment
-import htmx from "htmx.org";
+import htmx from "@alltuner/vibetuner/htmx";
 window.htmx = htmx;
-import "./node_modules/htmx.org/dist/ext/hx-preload.js";
+import "@alltuner/vibetuner/htmx/preload";
 // Do not change anything between this comment and the previous one
 
 // Add your custom imports below:
