@@ -2234,14 +2234,18 @@ In v4, inheritance must be explicitly opted into:
 ```javascript
 // Before (v2): import "htmx.org";
 // After (v4):
-import htmx from "htmx.org";
+import htmx from "@alltuner/vibetuner/htmx";
 window.htmx = htmx;
 
 // Preload extension:
 // Before: import "htmx-ext-preload";
 // After:
-import "htmx.org/dist/ext/hx-preload.js";
+import "@alltuner/vibetuner/htmx/preload";
 ```
+
+`@alltuner/vibetuner` re-exports htmx as a subpath, so scaffolded projects don't need
+`htmx.org` as a direct dependency. The bare-specifier import works under any package
+manager linker mode (Bun hoisted or isolated, pnpm-style stores, npm v9+ isolated).
 
 #### Migration Checklist
 

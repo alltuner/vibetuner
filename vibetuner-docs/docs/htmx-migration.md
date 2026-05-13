@@ -232,12 +232,16 @@ import "htmx.org";
 **After (v4):**
 
 ```javascript
-import htmx from "htmx.org";
+import htmx from "@alltuner/vibetuner/htmx";
 window.htmx = htmx;
 ```
 
 The default import is required, and you must explicitly assign `htmx` to `window` for
 it to be available globally (e.g., in inline scripts or the browser console).
+
+`@alltuner/vibetuner` re-exports htmx as a subpath, so scaffolded projects don't need
+`htmx.org` as a direct dependency. The bare-specifier import works under any package
+manager linker mode (Bun hoisted or isolated, pnpm-style stores, npm v9+ isolated).
 
 ### Preload Extension
 
@@ -252,7 +256,7 @@ import "htmx-ext-preload";
 **After (v4):**
 
 ```javascript
-import "htmx.org/dist/ext/hx-preload.js";
+import "@alltuner/vibetuner/htmx/preload";
 ```
 
 ## Event Names Changed from camelCase to Colon-Separated
@@ -606,7 +610,7 @@ still being loaded, conflicting with htmx v4's built-in SSE support.
 **Fix:** Update your JS entry point:
 
 ```javascript
-import htmx from "htmx.org";
+import htmx from "@alltuner/vibetuner/htmx";
 window.htmx = htmx;
 ```
 
@@ -634,7 +638,7 @@ a parent's `hx-target`, `hx-swap`, or similar attribute.
 
 ```javascript
 // Before: import "htmx-ext-preload";
-import "htmx.org/dist/ext/hx-preload.js";
+import "@alltuner/vibetuner/htmx/preload";
 ```
 
 ```html

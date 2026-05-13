@@ -22,6 +22,11 @@
   "bugs": {
     "url": "https://github.com/alltuner/vibetuner/issues"
   },
+  "exports": {
+    "./core.css": "./core.css",
+    "./htmx": "./htmx.js",
+    "./htmx/preload": "./htmx-preload.js"
+  },
   "dependencies": {
     "@alltuner/vibetuner-jinja": "^10.11.0",
     "concurrently": "^9.2.1",
