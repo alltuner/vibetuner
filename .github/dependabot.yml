@@ -8,6 +8,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 2
     commit-message:
       prefix: "chore(deps)"
 
@@ -16,6 +18,8 @@ updates:
     directory: "/vibetuner-py"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 2
     commit-message:
       prefix: "chore(deps)"
 
@@ -24,6 +28,8 @@ updates:
     directory: "/vibetuner-template"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 2
     commit-message:
       prefix: "chore(deps)"
 
@@ -32,6 +38,8 @@ updates:
     directory: "/vibetuner-js"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 2
     commit-message:
       prefix: "chore(deps)"
 
@@ -40,6 +48,8 @@ updates:
     directory: "/vibetuner-template"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 2
     commit-message:
       prefix: "chore(deps)"
 
@@ -48,5 +58,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 2
     commit-message:
       prefix: "chore(deps)"
