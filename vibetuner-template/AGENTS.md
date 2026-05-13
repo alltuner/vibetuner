@@ -110,11 +110,15 @@ app = VibetunerApp(
 
 ## PR Titles & Releases
 
-Use **conventional commits** for PR titles: `feat:`, `fix:`, `docs:`,
-`chore:`, `refactor:`, `style:`, `test:`, `perf:`, `ci:`, `build:`.
-Add `!` for breaking changes (e.g., `feat!:`). PR titles become squash
-commit messages. Release Please auto-generates changelogs. Versioning
-via git tags + `uv-dynamic-versioning`.
+Use **conventional commits** for PR titles: `feat:`, `fix:`, `revert:`,
+`docs:`, `chore:`, `refactor:`, `style:`, `test:`, `perf:`, `ci:`,
+`build:`. Add `!` for breaking changes (e.g., `feat!:`). PR titles
+become squash commit messages. Release Please auto-generates changelogs.
+Versioning via git tags + `uv-dynamic-versioning`.
+
+**Reverting:** the PR title must start with `revert:` (not the default
+`Revert "..."` subject `git revert` produces) — otherwise Release Please
+silently drops it from the changelog.
 
 > **Stale CI on release PRs:** the scaffolded `release.yml` regenerates
 > `uv.lock` after Release Please bumps `pyproject.toml`, then pushes the
