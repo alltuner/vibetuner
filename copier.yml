@@ -100,6 +100,21 @@ enable_watchtower:
   when: "{{ fqdn }}"
 
 _tasks:
+  # Copier's `to_nice_yaml` filter emits single-quoted strings and
+  # zero-indented sequence items, which the scaffolded `lint-yaml` recipe
+  # rejects. Format the answers file with the same dprint plugin the
+  # template uses so `just lint` passes on a fresh checkout and after
+  # every `copier update`.
+  - command:
+      - uvx
+      - --from
+      - dprint-py
+      - dprint
+      - fmt
+      - --plugins
+      - https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.1.wasm
+      - --
+      - "{{ _copier_conf.answers_file }}"
   - command: [uv, sync]
     when: "{{ _copier_operation == 'copy' }}"
   - command: [bun, install]
