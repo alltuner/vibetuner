@@ -5,16 +5,19 @@
     "": {
       "name": "vibetuner",
       "dependencies": {
-        "@tailwindcss/cli": "^4.2.4",
+        "@alltuner/vibetuner-jinja": "^10.11.0",
+        "@tailwindcss/cli": "^4.3.0",
         "@tailwindcss/typography": "^0.5.19",
         "concurrently": "^9.2.1",
         "daisyui": "^5.5.19",
         "htmx.org": "4.0.0-beta3",
-        "tailwindcss": "^4.2.4",
+        "tailwindcss": "^4.3.0",
       },
     },
   },
   "packages": {
+    "@alltuner/vibetuner-jinja": ["@alltuner/vibetuner-jinja@10.11.0", "", {}, "sha512-yufO7h/EstDZtPY8E2zpSd3l+hoxMfPKoXoxIYGRVEM7Ut8dv8Xr/BQG7/F9z0GgJ3sFRDw9DPgvwsnjJkaLJw=="],
+
     "@jridgewell/gen-mapping": ["@jridgewell/gen-mapping@0.3.13", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.0", "@jridgewell/trace-mapping": "^0.3.24" } }, "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA=="],
 
     "@jridgewell/remapping": ["@jridgewell/remapping@2.3.5", "", { "dependencies": { "@jridgewell/gen-mapping": "^0.3.5", "@jridgewell/trace-mapping": "^0.3.24" } }, "sha512-LI9u/+laYG4Ds1TDKSJW2YPrIlcVYOwi2fUC6xB43lueCjgxV4lffOCZCtYFiH6TNOX+tQKXx97T4IKHbhyHEQ=="],

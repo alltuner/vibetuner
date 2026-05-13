@@ -21,7 +21,8 @@
     "url": "https://github.com/alltuner/vibetuner/issues"
   },
   "files": [
-    "templates/"
+    "templates/",
+    "sources.css"
   ],
   "scripts": {
     "prepare": "bash scripts/sync.sh"
