@@ -25,7 +25,8 @@
   "exports": {
     "./core.css": "./core.css",
     "./htmx": "./htmx.js",
-    "./htmx/preload": "./htmx-preload.js"
+    "./htmx/preload": "./htmx-preload.js",
+    "./htmx/sse": "./htmx-sse.js"
   },
   "bin": {
     "tailwindcss": "./bin/tailwindcss.js"
