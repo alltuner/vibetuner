@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.14.2](https://github.com/alltuner/vibetuner/compare/v10.14.1...v10.14.2) (2026-05-14)
+
+
+### Bug Fixes
+
+* **py:** relax cryptography floor to &gt;=46.0.7 for atproto coexistence ([#1822](https://github.com/alltuner/vibetuner/issues/1822)) ([29be603](https://github.com/alltuner/vibetuner/commit/29be60364dd9dd5e656a610bfd54efbecdbcd12c))
+
 ## [10.14.1](https://github.com/alltuner/vibetuner/compare/v10.14.0...v10.14.1) (2026-05-13)
 
 
