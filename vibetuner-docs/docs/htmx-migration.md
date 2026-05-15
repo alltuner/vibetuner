@@ -557,6 +557,8 @@ the changes specific to beta3 (which is the 4.0 release candidate).
   proxy, sigil-syntax `toggle('@attr')` / `toggle('*display=none|block')`,
   per-element `debounce(ms[, fn])`, and `htmx.live.q` /
   `htmx.live.take(target, className, source)` outside expression scope.
+  **Default-on in vibetuner** as of `@alltuner/vibetuner` 10.15.0 — see
+  [Live Reactivity](#live-reactivity-with-hx-live) below.
 
 ### New Swap Style: `outerSync`
 
@@ -607,7 +609,110 @@ for history snapshots, the same as in htmx 2.
 the new `hx-live` extension and are exposed via the `htmx.live`
 namespace (e.g. `htmx.live.take(target, className, source)`). If you
 were calling them directly, import the `hx-live` extension or migrate
-to native equivalents.
+to native equivalents. Vibetuner loads `hx-live` by default, so
+`htmx.live.take(...)` is available without extra setup.
+
+## Live Reactivity with `hx-live`
+
+`@alltuner/vibetuner` 10.15.0 imports `hx-live` by default from
+`config.js` (in the framework-managed block, alongside `hx-preload`).
+This is vibetuner's recommended path for client-side reactivity —
+chip lists, derived form fields, live filters, paired controls.
+Reach for it before adding Alpine.js, Stimulus, or hand-rolled
+event-listener boilerplate.
+
+### Why it fits vibetuner
+
+Vibetuner's CSP runs `script-src 'nonce-X' 'strict-dynamic'` with
+no `'unsafe-inline'`, which blocks inline `onclick="..."` /
+`onchange="..."` attributes at the spec level. htmx attributes
+(`hx-on:`, `hx-live`) evaluate through htmx's nonced TrustedTypes
+pipeline, so they work where raw handler attributes do not. If you
+also enable `hx-nonce`, every `hx-live` expression gets the same
+defence-in-depth as `hx-get` / `hx-post`.
+
+### Idiomatic patterns
+
+**Derive a hidden field from a chip list** (the OAuth scope editor
+in `debug/oauth_app_form.html.jinja` uses this exact shape):
+
+```jinja
+<div id="scopes-tags"
+     hx-on:click="
+       const btn = event.target.closest('button[data-action=remove-scope]');
+       if (btn) btn.closest('.badge').remove();
+     ">
+  {% for scope in scopes %}
+    <span class="badge" data-scope="{{ scope }}">
+      <span data-text>{{ scope }}</span>
+      <button type="button" data-action="remove-scope">×</button>
+    </span>
+  {% endfor %}
+</div>
+<input type="hidden" name="scopes"
+       hx-live="this.value = q('#scopes-tags .badge').arr()
+                             .map(b => b.dataset.scope).join(',')">
+```
+
+The hidden input recomputes its `value` on every mutation under
+`#scopes-tags` — add and remove both stay in sync without manual
+wiring. Event delegation on the container handles remove clicks
+on both initially-rendered and dynamically-inserted badges
+(`q().insert()` is raw `insertAdjacentHTML` — htmx does not
+re-process inserted nodes).
+
+**Conditional CSS class from a sibling input:**
+
+```jinja
+<input id="age" type="number" value="0">
+<p hx-live="this.classList.toggle('text-error',
+                                  q('#age').valueAsNumber < 18)">
+  Adult content
+</p>
+```
+
+**Debounced live search:**
+
+```jinja
+<input id="q" placeholder="search">
+<output hx-live="
+  let term = q('#q').value;
+  if (!term) { this.textContent = ''; return; }
+  await debounce(250);
+  this.textContent = await fetch('/search?q=' +
+    encodeURIComponent(term)).then(r => r.text());
+"></output>
+```
+
+The `await debounce(250)` is per-element — successive keystrokes
+cancel the in-flight call via async rejection, so only the final
+term hits the server.
+
+### Rough edges to know
+
+- **The DOM is the only source of truth.** No JS-variable reactivity.
+  Share state via `data-*` attributes or hidden inputs. Alpine.js
+  refugees will expect refs — `hx-live` deliberately doesn't have them.
+- **Expressions re-run on *any* DOM mutation.** Cheap by default, but
+  unconditional side effects (a bare `fetch()`, mutating the DOM tree
+  the expression reads) will tank performance or trip the >50/s
+  self-mutation cutoff (the expression deactivates with a console
+  warning). Guard with `debounce` or a value-change check.
+- **Set-property writes broadcast silently.** `q('.field').value = ''`
+  writes to every matching element. A selector that accidentally
+  widens (e.g. an `:inherited` attribute unexpectedly inheriting)
+  clobbers things you didn't intend. Prefer narrow selectors and
+  add `data-*` markers where ambiguity is possible.
+- **`next` / `prev` / `closest` anchor to `this`.** Inside `hx-live`
+  they mean "relative to the owner element". Calling
+  `htmx.live.q('next .foo')` from a free-floating script is undefined.
+- **`q().insert(pos, html)` does not run `htmx.process()`** on the
+  inserted markup. Dynamic `hx-on:` / `hx-live` attributes won't be
+  wired. Use event delegation on a stable parent (as in the chip-list
+  pattern above) or call `htmx.process(elt)` after insertion.
+- **`hx-config` no longer accepts request `mode` overrides** in beta3
+  (security fix). Unrelated to `hx-live` itself but ships together —
+  drop `hx-config="mode:..."` attributes if you have them.
 
 ## Common Migration Issues
 

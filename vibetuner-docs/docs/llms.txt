@@ -123,6 +123,16 @@ Important notes:
   enable. Elements without a matching `hx-nonce` are stripped (fail-closed). Requires
   `@alltuner/vibetuner` ≥ 10.11.0 (older releases pull `htmx.org@4.0.0-beta2` which
   does not ship the extension file)
+- **htmx Live Reactivity (default-on)**: htmx 4.0.0-beta3's `hx-live` extension is
+  loaded by default from `config.js` since `@alltuner/vibetuner` 10.15.0. Use
+  `hx-live="<expr>"` for derived state that recomputes on any DOM mutation,
+  `hx-on:event="..."` with the `q()` proxy / sigil-`toggle()` / per-element
+  `debounce()` for richer event handlers. CSP-clean (evaluates through htmx's
+  nonced TrustedTypes path) where raw inline `onclick=` is not. Vibetuner's
+  preferred path for chip lists, paired controls, live filters, and inline
+  form-field validation — use this before reaching for Alpine.js or Stimulus.
+  See `vibetuner-docs/docs/htmx-migration.md#live-reactivity-with-hx-live` for
+  idiomatic patterns and rough edges
 - **Health Checks**: `/health`, `/health/ping`, `/health/ready`, `/health/id` endpoints
   with service connectivity checks
 - **Robust Tasks**: `@robust_task()` decorator with exponential backoff retries and

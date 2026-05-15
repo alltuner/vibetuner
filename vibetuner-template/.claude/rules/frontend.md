@@ -77,6 +77,53 @@ Add `import "./node_modules/htmx.org/dist/ext/hx-nonce.js";` to your
 `hx-nonce` will be stripped (fail-closed). See the
 [CSP/htmx docs](https://vibetuner.alltuner.com/development-guide/#htmx-nonce-protection-opt-in).
 
+## htmx Live Reactivity (default-on)
+
+`hx-live` is loaded by default from the framework-managed block of
+`config.js`. **Use it before reaching for Alpine.js or Stimulus** —
+it covers the same client-side-reactivity ground (chip lists, derived
+fields, live filters, paired controls, inline validation) without
+adding a separate library or breaking the project's "no JavaScript
+frameworks" stance.
+
+Quick patterns:
+
+```jinja
+{# Derived field that recomputes on every DOM mutation #}
+<input type="hidden" name="scopes"
+       hx-live="this.value = q('#scopes-tags .badge').arr()
+                             .map(b => b.dataset.scope).join(',')">
+
+{# Conditional class from a sibling input #}
+<p hx-live="this.classList.toggle('text-error',
+                                  q('#age').valueAsNumber < 18)">
+  Adult content
+</p>
+
+{# Debounced live search (per-element debounce cancels prior calls) #}
+<output hx-live="
+  let term = q('#q').value;
+  if (!term) { this.textContent = ''; return; }
+  await debounce(250);
+  this.textContent = await fetch('/search?q=' +
+    encodeURIComponent(term)).then(r => r.text());
+"></output>
+```
+
+CSP-safe by design — `hx-on:` / `hx-live` attributes evaluate
+through htmx's nonced TrustedTypes path, where raw inline
+`onclick="..."` would be blocked by the project's `script-src`
+policy.
+
+Gotchas to remember: the DOM is the only source of truth (no
+JS-variable reactivity, share state via `data-*` or hidden inputs);
+expressions re-run on **any** mutation so guard expensive work with
+`debounce`; set-property writes (`q('.x').value = ''`) broadcast to
+every match; `q().insert()` is raw `insertAdjacentHTML` and does
+not run `htmx.process()` — use event delegation on a stable parent
+for handlers on dynamically-inserted elements. Full reference:
+<https://four.htmx.org/extensions/hx-live/>.
+
 ## Response Caching (Server-Side)
 
 `from vibetuner.cache import cache, invalidate, invalidate_pattern`.
