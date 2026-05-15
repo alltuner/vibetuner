@@ -26,7 +26,8 @@
     "./core.css": "./core.css",
     "./htmx": "./htmx.js",
     "./htmx/preload": "./htmx-preload.js",
-    "./htmx/sse": "./htmx-sse.js"
+    "./htmx/sse": "./htmx-sse.js",
+    "./htmx/live": "./htmx-live.js"
   },
   "bin": {
     "tailwindcss": "./bin/tailwindcss.js"

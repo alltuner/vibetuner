@@ -1837,6 +1837,96 @@ file only ships with `htmx.org@4.0.0-beta3`, pulled transitively by
 `@alltuner/vibetuner` 10.11.0+; on older versions the bundler errors
 with `Could not resolve "./node_modules/htmx.org/dist/ext/hx-nonce.js"`.
 
+**htmx Live Reactivity (default-on, requires `@alltuner/vibetuner` ≥ 10.15.0):**
+htmx 4.0.0-beta3's `hx-live` extension is loaded by default from the
+framework-managed block of `config.js`, alongside `hx-preload`. This is
+vibetuner's recommended path for client-side reactivity — chip lists,
+derived form fields, live filters, paired controls, inline validation.
+Reach for it before adding Alpine.js, Stimulus, or hand-rolled
+event-listener boilerplate.
+
+**Why it fits the stack.** Vibetuner's `script-src 'nonce-X' 'strict-dynamic'`
+CSP blocks inline `onclick="..."` / `onchange="..."` attributes at the spec
+level. `hx-on:` and `hx-live` evaluate through htmx's nonced TrustedTypes
+pipeline, so they work where raw handler attributes do not. Pair with the
+opt-in `hx-nonce` extension for defence-in-depth.
+
+**Primitives** (full reference at <https://four.htmx.org/extensions/hx-live/>):
+
+- `hx-live="<expr>"` — JS expression re-run on any `input`/`change`/mutation,
+  with `q()`, `wait`, `trigger`, `debounce`, and the htmx public API in scope.
+  Async function body (top-level `await` allowed).
+- `q(selector)` — jQuery-like proxy. Selector grammar: `next` / `prev` /
+  `closest`, `'.foo in #scope'`, `'.foo in this'`, chained `.q(...)`. Reads
+  return the first match; assigns write to all matches. `q('.x').arr()`
+  for a real `Array<Element>`.
+- Built-in shortcuts: `.trigger(name, detail)`, `.insert(pos, html)` (raw
+  `insertAdjacentHTML` — does not run `htmx.process()`), `.take(class, from)`
+  (move class from peers).
+- Sigil `toggle('@attr')` / `toggle('*display=none|block')` for attribute /
+  style flips.
+- `debounce(ms)` — per-element, cancels prior in-flight via async rejection.
+- `htmx.live.*` — same primitives outside expression scope (e.g.
+  `htmx.live.take(target, className, source)` for the migrated
+  `htmx.takeClass()`).
+
+**Pattern: chip-list with derived hidden input** (the OAuth scope editor in
+`debug/oauth_app_form.html.jinja` is the canonical in-tree example):
+
+```jinja
+<div id="scopes-tags"
+     hx-on:click="
+       const btn = event.target.closest('button[data-action=remove-scope]');
+       if (btn) btn.closest('.badge').remove();
+     ">
+  {% for scope in scopes %}
+    <span class="badge" data-scope="{{ scope }}">
+      <span data-text>{{ scope }}</span>
+      <button type="button" data-action="remove-scope">×</button>
+    </span>
+  {% endfor %}
+</div>
+<input type="hidden" name="scopes"
+       hx-live="this.value = q('#scopes-tags .badge').arr()
+                             .map(b => b.dataset.scope).join(',')">
+```
+
+The hidden input recomputes on every mutation under `#scopes-tags` — add
+and remove paths stay in sync without manual wiring. Event delegation on
+the container handles both initially-rendered and dynamically-inserted
+badges (`q().insert()` does not re-process inserted nodes).
+
+**Pattern: debounced live search:**
+
+```jinja
+<output hx-live="
+  let term = q('#q').value;
+  if (!term) { this.textContent = ''; return; }
+  await debounce(250);
+  this.textContent = await fetch('/search?q=' +
+    encodeURIComponent(term)).then(r => r.text());
+"></output>
+```
+
+**Rough edges:**
+
+- **The DOM is the only source of truth.** No JS-variable reactivity; share
+  state via `data-*` attributes or hidden inputs.
+- **Expressions re-run on every DOM mutation.** Idempotent or
+  cheap-or-guarded only. The runtime deactivates expressions that mutate
+  more than 50 times per second.
+- **Set-property writes broadcast silently** to all matched elements.
+  Narrow your selectors.
+- **`next` / `prev` / `closest` anchor to `this`.** Undefined when called
+  from `htmx.live.q(...)` outside an expression.
+- **`q().insert()` is raw `insertAdjacentHTML`.** Dynamic `hx-on:` /
+  `hx-live` attributes on inserted markup won't be wired. Use event
+  delegation on a stable parent or call `htmx.process(elt)` after insertion.
+- **Breaking from beta2:** `htmx.takeClass()` / `htmx.forEvent()` moved
+  out of core. Use `htmx.live.take(...)` / `htmx.live.forEvent(...)`.
+  Framework code has no usages, so this is a non-event for users on the
+  default scaffolding; user code calling those globals will need an update.
+
 ### Background Tasks
 
 Run long-running or scheduled work outside the request cycle using Vibetuner's
@@ -2274,9 +2364,11 @@ relevant to vibetuner projects:
   enable. Framework templates already follow the pattern. Elements
   without a matching nonce are stripped (fail-closed)
 - **`hx-live` extension** — DOM-reactivity via `hx-live="..."` plus a
-  richer `hx-on` JS surface (`q()`, `toggle()`, `debounce()`). Note:
-  `htmx.takeClass` and `htmx.forEvent` moved out of core into this
-  extension (now `htmx.live.take(...)` etc.)
+  richer `hx-on` JS surface (`q()`, `toggle()`, `debounce()`). **Default-on
+  in vibetuner** since `@alltuner/vibetuner` 10.15.0; see the Live
+  Reactivity section above for patterns. Note: `htmx.takeClass` and
+  `htmx.forEvent` moved out of core into this extension (now
+  `htmx.live.take(...)` etc.)
 - **`hx-history-elt` restored** — was removed in earlier 4.x pre-releases,
   brought back in beta3 alongside an improved `hx-history-cache`
   extension
