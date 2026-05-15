@@ -1,5 +1,18 @@
 # Changelog
 
+## [10.15.1](https://github.com/alltuner/vibetuner/compare/v10.15.0...v10.15.1) (2026-05-15)
+
+
+### Bug Fixes
+
+* **py:** auto-register settings.project as a template global ([#1828](https://github.com/alltuner/vibetuner/issues/1828)) ([b91b643](https://github.com/alltuner/vibetuner/commit/b91b6438175fb5e33ae4956cd005ecc4c7db3e47))
+* **template:** run uv-lock only on pre-commit ([#1831](https://github.com/alltuner/vibetuner/issues/1831)) ([ad46ab8](https://github.com/alltuner/vibetuner/commit/ad46ab89bce0dd4f2bbcfce903f410e379908fba))
+
+
+### Miscellaneous Chores
+
+* autoupdate pre-commit hook revs ([#1832](https://github.com/alltuner/vibetuner/issues/1832)) ([670a78d](https://github.com/alltuner/vibetuner/commit/670a78d6487a4a1533856327dd9468d10278a19b))
+
 ## [10.15.0](https://github.com/alltuner/vibetuner/compare/v10.14.2...v10.15.0) (2026-05-15)
 
 
