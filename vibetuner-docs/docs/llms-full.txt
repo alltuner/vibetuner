@@ -398,12 +398,23 @@ player without touching upstream markup:
 
 These variables are available in every template automatically:
 
+- `request` — current Starlette `Request`
+- `language` — resolved request language (e.g. `"en"`, `"ca"`)
+- `DEBUG` — mirrors `settings.debug`
 - `now` — `datetime.now(timezone.utc)`, timezone-aware UTC datetime
 - `today` — `date.today().isoformat()`, ISO date string (e.g., `"2026-04-07"`)
+- `project` — `settings.project` (`ProjectConfiguration` loaded from
+  `config_vars.yaml`); use `project.project_name`, `project.company_name`,
+  `project.copyright`, `project.fqdn`, etc.
+- `brand` — `settings.brand` (`BrandSettings` from `BRAND_*` env vars);
+  see [Brand Configuration](#brand-configuration)
+- `csp_nonce` — per-request CSP nonce
+- `hotreload` — dev-mode hot-reload helper
 
 ```html
+<title>{{ project.project_name }}</title>
 <p>Page rendered at {{ now | format_datetime }}</p>
-<footer>&copy; {{ now.year }} My Company</footer>
+<footer>{{ project.copyright }}</footer>
 ```
 
 #### Built-in Template Filters
@@ -1578,6 +1589,13 @@ without wiring anything up. The framework's bundled
 `meta/browserconfig.xml.jinja` already do this; the magic-link email
 template receives `button_color=settings.brand.email_button` from
 `send_magic_link_email()`.
+
+The companion `_project_context` provider exposes `settings.project`
+(`ProjectConfiguration` loaded from `config_vars.yaml`) under the
+`project` template global, so branded chrome can reference
+`{{ project.project_name }}`, `{{ project.company_name }}`,
+`{{ project.copyright }}`, `{{ project.fqdn }}`, etc. without per-route
+context boilerplate.
 
 ### Service Dependency Injection
 

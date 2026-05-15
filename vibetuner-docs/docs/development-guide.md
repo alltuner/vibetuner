@@ -464,18 +464,26 @@ Vibetuner provides these variables in every template automatically:
 
 | Variable | Type | Value |
 |----------|------|-------|
+| `request` | `Request` | The current Starlette `Request` |
+| `language` | `str` | Resolved request language (e.g. `"en"`, `"ca"`) |
+| `DEBUG` | `bool` | Mirrors `settings.debug` |
 | `now` | `datetime` | `datetime.now(timezone.utc)` — timezone-aware UTC datetime |
 | `today` | `str` | `date.today().isoformat()` — ISO date string (e.g., `"2026-04-07"`) |
+| `project` | `ProjectConfiguration` | `settings.project` — `project_name`, `company_name`, `copyright`, `fqdn`, … |
+| `brand` | `BrandSettings` | `settings.brand` — see [Brand Configuration](#brand-configuration) |
+| `csp_nonce` | `str` | Per-request CSP nonce (see [Security Headers and CSP Nonce](#security-headers-and-csp-nonce)) |
+| `hotreload` | `callable` | Dev-mode hot-reload helper |
 
 ```html
 <p>Page rendered at {{ now | format_datetime }}</p>
 <p>Today is {{ today }}</p>
-<footer>&copy; {{ now.year }} My Company</footer>
+<footer>{{ project.copyright }}</footer>
+<title>{{ project.project_name }}</title>
 ```
 
-These are re-evaluated on every render, so `now` reflects the current
-request time. For custom globals, see
-[Template Context Providers](#template-context-providers).
+`now` and `csp_nonce` are re-evaluated on every render; `project` and
+`brand` are app-level config snapshots resolved at startup. For custom
+globals, see [Template Context Providers](#template-context-providers).
 
 ### Built-in Template Filters
 
@@ -650,10 +658,14 @@ settings.brand.email_button         # email_button_color or primary_color
 
 `settings.brand` is exposed in every Jinja render via the shipped
 `_brand_context` provider, so templates read `{{ brand.primary_color }}`
-without wiring anything up. `BrandSettings` is deliberately app-level
-(favicon assets are static files served before tenant resolution; the
-email service does not see request context). For per-tenant in-page
-colors, use `TenantTheme`.
+without wiring anything up. The companion `_project_context` provider
+does the same for `settings.project`, so branded chrome (header logos,
+footers, OpenGraph defaults) can reference `{{ project.project_name }}`,
+`{{ project.copyright }}`, `{{ project.fqdn }}`, etc. without per-route
+context boilerplate. `BrandSettings` is deliberately app-level (favicon
+assets are static files served before tenant resolution; the email
+service does not see request context). For per-tenant in-page colors,
+use `TenantTheme`.
 
 ### Security Headers and CSP Nonce
 
