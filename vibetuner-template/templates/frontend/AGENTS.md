@@ -109,11 +109,19 @@ Run `just lint-jinja` to check templates before committing.
 
 All templates automatically receive:
 
-- `request` - Current request object
-- `DEBUG` - Debug mode flag
-- `hotreload` - Hot reload function (dev mode)
-- Project settings from configuration
-- Current language/locale info
+- `request` — Current request object
+- `DEBUG` — Debug mode flag
+- `hotreload` — Hot reload function (dev mode)
+- `language` — Current request language (e.g. `"en"`, `"ca"`)
+- `project` — `settings.project` (`ProjectConfiguration` from
+  `config_vars.yaml`): `project.project_name`, `project.company_name`,
+  `project.copyright`, `project.fqdn`, etc.
+- `brand` — `settings.brand` (`BrandSettings` from `BRAND_*` env vars):
+  `brand.primary_color`, `brand.browser_theme_color`, `brand.email_button`
+- `now` / `today` — UTC datetime and ISO date string
+
+Need more globals? Use `register_globals({...})` or
+`@register_context_provider` from `vibetuner.rendering`.
 
 ## Template Inheritance
 

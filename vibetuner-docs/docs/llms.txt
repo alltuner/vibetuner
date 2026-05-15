@@ -61,8 +61,10 @@ Important notes:
   `hx_push_url()`, `hx_reswap()`, `hx_retarget()`, `hx_refresh()`,
   `hx_replace_url()`, `hx_trigger_after_settle()`, `hx_trigger_after_swap()`.
   Handles JSON serialization internally. Import from `vibetuner.htmx`
-- **Built-in Template Globals**: `now` (UTC datetime) and `today` (ISO date string)
-  are available in all templates automatically
+- **Built-in Template Globals**: `request`, `language`, `DEBUG`, `now`
+  (UTC datetime), `today` (ISO date string), `project` (`settings.project`),
+  `brand` (`settings.brand`), `csp_nonce`, and `hotreload` are available
+  in all templates automatically
 - **Skeleton Extension Points**: `base/skeleton.html.jinja` exposes blocks
   (`extra_head_links`, `extra_scripts`, `before_main`, `after_main`) and
   context variables (`color_scheme`, `canonical_url`, `font_preloads`) so

@@ -762,6 +762,23 @@ def _brand_context() -> dict[str, Any]:
 
 register_context_provider(_brand_context)
 
+
+def _project_context() -> dict[str, Any]:
+    """Expose project configuration (``settings.project``) to every template.
+
+    See :class:`vibetuner.config.ProjectConfiguration` for the fields backed
+    by ``config_vars.yaml``. Templates can reference ``{{ project.project_name }}``,
+    ``{{ project.company_name }}``, ``{{ project.copyright }}``, etc., so
+    branded chrome (header logos, footers, OpenGraph defaults) can be wired
+    without per-route context boilerplate.
+    """
+    from vibetuner.config import settings
+
+    return {"project": settings.project}
+
+
+register_context_provider(_project_context)
+
 # Global Vars
 jinja_env.globals.update({"DEBUG": data_ctx.DEBUG})
 

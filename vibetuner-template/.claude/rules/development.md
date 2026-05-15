@@ -146,8 +146,13 @@ via `runtime_config={...}`. Read with `await get_config("key")`.
 Write with `await set_config("key", value)`.
 Debug UI at `/debug/config`. CLI: `vibetuner config list|set|delete`.
 
-**Built-in template globals**: `now` (UTC datetime), `today` (ISO
-date string) — available in all templates automatically.
+**Built-in template globals** (available in every template
+automatically): `request`, `language`, `DEBUG`, `now` (UTC datetime),
+`today` (ISO date string), `project` (`settings.project` —
+`project.project_name`, `project.company_name`, `project.copyright`,
+`project.fqdn`, …), `brand` (`settings.brand` — `brand.primary_color`,
+`brand.browser_theme_color`, `brand.email_button`), `csp_nonce`, and
+`hotreload`.
 
 ## Template Override
 

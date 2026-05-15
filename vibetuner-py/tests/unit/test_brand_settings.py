@@ -247,3 +247,22 @@ def test_brand_context_provider_exposes_settings_brand():
     ctx = _collect_provider_context(request=request)
     assert "brand" in ctx
     assert isinstance(ctx["brand"], BrandSettings)
+
+
+def test_project_context_provider_exposes_settings_project():
+    """The shipped _project_context provider hands settings.project to every render.
+
+    Regression for #1827: scaffolded templates/frontend/CLAUDE.md promises project
+    settings are auto-available in every template, but `project` was never
+    registered. Templates referencing `{{ project.project_name }}` (e.g. branded
+    chrome) crashed with `UndefinedError: 'project' is undefined`.
+    """
+    from vibetuner.config import ProjectConfiguration
+    from vibetuner.rendering import _collect_provider_context
+
+    request = _StubRequest()
+    ctx = _collect_provider_context(request=request)
+    assert "project" in ctx
+    assert isinstance(ctx["project"], ProjectConfiguration)
+    # Sanity: the attribute the failing template touched is reachable.
+    assert hasattr(ctx["project"], "project_name")
