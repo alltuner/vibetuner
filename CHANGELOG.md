@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.15.0](https://github.com/alltuner/vibetuner/compare/v10.14.2...v10.15.0) (2026-05-15)
+
+
+### Features
+
+* adopt htmx hx-live as default-on for client-side reactivity ([#1826](https://github.com/alltuner/vibetuner/issues/1826)) ([16325aa](https://github.com/alltuner/vibetuner/commit/16325aab311493a87936394818c5da0c4f4f0e07))
+
+
+### CI/CD Changes
+
+* unpin claude-code-action now that symlink bug is fixed upstream ([#1824](https://github.com/alltuner/vibetuner/issues/1824)) ([4cee0ad](https://github.com/alltuner/vibetuner/commit/4cee0ad4c7d5aa73624b4c843d54148cdf6211fd))
+
 ## [10.14.2](https://github.com/alltuner/vibetuner/compare/v10.14.1...v10.14.2) (2026-05-14)
 
 
