@@ -10,9 +10,13 @@ from pathlib import Path
 import aioboto3
 
 from vibetuner.config import settings
+from vibetuner.logging import logger
 from vibetuner.models import BlobModel
 from vibetuner.models.blob import BlobStatus
 from vibetuner.services.s3_storage import DEFAULT_CONTENT_TYPE, S3StorageService
+
+
+_implicit_fallback_warned = False
 
 
 class BlobService:
@@ -29,6 +33,20 @@ class BlobService:
             from vibetuner.services.errors import s3_not_configured
 
             raise ValueError(s3_not_configured(log=False))
+
+        if default_bucket is None and settings.r2_default_bucket_name is not None:
+            global _implicit_fallback_warned
+            if not _implicit_fallback_warned:
+                _implicit_fallback_warned = True
+                logger.warning(
+                    "BlobService is using the process-wide R2_DEFAULT_BUCKET_NAME "
+                    "fallback bucket {bucket!r}. If this is not the bucket this "
+                    "deploy should be writing to, the env var has leaked from "
+                    "another project; uploads will silently land in the wrong "
+                    "bucket. Set R2_DEFAULT_BUCKET_NAME explicitly for this "
+                    "deploy, or pass default_bucket=... to BlobService().",
+                    bucket=settings.r2_default_bucket_name,
+                )
 
         bucket = default_bucket or settings.r2_default_bucket_name
         if bucket is None:

@@ -1710,6 +1710,14 @@ async def settings_page(config=Depends(get_runtime_config)):
     value = await config.get("features.dark_mode")
 ```
 
+`BlobService()` falls back to `R2_DEFAULT_BUCKET_NAME` when no explicit
+`default_bucket` is passed, and logs a one-time process warning naming the
+resolved bucket. Watch deploy logs on first boot: if the bucket isn't yours,
+the env var has leaked from another deploy and uploads will silently land in
+the wrong place. Set `R2_DEFAULT_BUCKET_NAME` explicitly for the deploy, or
+pass `default_bucket=...` to `BlobService()` to suppress the warning and
+guarantee the bucket.
+
 ### Health Check Endpoints
 
 Built-in health check routes are mounted at `/health`:

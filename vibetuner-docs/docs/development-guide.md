@@ -1799,6 +1799,14 @@ async def upload(
     await blobs.put_object(...)
 ```
 
+When `BlobService()` is constructed without an explicit `default_bucket`, it
+falls back to `R2_DEFAULT_BUCKET_NAME` from the environment and logs a one-time
+process warning naming the resolved bucket. Watch deploy logs for that warning
+on first boot — if the bucket name doesn't match what this project should write
+to, the env var has leaked in from another project and uploads will silently
+land in the wrong bucket. Either set `R2_DEFAULT_BUCKET_NAME` explicitly for
+the deploy, or pass `default_bucket=...` to `BlobService()`.
+
 ### Runtime Config
 
 ```python
