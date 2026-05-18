@@ -84,6 +84,9 @@ jobs:
       - name: Set up Docker Buildx
         if: steps.version.outputs.skip != 'true'
         uses: docker/setup-buildx-action@v4
+        with:
+          name: alltuner-runner
+          cleanup: false
 
       - name: Build and push
         if: steps.version.outputs.skip != 'true'
