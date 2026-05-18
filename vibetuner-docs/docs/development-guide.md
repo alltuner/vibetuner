@@ -1150,9 +1150,53 @@ to branch on `request.state.htmx` for boosted routes.
 
 ## Internationalization
 
+### Framework-Shipped Translations
+
+The vibetuner package ships compiled translation catalogs for its built-in
+templates (login, profile, magic-link, etc.). When your app sets a supported
+locale, framework strings translate automatically — you do **not** need to
+re-extract `_()` calls from `vibetuner/templates/` into your own catalog.
+
+At startup, `frontend/middleware.py` loads catalogs in this order:
+
+1. **Framework catalogs** (`vibetuner/locales/<lang>/LC_MESSAGES/messages.mo`)
+   — bundled with the package, ship for the locales the framework supports
+   (`en`, `ca`, with more coming).
+2. **Project catalogs** (`<project>/locales/<lang>/LC_MESSAGES/messages.mo`)
+   — your app's own translations.
+
+Both catalogs use the default `messages` domain and merge per locale, with
+project catalogs winning on collision. Practical implications:
+
+- Set your project locale to `ca` and `/auth/login` renders in Catalan
+  out of the box — no extraction required.
+- If you don't like the framework's wording for a string, redefine it
+  in your project's own `messages.po`. Your translation overrides the
+  framework's at runtime.
+- If you support a locale the framework doesn't yet ship, framework
+  strings fall back to the English msgid (gettext's `NullTranslations`
+  behavior). You can either translate those strings yourself (extract
+  them locally, override in your catalog) or
+  [contribute the locale upstream](#contributing-a-framework-locale).
+
+### Contributing a Framework Locale
+
+To add a new framework locale (e.g. Spanish):
+
+```bash
+just extract-framework-translations  # refresh messages.pot
+just new-framework-locale es         # init es/LC_MESSAGES/messages.po
+# Edit vibetuner-py/src/vibetuner/locales/es/LC_MESSAGES/messages.po
+just compile-framework-locales       # produce messages.mo
+```
+
+The full workflow is also wrapped as `just i18n-framework`. Both `.po`
+and `.mo` files are committed to the repo so end users don't need
+`pybabel` at install time — the wheel ships the `.mo` files directly.
+
 ### Extracting Translations
 
-After adding translatable strings:
+After adding translatable strings to **your** code or templates:
 
 ```bash
 just extract-translations

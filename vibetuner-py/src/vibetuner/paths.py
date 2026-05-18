@@ -12,6 +12,7 @@ from vibetuner.logging import logger
 _package_files = files("vibetuner")
 _package_templates_traversable = _package_files / "templates"
 _package_statics_traversable = _package_files / "assets" / "statics"
+_package_locales_traversable = _package_files / "locales"
 
 
 def _get_package_templates_path() -> Path:
@@ -36,9 +37,27 @@ def _get_package_statics_path() -> Path:
         ) from None
 
 
-# Package templates and statics always available
+def _get_package_locales_path() -> Path | None:
+    """Path to bundled translation catalogs (vibetuner/locales/).
+
+    Returns ``None`` when the package was installed without compiled
+    ``.mo`` catalogs — e.g. a development checkout where ``pybabel
+    compile`` has not been run yet. The middleware treats a missing path
+    as "no framework translations available" and falls back to msgids,
+    preserving today's behavior.
+    """
+    try:
+        path = Path(str(_package_locales_traversable))
+    except (TypeError, ValueError):
+        return None
+    return path if path.is_dir() else None
+
+
+# Package templates, statics, and locales always available (locales may be None
+# in dev checkouts that have not run `pybabel compile`).
 package_templates = _get_package_templates_path()
 package_statics = _get_package_statics_path()
+package_locales = _get_package_locales_path()
 
 
 class PathSettings(BaseSettings):

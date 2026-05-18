@@ -21,10 +21,18 @@ from vibetuner import i18n
 
 @pytest.fixture(autouse=True)
 def reset_locale_resolvers():
-    """Clear the resolver registry between tests."""
+    """Clear the resolver registry and the Babel context locale between tests.
+
+    Some tests in this module call :func:`starlette_babel.set_locale` to
+    exercise display-locale behavior. The contextvar persists across
+    tests in the same module (and would leak into other test modules if
+    they run after this one), so we restore the default ``en_US`` after
+    each test.
+    """
     i18n._reset_locale_resolvers()
     yield
     i18n._reset_locale_resolvers()
+    set_locale(Locale.parse("en_US"))
 
 
 def _fake_request(language: str | None = None) -> MagicMock:

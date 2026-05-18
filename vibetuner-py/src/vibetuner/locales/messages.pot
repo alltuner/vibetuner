@@ -1,0 +1,324 @@
+# Translations template for vibetuner.
+# Copyright (C) 2026 All Tuner Labs, S.L.
+# This file is distributed under the same license as the vibetuner project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: vibetuner VERSION\n"
+"Report-Msgid-Bugs-To: https://github.com/alltuner/vibetuner/issues\n"
+"POT-Creation-Date: 2026-05-18 20:01+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: src/vibetuner/rendering.py:207
+#, python-format
+msgid "%(seconds)d second ago"
+msgid_plural "%(seconds)d seconds ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py:214
+#, python-format
+msgid "%(minutes)d minute ago"
+msgid_plural "%(minutes)d minutes ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py:220
+#, python-format
+msgid "%(hours)d hour ago"
+msgid_plural "%(hours)d hours ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py:224
+msgid "yesterday"
+msgstr ""
+
+#: src/vibetuner/rendering.py:227
+#, python-format
+msgid "%(days)d day ago"
+msgid_plural "%(days)d days ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py:232
+#, python-format
+msgid "%(months)d month ago"
+msgid_plural "%(months)d months ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py:237
+#, python-format
+msgid "%(years)d year ago"
+msgid_plural "%(years)d years ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py:249
+msgid "just now"
+msgid_plural "just now"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py:252
+#, python-format
+msgid "%(minutes)dm ago"
+msgid_plural "%(minutes)dm ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py:257
+#, python-format
+msgid "%(hours)dh ago"
+msgid_plural "%(hours)dh ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py:259 src/vibetuner/rendering.py:262
+#, python-format
+msgid "%(days)dd ago"
+msgid_plural "%(days)dd ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py:265
+#, python-format
+msgid "%(weeks)dw ago"
+msgid_plural "%(weeks)dw ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py:268
+#, python-format
+msgid "%(months)dmo ago"
+msgid_plural "%(months)dmo ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py:273
+#, python-format
+msgid "%(years)dy ago"
+msgid_plural "%(years)dy ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/frontend/email.py:40
+#, python-brace-format
+msgid "Sign in to {project_name}"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/email_sent.html.jinja:4
+#: src/vibetuner/templates/frontend/email_sent.html.jinja:22
+msgid "Check Your Email"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/email_sent.html.jinja:25
+msgid "We've sent a secure login link to"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/email_sent.html.jinja:37
+msgid "Quick! Link expires in 15 minutes"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/email_sent.html.jinja:38
+msgid "Click the link in the email to sign in instantly."
+msgstr ""
+
+#: src/vibetuner/templates/frontend/email_sent.html.jinja:52
+msgid "Don't see the email?"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/email_sent.html.jinja:53
+msgid "Check your spam folder or try signing in again."
+msgstr ""
+
+#: src/vibetuner/templates/frontend/email_sent.html.jinja:65
+msgid "Try Again"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/email_sent.html.jinja:73
+msgid "Back to Home"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/email_sent.html.jinja:78
+msgid "This link is secure and can only be used once"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/login.html.jinja:4
+msgid "Sign In"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/login.html.jinja:12
+msgid "Welcome Back"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/login.html.jinja:13
+msgid "Choose your preferred sign-in method"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/login.html.jinja:25
+#: src/vibetuner/templates/frontend/login.html.jinja:35
+#, python-format
+msgid "Continue with %(provider)s"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/login.html.jinja:41
+msgid "OR"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/login.html.jinja:51
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:51
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:47
+msgid "Email Address"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/login.html.jinja:58
+msgid "Enter your email address"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/login.html.jinja:79
+msgid "Send Magic Link"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/login.html.jinja:89
+msgid "No password required!"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/login.html.jinja:90
+msgid "We'll send you a secure link to sign in instantly."
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:4
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:12
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:112
+msgid "Edit Profile"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:13
+msgid "Update your account information and preferences"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:21
+msgid "Display Name"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:28
+msgid "This name will be displayed throughout the application"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:34
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:125
+msgid "Preferred Language"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:39
+msgid "Use browser default"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:47
+msgid "This will override browser language detection"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:58
+msgid "Email cannot be changed and is managed through your OAuth provider"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:64
+msgid "Cancel"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:65
+msgid "Save Changes"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:78
+msgid "About Language Preferences"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:80
+msgid ""
+"Your language preference will take priority over URL parameters, cookies,"
+" and browser settings. Leave empty to use automatic detection."
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:4
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:12
+msgid "User Profile"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:13
+msgid "Manage your account information and settings"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:35
+msgid "Member since"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:43
+msgid "Account Information"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:54
+msgid "User ID"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:61
+msgid "Account Created"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:68
+msgid "Last Updated"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:78
+msgid "Connected Accounts"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:96
+msgid "No email"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:99
+msgid "Connected"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:113
+msgid "Sign Out"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:120
+msgid "Account Settings"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:126
+msgid "Your preferred language for the interface"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:132
+msgid "Not set"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:140
+msgid "Email Notifications"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:141
+msgid "Receive updates about your account"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:148
+msgid "Profile Visibility"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:149
+msgid "Make your profile visible to others"
+msgstr ""

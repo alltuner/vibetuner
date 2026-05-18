@@ -25,7 +25,7 @@ from starlette_htmx.middleware import HtmxDetails
 from vibetuner.config import settings
 from vibetuner.context import ctx
 from vibetuner.logging import logger
-from vibetuner.paths import locales as locales_path
+from vibetuner.paths import locales as locales_path, package_locales
 
 from .oauth import WebUser
 
@@ -69,8 +69,17 @@ def user_preference_selector(conn: HTTPConnection) -> str | None:
 
 
 shared_translator = get_translator()
+
+# Load the framework's bundled catalogs first so every consuming app gets
+# translated framework templates (login, profile, email_sent, etc.) without
+# having to re-extract those strings into its own catalog. The project's
+# locales/ directory loads second; starlette_babel's Translator merges
+# domains in load order, so app translations override framework strings on
+# collision.
+if package_locales is not None:
+    shared_translator.load_from_directories([package_locales])
+
 if locales_path is not None and locales_path.exists() and locales_path.is_dir():
-    # Load translations from the locales directory
     shared_translator.load_from_directories([locales_path])
 
 

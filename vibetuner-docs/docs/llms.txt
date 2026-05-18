@@ -101,6 +101,15 @@ Important notes:
   (browsing in Spanish gives "inglés / español / catalán"; never English-only).
   `language_picker` is also registered as a Jinja global so templates can call
   it directly without overriding any existing template variable
+- **Framework Translation Catalogs**: vibetuner ships compiled
+  `.mo` files under `vibetuner/locales/<lang>/LC_MESSAGES/messages.mo`
+  (currently `en`, `ca`). `frontend/middleware.py` loads them before the
+  project's own `locales/` so framework templates (`login.html.jinja`,
+  `user/profile.html.jinja`, etc.) render in the active locale with no
+  per-app extraction. App catalogs loaded after the framework override
+  framework strings on collision via gettext domain merging. Add a new
+  framework locale with `just new-framework-locale <code>` then
+  `just compile-framework-locales`
 - **Service DI**: `get_email_service()`, `get_blob_service()`, `get_runtime_config()`
   FastAPI dependency wrappers
 - **Email Providers**: Pluggable transactional email via Resend
