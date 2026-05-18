@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.15.7](https://github.com/alltuner/vibetuner/compare/v10.15.6...v10.15.7) (2026-05-18)
+
+
+### Bug Fixes
+
+* **blob:** warn when BlobService falls back to global R2_DEFAULT_BUCKET_NAME ([#1857](https://github.com/alltuner/vibetuner/issues/1857)) ([9a87af4](https://github.com/alltuner/vibetuner/commit/9a87af4c39090d878579caa9607fecc68261df2b))
+
+
+### Documentation Updates
+
+* **theming:** warn against Tailwind v3 raw-RGB tokens in custom [@theme](https://github.com/theme) blocks ([#1854](https://github.com/alltuner/vibetuner/issues/1854)) ([de1f2fe](https://github.com/alltuner/vibetuner/commit/de1f2feef20b5926a61fa890fa066b56802863bf))
+
 ## [10.15.6](https://github.com/alltuner/vibetuner/compare/v10.15.5...v10.15.6) (2026-05-18)
 
 
