@@ -47,6 +47,9 @@ Important notes:
 - **Block Rendering**: `render_template_block(template, block_name, request, ctx)`
   renders a single `{% block %}` for HTMX partials. `render_template_blocks()` renders
   multiple blocks for OOB swaps. No extra dependencies. Import from `vibetuner`
+- **Context kwarg**: `render_template*` accepts the user context positionally, as
+  `ctx=`, or as `context=` (alias for `ctx=`). Passing both, or any unknown kwarg,
+  raises `TypeError` — typos cannot silently render with an empty context
 - **`@cache` Decorator**: `@cache(expire=60)` caches route responses in Redis.
   Key derived from path + query params. Use `vary_on=lambda r: str(r.state.user.id)`
   for request-dependent keys (per-user, per-tenant). Disabled in debug mode

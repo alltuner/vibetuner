@@ -385,6 +385,22 @@ The same convention applies to `{% extends %}` and `{% include %}` inside templa
 {% extends "frontend/base/skeleton.html.jinja" %} {# wrong #}
 ```
 
+#### Passing Context
+
+The user context dict can be passed positionally, as `ctx=`, or as `context=`
+(the two keywords are aliases — `context=` exists because that's what most
+Flask/Starlette muscle memory reaches for):
+
+```python
+render_template("home.html.jinja", request, {"hero": hero})           # positional
+render_template("home.html.jinja", request, ctx={"hero": hero})       # ctx kwarg
+render_template("home.html.jinja", request, context={"hero": hero})   # alias
+```
+
+Passing both `ctx=` and `context=` raises `TypeError`. Misspelled or unknown
+kwargs (e.g. `contxt=`) also raise `TypeError` — the signature is explicit, so
+typos can't silently render with an empty context.
+
 #### Skeleton Extension Points
 
 The shipped `base/skeleton.html.jinja` exposes blocks and context variables so

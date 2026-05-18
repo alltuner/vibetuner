@@ -28,6 +28,10 @@ unchanged.
 
 **Streaming**: `render_template_stream()` for large pages (improves TTFB).
 
+**Context kwarg**: pass user context positionally, as `ctx=`, or as
+`context=` (alias for `ctx=`). Unknown kwargs raise `TypeError`, so
+typos like `contxt=` can't silently render with an empty context.
+
 Register routes in `__init__.py` via `APIRouter.include_router()`, then
 list in `tune.py`.
 
