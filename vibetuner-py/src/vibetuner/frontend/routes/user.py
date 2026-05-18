@@ -55,7 +55,7 @@ async def user_edit_form(request: Request) -> HTMLResponse:
 async def user_edit_submit(
     request: Request,
     name: str = Form(...),
-    language: str = Form(None),
+    language: str = Form(""),
 ) -> RedirectResponse:
     """Handle user profile edit form submission."""
     user = await UserModel.get(request.user.id)

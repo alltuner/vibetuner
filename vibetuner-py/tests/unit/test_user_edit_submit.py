@@ -1,5 +1,5 @@
 # ABOUTME: Tests user_edit_submit handler's language preference handling
-# ABOUTME: Validates the fix for #1862 - empty submission clears language back to auto-detect
+# ABOUTME: Validates fixes for #1862 (clear branch) and #1870 (Form default empty string)
 # ruff: noqa: S101
 
 """
@@ -10,6 +10,10 @@ handler logic directly without a running database. Asserts that:
 - empty-string language clears the preference back to None (auto-detect)
 - a supported language code is stored as LanguageAlpha2
 - an unsupported language code leaves the existing preference untouched
+
+Also includes a TestClient regression test that exercises FastAPI's form
+parsing to prove an empty submission reaches the handler as "" (not None),
+which is the contract the clear branch depends on.
 """
 
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -131,25 +135,42 @@ async def test_unsupported_language_is_ignored():
     user.save.assert_awaited_once()
 
 
-@pytest.mark.asyncio
-async def test_none_language_leaves_preference_unchanged():
-    """When no language field is submitted (None), preference is not touched."""
+def test_form_default_empty_string_passes_through_fastapi():
+    """Regression for #1870.
+
+    The user_edit_submit handler relies on an empty `language` form value reaching
+    its body so the `if language == ""` branch can clear the preference. FastAPI
+    coerces empty form values to the parameter default, so the default must be ""
+    (not None). This test pins that contract: with Form(""), both an empty value
+    and an omitted field arrive as "".
+    """
+    from fastapi import FastAPI, Form
+    from fastapi.testclient import TestClient
+
+    app = FastAPI()
+
+    @app.post("/probe")
+    async def probe(language: str = Form("")) -> dict[str, str]:
+        return {"language": language}
+
+    client = TestClient(app)
+    assert client.post("/probe", data={"language": ""}).json() == {"language": ""}
+    assert client.post("/probe", data={}).json() == {"language": ""}
+
+
+def test_user_edit_submit_language_form_default_is_empty_string():
+    """Lock in the Form default itself in case the handler signature is touched.
+
+    Pairs with test_form_default_empty_string_passes_through_fastapi: that test
+    proves "" survives FastAPI parsing, this one proves the handler still asks
+    for "".
+    """
+    import inspect
+
+    from fastapi.params import Form as FormParam
     from vibetuner.frontend.routes.user import user_edit_submit
 
-    user = _make_user(language=LanguageAlpha2("ca"))
-    request = _make_request()
-
-    with (
-        patch(
-            "vibetuner.frontend.routes.user.UserModel.get",
-            new=AsyncMock(return_value=user),
-        ),
-        patch(
-            "vibetuner.frontend.routes.user.ctx.supported_languages",
-            new={"en", "ca", "es"},
-        ),
-    ):
-        await user_edit_submit(request, name="New Name", language=None)
-
-    assert user.user_settings.language == LanguageAlpha2("ca")
-    user.save.assert_awaited_once()
+    language_param = inspect.signature(user_edit_submit).parameters["language"]
+    default = language_param.default
+    assert isinstance(default, FormParam)
+    assert default.default == ""
