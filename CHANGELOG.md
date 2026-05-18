@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.15.2](https://github.com/alltuner/vibetuner/compare/v10.15.1...v10.15.2) (2026-05-18)
+
+
+### Bug Fixes
+
+* **py:** pair nosniff with text/plain fallback for bare Responses ([#1834](https://github.com/alltuner/vibetuner/issues/1834)) ([7e64ed3](https://github.com/alltuner/vibetuner/commit/7e64ed30fcdeab92daf56bc52aecd458056eccd9))
+
 ## [10.15.1](https://github.com/alltuner/vibetuner/compare/v10.15.0...v10.15.1) (2026-05-15)
 
 
