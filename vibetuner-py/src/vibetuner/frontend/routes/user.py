@@ -65,8 +65,10 @@ async def user_edit_submit(
     # Update user fields
     user.name = name
 
-    # Update language preference if provided
-    if language and language in ctx.supported_languages:
+    # Update language preference: empty string clears it back to auto-detect
+    if language == "":
+        user.user_settings.language = None
+    elif language and language in ctx.supported_languages:
         try:
             user.user_settings.language = LanguageAlpha2(language)
         except ValueError:
