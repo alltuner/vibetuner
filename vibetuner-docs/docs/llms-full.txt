@@ -1609,6 +1609,85 @@ Need native names but want a single source of truth? Call
 `language_picker(code)` once per language instead of reading
 `locale_names`.
 
+### Framework Translation Catalogs
+
+Vibetuner ships compiled `.mo` catalogs for its built-in templates so
+consuming apps render framework strings (login page, magic-link email,
+user profile, etc.) in the active locale **without** having to extract
+every core msgid into their own catalog.
+
+#### How it loads
+
+`frontend/middleware.py` loads two sources into starlette-babel's
+process-global translator at import time:
+
+1. **Framework catalogs**:
+   `vibetuner/locales/<lang>/LC_MESSAGES/messages.mo` — bundled inside
+   the wheel.
+2. **Project catalogs**:
+   `<project>/locales/<lang>/LC_MESSAGES/messages.mo` — your app's
+   own translations.
+
+Both use the default `messages` domain, and starlette-babel's
+`Translator.add_translations` merges identical (locale, domain) pairs
+on subsequent loads. Because the project catalogs load second, project
+translations override framework ones on collision. This means:
+
+- New apps get a translated login page out of the box for every
+  framework-supported locale (currently `en`, `ca`).
+- An app that doesn't like a specific framework translation can
+  redefine the msgid in its own `.po` file; the override wins at
+  runtime with no need to fork the framework template.
+- Unsupported locales fall back to the English msgid (gettext's
+  `NullTranslations` behavior).
+
+#### Contributing a new framework locale
+
+Catalogs live at `vibetuner-py/src/vibetuner/locales/`. The repo's
+root `justfile` provides the workflow:
+
+```bash
+# Regenerate messages.pot from the current source + templates
+just extract-framework-translations
+
+# Initialize a new locale (e.g. Spanish)
+just new-framework-locale es
+
+# Edit the new file:
+#   vibetuner-py/src/vibetuner/locales/es/LC_MESSAGES/messages.po
+
+# Merge new msgids into existing locales (fuzzy-marks ambiguous ones)
+just update-framework-locales
+
+# Compile every locale's .po to .mo so the wheel ships them
+just compile-framework-locales
+
+# Or run all four in sequence
+just i18n-framework
+```
+
+Both `.po` and `.mo` files are committed to the repo. The wheel build
+(`uv build`) includes them automatically — there is no install-time
+compilation step.
+
+#### What strings get extracted
+
+`vibetuner-py/babel.cfg` scans:
+
+- `src/**.py` — Python source (`from starlette_babel import gettext_lazy as _`
+  / `ngettext`, etc.). Today this covers the `timeago` filter variants
+  in `rendering.py` and the magic-link email subject in
+  `frontend/email.py`.
+- `src/vibetuner/templates/**.html.jinja`,
+  `src/vibetuner/templates/**.txt.jinja`, and
+  `src/vibetuner/templates/**.xml.jinja` — Jinja2 `_()` calls in the
+  framework's bundled templates.
+
+If you add a new `_()` call to any framework template or to
+framework Python code, re-run `just i18n-framework` so the existing
+locales get the new msgid (English defaults to the msgid; non-English
+locales get a fuzzy entry waiting for translation).
+
 ### Brand Configuration
 
 `TenantTheme` covers in-page DaisyUI role colors, but a few surfaces are

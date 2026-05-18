@@ -161,6 +161,16 @@ just dev                     # Docker development
 Key commands: `just format` (all code), `just lint` (all code),
 `just format-py` (Python only), `just i18n` (translations).
 
+> **Framework translations ship with the package.** Vibetuner's
+> built-in templates (`login.html.jinja`, `user/profile.html.jinja`,
+> magic-link email, etc.) translate automatically for every locale
+> the framework supports. `just i18n` only needs to handle strings
+> you add yourself — do **not** extract `_()` calls from
+> `vibetuner/templates/` into your own `messages.po`. If you want to
+> override a framework translation, redefine the same `msgid` in
+> your project's catalog; it wins on collision. See
+> [Framework Translation Catalogs](https://vibetuner.alltuner.com/development-guide/#framework-shipped-translations).
+
 `just dev` builds an all-in-one dev container (Python + bun + watchers)
 and brings up mongo/redis alongside. Edits to `src/`, `templates/`, or
 asset sources sync into the container via `docker compose up --watch`;
