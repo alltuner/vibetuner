@@ -1487,6 +1487,17 @@ DaisyUI scopes its theme via `:where(:root)` (zero specificity), so a plain
 - **Inline `<style>` without a CSP nonce.** The shipped partial sets it for
   you; if you write a custom override template, do the same with
   `{{ csp_nonce }}`.
+- **Tailwind v3 raw-RGB tokens in `@theme`.** Custom palettes defined as
+  `@theme { --color-brand-red: 239 68 68; }` with a
+  `.bg-brand-red { background-color: rgb(var(--color-brand-red)); }`
+  cascade-override work for direct utility usage but break under
+  `@apply`. Tailwind v4 expands `@apply bg-brand-red` by inlining its own
+  auto-generated `background-color: var(--color-brand-red)` rule (not
+  the override), which resolves to the raw triplet — invalid, dropped,
+  element renders transparent. Define `@theme` tokens as full color
+  values (`rgb(239 68 68)` / `oklch(...)` / `#ef4444`) and drop the
+  cascade-override; Tailwind v4 auto-generates `.bg-*` / `.text-*` from
+  `@theme`.
 
 **Out of scope:** per-tenant fonts. Font swapping requires `@font-face`
 rules to load the binary before any `--font-display` variable can switch to

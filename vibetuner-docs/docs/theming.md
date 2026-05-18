@@ -200,6 +200,50 @@ shade is a brand constant.
 `nonce="{{ csp_nonce }}"` automatically; if you write a custom override
 template, do the same.
 
+**4. Tailwind v3 raw-RGB tokens in `@theme`.** If you extend your project's
+`config.css` with a custom brand palette using the pre-Tailwind-v4
+raw-triplet pattern, the tokens look fine for direct utility usage but
+collapse the moment they flow through `@apply`:
+
+```css
+@theme {
+  --color-brand-red: 239 68 68;
+}
+
+/* Cascade override that recovers a valid color for direct class usage */
+.bg-brand-red { background-color: rgb(var(--color-brand-red)); }
+```
+
+`class="bg-brand-red"` resolves correctly because the cascade-override
+wins on source order. But Tailwind v4 expands
+`@apply bg-brand-red` by inlining its own auto-generated rule for the
+token (`background-color: var(--color-brand-red)`), **not** the
+override:
+
+```css
+@utility btn-brand-primary {
+  @apply bg-brand-red text-white;
+}
+
+/* Compiles to: */
+.btn-brand-primary {
+  background-color: var(--color-brand-red);  /* resolves to "239 68 68" — invalid */
+  color: var(--color-white);
+}
+```
+
+`239 68 68` isn't a valid color value, so the property is
+invalid-at-computed-value-time and dropped — the element renders fully
+transparent. Define `@theme` tokens as full color values instead, and
+drop the cascade-override classes (Tailwind v4 auto-generates the
+`.bg-*` / `.text-*` utilities from `@theme`):
+
+```css
+@theme {
+  --color-brand-red: rgb(239 68 68);  /* or oklch(...) / #ef4444 */
+}
+```
+
 ## What this primitive does *not* cover
 
 - **Fonts.** Per-tenant font swapping is genuinely different from color
