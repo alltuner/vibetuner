@@ -1833,6 +1833,13 @@ instead. Configure extra sources via `CSP_EXTRA_SCRIPT_SRC`,
 `CSP_EXTRA_STYLE_SRC`, `CSP_EXTRA_IMG_SRC`, `CSP_EXTRA_CONNECT_SRC`,
 `CSP_EXTRA_FONT_SRC`, `CSP_EXTRA_MEDIA_SRC` environment variables.
 
+The middleware always sets `X-Content-Type-Options: nosniff`. If a
+response has no `Content-Type` header (e.g. a bare
+`Response(status_code=404)` with no `media_type=`), the middleware fills
+in `text/plain; charset=utf-8`. Without this guard, nosniff combined
+with a missing `Content-Type` makes Safari/Firefox save the response as
+a 0-byte download and Chrome show a generic error page.
+
 **Strict `style-src` (opt-in, requires `vibetuner` ≥ 10.11.0):** Set
 `CSP_STYLE_SRC_STRICT=true` to drop `'unsafe-inline'` from `style-src`
 and use the request nonce instead. Inline `style="..."` attributes will

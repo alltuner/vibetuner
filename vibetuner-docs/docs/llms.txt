@@ -117,7 +117,11 @@ Important notes:
   environment variables (e.g., `CSP_EXTRA_SCRIPT_SRC`). Set `CSP_STYLE_SRC_STRICT=true`
   to drop `'unsafe-inline'` from `style-src` and require nonces on `<style>` tags
   (opt-in hardening; framework templates already nonce every `<style>`). Requires
-  `vibetuner` ≥ 10.11.0 (older releases silently ignore the env var)
+  `vibetuner` ≥ 10.11.0 (older releases silently ignore the env var). The middleware
+  also pairs nosniff with a `text/plain; charset=utf-8` fallback when a response has
+  no `Content-Type` (e.g. a bare `Response(status_code=404)`), so bare responses do
+  not get turned into 0-byte browser downloads (Safari/Firefox) or generic error
+  pages (Chrome)
 - **htmx Nonce Protection (opt-in)**: htmx 4.0.0-beta3 ships an `hx-nonce` extension
   that gates htmx attribute processing behind the page CSP nonce. Framework templates
   stamp `hx-nonce="{{ csp_nonce }}"` on htmx-bearing elements; mirror that pattern in

@@ -169,6 +169,12 @@ class SecurityHeadersMiddleware:
             "camera=(), microphone=(), geolocation=(), payment=()"
         )
 
+        # Pair nosniff with a fallback Content-Type. A bare Response() with no
+        # media_type sends nosniff + missing Content-Type, which Safari/Firefox
+        # turn into a 0-byte download and Chrome turns into a generic error.
+        if "content-type" not in headers:
+            headers["Content-Type"] = "text/plain; charset=utf-8"
+
         if "server" in headers:
             del headers["server"]
 

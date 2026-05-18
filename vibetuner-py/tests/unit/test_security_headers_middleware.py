@@ -106,6 +106,12 @@ class SecurityHeadersMiddleware:
             "camera=(), microphone=(), geolocation=(), payment=()"
         )
 
+        # Pair nosniff with a fallback Content-Type. A bare Response() with no
+        # media_type sends nosniff + missing Content-Type, which Safari/Firefox
+        # turn into a 0-byte download and Chrome turns into a generic error.
+        if "content-type" not in headers:
+            headers["Content-Type"] = "text/plain; charset=utf-8"
+
         if "server" in headers:
             del headers["server"]
 
@@ -195,6 +201,19 @@ def _make_app(settings: _Settings | None = None, html_body: str | None = None):
     # Stash list on wrapper for test access
     app._captured_nonces = captured_nonces  # type: ignore[attr-defined]
     return app
+
+
+def _make_bare_response_app(settings: _Settings | None = None, status_code: int = 404):
+    """Create an app that returns a bare Response with no media_type set."""
+    from starlette.applications import Starlette
+    from starlette.responses import Response
+    from starlette.routing import Route
+
+    async def bare(_request):
+        return Response(status_code=status_code)
+
+    inner = Starlette(routes=[Route("/{path:path}", bare), Route("/", bare)])
+    return SecurityHeadersMiddleware(inner, settings=settings)
 
 
 class TestSecurityHeadersMiddleware:
@@ -467,3 +486,37 @@ class TestCspNonceAutoInjection:
         with caplog.at_level(logging.WARNING, logger="vibetuner.security"):
             client.get("/")
         assert not any("empty nonce" in r.message for r in caplog.records)
+
+
+class TestBareResponseContentType:
+    """Test the nosniff Content-Type guard for bare responses without media_type."""
+
+    def test_bare_response_gets_default_content_type(self):
+        """A bare Response() with no media_type gets a fallback Content-Type.
+
+        Without this guard, the nosniff header combined with a missing
+        Content-Type makes browsers either error out (Chrome) or save the
+        response as a 0-byte download (Safari/Firefox).
+        """
+        app = _make_bare_response_app()
+        client = TestClient(app)
+        resp = client.get("/blocked")
+        assert resp.status_code == 404
+        assert resp.headers["X-Content-Type-Options"] == "nosniff"
+        assert resp.headers["Content-Type"] == "text/plain; charset=utf-8"
+
+    def test_explicit_content_type_is_preserved(self):
+        """Responses that already set a Content-Type are left alone."""
+        from starlette.applications import Starlette
+        from starlette.responses import JSONResponse
+        from starlette.routing import Route
+
+        async def handler(_request):
+            return JSONResponse({"ok": True}, status_code=418)
+
+        inner = Starlette(routes=[Route("/", handler)])
+        app = SecurityHeadersMiddleware(inner)
+        client = TestClient(app)
+        resp = client.get("/")
+        assert resp.status_code == 418
+        assert resp.headers["Content-Type"] == "application/json"
