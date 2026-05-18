@@ -443,13 +443,17 @@ middlewares += [
         secret_key=settings.session_key.get_secret_value(),
         https_only=not ctx.DEBUG,
     ),
+    # LangPrefixMiddleware must run before LocaleMiddleware so that
+    # state["lang_prefix"] is populated when locale_selector evaluates it.
+    # Middleware listed earlier wraps middleware listed later, so the earlier
+    # one runs first on the request path.
+    Middleware(LangPrefixMiddleware, supported_languages=ctx.supported_languages),
     Middleware(
         LocaleMiddleware,
         locales=list(ctx.supported_languages),
         default_locale=ctx.default_language,
         selectors=_build_locale_selectors(),
     ),
-    Middleware(LangPrefixMiddleware, supported_languages=ctx.supported_languages),
     Middleware(AdjustLangCookieMiddleware),
     Middleware(AuthenticationMiddleware, backend=AuthBackend()),
 ]
