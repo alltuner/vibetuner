@@ -99,4 +99,4 @@ jobs:
         run: >-
           docker buildx bake -f compose.prod.yml --push
           --set "*.cache-from=type=registry,ref=$DOCKER_REGISTRY/$COMPOSE_PROJECT_NAME:buildcache"
-          --set "*.cache-to=type=registry,ref=$DOCKER_REGISTRY/$COMPOSE_PROJECT_NAME:buildcache,mode=max"
+          --set "*.cache-to=type=registry,ref=$DOCKER_REGISTRY/$COMPOSE_PROJECT_NAME:buildcache,mode=min"
