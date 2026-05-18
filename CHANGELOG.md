@@ -1,5 +1,18 @@
 # Changelog
 
+## [10.15.5](https://github.com/alltuner/vibetuner/compare/v10.15.4...v10.15.5) (2026-05-18)
+
+
+### Bug Fixes
+
+* **template:** pin compose.prod.yml frontend target to runtime ([#1849](https://github.com/alltuner/vibetuner/issues/1849)) ([0f52fea](https://github.com/alltuner/vibetuner/commit/0f52feadc6865c80fa169057d24cf6178efe9228))
+
+
+### Performance Improvements
+
+* **ci:** default self-hosted docker cache-to to mode=min ([#1845](https://github.com/alltuner/vibetuner/issues/1845)) ([906f2b6](https://github.com/alltuner/vibetuner/commit/906f2b6f544fdae14839740e3cfac34dfa9d67d4))
+* **template:** drop linux/arm64 from default prod build ([#1850](https://github.com/alltuner/vibetuner/issues/1850)) ([9aa060f](https://github.com/alltuner/vibetuner/commit/9aa060fd21607c332e908565c5e3ac5e39c608fd))
+
 ## [10.15.4](https://github.com/alltuner/vibetuner/compare/v10.15.3...v10.15.4) (2026-05-18)
 
 
