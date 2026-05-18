@@ -1,5 +1,13 @@
 # Changelog
 
+## [10.15.4](https://github.com/alltuner/vibetuner/compare/v10.15.3...v10.15.4) (2026-05-18)
+
+
+### Bug Fixes
+
+* **py:** make render_template signature explicit and accept context= alias ([#1843](https://github.com/alltuner/vibetuner/issues/1843)) ([ddb758f](https://github.com/alltuner/vibetuner/commit/ddb758fd37da2833e1a7f4bac55be899051afc96))
+* **py:** omit timeout when robust_cron caller does not set one ([#1841](https://github.com/alltuner/vibetuner/issues/1841)) ([6e43187](https://github.com/alltuner/vibetuner/commit/6e43187a64385e77c6be170241e1ca8e4fb26024))
+
 ## [10.15.3](https://github.com/alltuner/vibetuner/compare/v10.15.2...v10.15.3) (2026-05-18)
 
 
