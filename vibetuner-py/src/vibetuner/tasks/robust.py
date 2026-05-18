@@ -252,12 +252,12 @@ def robust_cron(
             backoff_max=backoff_max,
             on_failure=on_failure,
         )
-        return worker.cron(
-            tab,
-            name=task_name,
-            max_tries=max_retries,
-            timeout=timeout,
-            **cron_kwargs,
-        )(fn)
+        cron_call_kwargs: dict[str, Any] = {
+            "name": task_name,
+            "max_tries": max_retries,
+        }
+        if timeout is not None:
+            cron_call_kwargs["timeout"] = timeout
+        return worker.cron(tab, **cron_call_kwargs, **cron_kwargs)(fn)
 
     return decorator

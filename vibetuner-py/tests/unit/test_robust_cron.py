@@ -24,13 +24,18 @@ def _make_mock_worker():
     worker = MagicMock()
     worker.middleware = lambda fn: fn
 
-    def fake_cron(tab, *, max_tries=3, name=None, timeout=None, **kwargs):
+    def fake_cron(tab, **kwargs):
         def decorator(fn):
             fn._cron_tab = tab
-            fn._cron_name = name
-            fn._cron_max_tries = max_tries
-            fn._cron_timeout = timeout
-            fn._cron_kwargs = kwargs
+            fn._cron_name = kwargs.get("name")
+            fn._cron_max_tries = kwargs.get("max_tries", 3)
+            fn._cron_timeout = kwargs.get("timeout")
+            fn._cron_call_kwargs = kwargs
+            fn._cron_kwargs = {
+                k: v
+                for k, v in kwargs.items()
+                if k not in {"name", "max_tries", "timeout"}
+            }
             return fn
 
         return decorator
@@ -102,6 +107,21 @@ class TestRobustCron:
             pass
 
         assert my_cron._cron_timeout == 60
+
+    @patch("vibetuner.tasks.worker.get_worker")
+    def test_omits_timeout_when_not_provided(self, mock_get_worker):
+        """Without an explicit timeout, robust_cron must not forward
+        timeout=None to worker.cron(); unique cron tasks would otherwise
+        fail with 'Unique tasks must have a timeout set!'.
+        """
+        worker = _make_mock_worker()
+        mock_get_worker.return_value = worker
+
+        @robust_cron("*/5 * * * *")
+        async def my_cron():
+            pass
+
+        assert "timeout" not in my_cron._cron_call_kwargs
 
     @patch("vibetuner.tasks.worker.get_worker")
     def test_custom_retry_config(self, mock_get_worker):
