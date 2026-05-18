@@ -1,5 +1,20 @@
 # Changelog
 
+## [10.16.0](https://github.com/alltuner/vibetuner/compare/v10.15.7...v10.16.0) (2026-05-18)
+
+
+### Features
+
+* **i18n:** ship translation catalogs for framework-built-in templates ([#1869](https://github.com/alltuner/vibetuner/issues/1869)) ([86c45f7](https://github.com/alltuner/vibetuner/commit/86c45f7897970b337790cce46dc08c802e17065f))
+
+
+### Bug Fixes
+
+* **debug:** bound /debug/tasks queue and workers requests with a 5s timeout ([#1867](https://github.com/alltuner/vibetuner/issues/1867)) ([ce39ac7](https://github.com/alltuner/vibetuner/commit/ce39ac7e62305495aaeae3a4c1a080193bbaf908))
+* **debug:** correct route names in users.html.jinja template (closes [#1860](https://github.com/alltuner/vibetuner/issues/1860)) ([#1864](https://github.com/alltuner/vibetuner/issues/1864)) ([184ffbb](https://github.com/alltuner/vibetuner/commit/184ffbbab2f58b46f66710287b4883ad620cf812))
+* **i18n:** allow clearing user language preference via empty submission ([#1865](https://github.com/alltuner/vibetuner/issues/1865)) ([f45951c](https://github.com/alltuner/vibetuner/commit/f45951c6f322cec493ef31c167776efe7c0845ef))
+* **i18n:** apply URL-prefix locale before LocaleMiddleware evaluates selectors ([#1866](https://github.com/alltuner/vibetuner/issues/1866)) ([d61df4f](https://github.com/alltuner/vibetuner/commit/d61df4f0a713a82273402139ce3c6404457a356a))
+
 ## [10.15.7](https://github.com/alltuner/vibetuner/compare/v10.15.6...v10.15.7) (2026-05-18)
 
 
