@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.15.3](https://github.com/alltuner/vibetuner/compare/v10.15.2...v10.15.3) (2026-05-18)
+
+
+### Documentation Updates
+
+* **theming:** document cascade override for DaisyUI brand palette ([#1839](https://github.com/alltuner/vibetuner/issues/1839)) ([1a35a78](https://github.com/alltuner/vibetuner/commit/1a35a78989181b457f89b440a695e394a729cbba))
+
 ## [10.15.2](https://github.com/alltuner/vibetuner/compare/v10.15.1...v10.15.2) (2026-05-18)
 
 
