@@ -481,8 +481,14 @@ class AuthBackend(AuthenticationBackend):
                     AuthCredentials(["authenticated"]),
                     WebUser.model_validate(user),
                 )
-            except Exception:
-                # Clear corrupted session data and continue unauthenticated
+            except Exception as exc:
+                logger.warning(
+                    "Clearing invalid session user data: {exc}",
+                    exc=exc,
+                    session_user_keys=sorted(user.keys())
+                    if isinstance(user, dict)
+                    else None,
+                )
                 conn.session.pop("user", None)
                 return None
 
