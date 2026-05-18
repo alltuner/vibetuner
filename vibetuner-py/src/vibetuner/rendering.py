@@ -460,7 +460,12 @@ def render_template(
     template: str,
     request: Request,
     ctx: dict[str, Any] | None = None,
-    **kwargs: Any,
+    *,
+    context: dict[str, Any] | None = None,
+    status_code: int = 200,
+    headers: dict[str, str] | None = None,
+    media_type: str | None = None,
+    background: Any = None,
 ) -> HTMLResponse:
     """Render a Jinja2 template and return an HTMLResponse.
 
@@ -472,7 +477,11 @@ def render_template(
             Use ``"blog/list.html.jinja"``, **not** ``"frontend/blog/list.html.jinja"``.
         request: FastAPI Request object.
         ctx: Optional context dictionary merged into the template context.
-        **kwargs: Extra keyword arguments forwarded to ``TemplateResponse``.
+        context: Alias for ``ctx``. Passing both raises ``TypeError``.
+        status_code: HTTP status code for the response.
+        headers: Optional response headers.
+        media_type: Optional response media type (e.g. ``"application/xml"``).
+        background: Optional Starlette ``BackgroundTask``.
 
     Returns:
         HTMLResponse with the rendered template.
@@ -486,27 +495,25 @@ def render_template(
         # Wrong - "frontend/" prefix is redundant and will cause a TemplateNotFound error
         render_template("frontend/blog/list.html.jinja", request)  # TemplateNotFound!
     """
-    _ensure_custom_filters()
-    ctx = ctx or {}
-    language = getattr(request.state, "language", data_ctx.default_language)
-    with _context_lock:
-        globals_snapshot = dict(_template_globals)
-    merged_ctx = {
-        **data_ctx.model_dump(),
-        **globals_snapshot,
-        **_collect_provider_context(request=request),
-        "request": request,
-        "language": language,
-        **ctx,
-    }
+    ctx = _resolve_render_ctx(ctx, context)
+    merged_ctx = _build_merged_ctx(request, ctx)
 
-    return templates.TemplateResponse(template, merged_ctx, **kwargs)
+    return templates.TemplateResponse(
+        template,
+        merged_ctx,
+        status_code=status_code,
+        headers=headers,
+        media_type=media_type,
+        background=background,
+    )
 
 
 def render_template_string(
     template: str,
     request: Request,
     ctx: dict[str, Any] | None = None,
+    *,
+    context: dict[str, Any] | None = None,
 ) -> str:
     """Render a template to a string instead of HTMLResponse.
 
@@ -517,6 +524,7 @@ def render_template_string(
         template: Path to template file (e.g., "admin/partials/episode.html.jinja")
         request: FastAPI Request object
         ctx: Optional context dictionary to pass to template
+        context: Alias for ``ctx``. Passing both raises ``TypeError``.
 
     Returns:
         str: Rendered template as a string
@@ -528,20 +536,8 @@ def render_template_string(
             {"episode": episode}
         )
     """
-    _ensure_custom_filters()
-    ctx = ctx or {}
-    language = getattr(request.state, "language", data_ctx.default_language)
-    with _context_lock:
-        globals_snapshot = dict(_template_globals)
-    merged_ctx = {
-        **data_ctx.model_dump(),
-        **globals_snapshot,
-        **_collect_provider_context(request=request),
-        "request": request,
-        "language": language,
-        **ctx,
-    }
-
+    ctx = _resolve_render_ctx(ctx, context)
+    merged_ctx = _build_merged_ctx(request, ctx)
     template_obj = templates.get_template(template)
     return template_obj.render(merged_ctx)
 
@@ -550,6 +546,8 @@ def render_template_stream(
     template: str,
     request: Request,
     ctx: dict[str, Any] | None = None,
+    *,
+    context: dict[str, Any] | None = None,
 ) -> StreamingResponse:
     """Render a template as a streaming HTML response.
 
@@ -565,6 +563,7 @@ def render_template_stream(
         template: Path to template file relative to ``templates/frontend/``.
         request: FastAPI Request object.
         ctx: Optional context dictionary merged into the template context.
+        context: Alias for ``ctx``. Passing both raises ``TypeError``.
 
     Returns:
         StreamingResponse with ``media_type="text/html"``.
@@ -583,26 +582,32 @@ def render_template_stream(
         streaming.  Use this for full page loads where the ``<head>`` and
         initial layout should reach the browser as early as possible.
     """
-    _ensure_custom_filters()
-    ctx = ctx or {}
-    language = getattr(request.state, "language", data_ctx.default_language)
-    with _context_lock:
-        globals_snapshot = dict(_template_globals)
-    merged_ctx = {
-        **data_ctx.model_dump(),
-        **globals_snapshot,
-        **_collect_provider_context(request=request),
-        "request": request,
-        "language": language,
-        **ctx,
-    }
-
+    ctx = _resolve_render_ctx(ctx, context)
+    merged_ctx = _build_merged_ctx(request, ctx)
     template_obj = templates.get_template(template)
 
     def _generate():
         yield from template_obj.generate(**merged_ctx)
 
     return StreamingResponse(_generate(), media_type="text/html")
+
+
+def _resolve_render_ctx(
+    ctx: dict[str, Any] | None,
+    context: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Reconcile the ``ctx`` and ``context`` kwargs.
+
+    ``context`` is accepted as an alias for ``ctx`` because that name is what
+    most Flask/Starlette users reach for by default. Passing both at once is
+    almost certainly a mistake, so we raise rather than silently picking one.
+    """
+    if ctx is not None and context is not None:
+        raise TypeError(
+            "render_template() received both 'ctx' and 'context'; "
+            "pass only one (they are aliases)."
+        )
+    return context if ctx is None else ctx
 
 
 def _build_merged_ctx(
@@ -629,6 +634,8 @@ def render_template_block(
     block_name: str,
     request: Request,
     ctx: dict[str, Any] | None = None,
+    *,
+    context: dict[str, Any] | None = None,
 ) -> HTMLResponse:
     """Render a single named ``{% block %}`` from a template.
 
@@ -640,6 +647,7 @@ def render_template_block(
         block_name: Name of the ``{% block %}`` to render.
         request: FastAPI Request object.
         ctx: Optional context dictionary merged into the template context.
+        context: Alias for ``ctx``. Passing both raises ``TypeError``.
 
     Returns:
         HTMLResponse containing only the rendered block content.
@@ -661,6 +669,7 @@ def render_template_block(
 
             return render_template("items/list.html.jinja", request, ctx)
     """
+    ctx = _resolve_render_ctx(ctx, context)
     merged_ctx = _build_merged_ctx(request, ctx)
     template_obj = templates.get_template(template)
 
@@ -680,6 +689,8 @@ def render_template_blocks(
     block_names: list[str],
     request: Request,
     ctx: dict[str, Any] | None = None,
+    *,
+    context: dict[str, Any] | None = None,
 ) -> HTMLResponse:
     """Render multiple named blocks from a template, concatenated.
 
@@ -691,6 +702,7 @@ def render_template_blocks(
         block_names: List of ``{% block %}`` names to render.
         request: FastAPI Request object.
         ctx: Optional context dictionary merged into the template context.
+        context: Alias for ``ctx``. Passing both raises ``TypeError``.
 
     Returns:
         HTMLResponse containing all rendered blocks concatenated together.
@@ -712,6 +724,7 @@ def render_template_blocks(
                 request, ctx,
             )
     """
+    ctx = _resolve_render_ctx(ctx, context)
     merged_ctx = _build_merged_ctx(request, ctx)
     template_obj = templates.get_template(template)
 

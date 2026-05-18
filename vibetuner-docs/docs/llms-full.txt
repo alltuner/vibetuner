@@ -1317,6 +1317,26 @@ def analytics_context() -> dict:
 Values from providers and globals are merged into every `render_template()` call.
 User-provided context in the render call takes precedence.
 
+#### Passing user context
+
+`render_template()`, `render_template_string()`, `render_template_stream()`,
+`render_template_block()` and `render_template_blocks()` all accept the user
+context dict positionally, as `ctx=`, or as `context=` (an alias for `ctx=`).
+
+```python
+render_template("home.html.jinja", request, {"hero": hero})           # positional
+render_template("home.html.jinja", request, ctx={"hero": hero})       # ctx kwarg
+render_template("home.html.jinja", request, context={"hero": hero})   # alias
+```
+
+Passing both `ctx=` and `context=` raises `TypeError`. Unknown kwargs (typos
+like `contxt=` or anything Starlette's `TemplateResponse` doesn't recognise)
+also raise `TypeError` — the signature is explicit, so a misspelled context
+keyword cannot silently render with an empty context.
+
+`render_template()` additionally accepts the response-shaping kwargs forwarded
+to `TemplateResponse`: `status_code`, `headers`, `media_type`, `background`.
+
 ### Build-time Brand Palette
 
 DaisyUI's `light` and `dark` themes are emitted by `@plugin "daisyui"`
