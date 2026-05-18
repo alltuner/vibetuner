@@ -160,9 +160,10 @@ Important notes:
   `override_config`, `vibetuner_db` pytest fixtures
 - **Error Messages**: Actionable error messages with env var examples, Docker
   commands, and documentation links
-- **Docker Builds**: Multi-platform Docker image builds via `just release` using
-  `compose.prod.yml` bake configuration. Optional GitHub Actions workflow for
-  self-hosted runners (enabled via `use_self_hosted_runner` scaffold prompt)
+- **Docker Builds**: Production Docker image builds (linux/amd64) via
+  `just release` using `compose.prod.yml` bake configuration. Optional GitHub
+  Actions workflow for self-hosted runners (enabled via
+  `use_self_hosted_runner` scaffold prompt)
 
 ## Reference
 
