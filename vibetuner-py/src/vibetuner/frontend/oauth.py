@@ -41,7 +41,7 @@ def register_oauth_provider(name: str, provider: OauthProviderModel) -> None:
 
 class WebUser(BaseUser, BaseModel):
     id: str
-    name: str
+    name: Optional[str] = None
     email: str
     picture: Optional[str] = Field(
         default=DEFAULT_AVATAR_IMAGE,
@@ -58,7 +58,7 @@ class WebUser(BaseUser, BaseModel):
 
     @property
     def display_name(self) -> str:
-        return self.name
+        return self.name or self.email.split("@", 1)[0]
 
 
 class Config:
