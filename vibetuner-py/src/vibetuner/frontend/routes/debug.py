@@ -564,7 +564,13 @@ async def debug_impersonate_user(request: Request, user_id: str):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Set full user session data (using the proper session_dict method)
+    # Stash the caller's session so /stop-impersonation can restore it.
+    # Only stash on the first hop so chained impersonations all unwind to
+    # the original admin instead of the previous impersonation target.
+    current_user = request.session.get("user")
+    if current_user is not None and "original_user" not in request.session:
+        request.session["original_user"] = current_user
+
     request.session["user"] = user.session_dict
 
     return RedirectResponse(url="/", status_code=302)
@@ -572,11 +578,15 @@ async def debug_impersonate_user(request: Request, user_id: str):
 
 @router.post("/stop-impersonation")
 async def debug_stop_impersonation(request: Request):
-    """Stop impersonating and clear user session."""
+    """Stop impersonating and restore the original session, if any."""
     if not ctx.DEBUG:
         raise HTTPException(status_code=404, detail="Not found")
 
-    request.session.pop("user", None)
+    original_user = request.session.pop("original_user", None)
+    if original_user is not None:
+        request.session["user"] = original_user
+    else:
+        request.session.pop("user", None)
     return RedirectResponse(url="/debug/users", status_code=302)
 
 
