@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.15.6](https://github.com/alltuner/vibetuner/compare/v10.15.5...v10.15.6) (2026-05-18)
+
+
+### Performance Improvements
+
+* **docker:** keep buildx alive between runner jobs ([#1851](https://github.com/alltuner/vibetuner/issues/1851)) ([eb79355](https://github.com/alltuner/vibetuner/commit/eb79355e3b756e0e25add137f56987790e6cff4d))
+
 ## [10.15.5](https://github.com/alltuner/vibetuner/compare/v10.15.4...v10.15.5) (2026-05-18)
 
 
