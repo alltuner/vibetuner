@@ -712,6 +712,14 @@ Configure extra allowed sources via environment variables:
 | `CSP_ENFORCE_CSP_IN_DEBUG` | Enforce CSP in debug mode (default: `true`) |
 | `CSP_STYLE_SRC_STRICT` | Use the request nonce on `style-src` instead of `'unsafe-inline'` (default: `false`) |
 
+**Nosniff Content-Type guard.** The middleware always sets
+`X-Content-Type-Options: nosniff`. If a response has no `Content-Type`
+header (e.g. a bare `Response(status_code=404)` with no `media_type=`),
+the middleware fills in `text/plain; charset=utf-8` so browsers do not
+turn the response into an error page or a 0-byte download. App code
+should still set `media_type=` explicitly when it matters, but the
+guard prevents the worst-case UX when something slips through.
+
 ### htmx Nonce Protection (opt-in)
 
 !!! note "Requires `@alltuner/vibetuner` ≥ 10.11.0"
