@@ -11,6 +11,7 @@ services:
   frontend:
     build:
       context: .
+      target: runtime
       args:
         PYTHON_VERSION: ${PYTHON_VERSION}
         ENVIRONMENT: ${ENVIRONMENT:-prod}
