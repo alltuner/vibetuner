@@ -606,19 +606,68 @@ async def signup(email: str):
 
 ### Styling with Tailwind
 
-Vibetuner uses Tailwind CSS + DaisyUI. Edit `assets/config.css` for custom styles:
+Vibetuner uses Tailwind v4 + DaisyUI. The scaffolded `config.css` lives at
+the project root and pulls everything in via the shipped core stylesheet:
 
 ```css
-/* assets/config.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-.btn-custom {
-@apply btn btn-primary rounded-full;
+/* config.css */
+@import "@alltuner/vibetuner/core.css";
+@source "templates";
+@source "assets/statics/js";
+
+/* Add your custom styles below: */
+```
+
+`core.css` already imports `tailwindcss` and registers the `daisyui`
+plugin, so you can use any DaisyUI component class and any Tailwind v4
+utility in your templates without further configuration. Define
+Tailwind tokens with `@theme { ... }` and write component classes
+with `@layer components { .btn-custom { @apply btn btn-primary; } }`.
+
+The build process compiles `config.css` to `assets/statics/css/bundle.css`
+on `just dev` / `just local-all` / `bun run build:css`.
+
+#### Brand palette (build-time)
+
+To recolor DaisyUI's `light` / `dark` themes for the whole bundle,
+override the `[data-theme="…"]` selectors below the `@import`:
+
+```css
+@import "@alltuner/vibetuner/core.css";
+@source "templates";
+@source "assets/statics/js";
+
+[data-theme="light"] {
+  --color-primary: oklch(64% 0.21 24);
+  --color-primary-content: oklch(98% 0 0);
+  --color-accent: oklch(82% 0.18 95);
+}
+
+[data-theme="dark"] {
+  --color-primary: oklch(64% 0.21 24);
+  --color-primary-content: oklch(98% 0 0);
+  --color-accent: oklch(82% 0.18 95);
 }
 ```
 
-The build process automatically compiles to `assets/statics/css/bundle.css`.
+`core.css` invokes `@plugin "daisyui"`, which emits rules like
+`:where(:root),:root:has(input.theme-controller[value=light]:checked),[data-theme=light] { … }`.
+The override above shares specificity with the standalone
+`[data-theme=light]` matcher and lands later in the file — cascade
+picks it up automatically. For per-tenant runtime overrides on top of
+this, see the [Theming](theming.md) guide.
+
+!!! note "When a brand-new named theme is needed"
+    DaisyUI's documented `@plugin "daisyui/theme" { name: "my-brand"; … }`
+    form lets projects define entirely new themes, but `daisyui` is a
+    private transitive of `@alltuner/vibetuner`, so resolution from a
+    consumer-side `config.css` fails under bun's isolated linker with
+    `Error: Can't resolve 'daisyui/theme'`. If you genuinely need this
+    (most projects don't — overriding `[data-theme="…"]` is enough),
+    add `daisyui` as a direct devDependency:
+    `bun add -d daisyui` and re-run `bun install`. The top-level
+    symlink makes `@plugin "daisyui/theme"` resolvable from
+    `config.css`.
 
 ### Brand Configuration
 

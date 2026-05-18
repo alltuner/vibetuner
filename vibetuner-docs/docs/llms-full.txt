@@ -1317,6 +1317,63 @@ def analytics_context() -> dict:
 Values from providers and globals are merged into every `render_template()` call.
 User-provided context in the render call takes precedence.
 
+### Build-time Brand Palette
+
+DaisyUI's `light` and `dark` themes are emitted by `@plugin "daisyui"`
+inside `@alltuner/vibetuner/core.css`. To recolor the four DaisyUI role
+colors across the whole compiled `bundle.css`, override the
+`[data-theme="…"]` selectors directly in your project's `config.css`:
+
+```css
+@import "@alltuner/vibetuner/core.css";
+@source "templates";
+@source "assets/statics/js";
+
+[data-theme="light"] {
+  --color-primary: oklch(64% 0.21 24);
+  --color-primary-content: oklch(98% 0 0);
+  --color-accent: oklch(82% 0.18 95);
+}
+
+[data-theme="dark"] {
+  --color-primary: oklch(64% 0.21 24);
+  --color-primary-content: oklch(98% 0 0);
+  --color-accent: oklch(82% 0.18 95);
+}
+```
+
+DaisyUI emits a rule like
+`:where(:root),:root:has(input.theme-controller[value=light]:checked),[data-theme=light] { … }`.
+The override above shares specificity with the standalone
+`[data-theme=light]` matcher and lands later in the file — cascade
+picks it up. No consumer-side `daisyui` install is required.
+
+**Caveat — DaisyUI theme-controller radio inputs.** If your UI relies on
+DaisyUI's `<input class="theme-controller" value="light">` switcher
+pattern *without* setting `data-theme` on the root element, the
+matching selector is `:root:has(input.theme-controller[value=…]:checked)`
+which has higher specificity than `[data-theme="…"]`. The override is
+bypassed for that path. Set `data-theme="…"` on `<html>` directly to
+keep the override pattern intact.
+
+**Brand-new named themes.** DaisyUI's documented `@plugin "daisyui/theme"
+{ name: "my-brand"; … }` form lets projects register entirely new
+themes. It is **not** resolvable from a consumer-side `config.css` by
+default: `daisyui` is a private transitive of `@alltuner/vibetuner`, so
+bun's isolated linker keeps it scoped to that package only — the
+consumer's `config.css` resolves modules from the project root and
+fails with `Error: Can't resolve 'daisyui/theme'`. Add it explicitly:
+
+```bash
+bun add -d daisyui
+bun install
+```
+
+The top-level symlink makes `@plugin "daisyui/theme"` resolvable.
+
+For per-request runtime overrides on top of the build-time palette
+(per-tenant branding), see the next section.
+
 ### Per-Tenant Theming
 
 Multi-tenant apps can swap DaisyUI role colors per tenant without rebuilding
