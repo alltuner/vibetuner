@@ -1,4 +1,69 @@
-# Per-Tenant Theming
+# Theming
+
+Vibetuner separates **build-time brand palette** (one set of role colors
+baked into `bundle.css`) from **runtime per-tenant overrides** (a small
+`<style>` block injected per request). Both pivot on the same cascade
+trick — overriding the variables DaisyUI emits, not the plugin that emits
+them.
+
+## Build-time brand palette
+
+DaisyUI's `light` and `dark` themes are emitted by `@plugin "daisyui"`
+inside `@alltuner/vibetuner/core.css`. To customise the four role colors
+across the whole bundle, override the `[data-theme="…"]` selectors
+directly in your project's `config.css`:
+
+```css
+@import "@alltuner/vibetuner/core.css";
+@source "templates";
+@source "assets/statics/js";
+
+[data-theme="light"] {
+  --color-primary: oklch(64% 0.21 24);
+  --color-primary-content: oklch(98% 0 0);
+  --color-accent: oklch(82% 0.18 95);
+}
+
+[data-theme="dark"] {
+  --color-primary: oklch(64% 0.21 24);
+  --color-primary-content: oklch(98% 0 0);
+  --color-accent: oklch(82% 0.18 95);
+}
+```
+
+DaisyUI emits a rule like
+`:where(:root),:root:has(input.theme-controller[value=light]:checked),[data-theme=light] { … }`.
+The override above has the same specificity as the standalone
+`[data-theme=light]` matcher and lands later in the file — cascade
+picks the consumer rules.
+
+**Caveat — DaisyUI theme-controller radio inputs.** If your UI uses
+DaisyUI's `<input class="theme-controller" value="light">` switcher
+pattern (without setting `data-theme` on the root element), the
+selector that matches at runtime is
+`:root:has(input.theme-controller[value=light]:checked)`, which has
+higher specificity than `[data-theme="light"]`. The override is then
+bypassed for that path. Most projects set `data-theme` on `<html>`
+directly, where the override pattern works as expected.
+
+**Escape hatch — brand-new named themes.** DaisyUI's documented
+`@plugin "daisyui/theme" { name: "my-brand"; … }` form lets projects
+register entirely new themes. It is **not** reachable from a
+consumer-side `config.css` by default: `daisyui` is a private
+transitive of `@alltuner/vibetuner`, so bun's isolated linker keeps
+it out of the project's root `node_modules`. Add it explicitly when
+you need this:
+
+```bash
+bun add -d daisyui
+bun install
+```
+
+The top-level symlink makes `@plugin "daisyui/theme"` resolvable from
+`config.css`. Most projects don't need this — overriding
+`[data-theme="…"]` is enough.
+
+## Per-tenant theming
 
 Multi-tenant Vibetuner apps often need per-tenant visual identity — at minimum
 the four DaisyUI role colors and their content variants. Vibetuner ships a

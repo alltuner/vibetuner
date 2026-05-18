@@ -253,6 +253,15 @@ extend `base/skeleton.html.jinja`.
 (`text-[13px]`, `bg-[#1DB954]`). Define tokens in `config.css`
 `@theme {}`. No inline styles.
 
+**DaisyUI palette**: Override `[data-theme="light"]` / `[data-theme="dark"]`
+in `config.css` (cascade-after the `@import "@alltuner/vibetuner/core.css"`)
+to recolor the role variables. Do **not** add `@plugin "daisyui/theme"`
+in `config.css` — `daisyui` is a private transitive of `@alltuner/vibetuner`
+and bun's isolated linker keeps it scoped, so resolution fails from the
+project root. The cascade-override pattern needs no extra dep. See the
+commented example in the scaffolded `config.css` and
+<https://vibetuner.alltuner.com/theming/#build-time-brand-palette>.
+
 ---
 
 ## Important Rules

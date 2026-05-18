@@ -7,4 +7,21 @@
 
 /* Add your custom styles below: */
 
+/* Brand palette overrides. DaisyUI emits its built-in `light` and `dark`
+ * themes from `@plugin "daisyui"` inside core.css; override the
+ * `[data-theme="..."]` selectors below to recolor without re-running the
+ * plugin. CSS cascade does the work — these rules come later in the file
+ * and win on source order. See
+ * https://vibetuner.alltuner.com/theming/#build-time-brand-palette
+ *
+ * [data-theme="light"] {
+ *   --color-primary: oklch(64% 0.21 24);
+ *   --color-primary-content: oklch(98% 0 0);
+ * }
+ * [data-theme="dark"] {
+ *   --color-primary: oklch(64% 0.21 24);
+ *   --color-primary-content: oklch(98% 0 0);
+ * }
+ */
+
 /* End of File: do not remove this comment or add anything below */

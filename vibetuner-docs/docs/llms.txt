@@ -26,7 +26,7 @@ Important notes:
 - [Background Tasks](https://vibetuner.alltuner.com/background-tasks/): Background task system powered by Streaq and Redis with retries, cron scheduling, and SSE integration
 - [Runtime Configuration](https://vibetuner.alltuner.com/runtime-config/): Layered configuration system with MongoDB persistence, debug UI, and feature flags
 - [HTMX v2 to v4 Migration](https://vibetuner.alltuner.com/htmx-migration/): Breaking changes and migration guide for upgrading from HTMX v2 to v4
-- [Per-Tenant Theming](https://vibetuner.alltuner.com/theming/): Embedded `TenantTheme` model + opt-in `register_tenant_theme_provider()` helper + shipped `base/theme.html.jinja` partial that injects DaisyUI role-color overrides at request time
+- [Theming](https://vibetuner.alltuner.com/theming/): Build-time brand palette via cascade override of DaisyUI's `[data-theme="…"]` selectors in `config.css` (no consumer-side `daisyui` dep needed), plus runtime per-tenant overrides via the embedded `TenantTheme` model + opt-in `register_tenant_theme_provider()` helper + shipped `base/theme.html.jinja` partial that injects DaisyUI role-color overrides at request time
 
 ## Features
 

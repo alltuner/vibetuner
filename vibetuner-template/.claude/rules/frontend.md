@@ -3,10 +3,47 @@ paths:
   - templates/frontend/**
   - assets/**
   - src/*/frontend/**
+  - config.css
 description: HTMX patterns, SSE, caching, block rendering, and Tailwind/DaisyUI
 ---
 
 # Frontend Patterns
+
+## DaisyUI palette overrides
+
+To recolor the DaisyUI `light` / `dark` themes for the whole bundle,
+override the `[data-theme="…"]` selectors in `config.css` below the
+`@import "@alltuner/vibetuner/core.css"`:
+
+```css
+[data-theme="light"] {
+  --color-primary: oklch(64% 0.21 24);
+  --color-primary-content: oklch(98% 0 0);
+}
+[data-theme="dark"] {
+  --color-primary: oklch(64% 0.21 24);
+  --color-primary-content: oklch(98% 0 0);
+}
+```
+
+`core.css` invokes `@plugin "daisyui"`, which emits a rule of the form
+`:where(:root),:root:has(input.theme-controller[value=light]:checked),[data-theme=light] { … }`.
+The override above shares specificity with the standalone
+`[data-theme=light]` matcher and lands later in `config.css` — cascade
+picks it up. No `daisyui` install on the consumer side is required.
+
+**Do not write `@plugin "daisyui/theme" { … }` in `config.css`.**
+`daisyui` is a private transitive of `@alltuner/vibetuner`; bun's
+isolated linker keeps it scoped to that package, so module resolution
+from the project root fails with `Error: Can't resolve 'daisyui/theme'`.
+Use the `[data-theme="…"]` cascade override above. If a project
+genuinely needs a brand-new named theme, add `daisyui` as a direct
+devDependency (`bun add -d daisyui`) — but for recoloring the existing
+themes, the cascade override is the right tool.
+
+For per-request runtime overrides (per-tenant branding), use
+`register_tenant_theme_provider` — see the
+[theming guide](https://vibetuner.alltuner.com/theming/).
 
 ## SSE
 
