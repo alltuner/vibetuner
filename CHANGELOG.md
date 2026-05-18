@@ -1,5 +1,14 @@
 # Changelog
 
+## [10.16.1](https://github.com/alltuner/vibetuner/compare/v10.16.0...v10.16.1) (2026-05-18)
+
+
+### Bug Fixes
+
+* **auth:** keep admin session when impersonating a nameless user ([#1874](https://github.com/alltuner/vibetuner/issues/1874)) ([9242569](https://github.com/alltuner/vibetuner/commit/9242569f45d5e8421373cd8550017f3ccc1711e6))
+* **debug:** restore admin session on stop-impersonation ([#1876](https://github.com/alltuner/vibetuner/issues/1876)) ([9e11261](https://github.com/alltuner/vibetuner/commit/9e11261990ce8a9c0f16b4419ada697ec9c92abf))
+* **i18n:** default language form to empty string so clear branch fires ([#1871](https://github.com/alltuner/vibetuner/issues/1871)) ([fa7f39a](https://github.com/alltuner/vibetuner/commit/fa7f39a9ca64c4b607cafa97e22e529f4e95081d))
+
 ## [10.16.0](https://github.com/alltuner/vibetuner/compare/v10.15.7...v10.16.0) (2026-05-18)
 
 
