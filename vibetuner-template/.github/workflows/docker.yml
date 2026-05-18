@@ -81,10 +81,6 @@ jobs:
           registry=$(uv run --with pyyaml python -c "import yaml; print(yaml.safe_load(open('.copier-answers.yml')).get('docker_registry', 'localhost:5050'))")
           echo "docker_registry=$registry" >> "$GITHUB_OUTPUT"
 
-      - name: Set up QEMU
-        if: steps.version.outputs.skip != 'true'
-        uses: docker/setup-qemu-action@v4
-
       - name: Set up Docker Buildx
         if: steps.version.outputs.skip != 'true'
         uses: docker/setup-buildx-action@v4
