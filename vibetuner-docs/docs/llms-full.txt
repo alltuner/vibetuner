@@ -1765,6 +1765,11 @@ task queue UI at `/debug/tasks`. This provides a web interface for monitoring
 queued, running, and completed tasks. Access is restricted by the same debug
 access check used for other debug routes.
 
+`/debug/tasks/queue` and `/debug/tasks/workers` enumerate Redis keys with `SCAN`,
+which can hang on a shared or large Redis. Both routes are bounded by a 5-second
+request timeout; on expiry the server returns a 504 page explaining the cause.
+The `/debug/tasks/cron` view is not affected.
+
 ### `vibetuner doctor`
 
 A diagnostic CLI command that validates your project setup:

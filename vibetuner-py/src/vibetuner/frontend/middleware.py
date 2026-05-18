@@ -1,3 +1,4 @@
+import asyncio
 import re
 import secrets
 
@@ -369,6 +370,97 @@ class LangPrefixMiddleware:
         await response(scope, receive, send)
 
 
+# Upper bound for /debug/tasks/queue and /debug/tasks/workers requests.
+# Streaq's UI walks Redis with SCAN; on shared or large Redis instances the
+# walk can take much longer than a debug page is worth waiting for. The
+# request is cancelled and a 504 is returned instead of hanging the browser.
+# See upstream tastyware/streaq#163.
+STREAQ_DEBUG_REQUEST_TIMEOUT_SECONDS = 5
+
+_STREAQ_DEBUG_SLOW_PREFIXES = (
+    "/debug/tasks/queue",
+    "/debug/tasks/workers",
+)
+
+_STREAQ_DEBUG_TIMEOUT_BODY = (
+    b'<!doctype html>'
+    b'<html lang="en"><head><meta charset="utf-8">'
+    b'<title>504 Gateway Timeout</title></head><body>'
+    b'<h1>Task queue view timed out</h1>'
+    b'<p>The Streaq debug page took longer than '
+    b'5 seconds to load and was cancelled. This usually means the '
+    b'underlying Redis SCAN is slow &mdash; see project settings.</p>'
+    b'</body></html>'
+)
+
+
+class StreaqDebugTimeoutMiddleware:
+    """Bounds Streaq debug UI requests that walk Redis with SCAN.
+
+    Streaq's /queue and /workers endpoints SCAN Redis to enumerate tasks and
+    worker health keys. On a shared or large Redis they can hang indefinitely,
+    leaving the browser with no response. This middleware cancels any such
+    request that exceeds STREAQ_DEBUG_REQUEST_TIMEOUT_SECONDS and replies with
+    a 504 page explaining what happened. Cheap endpoints under /debug/tasks
+    (e.g. /cron) are not guarded and pass through unchanged.
+    """
+
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        path = scope.get("path", "")
+        if not any(path.startswith(p) for p in _STREAQ_DEBUG_SLOW_PREFIXES):
+            await self.app(scope, receive, send)
+            return
+
+        response_started = False
+
+        async def send_tracking(message: dict) -> None:
+            nonlocal response_started
+            if message["type"] == "http.response.start":
+                response_started = True
+            await send(message)
+
+        try:
+            await asyncio.wait_for(
+                self.app(scope, receive, send_tracking),
+                timeout=STREAQ_DEBUG_REQUEST_TIMEOUT_SECONDS,
+            )
+        except asyncio.TimeoutError:
+            logger.warning(
+                "Streaq debug request timed out after "
+                f"{STREAQ_DEBUG_REQUEST_TIMEOUT_SECONDS}s: {path}"
+            )
+            if response_started:
+                # Cannot send a fresh response once headers are out; the
+                # client will see a truncated body. Logging is enough.
+                return
+            await send(
+                {
+                    "type": "http.response.start",
+                    "status": 504,
+                    "headers": [
+                        (b"content-type", b"text/html; charset=utf-8"),
+                        (
+                            b"content-length",
+                            str(len(_STREAQ_DEBUG_TIMEOUT_BODY)).encode("ascii"),
+                        ),
+                    ],
+                }
+            )
+            await send(
+                {
+                    "type": "http.response.body",
+                    "body": _STREAQ_DEBUG_TIMEOUT_BODY,
+                }
+            )
+
+
 class AuthBackend(AuthenticationBackend):
     async def authenticate(
         self,
@@ -453,3 +545,8 @@ middlewares += [
     Middleware(AdjustLangCookieMiddleware),
     Middleware(AuthenticationMiddleware, backend=AuthBackend()),
 ]
+
+if settings.workers_available:
+    # Innermost so the timeout only cancels the Streaq handler itself rather
+    # than work performed by outer middlewares.
+    middlewares.append(Middleware(StreaqDebugTimeoutMiddleware))

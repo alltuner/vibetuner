@@ -512,6 +512,14 @@ vibetuner debug open https://myapp.com
 
 See the [CLI Reference](cli-reference.md#vibetuner-debug) for details.
 
+!!! note "Five-second timeout on `/queue` and `/workers`"
+    Streaq's `/debug/tasks/queue` and `/debug/tasks/workers` views walk Redis
+    with `SCAN` to enumerate tasks and worker health keys. On a shared or
+    large Redis instance the walk can be slow enough to hang the page. Both
+    routes are bounded by a 5-second request timeout; when it fires, the
+    server returns a 504 page explaining the cause. The `/debug/tasks/cron`
+    view is not affected.
+
 A standalone worker monitoring web UI also starts automatically on
 **port 11111** when you run the worker. Access it at
 `http://localhost:11111`.
