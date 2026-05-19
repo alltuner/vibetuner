@@ -138,11 +138,23 @@ Extend them in your templates:
 ```jinja
 {% extends "base/skeleton.html.jinja" %}
 
-{% block extra_head %}
-  {# Add page-specific CSS/JS #}
-{% endblock extra_head %}
+{% block extra_head_links %}
+  {# Page-specific <link> tags — RSS feeds, alternates, custom meta #}
+{% endblock extra_head_links %}
+
+{% block extra_scripts %}
+  {# Page-specific <script> tags — loaded after bundle.js in <head> #}
+{% endblock extra_scripts %}
 
 {% block body %}
   {# Your page content #}
 {% endblock body %}
 ```
+
+The slots `<head>` exposes are `extra_head_links` (before `bundle.css`),
+`extra_scripts` (after `bundle.js`), and `head` (catch-all at the end of
+`<head>`). Use `before_main` / `after_main` to wrap the body. Jinja
+silently drops `{% block %}` content when the parent has no matching
+block — if a `<script>` or `<style>` you added never reaches the
+browser, double-check the block name. Full list:
+<https://vibetuner.alltuner.com/development-guide/#skeleton-extension-points>.
