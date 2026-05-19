@@ -37,14 +37,34 @@ def logout_user(request: Request):
 router = APIRouter(prefix="/auth")
 
 
-@router.get(
+@router.post(
     "/logout",
     dependencies=[Depends(logout_user)],
     response_class=RedirectResponse,
-    status_code=307,
+    status_code=303,
 )
-async def auth_logout(request: Request):
+async def auth_logout(request: Request) -> str:
+    """Sign the current user out and redirect to the homepage.
+
+    Restricted to POST so the endpoint cannot be triggered by a
+    cross-origin GET (e.g. ``<img src="/auth/logout">``), which would
+    otherwise let a malicious page sign the user out.
+    """
     return get_homepage_url(request)
+
+
+@router.get("/logout", response_class=HTMLResponse, name="auth_logout_confirm")
+async def auth_logout_confirm(request: Request) -> HTMLResponse:
+    """Render a "Confirm sign out" interstitial for legacy GET links.
+
+    The real sign-out happens via POST. This shim keeps external links
+    that still point at ``GET /auth/logout`` working with one extra
+    click.
+    """
+    return render_template(
+        "auth/logout_confirm.html.jinja",
+        request=request,
+    )
 
 
 @router.get("/login", response_model=None)

@@ -545,7 +545,9 @@ User is automatically available in templates:
 ```html
 {% if user %}
     <p>Welcome, {{ user.name }}!</p>
-    <a href="/auth/logout">Logout</a>
+    <form method="post" action="/auth/logout">
+        <button type="submit">Logout</button>
+    </form>
 {% else %}
     <a href="/auth/google">Sign in with Google</a>
     <a href="/auth/magic-link">Sign in with Email</a>
@@ -609,6 +611,21 @@ Use exact URLs in OAuth provider settings:
 ```text
 Development: http://localhost:8000/auth/provider/google
 Production: https://example.com/auth/provider/google
+```
+
+### Logout is POST-only
+
+`/auth/logout` only signs the user out via `POST`. A `GET` to the same path
+renders a confirmation interstitial with a small form that submits the POST.
+
+This prevents drive-by logout attacks where a cross-origin page embeds the
+old URL (`<img src="https://example.com/auth/logout">`) and silently ends
+the visitor's session. Use a form, not a link, in your own templates:
+
+```html
+<form method="post" action="/auth/logout">
+    <button type="submit">Log out</button>
+</form>
 ```
 
 ### Rate Limiting

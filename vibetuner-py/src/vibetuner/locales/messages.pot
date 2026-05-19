@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vibetuner VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/alltuner/vibetuner/issues\n"
-"POT-Creation-Date: 2026-05-18 20:01+0200\n"
+"POT-Creation-Date: 2026-05-19 13:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -197,6 +197,25 @@ msgstr ""
 msgid "We'll send you a secure link to sign in instantly."
 msgstr ""
 
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:4
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:10
+msgid "Confirm sign out"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:12
+msgid "Click the button below to end your session."
+msgstr ""
+
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:15
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:114
+msgid "Sign Out"
+msgstr ""
+
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:16
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:64
+msgid "Cancel"
+msgstr ""
+
 #: src/vibetuner/templates/frontend/user/edit.html.jinja:4
 #: src/vibetuner/templates/frontend/user/edit.html.jinja:12
 #: src/vibetuner/templates/frontend/user/profile.html.jinja:112
@@ -216,7 +235,7 @@ msgid "This name will be displayed throughout the application"
 msgstr ""
 
 #: src/vibetuner/templates/frontend/user/edit.html.jinja:34
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:125
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:127
 msgid "Preferred Language"
 msgstr ""
 
@@ -230,10 +249,6 @@ msgstr ""
 
 #: src/vibetuner/templates/frontend/user/edit.html.jinja:58
 msgid "Email cannot be changed and is managed through your OAuth provider"
-msgstr ""
-
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:64
-msgid "Cancel"
 msgstr ""
 
 #: src/vibetuner/templates/frontend/user/edit.html.jinja:65
@@ -291,34 +306,30 @@ msgstr ""
 msgid "Connected"
 msgstr ""
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:113
-msgid "Sign Out"
-msgstr ""
-
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:120
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:122
 msgid "Account Settings"
 msgstr ""
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:126
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:128
 msgid "Your preferred language for the interface"
 msgstr ""
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:132
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:134
 msgid "Not set"
 msgstr ""
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:140
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:142
 msgid "Email Notifications"
 msgstr ""
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:141
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:143
 msgid "Receive updates about your account"
 msgstr ""
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:148
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:150
 msgid "Profile Visibility"
 msgstr ""
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:149
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:151
 msgid "Make your profile visible to others"
 msgstr ""

@@ -110,7 +110,9 @@
                                         hx-target="#main-content"
                                         hx-swap="innerHTML"
                                         hx-nonce="{{ csp_nonce }}">{{ _("Edit Profile") }}</button>
-                                <a href="{{ url_for('auth_logout') }}" class="btn btn-outline btn-error">{{ _("Sign Out") }}</a>
+                                <form method="post" action="{{ url_for('auth_logout') }}">
+                                    <button type="submit" class="btn btn-outline btn-error">{{ _("Sign Out") }}</button>
+                                </form>
                             </div>
                         </div>
                     </div>
