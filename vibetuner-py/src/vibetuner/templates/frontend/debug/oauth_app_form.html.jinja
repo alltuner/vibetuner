@@ -8,7 +8,7 @@
         <!-- Header -->
         <header class="mb-8">
             <div class="flex items-center gap-2 mb-2">
-                <a href="{{ url_for('debug_oauth_apps') }}" class="btn btn-ghost btn-sm">
+                <a href="/debug/oauth-apps" class="btn btn-ghost btn-sm">
                     <svg xmlns="http://www.w3.org/2000/svg"
                          class="h-4 w-4"
                          fill="none"
@@ -36,7 +36,7 @@
                 <div class="card-body">
                     <form method="post"
                           autocomplete="off"
-                          action="{{ url_for('debug_oauth_app_update', app_id=app.id) if app else url_for('debug_oauth_app_store') }}">
+                          action="{{ '/debug/oauth-apps/' ~ app.id if app else '/debug/oauth-apps/create' }}">
                         <!-- Provider -->
                         <div class="form-control w-full mb-4">
                             <label class="label">
@@ -203,7 +203,7 @@
                         </div>
                         <!-- Submit -->
                         <div class="card-actions justify-end">
-                            <a href="{{ url_for('debug_oauth_apps') }}" class="btn btn-ghost">Cancel</a>
+                            <a href="/debug/oauth-apps" class="btn btn-ghost">Cancel</a>
                             <button type="submit" class="btn btn-primary">{{ 'Save Changes' if app else 'Create App' }}</button>
                         </div>
                     </form>

@@ -34,6 +34,10 @@ repos:
     hooks:
       - id: djlint-jinja
         files: \.(html\.jinja)$
+        # Mirror ignore list from djlint.toml: the djlint-jinja hook
+        # passes --profile=jinja, which causes djlint to skip the
+        # config file, so the ignore rules must be repeated here.
+        args: ["--ignore=H006,J018"]
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.4.0
     hooks:
