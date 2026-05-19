@@ -1846,8 +1846,12 @@ access check used for other debug routes.
 
 `/debug/tasks/queue` and `/debug/tasks/workers` enumerate Redis keys with `SCAN`,
 which can hang on a shared or large Redis. Both routes are bounded by a 5-second
-request timeout; on expiry the server returns a 504 page explaining the cause.
-The `/debug/tasks/cron` view is not affected.
+request timeout; on expiry the server renders a "Task queue unavailable" page
+listing the things to check (worker running? Redis reachable? installed `streaq`
+package compatible with this vibetuner version?) with a retry link back to
+`/debug/tasks/`. Clients that send `Accept: application/json` get a structured
+`{"error": "streaq_debug_timeout", "detail": ...}` payload instead. The
+`/debug/tasks/cron` view is not affected.
 
 ### `vibetuner doctor`
 

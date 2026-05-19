@@ -517,8 +517,11 @@ See the [CLI Reference](cli-reference.md#vibetuner-debug) for details.
     with `SCAN` to enumerate tasks and worker health keys. On a shared or
     large Redis instance the walk can be slow enough to hang the page. Both
     routes are bounded by a 5-second request timeout; when it fires, the
-    server returns a 504 page explaining the cause. The `/debug/tasks/cron`
-    view is not affected.
+    server returns a 504 page titled **"Task queue unavailable"** with a
+    short operator checklist (worker running? Redis reachable? installed
+    Streaq compatible?) and a retry link. API clients that send
+    `Accept: application/json` receive a structured `streaq_debug_timeout`
+    error instead. The `/debug/tasks/cron` view is not affected.
 
 A standalone worker monitoring web UI also starts automatically on
 **port 11111** when you run the worker. Access it at
