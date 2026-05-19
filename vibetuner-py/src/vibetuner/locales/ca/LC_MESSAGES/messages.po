@@ -7,14 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vibetuner\n"
 "Report-Msgid-Bugs-To: https://github.com/alltuner/vibetuner/issues\n"
+"POT-Creation-Date: 2026-05-19 13:37+0200\n"
 "PO-Revision-Date: 2026-05-18 19:57+0200\n"
 "Last-Translator: All Tuner Labs, S.L. <hello@alltuner.com>\n"
-"Language: ca\n"
 "Language-Team: ca <hello@alltuner.com>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: ca\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
 
 #: src/vibetuner/rendering.py:207
@@ -139,7 +140,8 @@ msgstr "No veus el correu?"
 
 #: src/vibetuner/templates/frontend/email_sent.html.jinja:53
 msgid "Check your spam folder or try signing in again."
-msgstr "Comprova la carpeta de correu brossa o torna a provar d'iniciar sessió."
+msgstr ""
+"Comprova la carpeta de correu brossa o torna a provar d'iniciar sessió."
 
 #: src/vibetuner/templates/frontend/email_sent.html.jinja:65
 msgid "Try Again"
@@ -197,6 +199,25 @@ msgstr "No cal contrasenya!"
 msgid "We'll send you a secure link to sign in instantly."
 msgstr "T'enviarem un enllaç segur per iniciar la sessió a l'instant."
 
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:4
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:10
+msgid "Confirm sign out"
+msgstr "Confirma el tancament de sessió"
+
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:12
+msgid "Click the button below to end your session."
+msgstr "Fes clic al botó de sota per finalitzar la sessió."
+
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:15
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:114
+msgid "Sign Out"
+msgstr "Tanca la sessió"
+
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:16
+#: src/vibetuner/templates/frontend/user/edit.html.jinja:64
+msgid "Cancel"
+msgstr "Cancel·la"
+
 #: src/vibetuner/templates/frontend/user/edit.html.jinja:4
 #: src/vibetuner/templates/frontend/user/edit.html.jinja:12
 #: src/vibetuner/templates/frontend/user/profile.html.jinja:112
@@ -216,7 +237,7 @@ msgid "This name will be displayed throughout the application"
 msgstr "Aquest nom es mostrarà arreu de l'aplicació"
 
 #: src/vibetuner/templates/frontend/user/edit.html.jinja:34
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:125
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:127
 msgid "Preferred Language"
 msgstr "Idioma preferit"
 
@@ -231,12 +252,8 @@ msgstr "Això anul·larà la detecció d'idioma del navegador"
 #: src/vibetuner/templates/frontend/user/edit.html.jinja:58
 msgid "Email cannot be changed and is managed through your OAuth provider"
 msgstr ""
-"El correu electrònic no es pot canviar i es gestiona des del teu "
-"proveïdor OAuth"
-
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:64
-msgid "Cancel"
-msgstr "Cancel·la"
+"El correu electrònic no es pot canviar i es gestiona des del teu proveïdor "
+"OAuth"
 
 #: src/vibetuner/templates/frontend/user/edit.html.jinja:65
 msgid "Save Changes"
@@ -248,12 +265,12 @@ msgstr "Sobre les preferències d'idioma"
 
 #: src/vibetuner/templates/frontend/user/edit.html.jinja:80
 msgid ""
-"Your language preference will take priority over URL parameters, cookies,"
-" and browser settings. Leave empty to use automatic detection."
+"Your language preference will take priority over URL parameters, cookies, "
+"and browser settings. Leave empty to use automatic detection."
 msgstr ""
-"La teva preferència d'idioma té prioritat sobre els paràmetres de l'URL, "
-"les galetes i la configuració del navegador. Deixa-ho buit per fer servir"
-" la detecció automàtica."
+"La teva preferència d'idioma té prioritat sobre els paràmetres de l'URL, les "
+"galetes i la configuració del navegador. Deixa-ho buit per fer servir la "
+"detecció automàtica."
 
 #: src/vibetuner/templates/frontend/user/profile.html.jinja:4
 #: src/vibetuner/templates/frontend/user/profile.html.jinja:12
@@ -296,34 +313,30 @@ msgstr "Sense correu electrònic"
 msgid "Connected"
 msgstr "Connectat"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:113
-msgid "Sign Out"
-msgstr "Tanca la sessió"
-
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:120
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:122
 msgid "Account Settings"
 msgstr "Configuració del compte"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:126
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:128
 msgid "Your preferred language for the interface"
 msgstr "El teu idioma preferit per a la interfície"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:132
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:134
 msgid "Not set"
 msgstr "Sense definir"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:140
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:142
 msgid "Email Notifications"
 msgstr "Notificacions per correu"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:141
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:143
 msgid "Receive updates about your account"
 msgstr "Rep actualitzacions sobre el teu compte"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:148
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:150
 msgid "Profile Visibility"
 msgstr "Visibilitat del perfil"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:149
+#: src/vibetuner/templates/frontend/user/profile.html.jinja:151
 msgid "Make your profile visible to others"
 msgstr "Fes el teu perfil visible per als altres"
