@@ -8,7 +8,7 @@
         <!-- Header -->
         <header class="mb-8">
             <div class="flex items-center gap-2 mb-2">
-                <a href="{{ url_for('debug_config') }}" class="btn btn-ghost btn-sm">
+                <a href="/debug/config" class="btn btn-ghost btn-sm">
                     <svg xmlns="http://www.w3.org/2000/svg"
                          class="h-4 w-4"
                          fill="none"
@@ -117,8 +117,7 @@
             <div class="card bg-base-100 shadow-xl mb-6">
                 <div class="card-body">
                     <h2 class="card-title text-lg">Edit Value</h2>
-                    <form method="post"
-                          action="{{ url_for('debug_config_update', key=entry.key) }}">
+                    <form method="post" action="/debug/config/{{ entry.key }}">
                         <div class="form-control w-full">
                             <label class="label">
                                 <span class="label-text">Current Value</span>
@@ -164,7 +163,7 @@
                             </label>
                         </div>
                         <div class="card-actions justify-end mt-6">
-                            <a href="{{ url_for('debug_config') }}" class="btn btn-ghost">Cancel</a>
+                            <a href="/debug/config" class="btn btn-ghost">Cancel</a>
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>
@@ -179,8 +178,7 @@
                             This value has a runtime override. Remove it to fall back to the MongoDB or default value.
                         </p>
                         <div class="card-actions justify-end mt-4">
-                            <form method="post"
-                                  action="{{ url_for('debug_config_clear_override', key=entry.key) }}">
+                            <form method="post" action="/debug/config/{{ entry.key }}/clear-override">
                                 <button type="submit" class="btn btn-warning btn-outline">Remove Runtime Override</button>
                             </form>
                         </div>

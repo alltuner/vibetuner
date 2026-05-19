@@ -24,7 +24,7 @@
         <!-- Actions Bar -->
         <div class="flex justify-between items-center mb-6">
             <div class="flex gap-2">
-                <form method="post" action="{{ url_for('debug_config_refresh') }}">
+                <form method="post" action="/debug/config/refresh">
                     <button type="submit" class="btn btn-outline btn-sm gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              class="h-4 w-4"
@@ -111,8 +111,7 @@
                                         {% if DEBUG %}
                                             <td class="text-center">
                                                 {% if not entry.is_secret %}
-                                                    <a href="{{ url_for('debug_config_detail', key=entry.key) }}"
-                                                       class="btn btn-outline btn-xs">Edit</a>
+                                                    <a href="/debug/config/{{ entry.key }}" class="btn btn-outline btn-xs">Edit</a>
                                                 {% else %}
                                                     <span class="text-base-content/40 text-xs">Protected</span>
                                                 {% endif %}
