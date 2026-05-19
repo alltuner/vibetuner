@@ -44,6 +44,9 @@ def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
     _console().print(f"[green]Starting worker in {mode} mode on port {port}[/green]")
     if is_dev:
         _console().print("[dim]Hot reload enabled[/dim]")
+        _console().print("Registered reload paths:")
+        for path in paths.reload_paths:
+            _console().print(f"  - {path}")
     else:
         _console().print(f"[dim]Workers: {workers}[/dim]")
 
@@ -60,14 +63,26 @@ def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
 
     for _ in range(workers - 1):
         p = Process(
-            target=run_worker, args=(worker_path, False, is_dev, verbose), daemon=True
+            target=run_worker, args=(worker_path, False, False, verbose), daemon=True
         )
         p.start()
         processes.append(p)
 
     # Run main worker in the current process (blocks)
     try:
-        run_worker(worker_path, False, is_dev, verbose)
+        if is_dev:
+            from watchfiles import run_process
+
+            run_process(
+                *paths.reload_paths,
+                target=run_worker,
+                args=(worker_path, False, False, verbose),
+                callback=lambda _: _console().print(
+                    "[dim]changes detected, reloading...[/dim]"
+                ),
+            )
+        else:
+            run_worker(worker_path, False, False, verbose)
     finally:
         for p in processes:
             p.terminate()
