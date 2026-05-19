@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.16.3](https://github.com/alltuner/vibetuner/compare/v10.16.2...v10.16.3) (2026-05-19)
+
+
+### Bug Fixes
+
+* **worker:** scope dev reloader to paths.reload_paths ([#1887](https://github.com/alltuner/vibetuner/issues/1887)) ([9a0a1e1](https://github.com/alltuner/vibetuner/commit/9a0a1e1ee2687f8f88e579b10fc04e229e06b43e))
+
 ## [10.16.2](https://github.com/alltuner/vibetuner/compare/v10.16.1...v10.16.2) (2026-05-19)
 
 
