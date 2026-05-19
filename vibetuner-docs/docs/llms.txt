@@ -160,7 +160,9 @@ Important notes:
   Import from `vibetuner.tasks.robust`
 - **Streaq UI**: Task queue monitoring dashboard at `/debug/tasks`. `/queue`
   and `/workers` carry a 5s request timeout (Redis SCAN can be slow on shared
-  instances); on expiry the server returns a 504 page
+  instances); on expiry the server renders a "Task queue unavailable" page
+  with an operator checklist (worker / Redis / streaq version) and a retry
+  link, or returns a `streaq_debug_timeout` JSON payload for API clients
 - **Doctor CLI**: `vibetuner doctor` validates project setup, services, and config
 - **Config Decorators**: `@config_value()` and `ConfigGroup` for type-safe runtime
   configuration. `set_config(key, value)` persists values programmatically.

@@ -382,8 +382,8 @@ class LangPrefixMiddleware:
 # Upper bound for /debug/tasks/queue and /debug/tasks/workers requests.
 # Streaq's UI walks Redis with SCAN; on shared or large Redis instances the
 # walk can take much longer than a debug page is worth waiting for. The
-# request is cancelled and a 504 is returned instead of hanging the browser.
-# See upstream tastyware/streaq#163.
+# request is cancelled and a fallback response is returned instead of
+# hanging the browser. See upstream tastyware/streaq#163.
 STREAQ_DEBUG_REQUEST_TIMEOUT_SECONDS = 5
 
 _STREAQ_DEBUG_SLOW_PREFIXES = (
@@ -391,15 +391,30 @@ _STREAQ_DEBUG_SLOW_PREFIXES = (
     "/debug/tasks/workers",
 )
 
-_STREAQ_DEBUG_TIMEOUT_BODY = (
-    b'<!doctype html>'
-    b'<html lang="en"><head><meta charset="utf-8">'
-    b'<title>504 Gateway Timeout</title></head><body>'
-    b'<h1>Task queue view timed out</h1>'
-    b'<p>The Streaq debug page took longer than '
-    b'5 seconds to load and was cancelled. This usually means the '
-    b'underlying Redis SCAN is slow &mdash; see project settings.</p>'
-    b'</body></html>'
+_STREAQ_DEBUG_TEMPLATE = "debug/tasks_unavailable.html.jinja"
+
+
+def _wants_html(scope: Scope) -> bool:
+    """Return True when the client likely expects an HTML page back."""
+    for header_name, header_value in scope.get("headers", []):
+        if header_name == b"accept":
+            accept = header_value.decode("latin-1", errors="replace").lower()
+            # JSON-only clients (curl with -H "Accept: application/json",
+            # XHR fetch with explicit JSON) should keep getting structured
+            # output. Everything else (browsers, htmx, missing header) gets
+            # the rendered page.
+            if "application/json" in accept and "text/html" not in accept:
+                return False
+            return True
+    return True
+
+
+_STREAQ_DEBUG_TIMEOUT_JSON = (
+    b'{"error":"streaq_debug_timeout",'
+    b'"detail":"Streaq debug UI did not respond within '
+    + str(STREAQ_DEBUG_REQUEST_TIMEOUT_SECONDS).encode("ascii")
+    + b"s. Check that the worker is running, Redis is reachable, "
+    b'and the installed streaq version is compatible."}'
 )
 
 
@@ -410,8 +425,9 @@ class StreaqDebugTimeoutMiddleware:
     worker health keys. On a shared or large Redis they can hang indefinitely,
     leaving the browser with no response. This middleware cancels any such
     request that exceeds STREAQ_DEBUG_REQUEST_TIMEOUT_SECONDS and replies with
-    a 504 page explaining what happened. Cheap endpoints under /debug/tasks
-    (e.g. /cron) are not guarded and pass through unchanged.
+    a fallback page (or JSON, for API clients) explaining what happened and
+    what to check. Cheap endpoints under /debug/tasks (e.g. /cron) are not
+    guarded and pass through unchanged.
     """
 
     def __init__(self, app: ASGIApp):
@@ -449,24 +465,65 @@ class StreaqDebugTimeoutMiddleware:
                 # Cannot send a fresh response once headers are out; the
                 # client will see a truncated body. Logging is enough.
                 return
-            await send(
+            await self._send_fallback(scope, send, path)
+
+    async def _send_fallback(self, scope: Scope, send: Send, path: str) -> None:
+        """Send a friendly fallback to the client after a Streaq timeout."""
+        if _wants_html(scope):
+            body = await self._render_html(scope, path)
+            content_type = b"text/html; charset=utf-8"
+        else:
+            body = _STREAQ_DEBUG_TIMEOUT_JSON
+            content_type = b"application/json"
+
+        await send(
+            {
+                "type": "http.response.start",
+                "status": 504,
+                "headers": [
+                    (b"content-type", content_type),
+                    (b"content-length", str(len(body)).encode("ascii")),
+                ],
+            }
+        )
+        await send({"type": "http.response.body", "body": body})
+
+    async def _render_html(self, scope: Scope, path: str) -> bytes:
+        """Render the operator-facing fallback page.
+
+        Falls back to a minimal inline HTML snippet when the template engine
+        is unavailable (e.g. tests that wire the middleware in isolation), so
+        the middleware never compounds the original failure.
+        """
+        try:
+            from starlette.requests import Request
+
+            from vibetuner.rendering import render_template
+
+            request = Request(scope)
+            response = render_template(
+                _STREAQ_DEBUG_TEMPLATE,
+                request,
                 {
-                    "type": "http.response.start",
-                    "status": 504,
-                    "headers": [
-                        (b"content-type", b"text/html; charset=utf-8"),
-                        (
-                            b"content-length",
-                            str(len(_STREAQ_DEBUG_TIMEOUT_BODY)).encode("ascii"),
-                        ),
-                    ],
-                }
+                    "path": path,
+                    "timeout_seconds": STREAQ_DEBUG_REQUEST_TIMEOUT_SECONDS,
+                },
+                status_code=504,
             )
-            await send(
-                {
-                    "type": "http.response.body",
-                    "body": _STREAQ_DEBUG_TIMEOUT_BODY,
-                }
+            return bytes(response.body)
+        except Exception as exc:
+            logger.error(
+                "Failed to render Streaq timeout fallback template: {exc}",
+                exc=exc,
+            )
+            return (
+                b'<!doctype html><html lang="en"><head><meta charset="utf-8">'
+                b"<title>504 Gateway Timeout</title></head><body>"
+                b"<h1>Task queue unavailable</h1>"
+                b"<p>The Streaq debug UI did not respond in time. "
+                b"Check that the worker is running, Redis is reachable, "
+                b"and the installed streaq version is compatible.</p>"
+                b"</body></html>"
             )
 
 
