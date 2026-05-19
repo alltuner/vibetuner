@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.16.4](https://github.com/alltuner/vibetuner/compare/v10.16.3...v10.16.4) (2026-05-19)
+
+
+### Documentation Updates
+
+* **scaffold:** fix non-existent extra_head block in frontend AGENTS.md ([#1890](https://github.com/alltuner/vibetuner/issues/1890)) ([bae9a1f](https://github.com/alltuner/vibetuner/commit/bae9a1ffbc35a1fe1906e1dadf6f0a097df09b63))
+
 ## [10.16.3](https://github.com/alltuner/vibetuner/compare/v10.16.2...v10.16.3) (2026-05-19)
 
 
