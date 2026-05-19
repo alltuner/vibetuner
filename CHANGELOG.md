@@ -1,5 +1,15 @@
 # Changelog
 
+## [10.16.2](https://github.com/alltuner/vibetuner/compare/v10.16.1...v10.16.2) (2026-05-19)
+
+
+### Bug Fixes
+
+* **auth:** make /auth/logout POST-only with GET confirmation shim ([#1884](https://github.com/alltuner/vibetuner/issues/1884)) ([da163cb](https://github.com/alltuner/vibetuner/commit/da163cb411c040ae9738daae64ce9de59000175f)), closes [#1880](https://github.com/alltuner/vibetuner/issues/1880)
+* **debug:** render operator-friendly fallback when streaq UI times out ([#1882](https://github.com/alltuner/vibetuner/issues/1882)) ([dd0e6ae](https://github.com/alltuner/vibetuner/commit/dd0e6ae45e822bd87cde28343549f5561ef8b9ed)), closes [#1878](https://github.com/alltuner/vibetuner/issues/1878)
+* **debug:** show env/CLI/.env setup steps on secret config detail page ([#1883](https://github.com/alltuner/vibetuner/issues/1883)) ([5e18da9](https://github.com/alltuner/vibetuner/commit/5e18da9ae5e948bf961d0844fd595983efb35541)), closes [#1879](https://github.com/alltuner/vibetuner/issues/1879)
+* **debug:** use path-relative URLs and surface tasks/users tiles ([#1881](https://github.com/alltuner/vibetuner/issues/1881)) ([3659d3a](https://github.com/alltuner/vibetuner/commit/3659d3a78c3e4d4af0cfa248536bbba959dbff88)), closes [#1877](https://github.com/alltuner/vibetuner/issues/1877)
+
 ## [10.16.1](https://github.com/alltuner/vibetuner/compare/v10.16.0...v10.16.1) (2026-05-18)
 
 
