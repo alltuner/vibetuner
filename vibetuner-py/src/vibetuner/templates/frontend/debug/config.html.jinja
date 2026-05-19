@@ -102,6 +102,8 @@
                                                 <span class="badge badge-warning badge-sm">runtime</span>
                                             {% elif entry.source == 'mongodb' %}
                                                 <span class="badge badge-info badge-sm">mongodb</span>
+                                            {% elif entry.source == 'env' %}
+                                                <span class="badge badge-info badge-sm">env</span>
                                             {% else %}
                                                 <span class="badge badge-ghost badge-sm">default</span>
                                             {% endif %}
