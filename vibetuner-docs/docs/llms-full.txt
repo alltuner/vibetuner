@@ -2395,7 +2395,19 @@ Values are resolved with this priority (highest to lowest):
 
 1. **Runtime overrides** — In-memory overrides set programmatically or via debug UI
 2. **MongoDB values** — Persisted values that survive restarts
-3. **Registered defaults** — Default values defined in code
+3. **Environment variables** — Derived from the key by uppercasing and replacing
+   dots with underscores (e.g. `services.anthropic_api_key` →
+   `SERVICES_ANTHROPIC_API_KEY`). Read from `os.environ` first, then from the
+   merged `.env` / `.env.local` files. Coerced to the registered `value_type`;
+   bogus values log a warning and fall through. Requires a worker/frontend
+   restart to pick up changes.
+4. **Registered defaults** — Default values defined in code
+
+For `is_secret=True` keys, `/debug/config/<key>` renders a "Set this value"
+card showing the env-var name, the matching `vibetuner config set <key>` CLI
+command, and the `.env` entry to write, plus a worker/frontend restart
+reminder. This unblocks first-time admins who would otherwise hit a dead-end
+"this configuration is marked as secret" alert.
 
 #### Value Types
 

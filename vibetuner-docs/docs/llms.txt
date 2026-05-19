@@ -169,6 +169,13 @@ Important notes:
   `VibetunerApp(runtime_config={...})` for declarative registration in `tune.py`
 - **Config CLI**: `vibetuner config list|set|delete` manages runtime config
   values from the command line. Secret values use hidden input prompts
+- **Config Env Fallback**: Runtime config keys auto-resolve from environment
+  variables derived as `<KEY>.upper().replace(".", "_")` (e.g.
+  `services.anthropic_api_key` → `SERVICES_ANTHROPIC_API_KEY`). Priority is
+  runtime override > MongoDB > env var > registered default. `.env` /
+  `.env.local` are honored. `/debug/config/<key>` renders a "Set this value"
+  block on secret keys showing the env-var name, CLI command, and `.env`
+  entry, with a worker/frontend restart reminder
 - **Testing Fixtures**: `vibetuner_client`, `mock_auth`, `mock_tasks`,
   `override_config`, `vibetuner_db` pytest fixtures
 - **Error Messages**: Actionable error messages with env var examples, Docker

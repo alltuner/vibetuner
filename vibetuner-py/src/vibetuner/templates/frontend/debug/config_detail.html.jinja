@@ -42,6 +42,8 @@
                             <span class="badge badge-warning ml-2">runtime override</span>
                         {% elif entry.source == 'mongodb' %}
                             <span class="badge badge-info ml-2">mongodb</span>
+                        {% elif entry.source == 'env' %}
+                            <span class="badge badge-info ml-2">env</span>
                         {% else %}
                             <span class="badge badge-ghost ml-2">default</span>
                         {% endif %}
@@ -67,6 +69,37 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
                 <span>This configuration is marked as secret and cannot be edited via the debug UI.</span>
+            </div>
+            <!-- How to set this secret -->
+            <div class="card bg-base-100 shadow-xl mb-6">
+                <div class="card-body">
+                    <h2 class="card-title text-lg">Set this value</h2>
+                    <p class="text-base-content/70">Choose whichever fits your deployment:</p>
+                    <ul class="mt-2 space-y-3">
+                        <li>
+                            <div class="text-sm text-base-content/60">Environment variable</div>
+                            <code class="text-sm bg-base-200 px-2 py-1 rounded select-all">{{ entry.env_name }}=&lt;value&gt;</code>
+                        </li>
+                        <li>
+                            <div class="text-sm text-base-content/60">CLI</div>
+                            <code class="text-sm bg-base-200 px-2 py-1 rounded select-all">uv run vibetuner config set {{ entry.key }}</code>
+                            <div class="text-xs text-base-content/60 mt-1">Prompts for the value without echoing it; persists to MongoDB.</div>
+                        </li>
+                        <li>
+                            <div class="text-sm text-base-content/60">.env file</div>
+                            <code class="text-sm bg-base-200 px-2 py-1 rounded select-all">{{ entry.env_name }}=&lt;value&gt;</code>
+                        </li>
+                    </ul>
+                    <div class="alert alert-info mt-4">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="stroke-current shrink-0 h-5 w-5"
+                             fill="none"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Restart the worker and frontend after changing the env var or .env file so the new value is picked up.</span>
+                    </div>
+                </div>
             </div>
         {% elif not DEBUG %}
             <!-- Production mode notice -->

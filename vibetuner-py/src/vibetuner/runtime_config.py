@@ -1,16 +1,34 @@
 # ABOUTME: Layered runtime configuration system with MongoDB persistence.
-# ABOUTME: Provides get/set config with priority: runtime overrides > MongoDB > registered defaults.
+# ABOUTME: Provides get/set config with priority: runtime overrides > MongoDB > env vars > registered defaults.
 
 import asyncio
 import json
+import os
 from collections.abc import Callable, Coroutine
 from datetime import datetime, timedelta
-from functools import wraps
+from functools import lru_cache, wraps
 from typing import Any, Literal, TypedDict
 
-from vibetuner.config import settings
+from dotenv import dotenv_values
+
+from vibetuner.config import _ENV_FILES, settings
 from vibetuner.logging import logger
 from vibetuner.time import now
+
+
+@lru_cache(maxsize=1)
+def _dotenv_values() -> dict[str, str]:
+    """Load the merged ``.env`` files used by ``CoreConfiguration``.
+
+    Cached so the files are read once per process; restart the
+    worker/frontend to pick up changes.
+    """
+    merged: dict[str, str] = {}
+    for path in _ENV_FILES:
+        for k, v in dotenv_values(path).items():
+            if v is not None:
+                merged[k] = v
+    return merged
 
 
 def _to_secret_value(value: Any) -> str:
@@ -24,6 +42,15 @@ ConfigValueType = Literal["str", "int", "float", "bool", "json"]
 CACHE_TTL_SECONDS = 60
 
 
+def env_var_name(key: str) -> str:
+    """Return the environment variable name for a runtime config key.
+
+    Dots become underscores and the whole thing is uppercased, so
+    ``services.anthropic_api_key`` maps to ``SERVICES_ANTHROPIC_API_KEY``.
+    """
+    return key.upper().replace(".", "_")
+
+
 class ConfigRegistryEntry(TypedDict):
     """Type for registry entries."""
 
@@ -34,16 +61,20 @@ class ConfigRegistryEntry(TypedDict):
     is_secret: bool
 
 
+ConfigSource = Literal["default", "mongodb", "runtime", "env"]
+
+
 class ConfigEntry(TypedDict):
     """Type for config entries returned by get_all_config."""
 
     key: str
     value: Any
     value_type: ConfigValueType
-    source: Literal["default", "mongodb", "runtime"]
+    source: ConfigSource
     description: str | None
     category: str
     is_secret: bool
+    env_name: str
 
 
 class RuntimeConfig:
@@ -52,7 +83,9 @@ class RuntimeConfig:
     Priority (highest to lowest):
     1. Runtime overrides - in-memory, for debugging/testing
     2. MongoDB values - persistent, survives restarts
-    3. Registered defaults - defined in code
+    3. Environment variables - derived from the key (e.g.
+       ``services.anthropic_api_key`` -> ``SERVICES_ANTHROPIC_API_KEY``)
+    4. Registered defaults - defined in code
     """
 
     # Class-level storage
@@ -106,8 +139,10 @@ class RuntimeConfig:
         Priority:
         1. Runtime overrides
         2. MongoDB cache
-        3. Registered default
-        4. Provided default parameter
+        3. Environment variable (``env_var_name(key)``), coerced to the
+           registered ``value_type`` when the key is registered
+        4. Registered default
+        5. Provided default parameter
         """
         # 1. Check runtime overrides first (highest priority)
         if key in cls._runtime_overrides:
@@ -121,12 +156,50 @@ class RuntimeConfig:
         if key in cls._config_cache:
             return cls._config_cache[key]
 
-        # 3. Check registered defaults
+        # 3. Check environment variable
+        env_value = cls._read_env_value(key)
+        if env_value is not None:
+            return env_value
+
+        # 4. Check registered defaults
         if key in cls._config_registry:
             return cls._config_registry[key]["default"]
 
-        # 4. Fall back to provided default
+        # 5. Fall back to provided default
         return default
+
+    @classmethod
+    def _read_env_value(cls, key: str) -> Any | None:
+        """Read and coerce the env-var value for a config key.
+
+        Reads ``os.environ`` first, falling back to the merged ``.env``
+        files used by :class:`CoreConfiguration`. Returns ``None`` when
+        the env var is unset or when coercion fails; callers should treat
+        ``None`` as "not provided by env" and fall through to the next
+        layer.
+        """
+        name = env_var_name(key)
+        raw = os.environ.get(name)
+        if raw is None:
+            raw = _dotenv_values().get(name)
+        if raw is None:
+            return None
+
+        entry = cls._config_registry.get(key)
+        if entry is None:
+            return raw
+
+        try:
+            return cls._validate_value(raw, entry["value_type"])
+        except (ValueError, TypeError, json.JSONDecodeError) as exc:
+            logger.warning(
+                "Ignoring env var {} for config {}: failed to coerce to {} ({})",
+                name,
+                key,
+                entry["value_type"],
+                exc,
+            )
+            return None
 
     @classmethod
     async def set_runtime_override(cls, key: str, value: Any) -> None:
@@ -232,15 +305,21 @@ class RuntimeConfig:
         # Start with all registered configs
         for key, reg in cls._config_registry.items():
             # Determine value and source based on priority
+            source: ConfigSource
             if key in cls._runtime_overrides:
                 value = cls._runtime_overrides[key]
-                source: Literal["default", "mongodb", "runtime"] = "runtime"
+                source = "runtime"
             elif key in cls._config_cache:
                 value = cls._config_cache[key]
                 source = "mongodb"
             else:
-                value = reg["default"]
-                source = "default"
+                env_value = cls._read_env_value(key)
+                if env_value is not None:
+                    value = env_value
+                    source = "env"
+                else:
+                    value = reg["default"]
+                    source = "default"
 
             entries.append(
                 ConfigEntry(
@@ -251,6 +330,7 @@ class RuntimeConfig:
                     description=reg["description"],
                     category=reg["category"],
                     is_secret=reg["is_secret"],
+                    env_name=env_var_name(key),
                 )
             )
 

@@ -110,11 +110,17 @@ Configuration values are resolved with the following priority (highest to lowest
 
 1. **Runtime overrides** - In-memory overrides set programmatically or via debug UI
 2. **MongoDB values** - Persisted values that survive restarts
-3. **Registered defaults** - Default values defined in code
+3. **Environment variables** - Derived from the key by uppercasing and replacing
+   dots with underscores (e.g. `services.anthropic_api_key` →
+   `SERVICES_ANTHROPIC_API_KEY`). Read from `os.environ` first, then from the
+   merged `.env` / `.env.local` files. Values are coerced to the registered
+   `value_type`. Requires a worker/frontend restart to pick up changes.
+4. **Registered defaults** - Default values defined in code
 
 ```python
-# Example: If the same key exists in all three layers
+# Example: If the same key exists in all four layers
 # registered default: False
+# env var: True
 # mongodb value: True
 # runtime override: False
 # Result: False (runtime override wins)
@@ -419,7 +425,10 @@ Mark sensitive values with `is_secret=True`:
 
 - Values are **encrypted at rest** in MongoDB using Fernet (symmetric encryption)
 - Values are masked (`*****`) in the debug UI
-- Values cannot be edited via the debug UI
+- Values cannot be edited via the debug UI; the detail page at
+  `/debug/config/<key>` shows a "Set this value" card with the derived env var
+  name, the matching `vibetuner config set <key>` CLI command, and the `.env`
+  entry to write
 - Values are still accessible programmatically (decrypted transparently on load)
 
 Encryption requires the `FIELD_ENCRYPTION_KEY` environment variable. When set, secret config

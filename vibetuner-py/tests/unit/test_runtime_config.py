@@ -455,7 +455,6 @@ class TestMongoDBIntegration:
         # Cache should still be updated
         assert RuntimeConfig._config_cache["test.key"] == "test_value"
 
-
     @pytest.mark.asyncio
     async def test_set_value_stores_secret_in_secret_value(self):
         """set_value passes secret_value (not value) when is_secret=True."""
@@ -820,6 +819,182 @@ class TestSetConfig:
             await set_config("unknown.key", "value")
 
 
+class TestEnvVarFallback:
+    """Tests for the environment-variable layer in RuntimeConfig.
+
+    Env vars sit between MongoDB and registered defaults so deployment-time
+    secrets work without bespoke wiring while still being overridable by the
+    debug UI (runtime overrides) and the persisted MongoDB layer.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _clear_dotenv_cache(self):
+        """Force ``_dotenv_values`` to re-read so monkeypatching ``os.environ``
+        gives a clean slate between tests."""
+        from vibetuner.runtime_config import _dotenv_values
+
+        _dotenv_values.cache_clear()
+        yield
+        _dotenv_values.cache_clear()
+
+    def test_env_var_name_uppercases_and_replaces_dots(self):
+        """env_var_name maps dot-paths to upper-snake-case env names."""
+        from vibetuner.runtime_config import env_var_name
+
+        assert (
+            env_var_name("services.anthropic_api_key") == "SERVICES_ANTHROPIC_API_KEY"
+        )
+        assert env_var_name("feature.dark_mode") == "FEATURE_DARK_MODE"
+        assert env_var_name("plain_key") == "PLAIN_KEY"
+
+    @pytest.mark.asyncio
+    async def test_get_reads_from_env_when_no_override_or_cache(self, monkeypatch):
+        """Env var beats registered default."""
+        from vibetuner.runtime_config import (
+            RuntimeConfig,
+            get_config,
+            register_config_value,
+        )
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        register_config_value(
+            key="services.anthropic_api_key",
+            default="",
+            value_type="str",
+            category="services",
+            is_secret=True,
+        )
+        monkeypatch.setenv("SERVICES_ANTHROPIC_API_KEY", "sk-from-env")
+
+        result = await get_config("services.anthropic_api_key")
+        assert result == "sk-from-env"
+
+    @pytest.mark.asyncio
+    async def test_mongodb_cache_wins_over_env(self, monkeypatch):
+        """MongoDB value wins over env so an admin's persisted override sticks."""
+        from vibetuner.runtime_config import (
+            RuntimeConfig,
+            get_config,
+            register_config_value,
+        )
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        register_config_value(
+            key="services.anthropic_api_key",
+            default="",
+            value_type="str",
+            is_secret=True,
+        )
+        RuntimeConfig._config_cache["services.anthropic_api_key"] = "sk-from-mongo"
+        monkeypatch.setenv("SERVICES_ANTHROPIC_API_KEY", "sk-from-env")
+
+        result = await get_config("services.anthropic_api_key")
+        assert result == "sk-from-mongo"
+
+    @pytest.mark.asyncio
+    async def test_env_var_coerces_to_registered_value_type(self, monkeypatch):
+        """Env vars are coerced through ``_validate_value`` like any other source."""
+        from vibetuner.runtime_config import (
+            RuntimeConfig,
+            get_config,
+            register_config_value,
+        )
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        register_config_value(
+            key="features.max_items",
+            default=10,
+            value_type="int",
+        )
+        monkeypatch.setenv("FEATURES_MAX_ITEMS", "42")
+
+        result = await get_config("features.max_items")
+        assert result == 42
+
+    @pytest.mark.asyncio
+    async def test_invalid_env_value_falls_through_to_default(
+        self, monkeypatch, log_sink
+    ):
+        """A bogus env value logs a warning and falls back to the default."""
+        from vibetuner.runtime_config import (
+            RuntimeConfig,
+            get_config,
+            register_config_value,
+        )
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        register_config_value(
+            key="features.max_items",
+            default=10,
+            value_type="int",
+        )
+        monkeypatch.setenv("FEATURES_MAX_ITEMS", "not-a-number")
+
+        result = await get_config("features.max_items")
+        assert result == 10
+        assert any("FEATURES_MAX_ITEMS" in line for line in log_sink)
+
+    @pytest.mark.asyncio
+    async def test_get_all_config_exposes_env_name_and_source(self, monkeypatch):
+        """get_all_config exposes the env-var name and reports source='env'."""
+        from vibetuner.runtime_config import RuntimeConfig, register_config_value
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        register_config_value(
+            key="services.anthropic_api_key",
+            default="",
+            value_type="str",
+            category="services",
+            is_secret=True,
+        )
+        monkeypatch.setenv("SERVICES_ANTHROPIC_API_KEY", "sk-from-env")
+
+        entries = await RuntimeConfig.get_all_config()
+        entry = next(e for e in entries if e["key"] == "services.anthropic_api_key")
+
+        assert entry["env_name"] == "SERVICES_ANTHROPIC_API_KEY"
+        assert entry["source"] == "env"
+        assert entry["value"] == "sk-from-env"
+
+    @pytest.mark.asyncio
+    async def test_get_all_config_env_name_always_present(self):
+        """env_name is computed from the key even when no env var is set."""
+        from vibetuner.runtime_config import RuntimeConfig, register_config_value
+
+        RuntimeConfig._config_registry.clear()
+        RuntimeConfig._runtime_overrides.clear()
+        RuntimeConfig._config_cache.clear()
+
+        register_config_value(
+            key="services.anthropic_api_key",
+            default="",
+            value_type="str",
+            category="services",
+            is_secret=True,
+        )
+
+        entries = await RuntimeConfig.get_all_config()
+        entry = next(e for e in entries if e["key"] == "services.anthropic_api_key")
+
+        assert entry["env_name"] == "SERVICES_ANTHROPIC_API_KEY"
+        assert entry["source"] == "default"
+
+
 class TestVibetunerAppRuntimeConfig:
     """Tests for VibetunerApp runtime_config parameter."""
 
@@ -876,7 +1051,9 @@ class TestVibetunerAppRuntimeConfig:
 
         assert "crm.default_region" in RuntimeConfig._config_registry
         assert RuntimeConfig._config_registry["crm.default_region"]["default"] == "US"
-        assert RuntimeConfig._config_registry["crm.default_region"]["value_type"] == "str"
+        assert (
+            RuntimeConfig._config_registry["crm.default_region"]["value_type"] == "str"
+        )
 
         assert "crm.max_contacts" in RuntimeConfig._config_registry
         assert RuntimeConfig._config_registry["crm.max_contacts"]["default"] == 100
