@@ -1,5 +1,23 @@
 # Changelog
 
+## [10.16.5](https://github.com/alltuner/vibetuner/compare/v10.16.4...v10.16.5) (2026-05-20)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump anthropics/claude-code-action from 1 to 1.0.123 ([#1895](https://github.com/alltuner/vibetuner/issues/1895)) ([022ce19](https://github.com/alltuner/vibetuner/commit/022ce19c4ea67ddb257c788a3c31b58cf677bfa9))
+* **deps:** bump click from 8.3.3 to 8.4.0 in /vibetuner-py ([#1898](https://github.com/alltuner/vibetuner/issues/1898)) ([a4ca528](https://github.com/alltuner/vibetuner/commit/a4ca5281b4fd912db79f65e2439fe8b0ae2e6d0a))
+* **deps:** bump copier from 9.15.0 to 9.15.1 ([#1901](https://github.com/alltuner/vibetuner/issues/1901)) ([12b46e7](https://github.com/alltuner/vibetuner/commit/12b46e7c597d395efed3105120f76ffdf869d041))
+* **deps:** bump idna from 3.14 to 3.15 ([#1892](https://github.com/alltuner/vibetuner/issues/1892)) ([9db78ad](https://github.com/alltuner/vibetuner/commit/9db78ad810bcd6ffa13972aa3f55a35397527f9d))
+* **deps:** bump idna from 3.14 to 3.15 in /vibetuner-py ([#1893](https://github.com/alltuner/vibetuner/issues/1893)) ([1bfab13](https://github.com/alltuner/vibetuner/commit/1bfab13d3f50a39e627002e3645e20e06d5f3777))
+* **deps:** bump resend from 2.30.0 to 2.30.1 in /vibetuner-py ([#1894](https://github.com/alltuner/vibetuner/issues/1894)) ([eb70dfa](https://github.com/alltuner/vibetuner/commit/eb70dfab9ecf9ba84dc865fb381837eb270cf302))
+* **deps:** bump ruff from 0.15.12 to 0.15.13 ([#1899](https://github.com/alltuner/vibetuner/issues/1899)) ([30259c3](https://github.com/alltuner/vibetuner/commit/30259c34c878a50d7ebfe407ce537e0693639dd7))
+* **deps:** bump rumdl from 0.1.91 to 0.1.93 ([#1900](https://github.com/alltuner/vibetuner/issues/1900)) ([0baac3f](https://github.com/alltuner/vibetuner/commit/0baac3fc1726cc1e3026cafe2eea5630a09ab19e))
+* **deps:** bump rumdl from 0.1.91 to 0.1.93 in /vibetuner-py ([#1896](https://github.com/alltuner/vibetuner/issues/1896)) ([d27dd87](https://github.com/alltuner/vibetuner/commit/d27dd87e3ef6ee76e528ad8685ea411c8e161b3f))
+* **deps:** bump ty from 0.0.35 to 0.0.37 ([#1902](https://github.com/alltuner/vibetuner/issues/1902)) ([7f9da73](https://github.com/alltuner/vibetuner/commit/7f9da738b7999128dc2bb29e1264df506de6197c))
+* **deps:** bump types-authlib from 1.6.11.20260512 to 1.6.11.20260514 in /vibetuner-py ([#1897](https://github.com/alltuner/vibetuner/issues/1897)) ([2401f66](https://github.com/alltuner/vibetuner/commit/2401f66923edb1e575e287a8b05b8ef3b678098e))
+* **deps:** prek autoupdate pre-commit hooks ([#1904](https://github.com/alltuner/vibetuner/issues/1904)) ([0f71d70](https://github.com/alltuner/vibetuner/commit/0f71d700d4649284bd06d7bc67badd3e6b607dc7))
+
 ## [10.16.4](https://github.com/alltuner/vibetuner/compare/v10.16.3...v10.16.4) (2026-05-19)
 
 
