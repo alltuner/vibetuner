@@ -3081,7 +3081,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "10.16.4"
+version = "10.16.5"
 source = { directory = "vibetuner-py" }
 dependencies = [
     { name = "aioboto3" },
@@ -3171,7 +3171,7 @@ requires-dist = [
     { name = "resend", specifier = ">=2.30.0" },
     { name = "rich", specifier = ">=15.0.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15.12" },
-    { name = "rumdl", marker = "extra == 'dev'", specifier = ">=0.1.93" },
+    { name = "rumdl", marker = "extra == 'dev'", specifier = ">=0.1.91" },
     { name = "semver", marker = "extra == 'dev'", specifier = ">=3.0.4" },
     { name = "slowapi", specifier = ">=0.1.9" },
     { name = "sqlmodel", specifier = ">=0.0.38" },
@@ -3181,7 +3181,7 @@ requires-dist = [
     { name = "streaq", extras = ["web"], specifier = ">=6.4.0,<7.0.0" },
     { name = "taplo", marker = "extra == 'dev'", specifier = ">=0.9.3" },
     { name = "testcontainers", extras = ["mongodb"], marker = "extra == 'dev'", specifier = ">=4.14.2" },
-    { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.37" },
+    { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.35" },
     { name = "typer", specifier = ">=0.25.1" },
     { name = "types-aioboto3", extras = ["s3"], marker = "extra == 'dev'", specifier = ">=15.5.0" },
     { name = "types-authlib", marker = "extra == 'dev'", specifier = ">=1.6.11.20260512" },
@@ -3191,7 +3191,7 @@ provides-extras = ["dev"]
 
 [[package]]
 name = "vibetuner-scaffolding"
-version = "10.16.4"
+version = "10.16.5"
 source = { virtual = "." }
 
 [package.dev-dependencies]
