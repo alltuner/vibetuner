@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.16.6](https://github.com/alltuner/vibetuner/compare/v10.16.5...v10.16.6) (2026-05-21)
+
+
+### Miscellaneous Chores
+
+* **deps:** update anthropics/claude-code-action action to v1.0.124 ([#1820](https://github.com/alltuner/vibetuner/issues/1820)) ([b1e89e3](https://github.com/alltuner/vibetuner/commit/b1e89e328009a4e6262889739efa0348a7f78995))
+
 ## [10.16.5](https://github.com/alltuner/vibetuner/compare/v10.16.4...v10.16.5) (2026-05-20)
 
 
