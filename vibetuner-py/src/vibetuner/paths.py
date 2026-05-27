@@ -149,31 +149,31 @@ class PathSettings(BaseSettings):
 
     @computed_field
     @property
-    def css(self) -> Path | None:
+    def css(self) -> Path:
         """Project CSS directory."""
         return self._get_statics_type_path("css")
 
     @computed_field
     @property
-    def js(self) -> Path | None:
+    def js(self) -> Path:
         """Project JavaScript directory."""
         return self._get_statics_type_path("js")
 
     @computed_field
     @property
-    def favicons(self) -> Path | None:
+    def favicons(self) -> Path:
         """Project favicons directory."""
         return self._get_statics_type_path("favicons")
 
     @computed_field
     @property
-    def img(self) -> Path | None:
+    def img(self) -> Path:
         """Project images directory."""
         return self._get_statics_type_path("img")
 
     @computed_field
     @property
-    def fonts(self) -> Path | None:
+    def fonts(self) -> Path:
         """Project fonts directory."""
         return self._get_statics_type_path("fonts")
 

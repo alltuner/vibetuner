@@ -10,6 +10,7 @@ from fastapi.responses import (
     HTMLResponse,
     RedirectResponse,
 )
+from starlette.datastructures import FormData
 
 from vibetuner.config import settings
 from vibetuner.context import ctx
@@ -20,6 +21,12 @@ from vibetuner.paths import package_templates
 
 from ..deps import MAGIC_COOKIE_NAME
 from ..templates import render_template
+
+
+def _form_str(form: FormData, key: str, default: str = "") -> str:
+    """Return a string field from form data; treats uploaded files as missing."""
+    value = form.get(key)
+    return value if isinstance(value, str) else default
 
 
 def check_debug_access(request: Request):
@@ -764,11 +771,11 @@ async def debug_oauth_app_store(request: Request):
     from vibetuner.models.oauth_app import OAuthProviderAppModel
 
     form = await request.form()
-    scopes_raw = form.get("scopes", "").strip()
+    scopes_raw = _form_str(form, "scopes").strip()
     scopes = (
         [s.strip() for s in scopes_raw.split(",") if s.strip()] if scopes_raw else []
     )
-    capabilities_raw = form.get("capabilities", "").strip()
+    capabilities_raw = _form_str(form, "capabilities").strip()
     capabilities = (
         [c.strip() for c in capabilities_raw.split(",") if c.strip()]
         if capabilities_raw
@@ -776,14 +783,14 @@ async def debug_oauth_app_store(request: Request):
     )
 
     app = OAuthProviderAppModel(
-        provider=form.get("provider", ""),
-        name=form.get("name", ""),
-        client_id=form.get("client_id", ""),
-        client_secret=form.get("client_secret", ""),
-        external_app_id=form.get("external_app_id", "").strip() or None,
+        provider=_form_str(form, "provider"),
+        name=_form_str(form, "name"),
+        client_id=_form_str(form, "client_id"),
+        client_secret=_form_str(form, "client_secret"),
+        external_app_id=_form_str(form, "external_app_id").strip() or None,
         scopes=scopes,
         capabilities=capabilities,
-        is_active=form.get("is_active") == "on",
+        is_active=_form_str(form, "is_active") == "on",
     )
     await app.insert()
 
@@ -803,28 +810,28 @@ async def debug_oauth_app_update(request: Request, app_id: str):
         raise HTTPException(status_code=404, detail="OAuth app not found")
 
     form = await request.form()
-    scopes_raw = form.get("scopes", "").strip()
+    scopes_raw = _form_str(form, "scopes").strip()
     scopes = (
         [s.strip() for s in scopes_raw.split(",") if s.strip()] if scopes_raw else []
     )
-    capabilities_raw = form.get("capabilities", "").strip()
+    capabilities_raw = _form_str(form, "capabilities").strip()
     capabilities = (
         [c.strip() for c in capabilities_raw.split(",") if c.strip()]
         if capabilities_raw
         else []
     )
 
-    app.provider = form.get("provider", app.provider)
-    app.name = form.get("name", app.name)
-    app.client_id = form.get("client_id", app.client_id)
+    app.provider = _form_str(form, "provider", app.provider)
+    app.name = _form_str(form, "name", app.name)
+    app.client_id = _form_str(form, "client_id", app.client_id)
     # Only update secret if a new value was provided
-    new_secret = form.get("client_secret", "").strip()
+    new_secret = _form_str(form, "client_secret").strip()
     if new_secret:
         app.client_secret = new_secret
-    app.external_app_id = form.get("external_app_id", "").strip() or None
+    app.external_app_id = _form_str(form, "external_app_id").strip() or None
     app.scopes = scopes
     app.capabilities = capabilities
-    app.is_active = form.get("is_active") == "on"
+    app.is_active = _form_str(form, "is_active") == "on"
 
     await app.save()
 

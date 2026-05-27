@@ -95,6 +95,7 @@ def _run_frontend(
     """Start the frontend server."""
     from granian import Granian
     from granian.constants import Interfaces
+    from granian.log import LogLevels
 
     is_dev = mode == "dev"
 
@@ -121,7 +122,7 @@ def _run_frontend(
         workers_kill_timeout=5,
         reload=is_dev,
         reload_paths=paths.reload_paths if is_dev else [],
-        log_level="info",
+        log_level=LogLevels.info,
         log_access=True,
     )
 

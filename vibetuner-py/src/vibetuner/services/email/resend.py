@@ -1,11 +1,15 @@
 # ABOUTME: Resend email provider implementation.
 # ABOUTME: Sends transactional emails via the Resend API.
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 
 from asyncer import asyncify
 
 from vibetuner.services.email.base import EmailAddress, format_email_str
+
+
+if TYPE_CHECKING:
+    from resend.emails._emails import Emails as _ResendEmails
 
 
 class ResendEmailProvider:
@@ -35,5 +39,6 @@ class ResendEmailProvider:
         }
         if tags:
             params["tags"] = [{"name": k, "value": v} for k, v in tags.items()]
-        result = await asyncify(self._resend.Emails.send)(params)
-        return result
+        send_params = cast("_ResendEmails.SendParams", params)
+        result = await asyncify(self._resend.Emails.send)(send_params)
+        return dict(result)

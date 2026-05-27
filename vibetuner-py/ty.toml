@@ -1,0 +1,27 @@
+# ABOUTME: Type-check config for the vibetuner Python framework package
+# ABOUTME: Strict on src/; relaxes pydantic-narrowing noise rules under tests/
+
+[src]
+include = ["src", "tests"]
+exclude = ["**/__pycache__", "**/.venv", ".venv"]
+respect-ignore-files = true
+
+[terminal]
+output-format = "concise"
+
+# Test code exercises pydantic constructors with parametrized kwargs
+# (~125 errors from CoreConfiguration(**{field: 8080}) in test_utils.py
+# alone, where ty can't narrow which model field the parametrized key
+# targets) and monkey-patches framework internals in ways ty's narrower
+# can't follow. These rules fire on real bugs in src/, so we only relax
+# them under tests/.
+[[overrides]]
+include = ["tests/**/*.py"]
+
+[overrides.rules]
+invalid-argument-type = "ignore"
+unknown-argument = "ignore"
+invalid-assignment = "ignore"
+unresolved-attribute = "ignore"
+not-subscriptable = "ignore"
+invalid-return-type = "ignore"

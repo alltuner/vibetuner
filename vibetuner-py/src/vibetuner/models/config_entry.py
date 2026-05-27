@@ -23,7 +23,7 @@ class ConfigEntryModel(Document, TimeStampMixin, EncryptedFieldsMixin):
     for secret entries so plaintext never reaches the database.
     """
 
-    key: Indexed(str, unique=True) = Field(  # type: ignore[valid-type]
+    key: Indexed(str, unique=True) = Field(  # type: ignore[valid-type]  # ty: ignore[invalid-type-form]
         description="Unique configuration key using dot-notation (e.g., 'features.dark_mode')",
     )
     value: Any = Field(

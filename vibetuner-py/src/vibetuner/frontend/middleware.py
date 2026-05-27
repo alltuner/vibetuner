@@ -1,6 +1,7 @@
 import asyncio
 import re
 import secrets
+from typing import Any, MutableMapping
 
 from fastapi.middleware import Middleware
 from fastapi.requests import HTTPConnection
@@ -445,7 +446,7 @@ class StreaqDebugTimeoutMiddleware:
 
         response_started = False
 
-        async def send_tracking(message: dict) -> None:
+        async def send_tracking(message: MutableMapping[str, Any]) -> None:
             nonlocal response_started
             if message["type"] == "http.response.start":
                 response_started = True

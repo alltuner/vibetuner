@@ -2,7 +2,7 @@
 # ABOUTME: Manages connection lifecycle and model registration.
 from typing import Optional
 
-from beanie import init_beanie
+from beanie import Document, UnionDoc, View, init_beanie
 from deprecated import deprecated
 from pymongo import AsyncMongoClient
 from pymongo.errors import ConnectionFailure
@@ -11,6 +11,20 @@ from vibetuner.config import settings
 from vibetuner.loader import load_app_config
 from vibetuner.logging import logger
 from vibetuner.models import __all__ as core_models
+
+
+BeanieDocumentType = type[Document] | type[UnionDoc] | type[View]
+
+
+def _mongo_endpoint(url: object) -> str:
+    """Return a ``host:port`` string for log messages, or ``"unknown"``."""
+    if url is None:
+        return "unknown"
+    host = getattr(url, "host", None)
+    port = getattr(url, "port", None)
+    if host is None:
+        return "unknown"
+    return f"{host}:{port}" if port is not None else str(host)
 
 
 # Global singleton, created lazily
@@ -35,7 +49,7 @@ def _ensure_client() -> None:
         logger.debug("MongoDB client created.")
 
 
-def get_all_models() -> list[type]:
+def get_all_models() -> list[BeanieDocumentType]:
     """Get all models: core vibetuner models + user models from tune.py."""
     app_config = load_app_config()
     return list(core_models) + list(app_config.models)
@@ -76,10 +90,9 @@ async def init_mongodb() -> None:
             document_models=all_models,
         )
     except ConnectionFailure as exc:
-        url = settings.mongodb_url
         logger.error(
             "Failed to connect to MongoDB at {}: {}",
-            f"{url.host}:{url.port}" if url else "unknown",
+            _mongo_endpoint(settings.mongodb_url),
             exc,
         )
         raise

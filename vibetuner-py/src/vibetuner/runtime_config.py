@@ -2,6 +2,7 @@
 # ABOUTME: Provides get/set config with priority: runtime overrides > MongoDB > env vars > registered defaults.
 
 import asyncio
+import inspect
 import json
 import os
 from collections.abc import Callable, Coroutine
@@ -457,10 +458,12 @@ def config_value(
     """
 
     def decorator(func: Callable[[], Any]) -> Callable[[], Coroutine[Any, Any, Any]]:
-        if func.__code__.co_argcount > 0:
+        param_count = len(inspect.signature(func).parameters)
+        if param_count > 0:
+            name = getattr(func, "__name__", repr(func))
             raise ValueError(
-                f"@config_value() decorated function '{func.__name__}' must take no parameters, "
-                f"but it has {func.__code__.co_argcount}"
+                f"@config_value() decorated function '{name}' must take no parameters, "
+                f"but it has {param_count}"
             )
         default = func()
         register_config_value(
@@ -476,7 +479,7 @@ def config_value(
         async def wrapper() -> Any:
             return await RuntimeConfig.get(key, default)
 
-        wrapper.key = key  # type: ignore[attr-defined]
+        wrapper.key = key  # type: ignore[attr-defined]  # ty: ignore[unresolved-attribute]
         return wrapper
 
     return decorator
@@ -545,4 +548,6 @@ class ConfigField:
     def __get__(
         self, obj: Any, objtype: type | None = None
     ) -> Coroutine[Any, Any, Any]:
-        return RuntimeConfig.get(self.key, self.default)  # type: ignore[arg-type]
+        if self.key is None:
+            raise RuntimeError("ConfigField must be bound to a ConfigGroup")
+        return RuntimeConfig.get(self.key, self.default)

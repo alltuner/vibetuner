@@ -2,7 +2,7 @@
 # ABOUTME: Generates list/create/read/update/delete routes with pagination, filtering, and sorting.
 import re
 from collections.abc import Callable
-from enum import StrEnum
+from enum import Enum, StrEnum
 from typing import Any
 
 from beanie import Document, PydanticObjectId
@@ -149,7 +149,7 @@ def _register_create_route(
     post_create: PostHook | None,
 ) -> None:
     @router.post("", name=f"{collection_name}_create", status_code=201)
-    async def create_item(request: Request, data: schema):  # type: ignore[valid-type]
+    async def create_item(request: Request, data: schema):  # type: ignore[valid-type]  # ty: ignore[invalid-type-form]
         if pre_create:
             try:
                 data = await pre_create(data, request) or data
@@ -209,7 +209,7 @@ def _register_update_route(
     async def update_item(
         request: Request,
         item_id: PydanticObjectId,
-        data: schema,  # type: ignore[valid-type]
+        data: schema,  # type: ignore[valid-type]  # ty: ignore[invalid-type-form]
     ):
         doc = await model.get(item_id)
         if doc is None:
@@ -293,7 +293,7 @@ def create_crud_routes(
     model: type[Document],
     *,
     prefix: str | None = None,
-    tags: list[str] | None = None,
+    tags: list[str | Enum] | None = None,
     operations: set[Operation] | None = None,
     page_size: int = 25,
     max_page_size: int = 100,

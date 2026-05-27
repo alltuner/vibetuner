@@ -2,6 +2,7 @@
 # ABOUTME: Users create tune.py with an `app = VibetunerApp(...)` to configure their app.
 from typing import Any, Callable
 
+from beanie import Document, UnionDoc, View
 from fastapi import APIRouter
 from pydantic import BaseModel, ConfigDict
 from starlette.middleware import Middleware
@@ -32,7 +33,7 @@ class VibetunerApp(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     # Models (Beanie documents and views)
-    models: list[type] = []
+    models: list[type[Document] | type[UnionDoc] | type[View]] = []
 
     # SQL Models (SQLModel table models)
     sql_models: list[type] = []
