@@ -134,14 +134,16 @@ Important notes:
   no `Content-Type` (e.g. a bare `Response(status_code=404)`), so bare responses do
   not get turned into 0-byte browser downloads (Safari/Firefox) or generic error
   pages (Chrome)
-- **htmx Nonce Protection (opt-in)**: htmx 4.0.0-beta3 ships an `hx-nonce` extension
-  that gates htmx attribute processing behind the page CSP nonce. Framework templates
-  stamp `hx-nonce="{{ csp_nonce }}"` on htmx-bearing elements; mirror that pattern in
-  user templates and add `import "htmx.org/dist/ext/hx-nonce.js";` to `config.js` to
-  enable. Elements without a matching `hx-nonce` are stripped (fail-closed). Requires
-  `@alltuner/vibetuner` ≥ 10.11.0 (older releases pull `htmx.org@4.0.0-beta2` which
-  does not ship the extension file)
-- **htmx Live Reactivity (default-on)**: htmx 4.0.0-beta3's `hx-live` extension is
+- **htmx CSP Protection (opt-in)**: htmx 4.0.0-beta4 ships an `hx-csp` extension
+  (renamed from `hx-nonce` in beta3) that gates htmx attribute processing behind the
+  page CSP nonce. Framework templates stamp `hx-nonce="{{ csp_nonce }}"` on
+  htmx-bearing elements; mirror that pattern in user templates and add
+  `import "htmx.org/dist/ext/hx-csp.js";` to `config.js` to enable. Elements without
+  a matching `hx-nonce` are stripped (fail-closed). The HTML attribute is still
+  named `hx-nonce`; only the extension itself was renamed. Requires
+  `@alltuner/vibetuner` shipping `htmx.org@4.0.0-beta4` (older releases shipped the
+  extension as `hx-nonce.js`)
+- **htmx Live Reactivity (default-on)**: htmx 4's `hx-live` extension is
   loaded by default from `config.js` since `@alltuner/vibetuner` 10.15.0. Use
   `hx-live="<expr>"` for derived state that recomputes on any DOM mutation,
   `hx-on:event="..."` with the `q()` proxy / sigil-`toggle()` / per-element

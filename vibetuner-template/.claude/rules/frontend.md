@@ -103,16 +103,17 @@ directly to elements or use `hx-on` attributes.
 See the [HTMX migration guide](https://vibetuner.alltuner.com/htmx-migration/)
 for full details.
 
-## htmx Nonce Protection (opt-in)
+## htmx CSP Protection (opt-in)
 
-The `hx-nonce` extension (htmx 4.0.0-beta3+) gates htmx attribute
-processing behind the page CSP nonce. Framework templates already
-stamp `hx-nonce="{{ csp_nonce }}"` on htmx-bearing elements; mirror
-that pattern in your own templates if you enable the extension.
-Add `import "./node_modules/htmx.org/dist/ext/hx-nonce.js";` to your
-`config.js` custom imports section. Elements without a matching
-`hx-nonce` will be stripped (fail-closed). See the
-[CSP/htmx docs](https://vibetuner.alltuner.com/development-guide/#htmx-nonce-protection-opt-in).
+The `hx-csp` extension (htmx 4.0.0-beta4+, renamed from `hx-nonce`)
+gates htmx attribute processing behind the page CSP nonce. Framework
+templates already stamp `hx-nonce="{{ csp_nonce }}"` on htmx-bearing
+elements; mirror that pattern in your own templates if you enable the
+extension. Add `import "./node_modules/htmx.org/dist/ext/hx-csp.js";`
+to your `config.js` custom imports section. Elements without a
+matching `hx-nonce` will be stripped (fail-closed). The HTML attribute
+is still named `hx-nonce`; only the extension itself was renamed. See
+the [CSP/htmx docs](https://vibetuner.alltuner.com/development-guide/#htmx-csp-protection-opt-in).
 
 ## htmx Live Reactivity (default-on)
 

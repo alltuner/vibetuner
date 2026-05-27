@@ -2,8 +2,8 @@
 
 This guide covers the breaking changes when upgrading from htmx v2 to v4
 in Vibetuner projects. It also documents what changed between htmx 4
-pre-release versions (alpha → beta1 → beta3), so users on any
-pre-release can migrate.
+pre-release versions (alpha → beta1 → beta3 → beta4), so users on
+any pre-release can migrate.
 
 ## Quick Start
 
@@ -490,7 +490,7 @@ htmx 4 ships with these core extensions. All auto-register when imported.
 | `ptag` | Per-element polling tags to skip unchanged content |
 | `alpine-compat` | Alpine.js compatibility |
 | `htmx-2-compat` | Backward compatibility layer for htmx 2.x code |
-| `nonce` | CSP nonce-based protection for inline scripts and `eval`-style code paths (beta3) |
+| `csp` | CSP nonce-based protection for inline scripts and `eval`-style code paths (beta3, renamed from `nonce` in beta4) |
 | `live` | DOM-reactivity via `hx-live` and richer `hx-on` helpers: `q()`, `toggle()`, `debounce()` (beta3) |
 
 htmx also provides an `htmax` bundle (`htmax.min.js`) that includes htmx
@@ -551,6 +551,8 @@ the changes specific to beta3 (which is the 4.0 release candidate).
   Vibetuner enforces nonce-based CSP by default, so this extension is a
   natural fit. See the
   [vibetuner CSP docs](development-guide.md#security-headers-and-csp-nonce).
+  **Renamed to `hx-csp` in beta4** — see the
+  [Beta3 to Beta4 Changes](#beta3-to-beta4-changes) section below.
 - **`hx-live`**: DOM-reactivity via `hx-live="..."` (a JS expression
   re-evaluated whenever any DOM input/change/mutation event fires) plus
   a richer JavaScript surface inside `hx-on`: `q(selector)` jQuery-like
@@ -612,6 +614,86 @@ were calling them directly, import the `hx-live` extension or migrate
 to native equivalents. Vibetuner loads `hx-live` by default, so
 `htmx.live.take(...)` is available without extra setup.
 
+## Beta3 to Beta4 Changes
+
+Beta4 is a small follow-up to the 4.0 release candidate. The only
+vibetuner-relevant change is the rename of the CSP extension.
+
+### Upgrade Recipe
+
+For most projects this is a three-step bump:
+
+1. Bump `@alltuner/vibetuner` in `package.json` to a release that
+   ships `htmx.org@4.0.0-beta4` (or run
+   `just deps-scaffolding-pr` / `just deps-scaffolding`).
+2. Run `bun install` to refresh `node_modules` and `bun.lock`.
+3. If your `config.js` imports the CSP extension, update the path
+   from `hx-nonce.js` to `hx-csp.js` (see below).
+
+Run `just lint` and `just dev` to confirm the build still passes; no
+template changes are required.
+
+### `hx-nonce` Extension Renamed to `hx-csp`
+
+The extension file that beta3 shipped as
+`./node_modules/htmx.org/dist/ext/hx-nonce.js` is now
+`./node_modules/htmx.org/dist/ext/hx-csp.js` in beta4. The HTML
+attribute the extension reads is **still named `hx-nonce`** — only
+the extension itself was renamed (its scope grew beyond pure nonce
+gating, so the name was generalised to "CSP").
+
+**If you imported the extension in `config.js`:**
+
+```javascript
+// Before (beta3):
+import "./node_modules/htmx.org/dist/ext/hx-nonce.js";
+
+// After (beta4):
+import "./node_modules/htmx.org/dist/ext/hx-csp.js";
+```
+
+**If you registered the extension via `hx-ext`** (uncommon — most
+projects let vibetuner register it via the import above):
+
+```html
+<!-- Before (beta3): -->
+<meta name="htmx-config" content='extensions:"hx-nonce"'>
+
+<!-- After (beta4): -->
+<meta name="htmx-config" content='extensions:"hx-csp"'>
+```
+
+Template `hx-nonce="{{ csp_nonce }}"` attributes need no change.
+
+### Other Beta4 Changes (no action required)
+
+Beta4 also ships several bug fixes and minor additions that do not
+require any template or code changes in vibetuner projects:
+
+- New `hx-on` / `hx-trigger` modifiers (`prevent`, `stop`, `halt`,
+  `capture`, `passive`, `from:self`, `from:outside`) with a unified
+  arrow grammar: `hx-on="event mods -> code"`. Vibetuner templates use
+  plain `hx-on:event="..."` syntax which keeps working — adopt the
+  arrow form opportunistically when a modifier set would otherwise
+  duplicate code.
+- `rootMargin` modifier on the `intersect` trigger.
+- Fixes for `hx-get` / `hx-delete` over non-form inputs (these
+  variants no longer gather unrelated form fields when triggered on
+  bare inputs).
+- `outerSync` now re-processes the correct body on history restore.
+- `hx-ws` with `hx-trigger="load"` waits for the socket to open
+  instead of erroring.
+
+If you had been relying on the **undocumented dot-modifier shorthand**
+(`hx-on:click.prevent="..."`), it has been removed — use the new
+arrow grammar (`hx-on="click prevent -> ..."`) instead. Vibetuner
+templates do not use this shorthand, so a clean codebase needs no
+migration here.
+
+The `hx-trigger="..." queue:..."` modifier (a no-op since 4.0) was
+also hard-removed in beta4; use `hx-sync="this:queue all"` instead.
+Vibetuner templates do not use the `queue:` modifier either.
+
 ## Live Reactivity with `hx-live`
 
 `@alltuner/vibetuner` 10.15.0 imports `hx-live` by default from
@@ -628,8 +710,9 @@ no `'unsafe-inline'`, which blocks inline `onclick="..."` /
 `onchange="..."` attributes at the spec level. htmx attributes
 (`hx-on:`, `hx-live`) evaluate through htmx's nonced TrustedTypes
 pipeline, so they work where raw handler attributes do not. If you
-also enable `hx-nonce`, every `hx-live` expression gets the same
-defence-in-depth as `hx-get` / `hx-post`.
+also enable `hx-csp` (formerly `hx-nonce`, see
+[Beta3 to Beta4 Changes](#beta3-to-beta4-changes)), every `hx-live`
+expression gets the same defence-in-depth as `hx-get` / `hx-post`.
 
 ### Idiomatic patterns
 
@@ -833,3 +916,27 @@ htmx.config.defaultTimeout = 0; // no timeout, like v2
 - [ ] Test error handling (4xx/5xx now swap by default)
 - [ ] Test long-running requests against the 60-second timeout
 - [ ] Update `hx-swap` scroll modifiers to new syntax if used
+
+## Beta3 to Beta4 Checklist
+
+If you are already on htmx 4.0.0-beta3 (the common case for projects
+scaffolded since `@alltuner/vibetuner` 10.11.0), this is the only work
+that beta4 requires:
+
+- [ ] Bump `@alltuner/vibetuner` in `package.json` to a release that
+  ships `htmx.org@4.0.0-beta4`
+- [ ] Run `bun install`
+- [ ] If `config.js` imports the CSP extension, change
+  `import "./node_modules/htmx.org/dist/ext/hx-nonce.js";` to
+  `import "./node_modules/htmx.org/dist/ext/hx-csp.js";`
+- [ ] If any `<meta name="htmx-config" content='extensions:"hx-nonce"'>`
+  tags exist, change `hx-nonce` to `hx-csp` (uncommon — most projects
+  register the extension via the import above)
+- [ ] If you ever used the undocumented dot-modifier shorthand
+  (`hx-on:click.prevent="..."`), migrate to the new arrow grammar
+  (`hx-on="click prevent -> ..."`) — these shortcuts were removed in
+  beta4
+- [ ] If you used the `queue:` modifier on `hx-trigger` (a no-op since
+  4.0), migrate to `hx-sync="this:queue all"` — removed in beta4
+- [ ] No template changes required — `hx-nonce="{{ csp_nonce }}"`
+  attributes keep working
