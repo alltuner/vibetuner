@@ -1,5 +1,38 @@
 # Changelog
 
+## [10.17.0](https://github.com/alltuner/vibetuner/compare/v10.16.6...v10.17.0) (2026-05-27)
+
+
+### Features
+
+* **deps:** bump htmx.org to 4.0.0-beta4 and rename hx-nonce to hx-csp ([#1925](https://github.com/alltuner/vibetuner/issues/1925)) ([efaa0f8](https://github.com/alltuner/vibetuner/commit/efaa0f8301fcaf0ce32bf5f82e804d454166be7b))
+
+
+### Bug Fixes
+
+* **ci:** always publish JS and Jinja packages when their versions bump ([#1928](https://github.com/alltuner/vibetuner/issues/1928)) ([8e5cbe9](https://github.com/alltuner/vibetuner/commit/8e5cbe91b7aef79e9685690500bf326e0ff95d76))
+* triage ty diagnostics and wire ty into the lint flow ([#1929](https://github.com/alltuner/vibetuner/issues/1929)) ([d0fdd96](https://github.com/alltuner/vibetuner/commit/d0fdd962930816a5c02dd7c9ca5e3992c17b2dd3))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump anthropics/claude-code-action from 1.0.124 to 1.0.133 ([#1908](https://github.com/alltuner/vibetuner/issues/1908)) ([3ba8336](https://github.com/alltuner/vibetuner/commit/3ba8336f39b457d3e6e98677b0540f5f719774dd))
+* **deps:** bump cloudflare from 5.1.0 to 5.2.0 in /vibetuner-py ([#1916](https://github.com/alltuner/vibetuner/issues/1916)) ([1830c7e](https://github.com/alltuner/vibetuner/commit/1830c7e01b19dd5d6e4bba2c7cb6f649b48a6850))
+* **deps:** bump greenlet from 3.5.0 to 3.5.1 ([#1917](https://github.com/alltuner/vibetuner/issues/1917)) ([bfbaba5](https://github.com/alltuner/vibetuner/commit/bfbaba5b6a1659fe6748d5a6e640516da523a772))
+* **deps:** bump mongo from 8.3 to 8.3.2 ([#1922](https://github.com/alltuner/vibetuner/issues/1922)) ([16613d0](https://github.com/alltuner/vibetuner/commit/16613d0dca07f48a509c5198bed7ab115c96837d))
+* **deps:** bump mongo from 8.3 to 8.3.2 in /vibetuner-template ([#1920](https://github.com/alltuner/vibetuner/issues/1920)) ([f60b00e](https://github.com/alltuner/vibetuner/commit/f60b00ef32ac6de83d586e24bab1ef8e6b2e27a8))
+* **deps:** bump redis from 8.6-alpine to 8.8-alpine ([#1921](https://github.com/alltuner/vibetuner/issues/1921)) ([d9d4020](https://github.com/alltuner/vibetuner/commit/d9d4020b9bf843dfed3b9bf5e7646976507cbe70))
+* **deps:** bump redis from 8.6-alpine to 8.8-alpine in /vibetuner-template ([#1923](https://github.com/alltuner/vibetuner/issues/1923)) ([ca15a03](https://github.com/alltuner/vibetuner/commit/ca15a038fc645edeea9f65d19ec9686721a479a0))
+* **deps:** bump resend from 2.30.0 to 2.30.1 ([#1918](https://github.com/alltuner/vibetuner/issues/1918)) ([220f399](https://github.com/alltuner/vibetuner/commit/220f3998918dd23f57837257adeb22981f2bec53))
+* **deps:** bump ruff from 0.15.12 to 0.15.14 in /vibetuner-py ([#1914](https://github.com/alltuner/vibetuner/issues/1914)) ([1f6489e](https://github.com/alltuner/vibetuner/commit/1f6489edb8c3cc44b783dd8b0e5c2b35068c8c93))
+* **deps:** bump rumdl from 0.1.93 to 0.2.0 ([#1915](https://github.com/alltuner/vibetuner/issues/1915)) ([8b2c42c](https://github.com/alltuner/vibetuner/commit/8b2c42c1dcbf99d96f9f6c3505fb2cdb61201332))
+* **deps:** bump rumdl from 0.1.93 to 0.2.0 in /vibetuner-py ([#1912](https://github.com/alltuner/vibetuner/issues/1912)) ([caf9ca7](https://github.com/alltuner/vibetuner/commit/caf9ca7eb7fd8f344faeeb9ba84e1c8948e27ab9))
+* **deps:** bump ty from 0.0.35 to 0.0.39 in /vibetuner-py ([#1910](https://github.com/alltuner/vibetuner/issues/1910)) ([39ede3d](https://github.com/alltuner/vibetuner/commit/39ede3d439f92cb93fb1cbe0f06e5dd5b10c2b12))
+* **deps:** bump types-authlib from 1.6.11.20260514 to 1.6.11.20260518 in /vibetuner-py ([#1909](https://github.com/alltuner/vibetuner/issues/1909)) ([9c454e9](https://github.com/alltuner/vibetuner/commit/9c454e9962eb45c9d9371f033675871e82a13d05))
+* **deps:** update dependencies and pre-commit hooks ([#1926](https://github.com/alltuner/vibetuner/issues/1926)) ([d483230](https://github.com/alltuner/vibetuner/commit/d4832300952df1bd54566cd3d1e369a46f6d1b41))
+* **deps:** update fastapi[standard-no-fastapi-cloud-cli] requirement from &gt;=0.136.1 to &gt;=0.136.3 ([#1919](https://github.com/alltuner/vibetuner/issues/1919)) ([c43f430](https://github.com/alltuner/vibetuner/commit/c43f4307345230447165e00c5f157083df050eaa))
+* **deps:** update streaq[web] requirement from &lt;7.0.0,&gt;=6.4.0 to &gt;=6.5.0,&lt;7.0.0 ([#1913](https://github.com/alltuner/vibetuner/issues/1913)) ([2e0d681](https://github.com/alltuner/vibetuner/commit/2e0d681239465adafade03716b306ae40ab6fe16))
+
 ## [10.16.6](https://github.com/alltuner/vibetuner/compare/v10.16.5...v10.16.6) (2026-05-21)
 
 

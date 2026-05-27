@@ -2,13 +2,6 @@ version = 1
 revision = 3
 requires-python = ">=3.11"
 
-[options]
-exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
-exclude-newer-span = "P2D"
-
-[options.exclude-newer-package]
-vibetuner = false
-
 [[package]]
 name = "aioboto3"
 version = "15.5.0"
@@ -3103,7 +3096,7 @@ wheels = [
 
 [[package]]
 name = "vibetuner"
-version = "10.16.6"
+version = "10.17.0"
 source = { directory = "vibetuner-py" }
 dependencies = [
     { name = "aioboto3" },
@@ -3213,7 +3206,7 @@ provides-extras = ["dev"]
 
 [[package]]
 name = "vibetuner-scaffolding"
-version = "10.16.6"
+version = "10.17.0"
 source = { virtual = "." }
 
 [package.dev-dependencies]
