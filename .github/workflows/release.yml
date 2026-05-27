@@ -264,12 +264,12 @@ jobs:
             JS_NEEDED="true"
             echo "✅ Building JavaScript (major/minor version)"
           elif [ -n "$PREV_TAG" ]; then
-            JS_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-js/" | grep -vcE "package\.json" || true)
+            JS_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -cE "^vibetuner-js/" || true)
             if [ "$JS_CHANGED" -gt 0 ]; then
               JS_NEEDED="true"
               echo "✅ JavaScript has changes"
             else
-              echo "❌ JavaScript unchanged (only version files)"
+              echo "❌ JavaScript unchanged"
             fi
           else
             JS_NEEDED="true"
@@ -287,12 +287,12 @@ jobs:
             # Trigger on changes to either the package itself or the upstream
             # templates it mirrors, so a Python-side template edit causes the
             # mirror to be republished.
-            JINJA_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -E "^vibetuner-jinja/|^vibetuner-py/src/vibetuner/templates/frontend/" | grep -vcE "package\.json" || true)
+            JINJA_CHANGED=$(git diff --name-only "$PREV_TAG..HEAD" | grep -cE "^vibetuner-jinja/|^vibetuner-py/src/vibetuner/templates/frontend/" || true)
             if [ "$JINJA_CHANGED" -gt 0 ]; then
               JINJA_NEEDED="true"
               echo "✅ Jinja has changes"
             else
-              echo "❌ Jinja unchanged (only version files)"
+              echo "❌ Jinja unchanged"
             fi
           else
             JINJA_NEEDED="true"
