@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.17.1](https://github.com/alltuner/vibetuner/compare/v10.17.0...v10.17.1) (2026-05-27)
+
+
+### Bug Fixes
+
+* gate prek auto-update with 3-day cooldown and roll back rumdl-pre-commit ([#1931](https://github.com/alltuner/vibetuner/issues/1931)) ([aa671cb](https://github.com/alltuner/vibetuner/commit/aa671cbbdf07eca30c5c967ace1040b7139cd56d))
+
 ## [10.17.0](https://github.com/alltuner/vibetuner/compare/v10.16.6...v10.17.0) (2026-05-27)
 
 
