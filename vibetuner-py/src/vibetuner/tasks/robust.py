@@ -182,7 +182,7 @@ def robust_task(
     _ensure_middleware(worker)
 
     def decorator(fn: Callable) -> Any:
-        task_name = task_name_arg or fn.__name__
+        task_name = task_name_arg or getattr(fn, "__name__", repr(fn))
         _configs[task_name] = _RobustConfig(
             max_retries=max_retries,
             backoff_base=backoff_base,
@@ -245,7 +245,7 @@ def robust_cron(
     _ensure_middleware(worker)
 
     def decorator(fn: Callable) -> Any:
-        task_name = task_name_arg or fn.__name__
+        task_name = task_name_arg or getattr(fn, "__name__", repr(fn))
         _configs[task_name] = _RobustConfig(
             max_retries=max_retries,
             backoff_base=backoff_base,

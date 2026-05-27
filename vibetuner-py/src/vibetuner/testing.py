@@ -2,7 +2,7 @@
 # ABOUTME: Provides test client, mock auth, mock DB, mock tasks, and config overrides.
 import os
 import uuid
-from typing import Any, AsyncGenerator
+from typing import Any, AsyncGenerator, Iterator
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -95,7 +95,7 @@ async def _vibetuner_db_session() -> AsyncGenerator[str, None]:
     # Make every consumer of ``settings.mongo_dbname`` (framework code,
     # user code) target the session test database for the whole run.
     original = type(settings).mongo_dbname
-    type(settings).mongo_dbname = property(lambda self: test_db_name)  # type: ignore[assignment]
+    type(settings).mongo_dbname = property(lambda self: test_db_name)  # type: ignore[assignment]  # ty: ignore[invalid-assignment]
     settings.__dict__.pop("mongo_dbname", None)
 
     session_client: AsyncMongoClient = AsyncMongoClient(
@@ -212,7 +212,7 @@ class MockAuth:
 
 
 @pytest.fixture
-def mock_auth() -> MockAuth:
+def mock_auth() -> Iterator[MockAuth]:
     """Fixture for mocking authentication in tests.
 
     Patches the Starlette ``AuthBackend`` used by vibetuner so that

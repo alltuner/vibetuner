@@ -96,7 +96,7 @@ def localized(func: Callable[..., Any]) -> Callable[..., Any]:
         async def privacy(request: Request):
             return render_template("privacy.html.jinja", request)
     """
-    func._localized = True
+    func._localized = True  # ty: ignore[unresolved-attribute]
 
     @wraps(func)
     async def wrapper(*args, **kwargs):
@@ -115,5 +115,5 @@ def localized(func: Callable[..., Any]) -> Callable[..., Any]:
         return await func(*args, **kwargs)
 
     # Preserve the _localized attribute on wrapper
-    wrapper._localized = True
+    wrapper._localized = True  # ty: ignore[unresolved-attribute]
     return wrapper

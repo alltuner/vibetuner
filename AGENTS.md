@@ -173,7 +173,8 @@ just lint-jinja              # Lint Jinja with djlint
 just lint-md                 # Lint markdown files
 just lint-toml               # Lint TOML with taplo
 just lint-yaml               # Lint YAML with dprint
-just type-check              # Type check Python with ty
+just type-check              # Type check at the repo root (template + tooling)
+just type-check-py           # Type check the vibetuner-py framework code with ty
 ```
 
 ### Testing (vibetuner-py)

@@ -38,7 +38,7 @@ __all__ = [
 # App-level template context: static globals and dynamic providers
 _context_lock = threading.RLock()
 _template_globals: dict[str, Any] = {}
-_context_providers: list[Callable[[], dict[str, Any]]] = []
+_context_providers: list[Callable[..., dict[str, Any]]] = []
 _provider_accepts_request: dict[Callable, bool] = {}
 
 
@@ -130,6 +130,8 @@ def render(template: str) -> Callable:
     """
 
     def decorator(func: Callable) -> Callable:
+        func_name = getattr(func, "__name__", repr(func))
+
         @functools.wraps(func)
         async def wrapper(*args: Any, **kwargs: Any) -> Response:
             # Extract request from kwargs or positional args
@@ -142,7 +144,7 @@ def render(template: str) -> Callable:
 
             if request is None:
                 raise TypeError(
-                    f"@render('{template}'): route '{func.__name__}' must accept "
+                    f"@render('{template}'): route '{func_name}' must accept "
                     "a 'request' parameter"
                 )
 
@@ -157,7 +159,7 @@ def render(template: str) -> Callable:
 
             if not isinstance(result, dict):
                 raise TypeError(
-                    f"@render('{template}'): route '{func.__name__}' must return "
+                    f"@render('{template}'): route '{func_name}' must return "
                     f"a dict or Response, got {type(result).__name__}"
                 )
 
@@ -178,6 +180,7 @@ def _collect_provider_context(request: Request | None = None) -> dict[str, Any]:
         providers = list(_context_providers)
     result: dict[str, Any] = {}
     for provider in providers:
+        provider_name = getattr(provider, "__name__", repr(provider))
         try:
             accepts_request = _provider_accepts_request.get(provider, False)
             if accepts_request and request is not None:
@@ -188,11 +191,11 @@ def _collect_provider_context(request: Request | None = None) -> dict[str, Any]:
                 result.update(ctx)
             else:
                 logger.error(
-                    f"Context provider '{provider.__name__}' returned "
+                    f"Context provider '{provider_name}' returned "
                     f"{type(ctx).__name__} instead of dict, skipping"
                 )
         except Exception as e:
-            logger.error(f"Context provider '{provider.__name__}' failed: {e}")
+            logger.error(f"Context provider '{provider_name}' failed: {e}")
     return result
 
 
@@ -792,19 +795,19 @@ def _project_context() -> dict[str, Any]:
 
 register_context_provider(_project_context)
 
-# Global Vars
-jinja_env.globals.update({"DEBUG": data_ctx.DEBUG})
-
-# Language URL helpers for SEO
-jinja_env.globals.update({"lang_url_for": lang_url_for})
-jinja_env.globals.update({"url_for_language": url_for_language})
-jinja_env.globals.update({"hreflang_tags": hreflang_tags})
-
 # Language picker (lazy import to avoid circular dependency on vibetuner.i18n)
 from vibetuner.i18n import language_picker as _language_picker  # noqa: E402
 
 
-jinja_env.globals.update({"language_picker": _language_picker})
+_extra_globals: dict[str, Any] = {
+    "DEBUG": data_ctx.DEBUG,
+    # Language URL helpers for SEO
+    "lang_url_for": lang_url_for,
+    "url_for_language": url_for_language,
+    "hreflang_tags": hreflang_tags,
+    "language_picker": _language_picker,
+}
+jinja_env.globals.update(_extra_globals)
 
 # Date Filters
 jinja_env.filters["timeago"] = timeago
@@ -834,7 +837,8 @@ def _ensure_custom_filters() -> None:
     # Hotreload is imported lazily to avoid pulling in vibetuner.frontend
     from vibetuner.frontend.hotreload import hotreload
 
-    jinja_env.globals.update({"hotreload": hotreload})
+    _hotreload_global: dict[str, Any] = {"hotreload": hotreload}
+    jinja_env.globals.update(_hotreload_global)
 
     app_config = load_app_config()
     builtin_filters = set(jinja_env.filters.keys())

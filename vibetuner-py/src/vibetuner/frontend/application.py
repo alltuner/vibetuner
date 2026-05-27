@@ -49,7 +49,7 @@ if settings.rate_limit.enabled:
     from vibetuner.ratelimit import limiter
 
     app.state.limiter = limiter
-    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # ty: ignore[invalid-argument-type]
 
 # Static files
 app.mount(f"/static/v{ctx.v_hash}/css", StaticFiles(directory=paths.css), name="css")

@@ -21,7 +21,7 @@ class ScopeCapabilityDetector(CapabilityDetector):
     async def detect(self, token: dict[str, Any]) -> list[str]:
         scope = token.get("scope", "")
         if isinstance(scope, list):
-            return list(scope)
+            return [str(s) for s in scope]
         if isinstance(scope, str):
             return [s for s in scope.split() if s]
         return []

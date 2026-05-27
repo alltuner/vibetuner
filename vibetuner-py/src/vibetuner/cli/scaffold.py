@@ -28,7 +28,7 @@ def _get_git_config(key: str, cwd: Path) -> str | None:
         repo = git.Repo(cwd, search_parent_directories=True)
         reader = repo.config_reader()
         section, option = key.split(".", 1)
-        return reader.get_value(section, option)
+        return str(reader.get_value(section, option))
     except (git.InvalidGitRepositoryError, git.GitError, KeyError, ValueError):
         return None
 
