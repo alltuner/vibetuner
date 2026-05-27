@@ -47,10 +47,18 @@ update-and-commit: update-all update-precommit
         vibetuner-template/package.json \
         || echo "No changes to commit"
 
-# Update pre-commit hooks and commit changes
+# Update pre-commit hooks and commit changes.
+#
+# `--cooldown-days 3` makes prek skip any hook tag younger than 3 days.
+# Some hooks (e.g. rvben/rumdl-pre-commit) strict-pin their runtime
+# tool to the matching version and tag both within seconds, so bumping
+# the hook immediately leaves the strict-pinned PyPI package unresolv-
+# able for anyone whose resolver doesn't see it yet (uv `exclude-newer`,
+# mirror lag, offline caches). 3 days outlasts the typical
+# `exclude-newer = "2 days"` window.
 [group('Dependencies')]
 update-precommit:
-    @uv run --frozen prek auto-update
+    @uv run --frozen prek auto-update --cooldown-days 3
     @git add vibetuner-template/.pre-commit-config.yaml
     @git commit -m "chore: update pre-commit hooks" \
         vibetuner-template/.pre-commit-config.yaml \
