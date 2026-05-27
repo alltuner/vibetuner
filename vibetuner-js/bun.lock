@@ -9,7 +9,7 @@
         "@tailwindcss/cli": "^4.3.0",
         "@tailwindcss/typography": "^0.5.19",
         "daisyui": "^5.5.19",
-        "htmx.org": "4.0.0-beta3",
+        "htmx.org": "4.0.0-beta4",
         "tailwindcss": "^4.3.0",
       },
     },
@@ -101,7 +101,7 @@
 
     "graceful-fs": ["graceful-fs@4.2.11", "", {}, "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ=="],
 
-    "htmx.org": ["htmx.org@4.0.0-beta3", "", { "bin": { "upgrade-check": "dist/scripts/upgrade-check.js" } }, "sha512-FCs8/Umq4hy2TTdrzdOn7uQDCn6JaM+0AE4lyYuk4djBzA3Ug2y67LxaifpQElKAcvX7MgUsYv9zkX4UqIRhcw=="],
+    "htmx.org": ["htmx.org@4.0.0-beta4", "", { "bin": { "upgrade-check": "dist/scripts/upgrade-check.js" } }, "sha512-gnz4FUkbWSGc+OK0MUq7KCyWDElaIJoQegwkdfL9Os8xwKugHvAvFJY5AL8n1vhTVDks3mugfOK5BWfZWKDqAw=="],
 
     "is-extglob": ["is-extglob@2.1.1", "", {}, "sha512-SbKbANkN603Vi4jEZv49LeVJMn4yGwsbzZworEoyEiutsN3nJYdbO36zfhGJ6QEDpOZIFkDtnq5JRxmvl3jsoQ=="],
 

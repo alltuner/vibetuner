@@ -785,22 +785,30 @@ turn the response into an error page or a 0-byte download. App code
 should still set `media_type=` explicitly when it matters, but the
 guard prevents the worst-case UX when something slips through.
 
-### htmx Nonce Protection (opt-in)
+### htmx CSP Protection (opt-in)
 
-!!! note "Requires `@alltuner/vibetuner` ≥ 10.11.0"
-    The `hx-nonce` extension file ships with `htmx.org@4.0.0-beta3`, which
-    is pulled transitively by `@alltuner/vibetuner@10.11.0` and later. On
-    older versions the bundler will fail with
-    `Could not resolve "./node_modules/htmx.org/dist/ext/hx-nonce.js"`.
+!!! note "Requires `htmx.org@4.0.0-beta4`"
+    The `hx-csp` extension file ships with `htmx.org@4.0.0-beta4`, pulled
+    transitively by the matching `@alltuner/vibetuner` release. On older
+    versions the bundler will fail with
+    `Could not resolve "./node_modules/htmx.org/dist/ext/hx-csp.js"`
+    (releases shipping htmx beta3 carry the extension as `hx-nonce.js`).
     Bump `@alltuner/vibetuner` in `package.json` and re-run `bun install`
     before enabling.
 
-htmx 4.0.0-beta3 ships an `hx-nonce` extension that gates htmx attribute
-processing behind the page CSP nonce. Elements without a matching
-`hx-nonce` attribute are stripped at init time, providing a
-defence-in-depth layer against HTML injection attacks: even if an
-attacker manages to inject HTML, the browser will not honour any
-`hx-get`/`hx-post`/etc. attributes on injected elements.
+htmx 4.0.0-beta4 ships an `hx-csp` extension (renamed from `hx-nonce`
+in beta3) that gates htmx attribute processing behind the page CSP
+nonce. Elements without a matching `hx-nonce` attribute are stripped
+at init time, providing a defence-in-depth layer against HTML
+injection attacks: even if an attacker manages to inject HTML, the
+browser will not honour any `hx-get`/`hx-post`/etc. attributes on
+injected elements. The HTML attribute is still named `hx-nonce`; only
+the extension itself was renamed.
+
+If you previously enabled the extension on a beta3-shipping vibetuner
+release, see
+[Beta3 to Beta4 Changes](htmx-migration.md#beta3-to-beta4-changes) in
+the migration guide for the import-path update.
 
 The framework's templates already stamp `hx-nonce="{{ csp_nonce }}"` on
 their htmx-bearing elements, so the extension is safe to enable from a
@@ -812,7 +820,7 @@ fresh project as soon as you mirror the pattern in your own templates.
 
     ```javascript
     // Add your custom imports below:
-    import "./node_modules/htmx.org/dist/ext/hx-nonce.js";
+    import "./node_modules/htmx.org/dist/ext/hx-csp.js";
     ```
 
 2. Add `hx-nonce="{{ csp_nonce }}"` to every element in your templates
@@ -862,7 +870,7 @@ and every `<style>` tag must carry `nonce="{{ csp_nonce }}"`.
 
 The framework's own templates already follow this pattern (the inline
 styles in `skeleton.html.jinja` and `theme.html.jinja` are nonced; the
-htmx 4.0.0-beta3 indicator stylesheet uses a constructable
+htmx 4.0.0-beta4 indicator stylesheet uses a constructable
 `CSSStyleSheet` which does not need `'unsafe-inline'`). Before flipping
 this flag in your project:
 

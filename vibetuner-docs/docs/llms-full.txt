@@ -2029,25 +2029,25 @@ a 0-byte download and Chrome show a generic error page.
 and use the request nonce instead. Inline `style="..."` attributes will
 be blocked by the browser and every `<style>` tag must carry
 `nonce="{{ csp_nonce }}"`. Framework templates already follow this
-pattern; htmx 4.0.0-beta3's indicator stylesheet uses a constructable
+pattern; htmx 4.0.0-beta4's indicator stylesheet uses a constructable
 `CSSStyleSheet` so no inline style is needed there either. Audit user
 templates for inline `style="..."` before flipping. On older releases
 the env var is silently ignored, so bump `vibetuner` in `pyproject.toml`
 and re-run `uv sync` first.
 
-**htmx Nonce Protection (opt-in, requires `@alltuner/vibetuner` ≥ 10.11.0):**
-htmx 4.0.0-beta3 ships an `hx-nonce` extension that strips htmx
-attributes from elements without a matching `hx-nonce`. Stamp
-`hx-nonce="{{ csp_nonce }}"` on every htmx-bearing element and add
-`import "htmx.org/dist/ext/hx-nonce.js";` to `config.js` custom imports.
-Framework templates already include the attribute. Useful defence-in-depth
-even though vibetuner already enforces strict script-src. The extension
-file only ships with `htmx.org@4.0.0-beta3`, pulled transitively by
-`@alltuner/vibetuner` 10.11.0+; on older versions the bundler errors
-with `Could not resolve "./node_modules/htmx.org/dist/ext/hx-nonce.js"`.
+**htmx CSP Protection (opt-in, requires `htmx.org@4.0.0-beta4`):**
+htmx 4.0.0-beta4 ships an `hx-csp` extension (renamed from `hx-nonce`
+in beta3) that strips htmx attributes from elements without a matching
+`hx-nonce`. Stamp `hx-nonce="{{ csp_nonce }}"` on every htmx-bearing
+element and add `import "htmx.org/dist/ext/hx-csp.js";` to `config.js`
+custom imports. Framework templates already include the attribute.
+Useful defence-in-depth even though vibetuner already enforces strict
+script-src. The HTML attribute is still named `hx-nonce`; only the
+extension itself was renamed. On older releases that ship
+`htmx.org@4.0.0-beta3` the file is named `hx-nonce.js`.
 
 **htmx Live Reactivity (default-on, requires `@alltuner/vibetuner` ≥ 10.15.0):**
-htmx 4.0.0-beta3's `hx-live` extension is loaded by default from the
+htmx 4's `hx-live` extension is loaded by default from the
 framework-managed block of `config.js`, alongside `hx-preload`. This is
 vibetuner's recommended path for client-side reactivity — chip lists,
 derived form fields, live filters, paired controls, inline validation.
@@ -2058,7 +2058,7 @@ event-listener boilerplate.
 CSP blocks inline `onclick="..."` / `onchange="..."` attributes at the spec
 level. `hx-on:` and `hx-live` evaluate through htmx's nonced TrustedTypes
 pipeline, so they work where raw handler attributes do not. Pair with the
-opt-in `hx-nonce` extension for defence-in-depth.
+opt-in `hx-csp` extension for defence-in-depth.
 
 **Primitives** (full reference at <https://four.htmx.org/extensions/hx-live/>):
 
@@ -2579,11 +2579,13 @@ manager linker mode (Bun hoisted or isolated, pnpm-style stores, npm v9+ isolate
 htmx 4.0.0-beta3 (the 4.0 release candidate) ships several additions
 relevant to vibetuner projects:
 
-- **`hx-nonce` extension** — gates htmx attribute processing behind the
-  page CSP nonce. Stamp `hx-nonce="{{ csp_nonce }}"` on every htmx-bearing
-  element and import `htmx.org/dist/ext/hx-nonce.js` in `config.js` to
-  enable. Framework templates already follow the pattern. Elements
-  without a matching nonce are stripped (fail-closed)
+- **`hx-csp` extension** (introduced in beta3 as `hx-nonce`, renamed in
+  beta4) — gates htmx attribute processing behind the page CSP nonce.
+  Stamp `hx-nonce="{{ csp_nonce }}"` on every htmx-bearing element and
+  import `htmx.org/dist/ext/hx-csp.js` in `config.js` to enable. Framework
+  templates already follow the pattern. Elements without a matching nonce
+  are stripped (fail-closed). The HTML attribute is still named
+  `hx-nonce`; only the extension itself was renamed
 - **`hx-live` extension** — DOM-reactivity via `hx-live="..."` plus a
   richer `hx-on` JS surface (`q()`, `toggle()`, `debounce()`). **Default-on
   in vibetuner** since `@alltuner/vibetuner` 10.15.0; see the Live
