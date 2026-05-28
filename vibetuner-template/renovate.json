@@ -3,6 +3,8 @@
   "extends": [
     "config:recommended"
   ],
+  "minimumReleaseAge": "2 days",
+  "internalChecksFilter": "strict",
   "bun": {
     "enabled": true
   },
