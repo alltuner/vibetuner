@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.18.0](https://github.com/alltuner/vibetuner/compare/v10.17.1...v10.18.0) (2026-05-28)
+
+
+### Features
+
+* **scaffold:** enforce 2-day cooldown on Renovate updates ([#1933](https://github.com/alltuner/vibetuner/issues/1933)) ([4108820](https://github.com/alltuner/vibetuner/commit/4108820f344492d23a6260ce5204ce6f998591df))
+
 ## [10.17.1](https://github.com/alltuner/vibetuner/compare/v10.17.0...v10.17.1) (2026-05-27)
 
 
