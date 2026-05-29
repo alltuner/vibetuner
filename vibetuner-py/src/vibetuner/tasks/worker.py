@@ -9,6 +9,7 @@ from vibetuner.tasks.lifespan import lifespan
 worker: Worker | None = (
     Worker(
         redis_url=str(settings.redis_url),
+        redis_kwargs=settings.redis_socket_kwargs,
         queue_name=settings.redis_key_prefix.rstrip(":"),
         lifespan=lifespan,
         concurrency=settings.worker_concurrency,
