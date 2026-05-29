@@ -581,6 +581,25 @@ vibetuner run prod worker --workers 4
 | Concurrency | `WORKER_CONCURRENCY` | `16` | Max concurrent tasks per worker |
 | Queue name | — | Project slug | Derived from `REDIS_KEY_PREFIX` |
 | Monitoring port | `--port` flag | `11111` | Port for the worker web UI |
+| Socket timeout | `REDIS_SOCKET_TIMEOUT` | `30` | Seconds before a hung Redis read raises (0 disables) |
+| Connect timeout | `REDIS_SOCKET_CONNECT_TIMEOUT` | `10` | Seconds before a Redis connect attempt gives up (0 disables) |
+| Keepalive | `REDIS_SOCKET_KEEPALIVE` | `true` | Enable TCP keepalive on the Redis connection |
+| Health check | `REDIS_HEALTH_CHECK_INTERVAL` | `30` | Seconds between PINGs on idle connections (0 disables) |
+
+### Connection resilience
+
+The worker holds a long-lived Redis connection. Without a socket timeout, a
+silently-dropped TCP connection (a VPN or network blip) leaves a blocking read
+that never returns, wedging the worker's event loop indefinitely: the container
+stays up but stops processing tasks and crons, with no automatic recovery.
+
+The `REDIS_SOCKET_TIMEOUT`, `REDIS_SOCKET_CONNECT_TIMEOUT`,
+`REDIS_SOCKET_KEEPALIVE`, and `REDIS_HEALTH_CHECK_INTERVAL` settings guard
+against this: a dead connection raises an error instead of hanging, so the
+worker reconnects or exits and is restarted by its `restart` policy. The
+defaults are safe for the worker, whose blocking reads are bounded to well
+under a second. Raise `REDIS_SOCKET_TIMEOUT` if your network has high latency,
+or set it to `0` to disable it entirely.
 
 ## Testing Tasks
 

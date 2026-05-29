@@ -2326,6 +2326,14 @@ vibetuner run prod worker --workers 4
 Configuration: `REDIS_URL` (required), `WORKER_CONCURRENCY` (default 16),
 `--port` flag (default 11111 for monitoring UI).
 
+Connection resilience: the worker holds a long-lived Redis connection. Without
+a socket timeout, a silently-dropped TCP connection (a VPN/network blip) leaves
+a blocking read that never returns, wedging the worker's event loop
+indefinitely. `REDIS_SOCKET_TIMEOUT` (default 30s, 0 disables),
+`REDIS_SOCKET_CONNECT_TIMEOUT` (default 10s), `REDIS_SOCKET_KEEPALIVE` (default
+true), and `REDIS_HEALTH_CHECK_INTERVAL` (default 30s) make a dead connection
+raise instead of hang, so the worker reconnects or exits and is restarted.
+
 #### Testing Tasks
 
 Use the `mock_tasks` fixture:

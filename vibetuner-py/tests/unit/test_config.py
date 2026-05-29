@@ -173,6 +173,52 @@ class TestLoadProjectConfig:
             assert result.project_slug == "default_project"
 
 
+class TestRedisSocketKwargs:
+    """Test redis_socket_kwargs resilience options for long-lived clients."""
+
+    def test_defaults_enable_resilience(self):
+        """By default, socket timeouts, keepalive and health checks are on."""
+        config = CoreConfiguration(project=ProjectConfiguration())
+        kwargs = config.redis_socket_kwargs
+        assert kwargs["socket_timeout"] == 30.0
+        assert kwargs["socket_connect_timeout"] == 10.0
+        assert kwargs["socket_keepalive"] is True
+        assert kwargs["health_check_interval"] == 30.0
+
+    def test_socket_timeout_disabled_when_zero(self):
+        """A zero socket_timeout is omitted so redis-py treats it as no timeout."""
+        config = CoreConfiguration(
+            project=ProjectConfiguration(), redis_socket_timeout=0
+        )
+        assert "socket_timeout" not in config.redis_socket_kwargs
+
+    def test_connect_timeout_disabled_when_zero(self):
+        """A zero socket_connect_timeout is omitted."""
+        config = CoreConfiguration(
+            project=ProjectConfiguration(), redis_socket_connect_timeout=0
+        )
+        assert "socket_connect_timeout" not in config.redis_socket_kwargs
+
+    def test_overrides_from_env_vars(self):
+        """REDIS_SOCKET_* and REDIS_HEALTH_CHECK_INTERVAL env vars are honored."""
+        with patch.dict(
+            "os.environ",
+            {
+                "REDIS_SOCKET_TIMEOUT": "5",
+                "REDIS_SOCKET_CONNECT_TIMEOUT": "2",
+                "REDIS_SOCKET_KEEPALIVE": "false",
+                "REDIS_HEALTH_CHECK_INTERVAL": "15",
+            },
+            clear=False,
+        ):
+            config = CoreConfiguration(project=ProjectConfiguration())
+            kwargs = config.redis_socket_kwargs
+            assert kwargs["socket_timeout"] == 5.0
+            assert kwargs["socket_connect_timeout"] == 2.0
+            assert kwargs["socket_keepalive"] is False
+            assert kwargs["health_check_interval"] == 15.0
+
+
 class TestCoreConfigurationLocaleDetection:
     """Test locale_detection field in CoreConfiguration."""
 

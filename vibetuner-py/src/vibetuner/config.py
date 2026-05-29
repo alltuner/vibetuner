@@ -3,7 +3,7 @@ import hashlib
 import os
 from datetime import datetime
 from functools import cached_property
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 import yaml
 from pydantic import (
@@ -330,6 +330,16 @@ class CoreConfiguration(BaseSettings):
 
     worker_concurrency: int = 16
 
+    # Redis connection resilience for long-lived clients (e.g. the streaq worker).
+    # Without a socket timeout, a silently-dropped TCP connection leaves a blocking
+    # read that never returns, wedging the worker's event loop indefinitely. A
+    # non-zero socket_timeout turns that hang into a raised error so the worker
+    # reconnects or exits and is restarted. Set the timeouts to 0 to disable.
+    redis_socket_timeout: float = 30.0
+    redis_socket_connect_timeout: float = 10.0
+    redis_socket_keepalive: bool = True
+    redis_health_check_interval: float = 30.0
+
     # Port configuration (read from DEV_PORT / WORKER_PORT env or .env.local)
     dev_port: UnprivilegedPort | None = None
     worker_port: UnprivilegedPort | None = None
@@ -411,6 +421,24 @@ class CoreConfiguration(BaseSettings):
     @property
     def workers_available(self) -> bool:
         return self.redis_url is not None
+
+    @property
+    def redis_socket_kwargs(self) -> dict[str, Any]:
+        """Connection-resilience kwargs for long-lived Redis clients.
+
+        Passed through to the underlying redis-py client so a dead connection
+        raises instead of hanging the event loop. A timeout of 0 is omitted,
+        which redis-py treats as no timeout.
+        """
+        kwargs: dict[str, Any] = {
+            "socket_keepalive": self.redis_socket_keepalive,
+            "health_check_interval": self.redis_health_check_interval,
+        }
+        if self.redis_socket_timeout > 0:
+            kwargs["socket_timeout"] = self.redis_socket_timeout
+        if self.redis_socket_connect_timeout > 0:
+            kwargs["socket_connect_timeout"] = self.redis_socket_connect_timeout
+        return kwargs
 
     @cached_property
     def mongo_dbname(self) -> str:
