@@ -585,6 +585,8 @@ vibetuner run prod worker --workers 4
 | Connect timeout | `REDIS_SOCKET_CONNECT_TIMEOUT` | `10` | Seconds before a Redis connect attempt gives up (0 disables) |
 | Keepalive | `REDIS_SOCKET_KEEPALIVE` | `true` | Enable TCP keepalive on the Redis connection |
 | Health check | `REDIS_HEALTH_CHECK_INTERVAL` | `30` | Seconds between PINGs on idle connections (0 disables) |
+| Watchdog timeout | `WORKER_WATCHDOG_TIMEOUT` | `60` | Seconds of event-loop stall before the process force-exits (0 disables) |
+| Watchdog interval | `WORKER_WATCHDOG_INTERVAL` | `5` | Seconds between watchdog heartbeats/checks |
 
 ### Connection resilience
 
@@ -600,6 +602,32 @@ worker reconnects or exits and is restarted by its `restart` policy. The
 defaults are safe for the worker, whose blocking reads are bounded to well
 under a second. Raise `REDIS_SOCKET_TIMEOUT` if your network has high latency,
 or set it to `0` to disable it entirely.
+
+### Liveness watchdog
+
+As a backstop for any event-loop stall (not just Redis), the worker runs a
+watchdog: a daemon thread refreshes a heartbeat from inside the loop, and if
+the loop stops ticking for longer than `WORKER_WATCHDOG_TIMEOUT` seconds the
+process force-exits so its `restart` policy starts a fresh worker. This catches
+wedges a socket timeout can't, such as a blocking call in a task. Set
+`WORKER_WATCHDOG_TIMEOUT=0` to disable it. The threshold must exceed your
+longest legitimate loop-blocking work; CPU-bound tasks should use streaq's sync
+task support so they run off the event loop.
+
+### Worker healthcheck
+
+The scaffolded `compose.prod.yml` gives the `worker` service a healthcheck that
+runs `vibetuner worker-health`. The command exits non-zero when no live worker
+is found — it checks for a fresh streaq health key in Redis, which the worker
+renews from inside its event loop, so a wedged or stopped worker reads as
+unhealthy. Plain Docker Compose does not restart on healthcheck status (the
+watchdog handles recovery), but the healthcheck surfaces a "live but hung"
+worker to `docker ps`, orchestrators (Kubernetes, Swarm), and autoheal
+sidecars. Run it manually with:
+
+```bash
+vibetuner worker-health && echo healthy || echo unhealthy
+```
 
 ## Testing Tasks
 
