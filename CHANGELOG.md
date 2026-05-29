@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.19.0](https://github.com/alltuner/vibetuner/compare/v10.18.0...v10.19.0) (2026-05-29)
+
+
+### Features
+
+* add worker liveness watchdog and healthcheck ([#1939](https://github.com/alltuner/vibetuner/issues/1939)) ([8b3a5ff](https://github.com/alltuner/vibetuner/commit/8b3a5ff907039a09162993884cdf68e9de29c21d))
+
+
+### Bug Fixes
+
+* add Redis socket resilience to the streaq worker connection ([#1936](https://github.com/alltuner/vibetuner/issues/1936)) ([0efc685](https://github.com/alltuner/vibetuner/commit/0efc685b2fb6954bb0da5ef9ea8c2dcf8bd0bfee))
+
 ## [10.18.0](https://github.com/alltuner/vibetuner/compare/v10.17.1...v10.18.0) (2026-05-28)
 
 
