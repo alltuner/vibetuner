@@ -340,6 +340,13 @@ class CoreConfiguration(BaseSettings):
     redis_socket_keepalive: bool = True
     redis_health_check_interval: float = 30.0
 
+    # Liveness watchdog: a thread force-exits the worker if the event loop
+    # stops ticking for longer than the timeout, so a stalled (but not crashed)
+    # process is restarted by its `restart` policy. Set the timeout to 0 to
+    # disable. The interval is how often the loop beats and the thread checks.
+    worker_watchdog_timeout: float = 60.0
+    worker_watchdog_interval: float = 5.0
+
     # Port configuration (read from DEV_PORT / WORKER_PORT env or .env.local)
     dev_port: UnprivilegedPort | None = None
     worker_port: UnprivilegedPort | None = None

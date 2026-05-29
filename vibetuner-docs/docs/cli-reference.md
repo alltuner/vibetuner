@@ -114,6 +114,17 @@ vibetuner run prod [frontend|worker] [--port PORT] [--host HOST] [--workers COUN
 - Disables hot reload and honors `--workers` for both frontend and worker services.
 - Useful for containerless deployments or reproducing production settings locally.
 
+## `vibetuner worker-health`
+
+```bash
+vibetuner worker-health
+```
+
+- Exits `0` if a live worker is found, non-zero otherwise.
+- Checks for a fresh streaq health key in Redis, which the worker renews from
+  inside its event loop, so a wedged or stopped worker reads as unhealthy.
+- Used as the `worker` service healthcheck in the scaffolded `compose.prod.yml`.
+
 ## `vibetuner db`
 
 Database management commands for SQL databases (SQLModel/SQLAlchemy).

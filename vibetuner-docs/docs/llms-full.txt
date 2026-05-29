@@ -2334,6 +2334,18 @@ indefinitely. `REDIS_SOCKET_TIMEOUT` (default 30s, 0 disables),
 true), and `REDIS_HEALTH_CHECK_INTERVAL` (default 30s) make a dead connection
 raise instead of hang, so the worker reconnects or exits and is restarted.
 
+Liveness watchdog: as a backstop for any event-loop stall (not just Redis), the
+worker runs a daemon thread that force-exits the process if the loop stops
+ticking for `WORKER_WATCHDOG_TIMEOUT` seconds (default 60, 0 disables;
+`WORKER_WATCHDOG_INTERVAL` default 5), so its `restart` policy starts a fresh
+worker.
+
+Worker healthcheck: `vibetuner worker-health` exits non-zero when no live
+worker is found (it checks for a fresh streaq health key in Redis, renewed from
+inside the worker's event loop). The scaffolded `compose.prod.yml` wires it as
+the worker service healthcheck for orchestrators / autoheal; recovery on plain
+Compose comes from the watchdog.
+
 #### Testing Tasks
 
 Use the `mock_tasks` fixture:

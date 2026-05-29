@@ -6,6 +6,12 @@ services:
       - path: .env
         required: false
     command: ["prod", "worker"]
+    healthcheck:
+      test: ["CMD", "vibetuner", "worker-health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
     labels:
       com.centurylinklabs.watchtower.enable: "${ENABLE_WATCHTOWER:-false}"
   frontend:

@@ -10,6 +10,7 @@ from vibetuner.logging import logger
 from vibetuner.mongo import init_mongodb, teardown_mongodb
 from vibetuner.runtime_config import RuntimeConfig
 from vibetuner.sqlmodel import init_sqlmodel, teardown_sqlmodel
+from vibetuner.tasks.watchdog import LoopWatchdog
 
 
 @asynccontextmanager
@@ -24,7 +25,18 @@ async def base_lifespan() -> AsyncGenerator[Context, None]:
         await RuntimeConfig.refresh_cache()
         logger.debug("Runtime config cache initialized")
 
+    watchdog: LoopWatchdog | None = None
+    if settings.worker_watchdog_timeout > 0:
+        watchdog = LoopWatchdog(
+            timeout=settings.worker_watchdog_timeout,
+            interval=settings.worker_watchdog_interval,
+        )
+        watchdog.start()
+
     yield ctx
+
+    if watchdog is not None:
+        await watchdog.stop()
 
     await teardown_sqlmodel()
     await teardown_mongodb()

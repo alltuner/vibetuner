@@ -132,6 +132,42 @@ def version(
     console.print(table)
 
 
+@app.command(name="worker-health")
+async def worker_health() -> None:
+    """Exit 0 if a worker is alive, else exit 1 (for container healthchecks).
+
+    The streaq worker renews a health key in Redis from inside its event loop,
+    so a wedged loop lets the key expire. This checks for a fresh key.
+    """
+    from vibetuner.config import settings
+
+    if not settings.workers_available:
+        logger.error("worker-health: REDIS_URL not configured")
+        raise typer.Exit(code=1)
+
+    import redis.asyncio as aioredis
+
+    queue_name = settings.redis_key_prefix.rstrip(":")
+    pattern = f"streaq:{queue_name}:health:*"
+    client = aioredis.from_url(
+        str(settings.redis_url), socket_timeout=3, socket_connect_timeout=3
+    )
+    found = False
+    try:
+        async for _key in client.scan_iter(match=pattern, count=100):
+            found = True
+            break
+    except Exception as exc:
+        logger.error("worker-health: Redis check failed: {}", exc)
+        raise typer.Exit(code=1) from exc
+    finally:
+        await client.aclose()
+
+    if not found:
+        logger.error("worker-health: no live worker found for queue {}", queue_name)
+        raise typer.Exit(code=1)
+
+
 app.add_typer(config_app, name="config")
 app.add_typer(crypto_app, name="crypto")
 app.add_typer(db_app, name="db")
