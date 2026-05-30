@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.20.0](https://github.com/alltuner/vibetuner/compare/v10.19.0...v10.20.0) (2026-05-30)
+
+
+### Features
+
+* make strict-CSP hx-csp adoption ergonomic ([#1940](https://github.com/alltuner/vibetuner/issues/1940)) ([80e4bd4](https://github.com/alltuner/vibetuner/commit/80e4bd41925d3a246afb0df318768d93b58952e3))
+
 ## [10.19.0](https://github.com/alltuner/vibetuner/compare/v10.18.0...v10.19.0) (2026-05-29)
 
 
