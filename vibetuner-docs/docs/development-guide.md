@@ -790,11 +790,13 @@ guard prevents the worst-case UX when something slips through.
 
 !!! note "Requires `htmx.org@4.0.0-beta4`"
     The `hx-csp` extension file ships with `htmx.org@4.0.0-beta4`, pulled
-    transitively by the matching `@alltuner/vibetuner` release. On older
-    versions the bundler will fail with
-    `Could not resolve "./node_modules/htmx.org/dist/ext/hx-csp.js"`
-    (releases shipping htmx beta3 carry the extension as `hx-nonce.js`).
-    Bump `@alltuner/vibetuner` in `package.json` and re-run `bun install`
+    transitively by the matching `@alltuner/vibetuner` release, and is
+    re-exported as `@alltuner/vibetuner/htmx/csp` (added in 10.20.0). On
+    older `@alltuner/vibetuner` releases that subpath does not exist, so
+    the bundler fails with
+    `Could not resolve "@alltuner/vibetuner/htmx/csp"` (releases shipping
+    htmx beta3 carried the extension as `hx-nonce.js`). Bump
+    `@alltuner/vibetuner` in `package.json` and re-run `bun install`
     before enabling.
 
 htmx 4.0.0-beta4 ships an `hx-csp` extension (renamed from `hx-nonce`
@@ -821,11 +823,27 @@ fresh project as soon as you mirror the pattern in your own templates.
 
     ```javascript
     // Add your custom imports below:
-    import "./node_modules/htmx.org/dist/ext/hx-csp.js";
+    import "@alltuner/vibetuner/htmx/csp";
     ```
 
-2. Add `hx-nonce="{{ csp_nonce }}"` to every element in your templates
-   that uses any `hx-*` attribute:
+    This re-export pulls the extension from the framework's pinned
+    `htmx.org`, so you do **not** need a direct `htmx.org` devDependency
+    (which would risk drifting from the framework's version). It mirrors
+    the existing `@alltuner/vibetuner/htmx/preload`, `…/sse`, and `…/live`
+    re-exports.
+
+2. Stamp the nonce on your htmx elements. The extension is fail-closed:
+   every element carrying an `hx-*` attribute needs a matching `hx-nonce`,
+   or its htmx attributes are stripped. Rather than stamping each element,
+   add a single inherited nonce on `<body>` via the skeleton's
+   `body_attrs` block — every htmx element inherits it:
+
+    ```jinja
+    {% block body_attrs %}hx-nonce:inherited="{{ csp_nonce }}"{% endblock body_attrs %}
+    ```
+
+    Stamp individual elements only where you want to opt out of the
+    inherited nonce:
 
     ```html
     <button hx-post="/save"
@@ -845,10 +863,26 @@ directives, or extend `SecurityHeadersMiddleware` directly.
 
 **Safe eval:** vibetuner's CSP does not include `'unsafe-eval'`, so any
 htmx feature that requires `eval` (e.g. `hx-vals` with the `js:` prefix,
-`hx-on:` handlers that reference globals) will be blocked by default.
-If you use those features, set `safeEval:true` in your htmx config —
-the extension replaces htmx's `new Function()` eval with nonce-based
-script injection so the features work without `unsafe-eval`.
+`hx-on:` / `hx-on::` event handlers, `hx-confirm` with `js:`) is blocked
+by default — the handler silently never runs. If you use those features,
+enable `safeEval`: the extension replaces htmx's `new Function()` eval
+with nonce-based script injection so they work without `unsafe-eval`.
+
+Set it via the `htmx-config` meta tag rather than in JavaScript. The
+extension reads `htmx.config.safeEval` when its `init` runs, but ESM
+hoists imports, so a plain `htmx.config.safeEval = true` in `config.js`
+executes *after* the extension import and is too late. htmx reads the
+meta tag when its script first evaluates, so the tag must appear **before**
+the bundle script. Use the skeleton's `htmx_config` block, which renders
+in `<head>` just before the bundle for exactly this. The `extensions`
+key also applies the extension globally, so you don't need `hx-ext` on
+each element:
+
+```jinja
+{% block htmx_config %}
+    <meta name="htmx-config" content='extensions:"hx-csp",safeEval:true'>
+{% endblock htmx_config %}
+```
 
 ### Strict `style-src` (opt-in)
 

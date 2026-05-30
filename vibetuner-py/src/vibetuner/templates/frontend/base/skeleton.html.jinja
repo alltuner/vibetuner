@@ -29,6 +29,11 @@
         <link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
         {% include "base/theme.html.jinja" %}
 
+        {# Pre-script head hook. Anything here is parsed before the bundle
+           below, so htmx reads a `<meta name="htmx-config">` placed here at
+           startup (it reads config when the script evaluates, not later). -#}
+        {% block htmx_config %}
+        {% endblock htmx_config %}
         {% block scripts %}
             <script src="{{ url_for('js', path='bundle.js').path }}"></script>
         {% endblock scripts %}
@@ -43,7 +48,10 @@
         {% block head %}
         {% endblock head %}
     </head>
-    <body preload="mousedown" class="{{ BODY_CLASS }}">
+    <body preload="mousedown"
+          class="{{ BODY_CLASS }}"
+          {% block body_attrs %}
+          {% endblock body_attrs %}>
         {% block start_of_body %}
         {% endblock start_of_body %}
         {% block header %}

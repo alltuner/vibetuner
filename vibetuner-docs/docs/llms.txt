@@ -136,13 +136,15 @@ Important notes:
   pages (Chrome)
 - **htmx CSP Protection (opt-in)**: htmx 4.0.0-beta4 ships an `hx-csp` extension
   (renamed from `hx-nonce` in beta3) that gates htmx attribute processing behind the
-  page CSP nonce. Framework templates stamp `hx-nonce="{{ csp_nonce }}"` on
-  htmx-bearing elements; mirror that pattern in user templates and add
-  `import "htmx.org/dist/ext/hx-csp.js";` to `config.js` to enable. Elements without
-  a matching `hx-nonce` are stripped (fail-closed). The HTML attribute is still
-  named `hx-nonce`; only the extension itself was renamed. Requires
-  `@alltuner/vibetuner` shipping `htmx.org@4.0.0-beta4` (older releases shipped the
-  extension as `hx-nonce.js`)
+  page CSP nonce. Enable by adding `import "@alltuner/vibetuner/htmx/csp";` to
+  `config.js` (re-exported from the framework's pinned htmx, no direct `htmx.org`
+  dep needed; added in 10.20.0) and stamping the nonce once via the skeleton's
+  `body_attrs` block: `hx-nonce:inherited="{{ csp_nonce }}"` — every htmx element
+  inherits it. Elements without a matching `hx-nonce` are stripped (fail-closed).
+  For `hx-on`/`hx-vals js:` (which need eval), add
+  `<meta name="htmx-config" content='extensions:"hx-csp",safeEval:true'>` via the
+  skeleton's `htmx_config` block (must precede the bundle script). The HTML
+  attribute is still named `hx-nonce`; only the extension was renamed
 - **htmx Live Reactivity (default-on)**: htmx 4's `hx-live` extension is
   loaded by default from `config.js` since `@alltuner/vibetuner` 10.15.0. Use
   `hx-live="<expr>"` for derived state that recomputes on any DOM mutation,

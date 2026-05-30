@@ -180,6 +180,29 @@ def test_extension_blocks_empty_by_default():
         assert marker not in out
 
 
+# ── body_attrs block ─────────────────────────────────────────────────
+
+
+class TestBodyAttrs:
+    def test_attrs_render_inside_body_tag(self):
+        """Override content lands inside the opening <body> tag."""
+        env = _make_env(
+            child_body=(
+                '{% block body_attrs %}hx-nonce:inherited="{{ csp_nonce }}"'
+                "{% endblock body_attrs %}"
+            )
+        )
+        out = _render(env)
+        flat = " ".join(out.split())
+        body_open = flat[flat.index("<body") : flat.index(">", flat.index("<body"))]
+        assert 'hx-nonce:inherited="n"' in body_open
+
+    def test_empty_by_default(self):
+        """The <body> tag carries no extra attributes when not overridden."""
+        out = _render(_make_env())
+        assert "hx-nonce" not in out
+
+
 # ── cascade-order invariants ─────────────────────────────────────────
 
 
@@ -215,6 +238,18 @@ def test_extra_scripts_block_renders_after_bundle_js():
     )
     out = _render(env)
     assert out.index("bundle.js") < out.index("<!-- AFTER_BUNDLE -->")
+
+
+def test_htmx_config_block_renders_before_bundle_js():
+    """htmx reads its meta config when the bundle evaluates, so the
+    htmx_config block must precede the bundle script."""
+    env = _make_env(
+        child_body=(
+            "{% block htmx_config %}<!-- HTMX_CONFIG -->{% endblock htmx_config %}"
+        )
+    )
+    out = _render(env)
+    assert out.index("<!-- HTMX_CONFIG -->") < out.index("bundle.js")
 
 
 def test_before_main_and_after_main_wrap_body():
