@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.21.0](https://github.com/alltuner/vibetuner/compare/v10.20.0...v10.21.0) (2026-05-31)
+
+
+### Features
+
+* ship a no-flash theme setter in the skeleton ([#1943](https://github.com/alltuner/vibetuner/issues/1943)) ([8538c52](https://github.com/alltuner/vibetuner/commit/8538c529912e1120a1a3c2961b76d3996eb4229a))
+
 ## [10.20.0](https://github.com/alltuner/vibetuner/compare/v10.19.0...v10.20.0) (2026-05-30)
 
 
