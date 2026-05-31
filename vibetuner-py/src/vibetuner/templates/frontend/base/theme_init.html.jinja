@@ -1,0 +1,43 @@
+{# No-flash theme setter. Runs synchronously high in <head>, before
+   bundle.css, so `data-theme` is on <html> before first paint and the
+   page never flashes the wrong theme (FOUC / flash of inaccurate theme).
+
+   Behavior:
+   - reads the persisted preference from localStorage ('theme'), defaulting
+     to 'system';
+   - resolves 'system' against `prefers-color-scheme` and writes both
+     `data-theme` (the concrete light/dark theme DaisyUI renders) and
+     `data-theme-mode` (the chosen system/light/dark mode) on <html>;
+   - exposes `window.cycleTheme()` cycling system -> light -> dark;
+   - live-updates `data-theme` when the OS theme changes while in 'system'.
+
+   Nonced so it survives a strict `script-src` CSP. Projects that want
+   different theming logic can override just this partial. -#}
+<script nonce="{{ csp_nonce }}">
+    (function () {
+        var root = document.documentElement;
+        function osTheme() {
+            return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        function apply(mode) {
+            root.setAttribute("data-theme", mode === "system" ? osTheme() : mode);
+            root.setAttribute("data-theme-mode", mode);
+        }
+        apply(localStorage.getItem("theme") || "system");
+        window.cycleTheme = function () {
+            var current = root.getAttribute("data-theme-mode");
+            var next = current === "system" ? "light" : current === "light" ? "dark" : "system";
+            if (next === "system") {
+                localStorage.removeItem("theme");
+            } else {
+                localStorage.setItem("theme", next);
+            }
+            apply(next);
+        };
+        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
+            if (root.getAttribute("data-theme-mode") === "system") {
+                root.setAttribute("data-theme", osTheme());
+            }
+        });
+    })();
+</script>

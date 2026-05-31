@@ -45,6 +45,25 @@ For per-request runtime overrides (per-tenant branding), use
 `register_tenant_theme_provider` — see the
 [theming guide](https://vibetuner.alltuner.com/theming/).
 
+## Light / dark / system toggle
+
+The skeleton ships a CSP-nonced no-flash setter
+(`base/theme_init.html.jinja`) that sets `data-theme` on `<html>` before
+first paint. Default mode is `system` (honors `prefers-color-scheme`);
+the choice persists in `localStorage['theme']`. It exposes
+`window.cycleTheme()` cycling `system → light → dark`.
+
+Wire a toggle with htmx's nonced `hx-on` (a raw inline `onclick` is
+blocked by `script-src`):
+
+```html
+<button class="btn btn-ghost btn-sm" hx-on:click="cycleTheme()">Theme</button>
+```
+
+Do **not** add your own `<head>` theme script — that's what the shipped
+setter is for. Override `base/theme_init.html.jinja` only if you need
+different logic.
+
 ## SSE
 
 **Import from `vibetuner.sse`** (NOT `vibetuner.frontend.sse`):

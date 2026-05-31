@@ -295,3 +295,32 @@ class TestScrollbarGutter:
         the cascade if a project chooses to override it."""
         out = _render(_make_env())
         assert out.index("scrollbar-gutter") < out.index("bundle.css")
+
+
+# ── no-flash theme setter ────────────────────────────────────────────
+
+
+class TestThemeInit:
+    def test_sets_data_theme_and_mode(self):
+        out = _render(_make_env())
+        assert 'setAttribute("data-theme"' in out
+        assert 'setAttribute("data-theme-mode"' in out
+
+    def test_exposes_cycle_theme(self):
+        out = _render(_make_env())
+        assert "window.cycleTheme" in out
+
+    def test_uses_csp_nonce(self):
+        """The inline setter must carry the nonce to pass script-src CSP."""
+        out = _render(_make_env())
+        cycle_idx = out.index("window.cycleTheme")
+        script_open = out.rfind("<script", 0, cycle_idx)
+        assert script_open != -1
+        script_close = out.index(">", script_open)
+        assert 'nonce="n"' in out[script_open:script_close]
+
+    def test_renders_before_bundle_css(self):
+        """The setter must run before the stylesheet so data-theme is on
+        <html> before first paint (no flash of inaccurate theme)."""
+        out = _render(_make_env())
+        assert out.index("window.cycleTheme") < out.index("bundle.css")

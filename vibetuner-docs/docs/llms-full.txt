@@ -1395,6 +1395,35 @@ The top-level symlink makes `@plugin "daisyui/theme"` resolvable.
 For per-request runtime overrides on top of the build-time palette
 (per-tenant branding), see the next section.
 
+### Light / Dark / System Toggle
+
+The skeleton ships a CSP-nonced **no-flash theme setter**
+(`base/theme_init.html.jinja`) that runs synchronously high in `<head>`,
+before `bundle.css`. It sets `data-theme` on `<html>` before first
+paint, so the page never flashes the wrong theme.
+
+State:
+
+- `localStorage['theme']` — persisted preference (`"light"` / `"dark"`;
+  absent means *system*).
+- `data-theme-mode` on `<html>` — chosen mode (`system` / `light` / `dark`).
+- `data-theme` on `<html>` — concrete theme DaisyUI renders. In `system`
+  mode it resolves against `prefers-color-scheme` and live-updates when
+  the OS theme changes.
+
+Default mode is `system`, so a fresh visitor sees their OS preference.
+The setter exposes `window.cycleTheme()`, cycling `system → light → dark`
+and persisting the choice. Wire a toggle through htmx's nonced `hx-on`
+path (a raw inline `onclick` would be blocked by `script-src`):
+
+```html
+<button class="btn btn-ghost btn-sm" hx-on:click="cycleTheme()">Theme</button>
+```
+
+Override just `base/theme_init.html.jinja` for different theming logic.
+Projects replacing the skeleton wholesale must include it *before* the
+`bundle.css` link.
+
 ### Per-Tenant Theming
 
 Multi-tenant apps can swap DaisyUI role colors per tenant without rebuilding
