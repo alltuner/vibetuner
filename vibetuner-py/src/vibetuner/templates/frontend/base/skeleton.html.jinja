@@ -26,6 +26,8 @@
            applies to existing projects on framework upgrade without
            rebuilding their CSS bundle. -#}
         <style nonce="{{ csp_nonce }}">html { scrollbar-gutter: stable; }</style>
+        {% include "base/theme_init.html.jinja" %}
+
         <link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
         {% include "base/theme.html.jinja" %}
 

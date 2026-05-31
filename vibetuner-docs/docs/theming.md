@@ -63,6 +63,45 @@ The top-level symlink makes `@plugin "daisyui/theme"` resolvable from
 `config.css`. Most projects don't need this — overriding
 `[data-theme="…"]` is enough.
 
+## Light / dark / system toggle
+
+Vibetuner's skeleton ships a tiny, CSP-nonced **no-flash theme setter**
+(`base/theme_init.html.jinja`) that runs synchronously high in `<head>`,
+before `bundle.css`. It sets `data-theme` on `<html>` *before first
+paint*, so the page never flashes the wrong theme (the "flash of
+inaccurate theme" you get when JS switches the theme after the first
+render).
+
+Three pieces of state:
+
+- **`localStorage['theme']`** — the persisted preference. Holds
+  `"light"` or `"dark"`; absent means *system*.
+- **`data-theme-mode`** on `<html>` — the chosen mode (`system`,
+  `light`, or `dark`).
+- **`data-theme`** on `<html>` — the concrete theme DaisyUI renders
+  (`light` or `dark`). In `system` mode this resolves against
+  `prefers-color-scheme` and live-updates if the OS theme changes.
+
+The default mode is `system`, so a fresh visitor sees their OS
+preference. The setter also exposes `window.cycleTheme()`, which cycles
+`system → light → dark` and persists the choice.
+
+Wire a toggle with htmx's nonced `hx-on` path (a raw inline
+`onclick="…"` would be blocked by the project's `script-src` CSP):
+
+```html
+<button class="btn btn-ghost btn-sm" hx-on:click="cycleTheme()">
+  Theme
+</button>
+```
+
+For the toggle to have a visible effect, define both a `light` and a
+`dark` palette (DaisyUI ships both by default — see the build-time
+palette section above).
+
+Projects that want different theming logic can override just
+`base/theme_init.html.jinja` instead of the whole skeleton.
+
 ## Per-tenant theming
 
 Multi-tenant Vibetuner apps often need per-tenant visual identity — at minimum
@@ -163,9 +202,11 @@ Vibetuner's `base/skeleton.html.jinja` already includes
 apps that haven't registered the provider see no extra markup.
 
 If you've replaced the skeleton wholesale in your project, mirror the same
-include order:
+include order — the no-flash setter goes *before* the stylesheet, the
+per-tenant overrides go *after* it:
 
 ```jinja
+{% include "base/theme_init.html.jinja" %}
 <link rel="stylesheet" href="{{ url_for('css', path='bundle.css').path }}" />
 {% include "base/theme.html.jinja" %}
 {% block head %}{% endblock head %}
