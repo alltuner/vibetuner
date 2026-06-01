@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.21.1](https://github.com/alltuner/vibetuner/compare/v10.21.0...v10.21.1) (2026-06-01)
+
+
+### Bug Fixes
+
+* pass coredis-compatible kwargs to the streaq worker ([#1946](https://github.com/alltuner/vibetuner/issues/1946)) ([496b1dc](https://github.com/alltuner/vibetuner/commit/496b1dce9c48639934191695179194586cbec5d7))
+
 ## [10.21.0](https://github.com/alltuner/vibetuner/compare/v10.20.0...v10.21.0) (2026-05-31)
 
 
