@@ -173,31 +173,52 @@ class TestLoadProjectConfig:
             assert result.project_slug == "default_project"
 
 
-class TestRedisSocketKwargs:
-    """Test redis_socket_kwargs resilience options for long-lived clients."""
+class TestWorkerRedisKwargs:
+    """Test worker_redis_kwargs resilience options for the streaq coredis client."""
 
     def test_defaults_enable_resilience(self):
-        """By default, socket timeouts, keepalive and health checks are on."""
+        """By default, stream/connect timeouts, keepalive and idle recycling are on."""
         config = CoreConfiguration(project=ProjectConfiguration())
-        kwargs = config.redis_socket_kwargs
-        assert kwargs["socket_timeout"] == 30.0
-        assert kwargs["socket_connect_timeout"] == 10.0
+        kwargs = config.worker_redis_kwargs
+        assert kwargs["stream_timeout"] == 30.0
+        assert kwargs["connect_timeout"] == 10.0
         assert kwargs["socket_keepalive"] is True
-        assert kwargs["health_check_interval"] == 30.0
+        assert kwargs["max_idle_time"] == 30
 
-    def test_socket_timeout_disabled_when_zero(self):
-        """A zero socket_timeout is omitted so redis-py treats it as no timeout."""
+    def test_kwargs_accepted_by_coredis_connection(self):
+        """The kwargs must construct a coredis connection without raising.
+
+        Regression for the 10.19.0 startup crash: redis-py kwarg names
+        (health_check_interval, socket_timeout) reached streaq's coredis client
+        and coredis rejected them with a TypeError during lifespan startup.
+        """
+        from coredis.connection import TCPConnection, TCPLocation
+
+        config = CoreConfiguration(project=ProjectConfiguration())
+        location = TCPLocation(host="localhost", port=6379)
+        # Constructs the connection object (does not open a socket).
+        TCPConnection(location, **config.worker_redis_kwargs)
+
+    def test_stream_timeout_disabled_when_zero(self):
+        """A zero socket_timeout is omitted so coredis treats it as no timeout."""
         config = CoreConfiguration(
             project=ProjectConfiguration(), redis_socket_timeout=0
         )
-        assert "socket_timeout" not in config.redis_socket_kwargs
+        assert "stream_timeout" not in config.worker_redis_kwargs
 
     def test_connect_timeout_disabled_when_zero(self):
         """A zero socket_connect_timeout is omitted."""
         config = CoreConfiguration(
             project=ProjectConfiguration(), redis_socket_connect_timeout=0
         )
-        assert "socket_connect_timeout" not in config.redis_socket_kwargs
+        assert "connect_timeout" not in config.worker_redis_kwargs
+
+    def test_idle_recycling_disabled_when_zero(self):
+        """A zero health_check_interval omits max_idle_time."""
+        config = CoreConfiguration(
+            project=ProjectConfiguration(), redis_health_check_interval=0
+        )
+        assert "max_idle_time" not in config.worker_redis_kwargs
 
     def test_overrides_from_env_vars(self):
         """REDIS_SOCKET_* and REDIS_HEALTH_CHECK_INTERVAL env vars are honored."""
@@ -212,11 +233,11 @@ class TestRedisSocketKwargs:
             clear=False,
         ):
             config = CoreConfiguration(project=ProjectConfiguration())
-            kwargs = config.redis_socket_kwargs
-            assert kwargs["socket_timeout"] == 5.0
-            assert kwargs["socket_connect_timeout"] == 2.0
+            kwargs = config.worker_redis_kwargs
+            assert kwargs["stream_timeout"] == 5.0
+            assert kwargs["connect_timeout"] == 2.0
             assert kwargs["socket_keepalive"] is False
-            assert kwargs["health_check_interval"] == 15.0
+            assert kwargs["max_idle_time"] == 15
 
 
 class TestCoreConfigurationLocaleDetection:

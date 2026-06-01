@@ -11,13 +11,13 @@ from unittest.mock import MagicMock, patch
 class TestWorkerConstruction:
     """Verify how the module-level worker is built from settings."""
 
-    def test_passes_redis_socket_kwargs(self):
+    def test_passes_worker_redis_kwargs(self):
         """The worker is constructed with the configured resilience kwargs."""
-        resilience = {"socket_timeout": 30.0, "socket_keepalive": True}
+        resilience = {"stream_timeout": 30.0, "socket_keepalive": True}
         fake_settings = MagicMock()
         fake_settings.workers_available = True
         fake_settings.redis_url = "redis://localhost:6379/0"
-        fake_settings.redis_socket_kwargs = resilience
+        fake_settings.worker_redis_kwargs = resilience
         fake_settings.redis_key_prefix = "myproject:"
         fake_settings.worker_concurrency = 16
 
