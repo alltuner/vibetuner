@@ -430,21 +430,25 @@ class CoreConfiguration(BaseSettings):
         return self.redis_url is not None
 
     @property
-    def redis_socket_kwargs(self) -> dict[str, Any]:
-        """Connection-resilience kwargs for long-lived Redis clients.
+    def worker_redis_kwargs(self) -> dict[str, Any]:
+        """Connection-resilience kwargs for the streaq worker's coredis client.
 
-        Passed through to the underlying redis-py client so a dead connection
-        raises instead of hanging the event loop. A timeout of 0 is omitted,
-        which redis-py treats as no timeout.
+        Streaq builds its Redis client with coredis, so these use coredis
+        kwarg names. ``stream_timeout`` turns a silently-dropped connection's
+        blocking read into a raised error instead of an indefinite hang, and
+        ``max_idle_time`` recycles long-idle connections so a stale one is
+        never reused. A timeout of 0 is omitted, which coredis treats as no
+        timeout.
         """
         kwargs: dict[str, Any] = {
             "socket_keepalive": self.redis_socket_keepalive,
-            "health_check_interval": self.redis_health_check_interval,
         }
         if self.redis_socket_timeout > 0:
-            kwargs["socket_timeout"] = self.redis_socket_timeout
+            kwargs["stream_timeout"] = self.redis_socket_timeout
         if self.redis_socket_connect_timeout > 0:
-            kwargs["socket_connect_timeout"] = self.redis_socket_connect_timeout
+            kwargs["connect_timeout"] = self.redis_socket_connect_timeout
+        if self.redis_health_check_interval > 0:
+            kwargs["max_idle_time"] = int(self.redis_health_check_interval)
         return kwargs
 
     @cached_property

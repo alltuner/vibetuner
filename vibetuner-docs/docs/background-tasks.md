@@ -584,7 +584,7 @@ vibetuner run prod worker --workers 4
 | Socket timeout | `REDIS_SOCKET_TIMEOUT` | `30` | Seconds before a hung Redis read raises (0 disables) |
 | Connect timeout | `REDIS_SOCKET_CONNECT_TIMEOUT` | `10` | Seconds before a Redis connect attempt gives up (0 disables) |
 | Keepalive | `REDIS_SOCKET_KEEPALIVE` | `true` | Enable TCP keepalive on the Redis connection |
-| Health check | `REDIS_HEALTH_CHECK_INTERVAL` | `30` | Seconds between PINGs on idle connections (0 disables) |
+| Idle recycling | `REDIS_HEALTH_CHECK_INTERVAL` | `30` | Seconds before an idle connection is recycled instead of reused (0 disables) |
 | Watchdog timeout | `WORKER_WATCHDOG_TIMEOUT` | `60` | Seconds of event-loop stall before the process force-exits (0 disables) |
 | Watchdog interval | `WORKER_WATCHDOG_INTERVAL` | `5` | Seconds between watchdog heartbeats/checks |
 
