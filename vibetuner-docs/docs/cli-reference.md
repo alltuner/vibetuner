@@ -124,6 +124,9 @@ vibetuner worker-health
 - Checks for a fresh streaq health key in Redis, which the worker renews from
   inside its event loop, so a wedged or stopped worker reads as unhealthy.
 - Used as the `worker` service healthcheck in the scaffolded `compose.prod.yml`.
+- Runs on a fast path that skips the full CLI/app bootstrap (it only loads the
+  config and a Redis client), so it returns well under a second and stays
+  comfortably inside a small healthcheck `timeout`.
 
 ## `vibetuner db`
 

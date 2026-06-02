@@ -1,6 +1,9 @@
 # ABOUTME: Tests for the `vibetuner worker-health` CLI command.
 # ABOUTME: Verifies exit codes based on the presence of a fresh streaq health key.
-# ruff: noqa: S101
+# ruff: noqa: S101, S603
+import subprocess
+import sys
+import textwrap
 from unittest.mock import MagicMock, patch
 
 from typer.testing import CliRunner
@@ -77,3 +80,44 @@ class TestWorkerHealth:
             result = runner.invoke(app, ["worker-health"])
         assert result.exit_code == 1
         assert fake.closed is True
+
+
+class TestWorkerHealthFastPath:
+    """The healthcheck must skip the full CLI/app bootstrap so it finishes
+    well under a container healthcheck timeout."""
+
+    def test_main_dispatches_without_building_full_app(self):
+        # Run in a fresh interpreter: module import state is process-global,
+        # and other tests import vibetuner.cli.root (the heavy Typer app).
+        script = textwrap.dedent(
+            """
+            import sys
+            sys.argv = ["vibetuner", "worker-health"]
+
+            import vibetuner.cli as cli
+            import vibetuner.cli.health as health
+
+            async def fake_check():
+                return 0
+
+            health.check_worker = fake_check
+
+            try:
+                cli.main()
+            except SystemExit as exc:
+                assert exc.code == 0, exc.code
+
+            # The fast path must not import the heavy command tree, which is
+            # what pulls in the user's tune.py via load_app_config().
+            assert "vibetuner.cli.root" not in sys.modules
+            assert "vibetuner.cli.scaffold" not in sys.modules
+            print("OK")
+            """
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", script],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, result.stderr
+        assert "OK" in result.stdout
