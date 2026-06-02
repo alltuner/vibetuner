@@ -424,6 +424,20 @@ When multiple providers are configured, auto-detection prefers Resend, then
 Mailjet, then Cloudflare. Set `MAIL_PROVIDER=cloudflare` (or `resend` /
 `mailjet`) to pick explicitly.
 
+### Resend rate limits and quota
+
+Resend caps sends at 5 requests/second per team and enforces a monthly quota.
+When a send exceeds either limit, Resend returns HTTP 429 and the provider
+raises a `RateLimitError` — the send fails loudly rather than silently, so a
+burst of magic-link requests can surface errors. The framework does **not**
+retry or queue these; handle bursts upstream (for example, by sending mail from
+a background task) if you expect to approach 5 req/s.
+
+On every send the provider logs Resend's `ratelimit-*` and
+`x-resend-monthly-quota` response headers at `DEBUG`, and logs a `WARNING` with
+those headers when a `RateLimitError` is raised. Raise the log level to `DEBUG`
+to watch your remaining per-second budget and monthly usage.
+
 ### How It Works
 
 1. User enters email address
