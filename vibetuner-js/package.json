@@ -1,6 +1,6 @@
 {
   "name": "@alltuner/vibetuner",
-  "version": "10.22.3",
+  "version": "10.22.4",
   "description": "Blessed JavaScript/frontend build dependencies for production-ready Vibetuner projects",
   "keywords": [
     "tailwindcss",
@@ -34,7 +34,7 @@
     "tailwindcss": "./bin/tailwindcss.js"
   },
   "dependencies": {
-    "@alltuner/vibetuner-jinja": "10.22.3",
+    "@alltuner/vibetuner-jinja": "10.22.4",
     "daisyui": "^5.5.19",
     "htmx.org": "4.0.0-beta4",
     "tailwindcss": "^4.3.0",
