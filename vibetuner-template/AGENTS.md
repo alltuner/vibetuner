@@ -170,6 +170,11 @@ Key commands: `just format` (all code), `just lint` (all code),
 > override a framework translation, redefine the same `msgid` in
 > your project's catalog; it wins on collision. See
 > [Framework Translation Catalogs](https://vibetuner.alltuner.com/development-guide/#framework-shipped-translations).
+>
+> `just i18n` merges with `msgmerge --no-fuzzy-matching`, so new strings
+> arrive with an empty `msgstr` (untranslated → English fallback), never a
+> wrong guess copied from a similar entry. Translate the blank entries;
+> `just i18n-fuzzy-audit` flags any stray `#, fuzzy` ones.
 
 `just dev` builds an all-in-one dev container (Python + bun + watchers)
 and brings up mongo/redis alongside. Edits to `src/`, `templates/`, or

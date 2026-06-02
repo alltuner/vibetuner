@@ -16,12 +16,34 @@ new-locale LANG:
 # Updates existing language files for localization
 [group('localization')]
 update-locale-files:
-    @find locales -type f -path "*/LC_MESSAGES/messages.po" -exec sh -c 'echo " ↺ {}"; msguniq "{}" -o "{}"; msgmerge --add-location=file --update --backup=none --previous "{}" locales/messages.pot' \;
+    @find locales -type f -path "*/LC_MESSAGES/messages.po" -exec sh -c 'echo " ↺ {}"; msguniq "{}" -o "{}"; msgmerge --add-location=file --no-fuzzy-matching --update --backup=none --previous "{}" locales/messages.pot' \;
 
 # Compiles the language files into binary format
 [group('localization')]
 compile-locales:
     @uv run --frozen pybabel compile -d locales
+
+# Report any fuzzy-marked entries across all catalogs (gettext ignores them at runtime)
+[group('localization')]
+i18n-fuzzy-audit:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    found=0
+    for po in $(find locales -type f -path "*/LC_MESSAGES/messages.po"); do
+        count=$(grep -c '^#, fuzzy' "${po}" || true)
+        if [ "${count}" -gt 0 ]; then
+            echo " ⚠ ${po}: ${count} fuzzy entr$([ "${count}" -eq 1 ] && echo y || echo ies)"
+            found=$((found + count))
+        fi
+    done
+
+    if [ "${found}" -eq 0 ]; then
+        echo "✓ No fuzzy entries found"
+    else
+        echo "Found ${found} fuzzy entr$([ "${found}" -eq 1 ] && echo y || echo ies); review the listed catalogs."
+        exit 1
+    fi
 
 # Dump untranslated strings per language to a given DEST directory
 [group('localization')]
