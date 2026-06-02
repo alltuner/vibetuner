@@ -6,7 +6,7 @@ i18n: extract-translations update-locale-files compile-locales
 # Extracts translations from source files
 [group('localization')]
 extract-translations:
-    @uv run --frozen pybabel extract -F babel.cfg -o locales/messages.pot .
+    @uv run --frozen pybabel extract --add-location=file -F babel.cfg -o locales/messages.pot .
 
 # Creates a new language file for localization
 [group('localization')]
@@ -16,7 +16,7 @@ new-locale LANG:
 # Updates existing language files for localization
 [group('localization')]
 update-locale-files:
-    @find locales -type f -path "*/LC_MESSAGES/messages.po" -exec sh -c 'echo " ↺ {}"; msguniq "{}" -o "{}"; msgmerge --update --backup=none --previous "{}" locales/messages.pot' \;
+    @find locales -type f -path "*/LC_MESSAGES/messages.po" -exec sh -c 'echo " ↺ {}"; msguniq "{}" -o "{}"; msgmerge --add-location=file --update --backup=none --previous "{}" locales/messages.pot' \;
 
 # Compiles the language files into binary format
 [group('localization')]

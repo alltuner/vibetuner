@@ -16,6 +16,7 @@ i18n-framework: extract-framework-translations update-framework-locales compile-
 [group('localization')]
 extract-framework-translations:
     @cd vibetuner-py && uv run --frozen pybabel extract \
+        --add-location=file \
         -F babel.cfg \
         --project=vibetuner \
         --copyright-holder="All Tuner Labs, S.L." \
@@ -35,7 +36,7 @@ new-framework-locale LANG:
 [group('localization')]
 update-framework-locales:
     @cd vibetuner-py && find src/vibetuner/locales -type f -path "*/LC_MESSAGES/messages.po" \
-        -exec sh -c 'echo " ↺ {}"; msguniq "{}" -o "{}"; msgmerge --update --backup=none --previous "{}" src/vibetuner/locales/messages.pot' \;
+        -exec sh -c 'echo " ↺ {}"; msguniq "{}" -o "{}"; msgmerge --add-location=file --update --backup=none --previous "{}" src/vibetuner/locales/messages.pot' \;
 
 # Compile framework .po files to .mo files (the wheel ships .mo only)
 [group('localization')]
