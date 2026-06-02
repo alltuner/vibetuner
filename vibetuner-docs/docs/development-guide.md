@@ -1830,6 +1830,16 @@ Connect an SSE endpoint to HTMX using the built-in SSE support:
 When Redis is configured (`REDIS_URL`), broadcasts are relayed across
 all worker processes via Redis pub/sub automatically. No extra setup needed.
 
+### Reverse Proxies and CDNs
+
+SSE responses are sent with `Cache-Control: no-cache` and
+`X-Accel-Buffering: no`, which tell reverse proxies and CDNs (Caddy, nginx,
+Cloudflare) to stream events through immediately instead of buffering the
+response. Without these headers a buffering proxy can hold the connection
+open and deliver nothing to the client until it closes, making live updates
+appear to "only work on reload." Because the framework sets them for you, no
+extra proxy configuration is required for SSE to work in production.
+
 ## Template Context Providers
 
 Inject variables into every `render_template()` call without passing them
