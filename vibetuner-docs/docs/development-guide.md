@@ -120,7 +120,16 @@ just update-locale-files     # Update existing .po files
 just compile-locales         # Compile .po to .mo files
 just new-locale LANG         # Create new language (e.g., just new-locale es)
 just dump-untranslated DIR   # Export untranslated strings
+just i18n-fuzzy-audit        # Report any fuzzy-marked entries across catalogs
 ```
+
+`update-locale-files` runs `msgmerge --no-fuzzy-matching`, so new or
+changed strings land with an empty `msgstr` (an honest "untranslated"
+that falls back to the English `msgid`) rather than a confident wrong
+guess copied from a textually similar entry. Run `just i18n-fuzzy-audit`
+to find any leftover `#, fuzzy` entries — gettext ignores them at
+runtime, but they read as real translations in the `.po` file and should
+be cleaned up.
 
 ### CI/CD & Deployment
 
@@ -1253,6 +1262,11 @@ just compile-framework-locales       # produce messages.mo
 The full workflow is also wrapped as `just i18n-framework`. Both `.po`
 and `.mo` files are committed to the repo so end users don't need
 `pybabel` at install time — the wheel ships the `.mo` files directly.
+
+`update-framework-locales` uses `msgmerge --no-fuzzy-matching` so new
+strings stay empty rather than inheriting a wrong guess from a similar
+entry; `just i18n-framework-fuzzy-audit` reports any `#, fuzzy` entries
+in the framework catalogs.
 
 ### Extracting Translations
 

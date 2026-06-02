@@ -36,9 +36,31 @@ new-framework-locale LANG:
 [group('localization')]
 update-framework-locales:
     @cd vibetuner-py && find src/vibetuner/locales -type f -path "*/LC_MESSAGES/messages.po" \
-        -exec sh -c 'echo " ↺ {}"; msguniq "{}" -o "{}"; msgmerge --add-location=file --update --backup=none --previous "{}" src/vibetuner/locales/messages.pot' \;
+        -exec sh -c 'echo " ↺ {}"; msguniq "{}" -o "{}"; msgmerge --add-location=file --no-fuzzy-matching --update --backup=none --previous "{}" src/vibetuner/locales/messages.pot' \;
 
 # Compile framework .po files to .mo files (the wheel ships .mo only)
 [group('localization')]
 compile-framework-locales:
     @cd vibetuner-py && uv run --frozen pybabel compile -d src/vibetuner/locales
+
+# Report any fuzzy-marked entries across framework catalogs (gettext ignores them at runtime)
+[group('localization')]
+i18n-framework-fuzzy-audit:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    found=0
+    for po in $(find vibetuner-py/src/vibetuner/locales -type f -path "*/LC_MESSAGES/messages.po"); do
+        count=$(grep -c '^#, fuzzy' "${po}" || true)
+        if [ "${count}" -gt 0 ]; then
+            echo " ⚠ ${po}: ${count} fuzzy entr$([ "${count}" -eq 1 ] && echo y || echo ies)"
+            found=$((found + count))
+        fi
+    done
+
+    if [ "${found}" -eq 0 ]; then
+        echo "✓ No fuzzy entries found"
+    else
+        echo "Found ${found} fuzzy entr$([ "${found}" -eq 1 ] && echo y || echo ies); review the listed catalogs."
+        exit 1
+    fi

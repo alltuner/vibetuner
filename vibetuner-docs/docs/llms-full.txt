@@ -146,7 +146,12 @@ just extract-translations    # Extract translatable strings
 just update-locale-files     # Update existing .po files
 just compile-locales         # Compile .po to .mo files
 just new-locale LANG         # Create new language (e.g., just new-locale es)
+just i18n-fuzzy-audit        # Report fuzzy-marked entries across catalogs
 ```
+
+`update-locale-files` runs `msgmerge --no-fuzzy-matching`: new strings
+land with an empty `msgstr` (honest untranslated → English fallback)
+instead of a wrong guess copied from a textually similar entry.
 
 **CI/CD & Deployment:**
 
@@ -1713,7 +1718,7 @@ just new-framework-locale es
 # Edit the new file:
 #   vibetuner-py/src/vibetuner/locales/es/LC_MESSAGES/messages.po
 
-# Merge new msgids into existing locales (fuzzy-marks ambiguous ones)
+# Merge new msgids into existing locales (new strings stay empty, no fuzzy guesses)
 just update-framework-locales
 
 # Compile every locale's .po to .mo so the wheel ships them
@@ -1721,6 +1726,9 @@ just compile-framework-locales
 
 # Or run all four in sequence
 just i18n-framework
+
+# Report any fuzzy-marked entries left in the catalogs
+just i18n-framework-fuzzy-audit
 ```
 
 Both `.po` and `.mo` files are committed to the repo. The wheel build
@@ -1742,8 +1750,10 @@ compilation step.
 
 If you add a new `_()` call to any framework template or to
 framework Python code, re-run `just i18n-framework` so the existing
-locales get the new msgid (English defaults to the msgid; non-English
-locales get a fuzzy entry waiting for translation).
+locales get the new msgid. The merge uses `msgmerge --no-fuzzy-matching`,
+so new strings land with an empty `msgstr` (English falls back to the
+msgid; non-English locales get a blank entry waiting for translation)
+instead of a fuzzy guess copied from a similar string.
 
 ### Brand Configuration
 
