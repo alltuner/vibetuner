@@ -289,7 +289,9 @@ class ProjectConfiguration(BaseSettings):
         )
         return f"© {year_part}{f' {self.company_name}' if self.company_name else ''}"
 
-    model_config = SettingsConfigDict(case_sensitive=False, extra="ignore")
+    model_config = SettingsConfigDict(
+        case_sensitive=False, extra="ignore", env_file=_ENV_FILES
+    )
 
 
 class CoreConfiguration(BaseSettings):
