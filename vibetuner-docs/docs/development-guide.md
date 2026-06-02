@@ -1795,20 +1795,87 @@ async def clock_stream(request: Request):
 
 ### HTMX Integration
 
-Connect an SSE endpoint to HTMX using the built-in SSE support:
+Connect an SSE endpoint to HTMX using the built-in SSE support. The
+`hx-sse:connect` attribute opens the stream; htmx v4 then handles messages two
+ways depending on whether the broadcast carries an event name:
+
+- **Named events** (the `event` you pass to `broadcast()`) are dispatched as DOM
+  events on the connecting element. You consume them elsewhere with
+  `hx-trigger="<event> from:#<id>"`, typically to re-fetch current state.
+- **Unnamed messages** (an empty event name) are swapped into the connecting
+  element directly using its own `hx-target` / `hx-swap`.
+
+The recommended pattern broadcasts a named event as a *signal* and lets a
+consumer fetch the current state, so the rendered markup always reflects the
+server rather than a fragment that can be missed:
 
 ```html
-<div sse-connect="/events/notifications">
-    <div sse-swap="new-post" hx-swap="beforeend">
-        <!-- new posts appear here -->
-    </div>
+<!-- Opens the stream; carries no visible content itself -->
+<div id="notifications-stream" hx-sse:connect="/events/notifications"></div>
+
+<!-- Re-fetches current state whenever the "new-post" event fires -->
+<div hx-get="/notifications"
+     hx-trigger="new-post from:#notifications-stream">
+    <!-- current notifications render here -->
 </div>
 ```
+
+```python
+# Broadcast the signal; the consumer re-fetches the current state.
+await broadcast("notifications", "new-post")
+```
+
+### Backgrounded Tabs Drop Events — Resync on Reconnect
+
+!!! warning "Live views go stale when the tab is backgrounded"
+    For `hx-sse:connect`, htmx v4 enables `pauseOnBackground` by default: when
+    the tab is hidden it **closes the stream**, and reopens it when the tab is
+    visible again. Any event `broadcast()` during the hidden window is **lost** —
+    there is no automatic replay — so the view stays stuck on its old state until
+    the next event or a manual reload. This is easy to miss in local testing
+    (focused tabs never pause) and most visible with fast transitions, where a
+    status flip lands during a glance away.
+
+Recover by re-fetching current state on every (re)connection, not just on the
+named event. The `htmx:after:sse:connection` event fires on the connecting
+element on each connect and reconnect, so add it to the consumer's trigger:
+
+```html
+<div id="notifications-stream" hx-sse:connect="/events/notifications"></div>
+
+<div hx-get="/notifications"
+     hx-trigger="new-post from:#notifications-stream,
+                 htmx:after:sse:connection from:#notifications-stream">
+    <!-- current notifications; re-fetched on each event and every reconnect -->
+</div>
+```
+
+The reconnect fetch is one idempotent request that returns the view to the
+current server state, picking up anything missed while hidden. Because the
+consumer always renders server state, this stays correct no matter how many
+events were dropped.
+
+To keep a stream live in the background instead (at the cost of holding the
+connection open in hidden tabs), disable the pause per element with `hx-config`:
+
+```html
+<div hx-sse:connect="/events/notifications"
+     hx-config="sse.pauseOnBackground:false"></div>
+```
+
+or globally in your entry point with `htmx.config.sse = {pauseOnBackground: false}`.
 
 ### Multi-Worker Support
 
 When Redis is configured (`REDIS_URL`), broadcasts are relayed across
 all worker processes via Redis pub/sub automatically. No extra setup needed.
+
+`sse_endpoint(buffer_size=...)` enables a per-channel ring buffer so a client
+reconnecting with a `Last-Event-ID` header can replay missed events. Note that
+event IDs are **per-process and monotonic**, so across multiple frontend workers
+a reconnect that lands on a different worker cannot replay reliably. The
+resync-on-reconnect pattern above is the robust answer regardless of worker
+count, and it does not depend on `buffer_size`.
 
 ### Reverse Proxies and CDNs
 

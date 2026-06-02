@@ -79,7 +79,7 @@ Vibetuner uses HTMX for dynamic, reactive interfaces without complex JavaScript:
 </form>
 
 <!-- Real-time updates (native SSE in htmx v4) -->
-<div sse-connect="/events" sse-swap="message">
+<div hx-sse:connect="/events" hx-swap="innerHTML">
   Updates will appear here
 </div>
 ```

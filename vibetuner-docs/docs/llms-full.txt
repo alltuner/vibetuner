@@ -1277,11 +1277,40 @@ no extra proxy configuration is needed for live updates to work in production.
 
 **HTMX client example:**
 
+`hx-sse:connect` opens the stream. In htmx v4 a **named** event (the `event`
+passed to `broadcast()`) is dispatched as a DOM event on the connecting element;
+consume it with `hx-trigger="<event> from:#<id>"` to re-fetch current state. An
+**unnamed** message (empty event name) is swapped into the connecting element
+via its own `hx-target`/`hx-swap`. The recommended pattern broadcasts a named
+event as a signal and lets a consumer fetch state:
+
 ```html
-<div sse-connect="/events/notifications" sse-swap="update">
-    <!-- Updates appear here -->
+<div id="notifications-stream" hx-sse:connect="/events/notifications"></div>
+
+<div hx-get="/notifications"
+     hx-trigger="update from:#notifications-stream,
+                 htmx:after:sse:connection from:#notifications-stream">
+    <!-- current state; re-fetched on each event and every reconnect -->
 </div>
 ```
+
+```python
+await broadcast("notifications", "update")  # signal; consumer re-fetches
+```
+
+**Backgrounded tabs drop events.** For `hx-sse:connect`, htmx v4 enables
+`pauseOnBackground` by default: a hidden tab closes the stream and reopens it
+when visible, with **no replay**, so events broadcast during the hidden window
+are lost and the view goes stale until the next event or a reload. Recovering is
+why the consumer above also triggers on `htmx:after:sse:connection` (fires on
+every connect/reconnect) — one idempotent re-fetch restores current state. To
+keep a stream live in the background instead, disable the pause per element with
+`hx-config="sse.pauseOnBackground:false"` (or globally via `htmx.config.sse`).
+
+`sse_endpoint(buffer_size=...)` enables `Last-Event-ID` replay, but event IDs are
+per-process and monotonic, so replay is unreliable across multiple frontend
+workers; the resync-on-reconnect trigger is the robust, worker-count-independent
+answer.
 
 ### Response Caching
 
@@ -2658,14 +2687,19 @@ Breaking changes when upgrading from htmx v2 to v4 in Vibetuner projects.
 
 #### SSE: Native Support Replaces Extension
 
-htmx v4 includes SSE in core. Remove `hx-ext="sse"`:
+htmx v4 includes SSE in core. Remove `hx-ext="sse"`, rename `sse-connect` to
+`hx-sse:connect`, and replace `sse-swap` — it is **removed** in v4 (no
+equivalent). Named events are now dispatched as DOM events (consume with
+`hx-trigger`); unnamed messages are swapped into the connecting element via its
+own `hx-target`/`hx-swap`.
 
 ```html
-<!-- Before (v2) -->
+<!-- Before (v2): sse-swap names the event to swap -->
 <div hx-ext="sse" sse-connect="/events/notifications" sse-swap="update">
 
-<!-- After (v4) -->
-<div sse-connect="/events/notifications" sse-swap="update">
+<!-- After (v4): hx-sse:connect opens the stream; a consumer re-fetches state -->
+<div id="notifications-stream" hx-sse:connect="/events/notifications"></div>
+<div hx-get="/notifications" hx-trigger="update from:#notifications-stream"></div>
 ```
 
 #### Extension Auto-Registration
