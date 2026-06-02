@@ -546,10 +546,11 @@ the changes specific to beta3 (which is the 4.0 release candidate).
 
 - **`hx-nonce`**: CSP nonce-based protection for inline scripts and
   `eval`-style code paths. Blocks elements without a matching `hx-nonce`
-  attribute, integrates with TrustedTypes, and defends against
-  `js:`/`javascript:` action URLs and unnonced boosted-form submitters.
-  Vibetuner enforces nonce-based CSP by default, so this extension is a
-  natural fit. See the
+  attribute, and defends against `js:`/`javascript:` action URLs and
+  unnonced boosted-form submitters. Vibetuner enforces nonce-based CSP by
+  default, and (under its renamed `hx-csp` form) loads this extension by
+  default — it is required for `hx-on:` / `hx-live` to work under the
+  strict `script-src`. See the
   [vibetuner CSP docs](development-guide.md#security-headers-and-csp-nonce).
   **Renamed to `hx-csp` in beta4** — see the
   [Beta3 to Beta4 Changes](#beta3-to-beta4-changes) section below.
@@ -706,13 +707,19 @@ event-listener boilerplate.
 ### Why it fits vibetuner
 
 Vibetuner's CSP runs `script-src 'nonce-X' 'strict-dynamic'` with
-no `'unsafe-inline'`, which blocks inline `onclick="..."` /
-`onchange="..."` attributes at the spec level. htmx attributes
-(`hx-on:`, `hx-live`) evaluate through htmx's nonced TrustedTypes
-pipeline, so they work where raw handler attributes do not. If you
-also enable `hx-csp` (formerly `hx-nonce`, see
-[Beta3 to Beta4 Changes](#beta3-to-beta4-changes)), every `hx-live`
-expression gets the same defence-in-depth as `hx-get` / `hx-post`.
+no `'unsafe-inline'` and no `'unsafe-eval'`, which blocks inline
+`onclick="..."` / `onchange="..."` attributes at the spec level, and
+would also reject htmx's own `new Function()` evaluation of `hx-on:` /
+`hx-live` expressions with an `EvalError`. The default-on `hx-csp`
+extension (formerly `hx-nonce`, see
+[Beta3 to Beta4 Changes](#beta3-to-beta4-changes)) is what makes them
+work: with `safeEval` on, htmx evaluates those expressions via
+nonce-based `<script>` injection, which the nonce + `strict-dynamic`
+CSP does permit. So `hx-on:` and `hx-live` are genuinely CSP-safe
+without `'unsafe-eval'`, where raw handler attributes are not.
+`hx-csp` is loaded by default (see
+[htmx CSP Protection](development-guide.md#htmx-csp-protection-default-on)),
+so no extra wiring is required.
 
 ### Idiomatic patterns
 

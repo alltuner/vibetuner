@@ -2,6 +2,7 @@
 // Do not change anything between this comment and the next comment
 import htmx from "@alltuner/vibetuner/htmx";
 window.htmx = htmx;
+import "@alltuner/vibetuner/htmx/csp";
 import "@alltuner/vibetuner/htmx/preload";
 import "@alltuner/vibetuner/htmx/live";
 // Do not change anything between this comment and the previous one

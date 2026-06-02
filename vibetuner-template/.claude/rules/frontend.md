@@ -122,17 +122,34 @@ directly to elements or use `hx-on` attributes.
 See the [HTMX migration guide](https://vibetuner.alltuner.com/htmx-migration/)
 for full details.
 
-## htmx CSP Protection (opt-in)
+## htmx CSP Protection (default-on)
 
-The `hx-csp` extension (htmx 4.0.0-beta4+, renamed from `hx-nonce`)
-gates htmx attribute processing behind the page CSP nonce. Framework
-templates already stamp `hx-nonce="{{ csp_nonce }}"` on htmx-bearing
-elements; mirror that pattern in your own templates if you enable the
-extension. Add `import "./node_modules/htmx.org/dist/ext/hx-csp.js";`
-to your `config.js` custom imports section. Elements without a
-matching `hx-nonce` will be stripped (fail-closed). The HTML attribute
-is still named `hx-nonce`; only the extension itself was renamed. See
-the [CSP/htmx docs](https://vibetuner.alltuner.com/development-guide/#htmx-csp-protection-opt-in).
+The `hx-csp` extension (htmx 4.0.0-beta4+) is loaded by default from the
+framework-managed block of `config.js`, with `htmx.config.safeEval`
+enabled. It does two things under the project's strict `script-src`
+(`'nonce-…' 'strict-dynamic'`, **no** `'unsafe-eval'`):
+
+- **Gates htmx behind the page nonce (fail-closed).** Every element
+  carrying an htmx attribute must have an `hx-nonce` matching the page
+  nonce, or its `hx-*` attributes are stripped. `SecurityHeadersMiddleware`
+  **auto-stamps `hx-nonce` on every htmx element** in HTML responses,
+  exactly like it injects the nonce into `<script>` tags — so you do
+  **not** add `hx-nonce` manually (the same convention as script nonces).
+- **Makes `hx-on:` / `hx-live` CSP-safe** by routing their evaluation
+  through nonce-based `<script>` injection instead of `new Function()`.
+  A nonce + `'strict-dynamic'` does not permit `eval`/`new Function`, so
+  without this every `hx-on:`/`hx-live` expression would throw an
+  `EvalError` under the enforced production CSP (it is only report-only
+  in debug, which masks the failure locally).
+
+Security note: because the middleware stamps the nonce on the rendered
+body, the gate trusts whatever the server renders — the same trust model
+as the existing script-nonce injection. If you render **untrusted** HTML
+(markdown, user-supplied rich content), sanitize it; do not rely on
+`hx-csp` to neutralize injected `hx-*`/`<script>` in that content.
+
+See the
+[CSP/htmx docs](https://vibetuner.alltuner.com/development-guide/#htmx-csp-protection-default-on).
 
 ## htmx Live Reactivity (default-on)
 
@@ -167,10 +184,11 @@ Quick patterns:
 "></output>
 ```
 
-CSP-safe by design — `hx-on:` / `hx-live` attributes evaluate
-through htmx's nonced TrustedTypes path, where raw inline
-`onclick="..."` would be blocked by the project's `script-src`
-policy.
+CSP-safe under the strict default `script-src` — `hx-on:` / `hx-live`
+attributes evaluate through the `hx-csp` extension's nonce-based script
+injection (enabled by default, see *htmx CSP Protection* above), not
+`new Function()`, so they need no `'unsafe-eval'`. A raw inline
+`onclick="..."` stays blocked by the policy.
 
 Gotchas to remember: the DOM is the only source of truth (no
 JS-variable reactivity, share state via `data-*` or hidden inputs);

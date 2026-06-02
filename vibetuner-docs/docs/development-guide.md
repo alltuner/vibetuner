@@ -812,103 +812,70 @@ turn the response into an error page or a 0-byte download. App code
 should still set `media_type=` explicitly when it matters, but the
 guard prevents the worst-case UX when something slips through.
 
-### htmx CSP Protection (opt-in)
+### htmx CSP Protection (default-on)
 
 !!! note "Requires `htmx.org@4.0.0-beta4`"
     The `hx-csp` extension file ships with `htmx.org@4.0.0-beta4`, pulled
     transitively by the matching `@alltuner/vibetuner` release, and is
-    re-exported as `@alltuner/vibetuner/htmx/csp` (added in 10.20.0). On
-    older `@alltuner/vibetuner` releases that subpath does not exist, so
-    the bundler fails with
-    `Could not resolve "@alltuner/vibetuner/htmx/csp"` (releases shipping
-    htmx beta3 carried the extension as `hx-nonce.js`). Bump
-    `@alltuner/vibetuner` in `package.json` and re-run `bun install`
-    before enabling.
+    re-exported as `@alltuner/vibetuner/htmx/csp` (added in 10.20.0). When
+    upgrading from an older release that shipped htmx beta3, the extension
+    was carried as `hx-nonce.js`; see
+    [Beta3 to Beta4 Changes](htmx-migration.md#beta3-to-beta4-changes) for
+    the import-path update.
 
 htmx 4.0.0-beta4 ships an `hx-csp` extension (renamed from `hx-nonce`
 in beta3) that gates htmx attribute processing behind the page CSP
-nonce. Elements without a matching `hx-nonce` attribute are stripped
-at init time, providing a defence-in-depth layer against HTML
-injection attacks: even if an attacker manages to inject HTML, the
-browser will not honour any `hx-get`/`hx-post`/etc. attributes on
-injected elements. The HTML attribute is still named `hx-nonce`; only
-the extension itself was renamed.
+nonce. It is **loaded by default** from the framework-managed block of
+`config.js`, alongside `hx-preload` and `hx-live`:
 
-If you previously enabled the extension on a beta3-shipping vibetuner
-release, see
-[Beta3 to Beta4 Changes](htmx-migration.md#beta3-to-beta4-changes) in
-the migration guide for the import-path update.
+```javascript
+import "@alltuner/vibetuner/htmx/csp";
+```
 
-The framework's templates already stamp `hx-nonce="{{ csp_nonce }}"` on
-their htmx-bearing elements, so the extension is safe to enable from a
-fresh project as soon as you mirror the pattern in your own templates.
+You do not add this yourself — it ships in the part of `config.js` you
+must not edit. The HTML attribute is still named `hx-nonce`; only the
+extension itself was renamed.
 
-**To enable:**
+**Why it is required, not optional.** Vibetuner's CSP is
+`script-src 'nonce-…' 'strict-dynamic'` with **no** `'unsafe-eval'`. A
+nonce plus `strict-dynamic` does not permit `eval` / `new Function` —
+only `'unsafe-eval'` does. In beta4, both `hx-on:` and `hx-live`
+evaluate their JS through htmx core's `new Function()`, so without
+mitigation every such expression throws an `EvalError` under the
+enforced CSP and silently does nothing (an easy-to-miss runtime console
+error, not a build failure — and CSP is enforced in debug too unless you
+opt out). `hx-csp` fixes this: the framework-managed import flips
+`htmx.config.safeEval = true` **before** the extension registers, and
+with `safeEval` the extension replaces htmx's `new Function()`
+evaluation with nonce-based `<script>` injection — which a nonce +
+`strict-dynamic` CSP **does** permit. That is what makes `hx-on:` and
+`hx-live` genuinely CSP-safe with no `'unsafe-eval'`. No `safeEval` meta
+tag is required; it is enabled by the framework config.
 
-1. Add the import to your `config.js` custom imports section:
+**Fail-closed nonce gating, auto-stamped.** The extension is
+fail-closed: every element carrying an `hx-*` attribute must have an
+`hx-nonce` attribute whose value matches the page CSP nonce, or htmx
+strips its `hx-*` attributes. You do not stamp this manually.
+`SecurityHeadersMiddleware` auto-stamps `hx-nonce` on every htmx element
+in HTML responses, exactly the way it already injects the `nonce` into
+`<script>` tags. There is no `body_attrs` nonce to add and no
+per-element `hx-nonce="{{ csp_nonce }}"` to write.
 
-    ```javascript
-    // Add your custom imports below:
-    import "@alltuner/vibetuner/htmx/csp";
-    ```
+!!! warning "The gate trusts what the server renders"
+    Because the middleware stamps the nonce onto the rendered body, the
+    gate trusts whatever the server renders — the same trust model as the
+    existing script-nonce injection. If your project renders **untrusted**
+    HTML (markdown, user-supplied rich content), you must sanitize it;
+    `hx-csp` is not a substitute for sanitizing injected `hx-*` /
+    `<script>` in that content.
 
-    This re-export pulls the extension from the framework's pinned
-    `htmx.org`, so you do **not** need a direct `htmx.org` devDependency
-    (which would risk drifting from the framework's version). It mirrors
-    the existing `@alltuner/vibetuner/htmx/preload`, `…/sse`, and `…/live`
-    re-exports.
-
-2. Stamp the nonce on your htmx elements. The extension is fail-closed:
-   every element carrying an `hx-*` attribute needs a matching `hx-nonce`,
-   or its htmx attributes are stripped. Rather than stamping each element,
-   add a single inherited nonce on `<body>` via the skeleton's
-   `body_attrs` block — every htmx element inherits it:
-
-    ```jinja
-    {% block body_attrs %}hx-nonce:inherited="{{ csp_nonce }}"{% endblock body_attrs %}
-    ```
-
-    Stamp individual elements only where you want to opt out of the
-    inherited nonce:
-
-    ```html
-    <button hx-post="/save"
-            hx-target="#main-content"
-            hx-nonce="{{ csp_nonce }}">Save</button>
-    ```
-
-The extension reads the page nonce from the first `<script nonce>`
-element on the page. Vibetuner's `SecurityHeadersMiddleware` already
-stamps that nonce on your bundle script, so no extra wiring is required.
-
-**Trusted Types (further hardening):** Once the extension is enabled
-you can also tell the browser to refuse non-htmx HTML sinks by adding
+**Trusted Types (further hardening):** You can also tell the browser to
+refuse non-htmx HTML sinks by adding
 `require-trusted-types-for 'script'; trusted-types htmx` to your CSP.
 Configure this via `CSP_EXTRA_*` if you need to merge it with other
-directives, or extend `SecurityHeadersMiddleware` directly.
-
-**Safe eval:** vibetuner's CSP does not include `'unsafe-eval'`, so any
-htmx feature that requires `eval` (e.g. `hx-vals` with the `js:` prefix,
-`hx-on:` / `hx-on::` event handlers, `hx-confirm` with `js:`) is blocked
-by default — the handler silently never runs. If you use those features,
-enable `safeEval`: the extension replaces htmx's `new Function()` eval
-with nonce-based script injection so they work without `unsafe-eval`.
-
-Set it via the `htmx-config` meta tag rather than in JavaScript. The
-extension reads `htmx.config.safeEval` when its `init` runs, but ESM
-hoists imports, so a plain `htmx.config.safeEval = true` in `config.js`
-executes *after* the extension import and is too late. htmx reads the
-meta tag when its script first evaluates, so the tag must appear **before**
-the bundle script. Use the skeleton's `htmx_config` block, which renders
-in `<head>` just before the bundle for exactly this. The `extensions`
-key also applies the extension globally, so you don't need `hx-ext` on
-each element:
-
-```jinja
-{% block htmx_config %}
-    <meta name="htmx-config" content='extensions:"hx-csp",safeEval:true'>
-{% endblock htmx_config %}
-```
+directives, or extend `SecurityHeadersMiddleware` directly. With `hx-csp`
+default-on this works as-is; if you add a `trusted-types` directive it
+must include `htmx` in the allowlist.
 
 ### Strict `style-src` (opt-in)
 

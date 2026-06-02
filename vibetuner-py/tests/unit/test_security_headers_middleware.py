@@ -36,6 +36,10 @@ class _Settings:
 
 _SCRIPT_WITHOUT_NONCE_RE = re.compile(rb"<script(?![^>]*\snonce=)", re.IGNORECASE)
 _EMPTY_NONCE_RE = re.compile(rb'<script[^>]*\snonce=""\s*', re.IGNORECASE)
+_HX_ELEMENT_WITHOUT_NONCE_RE = re.compile(
+    rb"<([a-zA-Z][a-zA-Z0-9-]*)(?=[^>]*\shx-)(?![^>]*\shx-nonce[\s=>])",
+    re.IGNORECASE,
+)
 
 _logger = logging.getLogger("vibetuner.security")
 
@@ -123,8 +127,10 @@ class SecurityHeadersMiddleware:
                 "CSP nonces are auto-injected by SecurityHeadersMiddleware; "
                 "do not add nonce= attributes manually in templates."
             )
-        replacement = f'<script nonce="{nonce}"'.encode()
-        return _SCRIPT_WITHOUT_NONCE_RE.sub(replacement, body)
+        script_replacement = f'<script nonce="{nonce}"'.encode()
+        body = _SCRIPT_WITHOUT_NONCE_RE.sub(script_replacement, body)
+        hx_replacement = rb'<\g<1> hx-nonce="' + nonce.encode() + rb'"'
+        return _HX_ELEMENT_WITHOUT_NONCE_RE.sub(hx_replacement, body)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
@@ -486,6 +492,92 @@ class TestCspNonceAutoInjection:
         with caplog.at_level(logging.WARNING, logger="vibetuner.security"):
             client.get("/")
         assert not any("empty nonce" in r.message for r in caplog.records)
+
+
+class TestHxNonceAutoInjection:
+    """Test automatic hx-nonce injection into htmx elements in HTML responses.
+
+    Mirrors the hx-csp extension's fail-closed nonce gate: every element
+    carrying an htmx attribute must have a matching hx-nonce or htmx strips it.
+    """
+
+    def test_stamps_hx_nonce_on_htmx_element(self):
+        """An element with an htmx verb attribute gets hx-nonce injected."""
+        app = _make_app(html_body='<html><button hx-post="/save">Save</button></html>')
+        client = TestClient(app)
+        resp = client.get("/")
+        nonce = app._captured_nonces[0]
+        assert f'<button hx-nonce="{nonce}" hx-post="/save">' in resp.text
+
+    def test_stamps_hx_on_element(self):
+        """An element with hx-on: gets hx-nonce injected."""
+        app = _make_app(
+            html_body='<html><button hx-on:click="cycleTheme()">T</button></html>'
+        )
+        client = TestClient(app)
+        resp = client.get("/")
+        nonce = app._captured_nonces[0]
+        assert f'<button hx-nonce="{nonce}" hx-on:click="cycleTheme()">' in resp.text
+
+    def test_stamps_correctly_when_expression_contains_gt(self):
+        """A '>' inside an hx-on/hx-live expression must not corrupt injection."""
+        app = _make_app(
+            html_body="<html><input hx-live=\"q('#b').disabled = a > b\"></html>"
+        )
+        client = TestClient(app)
+        resp = client.get("/")
+        nonce = app._captured_nonces[0]
+        assert (
+            f'<input hx-nonce="{nonce}" hx-live="q(\'#b\').disabled = a > b">'
+            in resp.text
+        )
+
+    def test_does_not_double_stamp_existing_hx_nonce(self):
+        """Elements that already carry hx-nonce are left unchanged."""
+        app = _make_app(
+            html_body='<html><button hx-nonce="keep" hx-post="/x">X</button></html>'
+        )
+        client = TestClient(app)
+        resp = client.get("/")
+        assert resp.text.count("hx-nonce=") == 1
+        assert 'hx-nonce="keep"' in resp.text
+
+    def test_leaves_non_htmx_elements_alone(self):
+        """Elements without any htmx attribute do not get hx-nonce."""
+        app = _make_app(html_body='<html><div class="card">hi</div></html>')
+        client = TestClient(app)
+        resp = client.get("/")
+        assert "hx-nonce" not in resp.text
+
+    def test_stamps_multiple_htmx_elements(self):
+        """Every htmx element in the response gets its own hx-nonce."""
+        app = _make_app(
+            html_body=(
+                "<html>"
+                '<button hx-get="/a">A</button>'
+                '<input hx-live="this.value = 1">'
+                "</html>"
+            )
+        )
+        client = TestClient(app)
+        resp = client.get("/")
+        nonce = app._captured_nonces[0]
+        assert resp.text.count(f'hx-nonce="{nonce}"') == 2
+
+    def test_hx_nonce_matches_page_nonce(self):
+        """The injected hx-nonce value equals the per-request CSP nonce."""
+        app = _make_app(html_body='<html><a hx-boost="true" href="/x">x</a></html>')
+        client = TestClient(app)
+        resp = client.get("/")
+        nonce = app._captured_nonces[0]
+        assert f'hx-nonce="{nonce}"' in resp.text
+
+    def test_does_not_match_closing_tags(self):
+        """Closing tags are never stamped."""
+        app = _make_app(html_body="<html><button hx-get='/a'>A</button></html>")
+        client = TestClient(app)
+        resp = client.get("/")
+        assert "</button hx-nonce" not in resp.text
 
 
 class TestBareResponseContentType:
