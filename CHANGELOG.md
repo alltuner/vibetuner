@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.22.1](https://github.com/alltuner/vibetuner/compare/v10.22.0...v10.22.1) (2026-06-02)
+
+
+### Bug Fixes
+
+* keep SSE Redis listener alive per worker, de-dup self-published events ([#1958](https://github.com/alltuner/vibetuner/issues/1958)) ([#1963](https://github.com/alltuner/vibetuner/issues/1963)) ([cd16b2f](https://github.com/alltuner/vibetuner/commit/cd16b2f07297a721e29f337bd386dc02f5a7b753))
+
 ## [10.22.0](https://github.com/alltuner/vibetuner/compare/v10.21.1...v10.22.0) (2026-06-02)
 
 
