@@ -16,6 +16,10 @@ user-driven language flows:
 * :func:`language_picker` — produce ``[{code, name}]`` for a language
   switcher, with names rendered in the *current* display locale (not
   hard-coded to English).
+* :func:`negotiate_accept_language` / :class:`LocaleFromAcceptLanguage`
+  — region-aware ``Accept-Language`` negotiation that honors a
+  region-qualified top preference (``ca-ES``) against a language-only
+  supported locale (``ca``).
 
 ``language_picker`` is also exposed as a Jinja global so templates can
 call it directly — no new context variable, no override of the existing
@@ -23,7 +27,7 @@ call it directly — no new context variable, no override of the existing
 codes).
 """
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 
 from babel import Locale, UnknownLocaleError
 from fastapi.requests import HTTPConnection
@@ -35,16 +39,97 @@ from vibetuner.logging import logger
 
 
 __all__ = [
+    "LocaleFromAcceptLanguage",
     "LocaleResolver",
     "combined_locale_selector",
     "get_locale_resolvers",
     "language_picker",
+    "negotiate_accept_language",
     "register_locale_resolver",
     "set_request_language",
 ]
 
 
 LocaleResolver = Callable[[HTTPConnection], str | None]
+
+
+def _rank_accept_language(header: str) -> list[str]:
+    """Return ``Accept-Language`` tags ordered best-preference first.
+
+    Tags are sorted by quality descending, ties broken by their order in
+    the header. The ``*`` wildcard and any tag with ``q=0`` (explicitly
+    unacceptable) are dropped.
+    """
+    ranked: list[tuple[float, int, str]] = []
+    for index, part in enumerate(header.split(",")):
+        tag, _, params = part.strip().partition(";")
+        tag = tag.strip()
+        if not tag or tag == "*":
+            continue
+        quality = 1.0
+        if params:
+            _, _, value = params.partition("=")
+            try:
+                quality = float(value.strip())
+            except ValueError:
+                quality = 1.0
+        if quality <= 0:
+            continue
+        ranked.append((quality, index, tag))
+    ranked.sort(key=lambda item: (-item[0], item[1]))
+    return [tag for _, _, tag in ranked]
+
+
+def negotiate_accept_language(header: str, supported: Iterable[str]) -> str | None:
+    """Pick the best supported locale for an ``Accept-Language`` header.
+
+    Walks the header's language tags from highest to lowest quality and
+    returns the first that matches a supported locale, either exactly
+    (``ca_ES`` against supported ``ca_ES``) or by its language-only
+    subtag (``ca_ES`` against supported ``ca``). A higher-quality
+    region-qualified tag therefore wins over a lower-quality exact match.
+
+    :class:`starlette_babel.LocaleFromHeader` matches by full identifier
+    only, so it silently drops a region-qualified top preference and lets
+    a lower-ranked exact match win; this function exists to negotiate
+    correctly in that case.
+
+    Returns ``None`` when nothing matches, so the caller falls through to
+    the next selector or the default locale.
+    """
+    by_full: dict[str, str] = {}
+    by_language: dict[str, str] = {}
+    for code in supported:
+        normalized = code.lower().replace("-", "_")
+        by_full.setdefault(normalized, code)
+        by_language.setdefault(normalized.split("_")[0], code)
+
+    for tag in _rank_accept_language(header):
+        normalized = tag.lower().replace("-", "_")
+        if normalized in by_full:
+            return by_full[normalized]
+        match = by_language.get(normalized.split("_")[0])
+        if match is not None:
+            return match
+    return None
+
+
+class LocaleFromAcceptLanguage:
+    """Locale selector that negotiates the ``Accept-Language`` header.
+
+    Mirrors :class:`starlette_babel.LocaleFromHeader`'s selector
+    interface but resolves a region-qualified preference (``ca-ES``) to a
+    language-only supported locale (``ca``) instead of discarding it, so
+    the highest-ranked acceptable language wins.
+    """
+
+    def __init__(self, supported_locales: Iterable[str]) -> None:
+        self.supported_locales = list(supported_locales)
+
+    def __call__(self, conn: HTTPConnection) -> str | None:
+        return negotiate_accept_language(
+            conn.headers.get("accept-language", ""), self.supported_locales
+        )
 
 
 _resolvers: list[tuple[int, int, LocaleResolver]] = []

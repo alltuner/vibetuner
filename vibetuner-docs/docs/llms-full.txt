@@ -1577,7 +1577,7 @@ it, which is a different mechanism. Tracked in
 
 ### i18n Primitives
 
-`vibetuner.i18n` exposes three primitives for apps that need to override
+`vibetuner.i18n` exposes primitives for apps that need to override
 locale detection or render language switchers without hardcoding language
 lists.
 
@@ -1679,6 +1679,28 @@ template variable (set of codes) are unchanged.
 Need native names but want a single source of truth? Call
 `language_picker(code)` once per language instead of reading
 `locale_names`.
+
+#### `negotiate_accept_language(header, supported)` / `LocaleFromAcceptLanguage`
+
+The built-in `Accept-Language` selector vibetuner installs in
+`LocaleMiddleware`. It walks the header's language tags from highest to
+lowest quality and returns the first that matches a supported locale,
+either by full tag (`ca_ES` against supported `ca_ES`) or by language-only
+subtag (`ca_ES` against supported `ca`). A higher-quality region-qualified
+preference therefore wins over a lower-quality exact match:
+
+```python
+from vibetuner.i18n import negotiate_accept_language
+
+supported = ["ca", "es", "eu", "nl", "sv", "en"]
+negotiate_accept_language("ca-ES,es;q=0.9,en;q=0.8", supported)  # "ca"
+negotiate_accept_language("ca-ES", supported)                    # "ca"
+```
+
+Tags with `q=0` (explicitly unacceptable) and the `*` wildcard are
+skipped. `LocaleFromAcceptLanguage(supported_locales)` is the selector
+wrapper; `negotiate_accept_language` is the pure function it delegates to,
+exposed for direct reuse and testing.
 
 ### Framework Translation Catalogs
 

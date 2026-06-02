@@ -105,6 +105,68 @@ class TestRegisterLocaleResolver:
             i18n.register_locale_resolver("not a function")  # type: ignore[arg-type]
 
 
+SUPPORTED = ["ca", "es", "eu", "nl", "sv", "en"]
+
+
+class TestNegotiateAcceptLanguage:
+    def test_region_qualified_top_preference_beats_lower_quality_exact(self):
+        # ca-ES (q=1.0) must win over es (q=0.9) via language-only fallback.
+        result = i18n.negotiate_accept_language("ca-ES,es;q=0.9,en;q=0.8", SUPPORTED)
+        assert result == "ca"
+
+    def test_bare_region_tag_falls_back_to_language(self):
+        assert i18n.negotiate_accept_language("ca-ES", SUPPORTED) == "ca"
+
+    def test_unsupported_top_token_defers_to_next_match(self):
+        # zh-TW is unsupported even by language, so the q=0.9 ca-ES wins.
+        result = i18n.negotiate_accept_language("zh-TW,ca-ES;q=0.9,es;q=0.8", SUPPORTED)
+        assert result == "ca"
+
+    def test_exact_region_match_is_preserved(self):
+        supported = ["pt_BR", "pt_PT", "en"]
+        result = i18n.negotiate_accept_language("pt-PT,pt;q=0.9", supported)
+        assert result == "pt_PT"
+
+    def test_language_only_request_maps_to_first_supported_variant(self):
+        supported = ["pt_BR", "pt_PT"]
+        assert i18n.negotiate_accept_language("pt", supported) == "pt_BR"
+
+    def test_q_zero_token_is_skipped(self):
+        # ca is explicitly unacceptable, so es wins despite lower position.
+        assert i18n.negotiate_accept_language("ca;q=0,es", SUPPORTED) == "es"
+
+    def test_wildcard_is_ignored(self):
+        assert i18n.negotiate_accept_language("*", SUPPORTED) is None
+        assert i18n.negotiate_accept_language("*,ca;q=0.5", SUPPORTED) == "ca"
+
+    def test_empty_header_returns_none(self):
+        assert i18n.negotiate_accept_language("", SUPPORTED) is None
+
+    def test_no_match_returns_none(self):
+        assert i18n.negotiate_accept_language("de,fr", SUPPORTED) is None
+
+    def test_matching_is_case_insensitive(self):
+        assert i18n.negotiate_accept_language("CA-es", SUPPORTED) == "ca"
+
+    def test_malformed_quality_defaults_to_one(self):
+        # ca with an unparseable q keeps quality 1.0 and still wins.
+        assert i18n.negotiate_accept_language("ca;q=abc,es;q=0.9", SUPPORTED) == "ca"
+
+
+class TestLocaleFromAcceptLanguage:
+    def test_selector_negotiates_header(self):
+        selector = i18n.LocaleFromAcceptLanguage(SUPPORTED)
+        conn = MagicMock()
+        conn.headers = {"accept-language": "ca-ES,es;q=0.9"}
+        assert selector(conn) == "ca"
+
+    def test_selector_returns_none_without_header(self):
+        selector = i18n.LocaleFromAcceptLanguage(SUPPORTED)
+        conn = MagicMock()
+        conn.headers = {}
+        assert selector(conn) is None
+
+
 class TestSetRequestLanguage:
     def test_updates_request_state_and_babel_contextvar(self):
         request = _fake_request(language="en")
