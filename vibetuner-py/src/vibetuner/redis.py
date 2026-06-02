@@ -30,7 +30,9 @@ async def get_redis_client():
 
         import redis.asyncio as aioredis
 
-        _client = aioredis.from_url(str(settings.redis_url))
+        _client = aioredis.from_url(
+            str(settings.redis_url), **settings.redis_client_kwargs
+        )
         logger.debug("Shared Redis client initialized")
         return _client
 
@@ -70,7 +72,8 @@ def create_redis_client():
     """Create a new, independent async Redis client.
 
     Unlike :func:`get_redis_client`, each call returns a **separate** connection.
-    Use this when a dedicated connection is needed (e.g. pub/sub).
+    Use this for the SSE pub/sub subscriber, whose blocking ``listen()`` must not
+    carry a socket read timeout (see ``settings.redis_subscriber_kwargs``).
 
     Returns None if ``redis_url`` is not configured.
     """
@@ -81,4 +84,6 @@ def create_redis_client():
 
     import redis.asyncio as aioredis
 
-    return aioredis.from_url(str(settings.redis_url))
+    return aioredis.from_url(
+        str(settings.redis_url), **settings.redis_subscriber_kwargs
+    )

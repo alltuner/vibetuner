@@ -207,51 +207,74 @@ def _parse_redis_message(message: dict, prefix: str) -> tuple[str, dict] | None:
     }
 
 
-async def _redis_listen_loop(pubsub, client, prefix: str) -> None:
-    """Run the Redis pub/sub listen loop, dispatching to local subscribers."""
-    try:
-        async for message in pubsub.listen():
-            parsed = _parse_redis_message(message, prefix)
-            if parsed is not None:
-                _dispatch_local(*parsed)
-    except asyncio.CancelledError:
-        pass
-    finally:
-        await pubsub.punsubscribe()
+_LISTENER_RECONNECT_DELAY = 1.0
+
+
+async def _close_subscriber(pubsub, client) -> None:
+    """Tear down a pub/sub subscriber and its connection, ignoring errors."""
+    with suppress(Exception):
+        await pubsub.aclose()
+    with suppress(Exception):
         await client.aclose()
 
 
-async def start_redis_listener() -> None:
-    """Start a background task that relays Redis pub/sub messages to local queues.
+async def _redis_listen_loop(prefix: str) -> None:
+    """Relay Redis pub/sub messages to local queues, reconnecting on failure.
 
-    Owned by the frontend lifespan so the worker's ``psubscribe`` stays live for
-    the whole process, not just one request. A task that has finished (cancelled
-    or errored) is replaced so the worker re-subscribes instead of going silent.
+    The subscriber connection carries no socket read timeout (see
+    ``settings.redis_subscriber_kwargs``), so an idle channel never raises. A
+    dropped connection or other Redis error closes the subscriber and the loop
+    re-subscribes after a short delay rather than exiting and leaving the worker
+    silent (``PUBSUB NUMPAT`` decaying to 0).
     """
-    global _redis_listener_task
-    if _redis_listener_task is not None and not _redis_listener_task.done():
-        return
+    from redis.exceptions import RedisError
 
-    try:
-        from vibetuner.config import settings
-        from vibetuner.redis import create_redis_client
+    from vibetuner.redis import create_redis_client
 
+    while True:
         client = create_redis_client()
         if client is None:
             return
 
         pubsub = client.pubsub()
-        prefix = f"{settings.redis_key_prefix}sse:"
-        await pubsub.psubscribe(f"{prefix}*")
+        try:
+            await pubsub.psubscribe(f"{prefix}*")
+            logger.debug("SSE Redis pub/sub listener subscribed to {}*", prefix)
+            async for message in pubsub.listen():
+                parsed = _parse_redis_message(message, prefix)
+                if parsed is not None:
+                    _dispatch_local(*parsed)
+        except asyncio.CancelledError:
+            await _close_subscriber(pubsub, client)
+            raise
+        except RedisError as e:
+            logger.warning(
+                "SSE Redis listener lost its connection, reconnecting: {}", e
+            )
+            await _close_subscriber(pubsub, client)
+            await asyncio.sleep(_LISTENER_RECONNECT_DELAY)
 
-        _redis_listener_task = asyncio.create_task(
-            _redis_listen_loop(pubsub, client, prefix)
-        )
-        logger.debug("SSE Redis pub/sub listener started")
-    except ImportError:
-        logger.debug("Redis not available, SSE broadcasting is local-only")
-    except Exception as e:
-        logger.warning("Failed to start SSE Redis listener: {}", e)
+
+async def start_redis_listener() -> None:
+    """Start a process-lifetime task relaying Redis pub/sub to local queues.
+
+    Owned by the frontend lifespan so the worker's ``psubscribe`` stays live for
+    the whole process, not just one request. The loop reconnects on its own, so a
+    running task is never duplicated; it is only (re)created when absent or done.
+    """
+    global _redis_listener_task
+    if _redis_listener_task is not None and not _redis_listener_task.done():
+        return
+
+    from vibetuner.config import settings
+
+    if settings.redis_url is None:
+        logger.debug("Redis not configured, SSE broadcasting is local-only")
+        return
+
+    prefix = f"{settings.redis_key_prefix}sse:"
+    _redis_listener_task = asyncio.create_task(_redis_listen_loop(prefix))
+    logger.debug("SSE Redis pub/sub listener started")
 
 
 async def stop_redis_listener() -> None:
