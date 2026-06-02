@@ -6,10 +6,39 @@ from unittest.mock import patch
 
 import pytest
 from vibetuner.config import (
+    _ENV_FILES,
     CoreConfiguration,
     LocaleDetectionSettings,
     ProjectConfiguration,
 )
+
+
+class TestProjectConfigurationEnvFile:
+    """Test that ProjectConfiguration loads deploy-config from .env files.
+
+    Deploy-time fields like from_email have no stable home in the copier
+    questionnaire (non-template keys are stripped on copier update), so they
+    must be settable via .env like the other settings classes (#1970).
+    """
+
+    def test_declares_env_file(self):
+        """ProjectConfiguration wires .env loading, matching the sibling
+        settings classes (CoreConfiguration, MailSettings, BrandSettings, ...)."""
+        assert ProjectConfiguration.model_config.get("env_file") == _ENV_FILES
+
+    def test_from_email_loads_from_dotenv(self, tmp_path):
+        """from_email is populated from a .env file at the project root."""
+        env_file = tmp_path / ".env"
+        env_file.write_text("FROM_EMAIL=ops@example.com\n")
+        with patch.dict("os.environ", {}, clear=True):
+            project = ProjectConfiguration(_env_file=str(env_file))
+            assert project.from_email == "ops@example.com"
+
+    def test_from_email_falls_back_to_default(self):
+        """Without .env or env var, from_email keeps its default."""
+        with patch.dict("os.environ", {}, clear=True):
+            project = ProjectConfiguration(_env_file=None)
+            assert project.from_email == "no-reply@example.com"
 
 
 class TestCoreConfigurationEnvironment:
