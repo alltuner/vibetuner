@@ -257,12 +257,8 @@ msgid "About Language Preferences"
 msgstr "About Language Preferences"
 
 #: src/vibetuner/templates/frontend/user/edit.html.jinja
-msgid ""
-"Your language preference will take priority over URL parameters, cookies, "
-"and browser settings. Leave empty to use automatic detection."
-msgstr ""
-"Your language preference will take priority over URL parameters, cookies, "
-"and browser settings. Leave empty to use automatic detection."
+msgid "Your language preference will take priority over URL parameters, cookies, and browser settings. Leave empty to use automatic detection."
+msgstr "Your language preference will take priority over URL parameters, cookies, and browser settings. Leave empty to use automatic detection."
 
 #: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "User Profile"

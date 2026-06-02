@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vibetuner VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/alltuner/vibetuner/issues\n"
-"POT-Creation-Date: 2026-06-02 12:40+0200\n"
+"POT-Creation-Date: 2026-06-02 16:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -256,9 +256,7 @@ msgid "About Language Preferences"
 msgstr ""
 
 #: src/vibetuner/templates/frontend/user/edit.html.jinja
-msgid ""
-"Your language preference will take priority over URL parameters, cookies,"
-" and browser settings. Leave empty to use automatic detection."
+msgid "Your language preference will take priority over URL parameters, cookies, and browser settings. Leave empty to use automatic detection."
 msgstr ""
 
 #: src/vibetuner/templates/frontend/user/profile.html.jinja

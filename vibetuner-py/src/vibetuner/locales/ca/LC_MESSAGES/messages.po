@@ -139,8 +139,7 @@ msgstr "No veus el correu?"
 
 #: src/vibetuner/templates/frontend/email_sent.html.jinja
 msgid "Check your spam folder or try signing in again."
-msgstr ""
-"Comprova la carpeta de correu brossa o torna a provar d'iniciar sessió."
+msgstr "Comprova la carpeta de correu brossa o torna a provar d'iniciar sessió."
 
 #: src/vibetuner/templates/frontend/email_sent.html.jinja
 msgid "Try Again"
@@ -247,9 +246,7 @@ msgstr "Això anul·larà la detecció d'idioma del navegador"
 
 #: src/vibetuner/templates/frontend/user/edit.html.jinja
 msgid "Email cannot be changed and is managed through your OAuth provider"
-msgstr ""
-"El correu electrònic no es pot canviar i es gestiona des del teu proveïdor "
-"OAuth"
+msgstr "El correu electrònic no es pot canviar i es gestiona des del teu proveïdor OAuth"
 
 #: src/vibetuner/templates/frontend/user/edit.html.jinja
 msgid "Save Changes"
@@ -260,13 +257,8 @@ msgid "About Language Preferences"
 msgstr "Sobre les preferències d'idioma"
 
 #: src/vibetuner/templates/frontend/user/edit.html.jinja
-msgid ""
-"Your language preference will take priority over URL parameters, cookies, "
-"and browser settings. Leave empty to use automatic detection."
-msgstr ""
-"La teva preferència d'idioma té prioritat sobre els paràmetres de l'URL, les "
-"galetes i la configuració del navegador. Deixa-ho buit per fer servir la "
-"detecció automàtica."
+msgid "Your language preference will take priority over URL parameters, cookies, and browser settings. Leave empty to use automatic detection."
+msgstr "La teva preferència d'idioma té prioritat sobre els paràmetres de l'URL, les galetes i la configuració del navegador. Deixa-ho buit per fer servir la detecció automàtica."
 
 #: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "User Profile"
