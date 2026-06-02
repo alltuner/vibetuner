@@ -68,7 +68,10 @@ No registration needed — just import where used. Email via
 `vibetuner.services.email.EmailService`. Configure with
 `MAIL_RESEND_API_KEY`, `MAIL_MAILJET_API_KEY` /
 `MAIL_MAILJET_API_SECRET`, or `MAIL_CLOUDFLARE_API_TOKEN` /
-`MAIL_CLOUDFLARE_ACCOUNT_ID` (public beta) in `.env`.
+`MAIL_CLOUDFLARE_ACCOUNT_ID` (public beta) in `.env`. Resend caps sends at
+5 req/s plus a monthly quota; on 429 the provider raises `RateLimitError`
+(no retry/queue) and logs the `ratelimit-*` / `x-resend-monthly-quota`
+headers.
 
 ## Template Filters
 

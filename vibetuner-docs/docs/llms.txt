@@ -117,7 +117,11 @@ Important notes:
   `MAIL_MAILJET_API_SECRET`), or Cloudflare Email Service
   (`MAIL_CLOUDFLARE_API_TOKEN` + `MAIL_CLOUDFLARE_ACCOUNT_ID`). Auto-detected
   from available credentials; `MAIL_PROVIDER=resend|mailjet|cloudflare` to
-  pick explicitly. Auto-detection priority: resend > mailjet > cloudflare
+  pick explicitly. Auto-detection priority: resend > mailjet > cloudflare.
+  Resend caps sends at 5 req/s plus a monthly quota; on HTTP 429 the provider
+  raises `RateLimitError` (no retry/queue) and logs a `WARNING` with the
+  `ratelimit-*`/`x-resend-monthly-quota` headers, which are logged at `DEBUG`
+  on every send
 - **CSP Nonce Auto-Injection**: `SecurityHeadersMiddleware` generates a unique CSP nonce
   per request and auto-injects it into all `<script>` tags in HTML responses. Do NOT
   manually add `nonce=` attributes to `<script>` tags in templates, the middleware handles

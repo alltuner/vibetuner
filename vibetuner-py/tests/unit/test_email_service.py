@@ -123,6 +123,84 @@ async def test_resend_send_named_addresses(resend_provider):
         assert call_params["to"] == ["John Doe <john@example.com>"]
 
 
+@pytest.mark.asyncio
+async def test_resend_send_logs_rate_limit_headers(resend_provider, log_sink):
+    """Resend's ratelimit/quota response headers are logged at DEBUG."""
+    mock_result = {
+        "id": "abc123",
+        "http_headers": {
+            "ratelimit-limit": "5",
+            "ratelimit-remaining": "4",
+            "ratelimit-reset": "1",
+            "x-resend-monthly-quota": "1",
+            "content-type": "application/json",
+        },
+    }
+
+    with patch("vibetuner.services.email.resend.asyncify") as mock_asyncify:
+        mock_asyncify.return_value = AsyncMock(return_value=mock_result)
+
+        await resend_provider.send(
+            from_addr="sender@example.com",
+            to_addr="recipient@example.com",
+            subject="Test",
+            html_body="<p>Hi</p>",
+            text_body="Hi",
+        )
+
+    logged = "".join(log_sink)
+    assert "ratelimit-remaining" in logged
+    assert "x-resend-monthly-quota" in logged
+    # Only the rate-limit headers are surfaced, not unrelated response headers.
+    assert "content-type" not in logged
+
+
+@pytest.mark.asyncio
+async def test_resend_send_no_log_without_rate_limit_headers(resend_provider, log_sink):
+    """No rate-limit log line is emitted when the headers are absent."""
+    with patch("vibetuner.services.email.resend.asyncify") as mock_asyncify:
+        mock_asyncify.return_value = AsyncMock(return_value={"id": "abc123"})
+
+        await resend_provider.send(
+            from_addr="sender@example.com",
+            to_addr="recipient@example.com",
+            subject="Test",
+            html_body="<p>Hi</p>",
+            text_body="Hi",
+        )
+
+    assert not any("ratelimit" in m for m in log_sink)
+
+
+@pytest.mark.asyncio
+async def test_resend_send_warns_and_reraises_on_rate_limit(resend_provider, log_sink):
+    """A Resend RateLimitError is logged at WARNING with its headers, then re-raised."""
+    from resend.exceptions import RateLimitError
+
+    error = RateLimitError(
+        message="Too many requests.",
+        error_type="rate_limit_exceeded",
+        code=429,
+        headers={"ratelimit-remaining": "0", "ratelimit-reset": "1"},
+    )
+
+    with patch("vibetuner.services.email.resend.asyncify") as mock_asyncify:
+        mock_asyncify.return_value = AsyncMock(side_effect=error)
+
+        with pytest.raises(RateLimitError):
+            await resend_provider.send(
+                from_addr="sender@example.com",
+                to_addr="recipient@example.com",
+                subject="Test",
+                html_body="<p>Hi</p>",
+                text_body="Hi",
+            )
+
+    warnings = [m for m in log_sink if "WARNING" in m]
+    assert any("rate limit" in m.lower() for m in warnings)
+    assert any("ratelimit-remaining" in m for m in warnings)
+
+
 # ── MailjetEmailProvider tests ───────────────────────────────────────
 
 
