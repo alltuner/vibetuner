@@ -2078,7 +2078,27 @@ async def test_create_post(vibetuner_db):
     assert await Post.get(post.id) is not None
 ```
 
-Skips the test automatically if `MONGODB_URL` is not set.
+The throwaway database is created on the configured Mongo **server**. By
+default that is `MONGODB_URL`, so if your `.env` points at a remote or
+production cluster the suite reaches that infrastructure (slow, and not
+isolated). Set `TEST_MONGODB_URL` to keep tests on a local Mongo while
+`MONGODB_URL` stays pointed at your app's database:
+
+```bash
+# .env (or .env.local)
+MONGODB_URL=mongodb://prod-cluster.internal:27017/
+TEST_MONGODB_URL=mongodb://localhost:27017/
+```
+
+```bash
+# Or stand up a throwaway local Mongo just for the suite
+docker run -d --rm -p 27017:27017 mongo:7
+TEST_MONGODB_URL=mongodb://localhost:27017/ pytest
+```
+
+When `TEST_MONGODB_URL` is unset the fixtures fall back to `MONGODB_URL`,
+and the session start logs the resolved server and throwaway database name.
+The test is skipped when neither variable is set.
 
 **Caveats:**
 

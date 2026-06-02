@@ -160,6 +160,40 @@ class TestLocaleDetectionSettings:
         assert settings.accept_language is False
 
 
+class TestResolvedTestMongodbUrl:
+    """Test resolved_test_mongodb_url fallback for the test fixtures."""
+
+    def test_falls_back_to_mongodb_url_when_test_url_unset(self):
+        """Without TEST_MONGODB_URL, tests target the production mongodb_url."""
+        config = CoreConfiguration(
+            project=ProjectConfiguration(),
+            mongodb_url="mongodb://prod-host:27017/",
+        )
+        assert str(config.resolved_test_mongodb_url) == "mongodb://prod-host:27017/"
+
+    def test_prefers_test_url_when_set(self):
+        """TEST_MONGODB_URL wins over mongodb_url so a prod .env stays isolated."""
+        config = CoreConfiguration(
+            project=ProjectConfiguration(),
+            mongodb_url="mongodb://prod-host:27017/",
+            test_mongodb_url="mongodb://localhost:27018/",
+        )
+        assert str(config.resolved_test_mongodb_url) == "mongodb://localhost:27018/"
+
+    def test_is_none_when_neither_set(self):
+        """Resolves to None when no Mongo URL is configured at all."""
+        config = CoreConfiguration(project=ProjectConfiguration())
+        assert config.resolved_test_mongodb_url is None
+
+    def test_test_url_from_env_var(self):
+        """test_mongodb_url is read from the TEST_MONGODB_URL env var."""
+        with patch.dict(
+            "os.environ", {"TEST_MONGODB_URL": "mongodb://localhost:27018/"}
+        ):
+            config = CoreConfiguration(project=ProjectConfiguration())
+            assert str(config.resolved_test_mongodb_url) == "mongodb://localhost:27018/"
+
+
 class TestLoadProjectConfig:
     """Test _load_project_config behavior outside a project directory."""
 

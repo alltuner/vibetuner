@@ -304,6 +304,11 @@ class CoreConfiguration(BaseSettings):
     redis_url: RedisDsn | None = None
     database_url: PostgresDsn | MariaDBDsn | MySQLDsn | SQLiteDsn | None = None
 
+    # Optional test-only MongoDB DSN. When set, the pytest fixtures target this
+    # server instead of ``mongodb_url`` so a project whose ``.env`` points at a
+    # remote/production cluster can still run its suite against a local Mongo.
+    test_mongodb_url: MongoDsn | None = None
+
     # Mail provider settings (MAIL_* env vars)
     mail: MailSettings = Field(default_factory=MailSettings)
 
@@ -450,6 +455,16 @@ class CoreConfiguration(BaseSettings):
         if self.redis_health_check_interval > 0:
             kwargs["max_idle_time"] = int(self.redis_health_check_interval)
         return kwargs
+
+    @property
+    def resolved_test_mongodb_url(self) -> MongoDsn | None:
+        """MongoDB server the test fixtures target.
+
+        Prefers ``test_mongodb_url`` (``TEST_MONGODB_URL``) when set so a
+        prod-pointing ``mongodb_url`` stays out of the test path, falling back
+        to ``mongodb_url`` otherwise.
+        """
+        return self.test_mongodb_url or self.mongodb_url
 
     @cached_property
     def mongo_dbname(self) -> str:
