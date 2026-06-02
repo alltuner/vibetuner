@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vibetuner\n"
 "Report-Msgid-Bugs-To: https://github.com/alltuner/vibetuner/issues\n"
-"POT-Creation-Date: 2026-05-19 13:37+0200\n"
+"POT-Creation-Date: 2026-06-02 12:40+0200\n"
 "PO-Revision-Date: 2026-05-18 19:57+0200\n"
 "Last-Translator: All Tuner Labs, S.L. <hello@alltuner.com>\n"
 "Language-Team: ca <hello@alltuner.com>\n"
@@ -18,252 +18,248 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: src/vibetuner/rendering.py:207
+#: src/vibetuner/rendering.py
 #, python-format
 msgid "%(seconds)d second ago"
 msgid_plural "%(seconds)d seconds ago"
 msgstr[0] "fa %(seconds)d segon"
 msgstr[1] "fa %(seconds)d segons"
 
-#: src/vibetuner/rendering.py:214
+#: src/vibetuner/rendering.py
 #, python-format
 msgid "%(minutes)d minute ago"
 msgid_plural "%(minutes)d minutes ago"
 msgstr[0] "fa %(minutes)d minut"
 msgstr[1] "fa %(minutes)d minuts"
 
-#: src/vibetuner/rendering.py:220
+#: src/vibetuner/rendering.py
 #, python-format
 msgid "%(hours)d hour ago"
 msgid_plural "%(hours)d hours ago"
 msgstr[0] "fa %(hours)d hora"
 msgstr[1] "fa %(hours)d hores"
 
-#: src/vibetuner/rendering.py:224
+#: src/vibetuner/rendering.py
 msgid "yesterday"
 msgstr "ahir"
 
-#: src/vibetuner/rendering.py:227
+#: src/vibetuner/rendering.py
 #, python-format
 msgid "%(days)d day ago"
 msgid_plural "%(days)d days ago"
 msgstr[0] "fa %(days)d dia"
 msgstr[1] "fa %(days)d dies"
 
-#: src/vibetuner/rendering.py:232
+#: src/vibetuner/rendering.py
 #, python-format
 msgid "%(months)d month ago"
 msgid_plural "%(months)d months ago"
 msgstr[0] "fa %(months)d mes"
 msgstr[1] "fa %(months)d mesos"
 
-#: src/vibetuner/rendering.py:237
+#: src/vibetuner/rendering.py
 #, python-format
 msgid "%(years)d year ago"
 msgid_plural "%(years)d years ago"
 msgstr[0] "fa %(years)d any"
 msgstr[1] "fa %(years)d anys"
 
-#: src/vibetuner/rendering.py:249
+#: src/vibetuner/rendering.py
 msgid "just now"
 msgid_plural "just now"
 msgstr[0] "ara mateix"
 msgstr[1] "ara mateix"
 
-#: src/vibetuner/rendering.py:252
+#: src/vibetuner/rendering.py
 #, python-format
 msgid "%(minutes)dm ago"
 msgid_plural "%(minutes)dm ago"
 msgstr[0] "fa %(minutes)dm"
 msgstr[1] "fa %(minutes)dm"
 
-#: src/vibetuner/rendering.py:257
+#: src/vibetuner/rendering.py
 #, python-format
 msgid "%(hours)dh ago"
 msgid_plural "%(hours)dh ago"
 msgstr[0] "fa %(hours)dh"
 msgstr[1] "fa %(hours)dh"
 
-#: src/vibetuner/rendering.py:259 src/vibetuner/rendering.py:262
+#: src/vibetuner/rendering.py
 #, python-format
 msgid "%(days)dd ago"
 msgid_plural "%(days)dd ago"
 msgstr[0] "fa %(days)dd"
 msgstr[1] "fa %(days)dd"
 
-#: src/vibetuner/rendering.py:265
+#: src/vibetuner/rendering.py
 #, python-format
 msgid "%(weeks)dw ago"
 msgid_plural "%(weeks)dw ago"
 msgstr[0] "fa %(weeks)ds"
 msgstr[1] "fa %(weeks)ds"
 
-#: src/vibetuner/rendering.py:268
+#: src/vibetuner/rendering.py
 #, python-format
 msgid "%(months)dmo ago"
 msgid_plural "%(months)dmo ago"
 msgstr[0] "fa %(months)dmes"
 msgstr[1] "fa %(months)dmes"
 
-#: src/vibetuner/rendering.py:273
+#: src/vibetuner/rendering.py
 #, python-format
 msgid "%(years)dy ago"
 msgid_plural "%(years)dy ago"
 msgstr[0] "fa %(years)da"
 msgstr[1] "fa %(years)da"
 
-#: src/vibetuner/frontend/email.py:40
+#: src/vibetuner/frontend/email.py
 #, python-brace-format
 msgid "Sign in to {project_name}"
 msgstr "Inicia la sessió a {project_name}"
 
-#: src/vibetuner/templates/frontend/email_sent.html.jinja:4
-#: src/vibetuner/templates/frontend/email_sent.html.jinja:22
+#: src/vibetuner/templates/frontend/email_sent.html.jinja
 msgid "Check Your Email"
 msgstr "Revisa el teu correu"
 
-#: src/vibetuner/templates/frontend/email_sent.html.jinja:25
+#: src/vibetuner/templates/frontend/email_sent.html.jinja
 msgid "We've sent a secure login link to"
 msgstr "Hem enviat un enllaç segur d'inici de sessió a"
 
-#: src/vibetuner/templates/frontend/email_sent.html.jinja:37
+#: src/vibetuner/templates/frontend/email_sent.html.jinja
 msgid "Quick! Link expires in 15 minutes"
 msgstr "Ràpid! L'enllaç caduca en 15 minuts"
 
-#: src/vibetuner/templates/frontend/email_sent.html.jinja:38
+#: src/vibetuner/templates/frontend/email_sent.html.jinja
 msgid "Click the link in the email to sign in instantly."
 msgstr "Fes clic a l'enllaç del correu per iniciar la sessió a l'instant."
 
-#: src/vibetuner/templates/frontend/email_sent.html.jinja:52
+#: src/vibetuner/templates/frontend/email_sent.html.jinja
 msgid "Don't see the email?"
 msgstr "No veus el correu?"
 
-#: src/vibetuner/templates/frontend/email_sent.html.jinja:53
+#: src/vibetuner/templates/frontend/email_sent.html.jinja
 msgid "Check your spam folder or try signing in again."
 msgstr ""
 "Comprova la carpeta de correu brossa o torna a provar d'iniciar sessió."
 
-#: src/vibetuner/templates/frontend/email_sent.html.jinja:65
+#: src/vibetuner/templates/frontend/email_sent.html.jinja
 msgid "Try Again"
 msgstr "Torna-ho a provar"
 
-#: src/vibetuner/templates/frontend/email_sent.html.jinja:73
+#: src/vibetuner/templates/frontend/email_sent.html.jinja
 msgid "Back to Home"
 msgstr "Torna a l'inici"
 
-#: src/vibetuner/templates/frontend/email_sent.html.jinja:78
+#: src/vibetuner/templates/frontend/email_sent.html.jinja
 msgid "This link is secure and can only be used once"
 msgstr "Aquest enllaç és segur i només es pot fer servir una vegada"
 
-#: src/vibetuner/templates/frontend/login.html.jinja:4
+#: src/vibetuner/templates/frontend/login.html.jinja
 msgid "Sign In"
 msgstr "Inicia la sessió"
 
-#: src/vibetuner/templates/frontend/login.html.jinja:12
+#: src/vibetuner/templates/frontend/login.html.jinja
 msgid "Welcome Back"
 msgstr "Et donem la benvinguda de nou"
 
-#: src/vibetuner/templates/frontend/login.html.jinja:13
+#: src/vibetuner/templates/frontend/login.html.jinja
 msgid "Choose your preferred sign-in method"
 msgstr "Tria el teu mètode d'inici de sessió preferit"
 
-#: src/vibetuner/templates/frontend/login.html.jinja:25
-#: src/vibetuner/templates/frontend/login.html.jinja:35
+#: src/vibetuner/templates/frontend/login.html.jinja
 #, python-format
 msgid "Continue with %(provider)s"
 msgstr "Continua amb %(provider)s"
 
-#: src/vibetuner/templates/frontend/login.html.jinja:41
+#: src/vibetuner/templates/frontend/login.html.jinja
 msgid "OR"
 msgstr "O BÉ"
 
-#: src/vibetuner/templates/frontend/login.html.jinja:51
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:51
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:47
+#: src/vibetuner/templates/frontend/login.html.jinja
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Email Address"
 msgstr "Adreça de correu electrònic"
 
-#: src/vibetuner/templates/frontend/login.html.jinja:58
+#: src/vibetuner/templates/frontend/login.html.jinja
 msgid "Enter your email address"
 msgstr "Introdueix la teva adreça de correu electrònic"
 
-#: src/vibetuner/templates/frontend/login.html.jinja:79
+#: src/vibetuner/templates/frontend/login.html.jinja
 msgid "Send Magic Link"
 msgstr "Envia l'enllaç màgic"
 
-#: src/vibetuner/templates/frontend/login.html.jinja:89
+#: src/vibetuner/templates/frontend/login.html.jinja
 msgid "No password required!"
 msgstr "No cal contrasenya!"
 
-#: src/vibetuner/templates/frontend/login.html.jinja:90
+#: src/vibetuner/templates/frontend/login.html.jinja
 msgid "We'll send you a secure link to sign in instantly."
 msgstr "T'enviarem un enllaç segur per iniciar la sessió a l'instant."
 
-#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:4
-#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:10
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja
 msgid "Confirm sign out"
 msgstr "Confirma el tancament de sessió"
 
-#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:12
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja
 msgid "Click the button below to end your session."
 msgstr "Fes clic al botó de sota per finalitzar la sessió."
 
-#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:15
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:114
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Sign Out"
 msgstr "Tanca la sessió"
 
-#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja:16
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:64
+#: src/vibetuner/templates/frontend/auth/logout_confirm.html.jinja
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
 msgid "Cancel"
 msgstr "Cancel·la"
 
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:4
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:12
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:112
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Edit Profile"
 msgstr "Edita el perfil"
 
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:13
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
 msgid "Update your account information and preferences"
 msgstr "Actualitza la informació i les preferències del teu compte"
 
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:21
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
 msgid "Display Name"
 msgstr "Nom visible"
 
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:28
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
 msgid "This name will be displayed throughout the application"
 msgstr "Aquest nom es mostrarà arreu de l'aplicació"
 
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:34
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:127
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Preferred Language"
 msgstr "Idioma preferit"
 
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:39
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
 msgid "Use browser default"
 msgstr "Fes servir el predeterminat del navegador"
 
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:47
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
 msgid "This will override browser language detection"
 msgstr "Això anul·larà la detecció d'idioma del navegador"
 
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:58
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
 msgid "Email cannot be changed and is managed through your OAuth provider"
 msgstr ""
 "El correu electrònic no es pot canviar i es gestiona des del teu proveïdor "
 "OAuth"
 
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:65
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
 msgid "Save Changes"
 msgstr "Desa els canvis"
 
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:78
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
 msgid "About Language Preferences"
 msgstr "Sobre les preferències d'idioma"
 
-#: src/vibetuner/templates/frontend/user/edit.html.jinja:80
+#: src/vibetuner/templates/frontend/user/edit.html.jinja
 msgid ""
 "Your language preference will take priority over URL parameters, cookies, "
 "and browser settings. Leave empty to use automatic detection."
@@ -272,71 +268,70 @@ msgstr ""
 "galetes i la configuració del navegador. Deixa-ho buit per fer servir la "
 "detecció automàtica."
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:4
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:12
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "User Profile"
 msgstr "Perfil d'usuari"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:13
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Manage your account information and settings"
 msgstr "Gestiona la informació i la configuració del teu compte"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:35
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Member since"
 msgstr "Membre des de"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:43
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Account Information"
 msgstr "Informació del compte"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:54
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "User ID"
 msgstr "Identificador d'usuari"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:61
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Account Created"
 msgstr "Compte creat"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:68
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Last Updated"
 msgstr "Última actualització"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:78
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Connected Accounts"
 msgstr "Comptes connectats"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:96
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "No email"
 msgstr "Sense correu electrònic"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:99
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Connected"
 msgstr "Connectat"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:122
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Account Settings"
 msgstr "Configuració del compte"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:128
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Your preferred language for the interface"
 msgstr "El teu idioma preferit per a la interfície"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:134
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Not set"
 msgstr "Sense definir"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:142
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Email Notifications"
 msgstr "Notificacions per correu"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:143
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Receive updates about your account"
 msgstr "Rep actualitzacions sobre el teu compte"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:150
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Profile Visibility"
 msgstr "Visibilitat del perfil"
 
-#: src/vibetuner/templates/frontend/user/profile.html.jinja:151
+#: src/vibetuner/templates/frontend/user/profile.html.jinja
 msgid "Make your profile visible to others"
 msgstr "Fes el teu perfil visible per als altres"

@@ -1247,6 +1247,10 @@ just extract-translations
 
 This scans your code and templates for `{% trans %}` blocks and `gettext()` calls.
 
+Catalog references record the source **file** only (`#: templates/frontend/index.html.jinja`),
+not the line number. Moving a translatable string within a file therefore produces no catalog
+churn, so a pure line shift never drifts `messages.pot` or your `.po` files.
+
 ### Adding New Languages
 
 ```bash
