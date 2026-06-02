@@ -1,5 +1,19 @@
 # Changelog
 
+## [10.22.4](https://github.com/alltuner/vibetuner/compare/v10.22.3...v10.22.4) (2026-06-02)
+
+
+### Bug Fixes
+
+* fast-path worker-health to skip CLI bootstrap ([#1974](https://github.com/alltuner/vibetuner/issues/1974)) ([#1977](https://github.com/alltuner/vibetuner/issues/1977)) ([ee77f6c](https://github.com/alltuner/vibetuner/commit/ee77f6c6915d4c8ff5a937af2da3d55ee2baacf4))
+* load ProjectConfiguration deploy-config from .env ([#1970](https://github.com/alltuner/vibetuner/issues/1970)) ([#1971](https://github.com/alltuner/vibetuner/issues/1971)) ([13b67a7](https://github.com/alltuner/vibetuner/commit/13b67a7afa602d7495117ee4429fb4ca761110c0))
+* negotiate Accept-Language with language-only subtag fallback ([#1973](https://github.com/alltuner/vibetuner/issues/1973)) ([#1975](https://github.com/alltuner/vibetuner/issues/1975)) ([0738181](https://github.com/alltuner/vibetuner/commit/073818112e63f6faa1f1fc9130c7d50a27968eb1))
+
+
+### Documentation Updates
+
+* warn that backgrounded SSE tabs drop events and document resync ([#1978](https://github.com/alltuner/vibetuner/issues/1978)) ([6bb1a91](https://github.com/alltuner/vibetuner/commit/6bb1a91c958cb8fe0a280aae8c474907d5ae97cd))
+
 ## [10.22.3](https://github.com/alltuner/vibetuner/compare/v10.22.2...v10.22.3) (2026-06-02)
 
 
