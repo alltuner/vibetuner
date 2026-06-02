@@ -1233,7 +1233,9 @@ and `.mo` files are committed to the repo so end users don't need
 `update-framework-locales` uses `msgmerge --no-fuzzy-matching` so new
 strings stay empty rather than inheriting a wrong guess from a similar
 entry; `just i18n-framework-fuzzy-audit` reports any `#, fuzzy` entries
-in the framework catalogs.
+in the framework catalogs. The recipes pass `--no-wrap` so entries stay
+single-line and don't drift when gettext's line-wrapping differs between
+macOS and the Linux used in CI.
 
 ### Extracting Translations
 
@@ -1248,6 +1250,11 @@ This scans your code and templates for `{% trans %}` blocks and `gettext()` call
 Catalog references record the source **file** only (`#: templates/frontend/index.html.jinja`),
 not the line number. Moving a translatable string within a file therefore produces no catalog
 churn, so a pure line shift never drifts `messages.pot` or your `.po` files.
+
+The recipes also pass `--no-wrap`, so every `msgid`/`msgstr` stays on a single line. GNU
+gettext's default line wrapping varies between versions and platforms (macOS vs the Linux used
+in CI), which would otherwise rewrap long strings differently and drift the catalogs between a
+developer's machine and CI. Single-line entries are deterministic everywhere.
 
 ### Adding New Languages
 

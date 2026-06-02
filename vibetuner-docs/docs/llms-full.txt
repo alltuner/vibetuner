@@ -151,7 +151,10 @@ just i18n-fuzzy-audit        # Report fuzzy-marked entries across catalogs
 
 `update-locale-files` runs `msgmerge --no-fuzzy-matching`: new strings
 land with an empty `msgstr` (honest untranslated → English fallback)
-instead of a wrong guess copied from a textually similar entry.
+instead of a wrong guess copied from a textually similar entry. The i18n
+recipes also pass `--no-wrap`, keeping every `msgid`/`msgstr` on a single
+line so catalogs don't drift when gettext's line-wrapping differs between
+macOS and the Linux used in CI.
 
 **CI/CD & Deployment:**
 
