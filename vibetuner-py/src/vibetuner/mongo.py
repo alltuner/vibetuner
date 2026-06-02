@@ -17,14 +17,28 @@ BeanieDocumentType = type[Document] | type[UnionDoc] | type[View]
 
 
 def _mongo_endpoint(url: object) -> str:
-    """Return a ``host:port`` string for log messages, or ``"unknown"``."""
+    """Return a ``host:port`` string for log messages, or ``"unknown"``.
+
+    ``MongoDsn`` is a multi-host URL: it carries its hosts in ``hosts()``
+    rather than ``.host``/``.port``, so single-host DSN types are handled
+    first and multi-host DSNs fall back to joining every ``host:port`` pair.
+    """
     if url is None:
         return "unknown"
     host = getattr(url, "host", None)
     port = getattr(url, "port", None)
-    if host is None:
-        return "unknown"
-    return f"{host}:{port}" if port is not None else str(host)
+    if host is not None:
+        return f"{host}:{port}" if port is not None else str(host)
+    hosts = getattr(url, "hosts", None)
+    if callable(hosts):
+        parts = [
+            f"{h['host']}:{h['port']}" if h.get("port") is not None else str(h["host"])
+            for h in hosts()
+            if h.get("host")
+        ]
+        if parts:
+            return ",".join(parts)
+    return "unknown"
 
 
 # Global singleton, created lazily

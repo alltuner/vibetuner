@@ -1965,7 +1965,7 @@ auto-discovered.
 |---------|-------------|
 | `vibetuner_client` | Async HTTP test client with full middleware |
 | `vibetuner_app` | The FastAPI app instance (override for custom apps) |
-| `vibetuner_db` | Session-scoped MongoDB DB; collections truncated per test |
+| `vibetuner_db` | Session-scoped MongoDB DB on `TEST_MONGODB_URL` (falls back to `MONGODB_URL`); collections truncated per test |
 | `mock_auth` | Mock authentication without real sessions |
 | `mock_tasks` | Mock background tasks without Redis |
 | `override_config` | Override RuntimeConfig values with auto-cleanup |
@@ -1998,6 +1998,31 @@ async def test_feature_flag(override_config):
     value = await RuntimeConfig.get("features.dark_mode")
     assert value is True
 ```
+
+**Running tests against a local Mongo:**
+
+The `vibetuner_db` fixture creates a uniquely-named throwaway database on the
+configured Mongo *server* and builds indexes there once per session. It targets
+the server pointed at by `MONGODB_URL` unless `TEST_MONGODB_URL` is set, in which
+case that wins. So if your `.env` points `MONGODB_URL` at a remote/production
+cluster, set `TEST_MONGODB_URL` to a local Mongo to keep the suite fast and off
+prod infrastructure — no per-invocation env juggling:
+
+```bash
+# .env (or .env.local) — prod stays for the app, tests use local Mongo
+MONGODB_URL=mongodb://prod-cluster.internal:27017/
+TEST_MONGODB_URL=mongodb://localhost:27017/
+```
+
+```bash
+# Or spin up a throwaway local Mongo just for the suite
+docker run -d --rm -p 27017:27017 mongo:7
+TEST_MONGODB_URL=mongodb://localhost:27017/ pytest
+```
+
+The session start logs the resolved server and throwaway database name, so it is
+always obvious where the test database is being created. The suite is skipped
+entirely when neither `TEST_MONGODB_URL` nor `MONGODB_URL` is set.
 
 ### Default Language Configuration
 

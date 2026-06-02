@@ -14,6 +14,7 @@ from pymongo.asynchronous.database import AsyncDatabase
 from starlette.authentication import AuthCredentials
 
 from vibetuner.frontend.oauth import WebUser
+from vibetuner.logging import logger
 from vibetuner.runtime_config import RuntimeConfig
 
 
@@ -79,27 +80,44 @@ async def _vibetuner_db_session() -> AsyncGenerator[str, None]:
     so the only thing shared across tests is the database itself
     (collections + indexes living server-side).
 
-    Skips the session if ``MONGODB_URL`` is not set.
+    The throwaway database is created on ``TEST_MONGODB_URL`` when set,
+    otherwise on ``MONGODB_URL``. Pointing ``TEST_MONGODB_URL`` at a local
+    Mongo keeps the suite off a prod-pointing ``MONGODB_URL``. The resolved
+    server and database name are logged at session start so it is obvious
+    where the throwaway database lives.
+
+    Skips the session if neither ``TEST_MONGODB_URL`` nor ``MONGODB_URL`` is
+    set.
     """
     from beanie import init_beanie
 
     from vibetuner.config import settings
-    from vibetuner.mongo import get_all_models
+    from vibetuner.mongo import _mongo_endpoint, get_all_models
 
-    if settings.mongodb_url is None:
-        pytest.skip("MongoDB not configured (MONGODB_URL not set)")
+    test_url = settings.resolved_test_mongodb_url
+    if test_url is None:
+        pytest.skip("MongoDB not configured (set TEST_MONGODB_URL or MONGODB_URL)")
 
     worker_id = os.environ.get("PYTEST_XDIST_WORKER", "main")
     test_db_name = f"test_{worker_id}_{uuid.uuid4().hex[:8]}"
 
-    # Make every consumer of ``settings.mongo_dbname`` (framework code,
-    # user code) target the session test database for the whole run.
+    logger.info(
+        "Test MongoDB session: creating throwaway database {!r} on {}",
+        test_db_name,
+        _mongo_endpoint(test_url),
+    )
+
+    # Redirect every consumer of ``settings.mongodb_url`` (framework code via
+    # ``_ensure_client``, user code) and ``settings.mongo_dbname`` at the test
+    # server + throwaway database for the whole run.
+    original_url = settings.mongodb_url
+    settings.mongodb_url = test_url
     original = type(settings).mongo_dbname
     type(settings).mongo_dbname = property(lambda self: test_db_name)  # type: ignore[assignment]  # ty: ignore[invalid-assignment]
     settings.__dict__.pop("mongo_dbname", None)
 
     session_client: AsyncMongoClient = AsyncMongoClient(
-        host=str(settings.mongodb_url),
+        host=str(test_url),
         compressors=["zstd"],
     )
     try:
@@ -113,6 +131,7 @@ async def _vibetuner_db_session() -> AsyncGenerator[str, None]:
             await session_client.drop_database(test_db_name)
         finally:
             await session_client.close()
+            settings.mongodb_url = original_url
             type(settings).mongo_dbname = original  # type: ignore[assignment]
             settings.__dict__.pop("mongo_dbname", None)
 

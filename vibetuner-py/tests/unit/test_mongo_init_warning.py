@@ -80,3 +80,29 @@ async def test_logs_error_on_connection_failure():
         assert "Failed to connect to MongoDB" in error_msg
         fmt_args = mock_logger.error.call_args[0]
         assert "mongo.example.com:27017" in fmt_args[1]
+
+
+class TestMongoEndpoint:
+    """_mongo_endpoint must resolve a host:port from real DSN types."""
+
+    def test_resolves_single_host_mongodsn(self):
+        """MongoDsn exposes hosts via hosts(), not .host/.port."""
+        from pydantic import MongoDsn
+        from vibetuner.mongo import _mongo_endpoint
+
+        assert (
+            _mongo_endpoint(MongoDsn("mongodb://localhost:27018/")) == "localhost:27018"
+        )
+
+    def test_resolves_multi_host_mongodsn(self):
+        """A replica-set DSN lists every host."""
+        from pydantic import MongoDsn
+        from vibetuner.mongo import _mongo_endpoint
+
+        endpoint = _mongo_endpoint(MongoDsn("mongodb://a:27017,b:27018/"))
+        assert endpoint == "a:27017,b:27018"
+
+    def test_returns_unknown_for_none(self):
+        from vibetuner.mongo import _mongo_endpoint
+
+        assert _mongo_endpoint(None) == "unknown"
