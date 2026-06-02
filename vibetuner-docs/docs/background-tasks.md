@@ -400,17 +400,18 @@ async def process_upload(file_id: str, user_id: str) -> dict:
     """Process an uploaded file and broadcast progress."""
     channel = f"upload:{user_id}"
 
-    await broadcast(channel, "progress", data="Processing started...")
+    # Unnamed messages (event="") are swapped into the connecting element.
+    await broadcast(channel, event="", data="<p>Processing started…</p>")
 
     # ... do work ...
 
-    await broadcast(channel, "progress", data="50% complete...")
+    await broadcast(channel, event="", data="<p>50% complete…</p>")
 
     # ... more work ...
 
     await broadcast(
         channel,
-        "complete",
+        event="",
         data="<div class='alert alert-success'>Upload complete!</div>",
     )
     return {"status": "complete"}
@@ -422,13 +423,22 @@ async def process_upload(file_id: str, user_id: str) -> dict:
     process to the frontend process). Without Redis, broadcasts from
     tasks will not reach connected clients.
 
-On the frontend, subscribe with HTMX:
+On the frontend, subscribe with HTMX. Each unnamed message is swapped into the
+connecting element via its `hx-swap`:
 
 ```html
-<div sse-connect="/events/upload/{{ user.id }}"
-     sse-swap="progress complete">
+<div hx-sse:connect="/events/upload/{{ user.id }}" hx-swap="innerHTML">
+    <!-- each progress message replaces this content -->
 </div>
 ```
+
+!!! warning "Backgrounded tabs drop events"
+    `hx-sse:connect` pauses while the tab is hidden and replays nothing on
+    return, so a message sent during that window (including the final
+    "complete") is lost. For views that must survive a backgrounded tab, use a
+    named event plus a consumer that re-fetches current state on
+    `htmx:after:sse:connection` — see
+    [Backgrounded Tabs Drop Events](development-guide.md#sse--real-time-streaming).
 
 With a corresponding SSE endpoint:
 

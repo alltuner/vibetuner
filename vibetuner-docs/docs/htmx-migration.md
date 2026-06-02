@@ -122,7 +122,17 @@ Each `<hx-partial>` specifies its own `hx-target` and `hx-swap` strategy.
 ## SSE: Native Support Replaces Extension
 
 htmx v4 includes Server-Sent Events support in core. The separate `sse` extension
-and `hx-ext="sse"` attribute are no longer needed.
+and `hx-ext="sse"` attribute are no longer needed, but the attributes changed:
+`sse-connect` becomes `hx-sse:connect`, and `sse-swap` is **removed** (there is
+no equivalent — the extension no longer has its own swap system).
+
+In v4, messages are handled by event name:
+
+- **Named events** (the event name in your stream) are dispatched as DOM events
+  on the connecting element. Consume them with `hx-trigger="<event> from:#<id>"`,
+  typically on a `hx-get` element that re-fetches current state.
+- **Unnamed messages** (empty event name) are swapped into the connecting element
+  using its own `hx-target` / `hx-swap`.
 
 **Before (v2):**
 
@@ -135,19 +145,25 @@ and `hx-ext="sse"` attribute are no longer needed.
 **After (v4):**
 
 ```html
-<div sse-connect="/events/notifications" sse-swap="update">
+<div id="notifications-stream" hx-sse:connect="/events/notifications"></div>
+<div hx-get="/notifications" hx-trigger="update from:#notifications-stream">
     <!-- updates appear here -->
 </div>
 ```
 
-The `sse-connect` and `sse-swap` attributes work exactly the same, just remove
-`hx-ext="sse"` from the element.
+!!! warning "Backgrounded tabs drop events"
+    `hx-sse:connect` enables `pauseOnBackground` by default: a hidden tab closes
+    the stream and reopens it on return, with no replay, so events sent while
+    hidden are lost. Add `htmx:after:sse:connection from:#<id>` to the consumer's
+    `hx-trigger` so it re-fetches current state on every reconnect, or disable
+    the pause with `hx-config="sse.pauseOnBackground:false"`. See
+    [SSE / Real-Time Streaming](development-guide.md#sse--real-time-streaming).
 
 !!! warning
     The SSE and WebSocket extensions were significantly rewritten for v4.
     If you use advanced SSE/WS features (custom config, event handling),
     see the upstream upgrade guides:
-    [SSE](https://four.htmx.org/docs/extensions/sse#upgrading-from-htmx-2x),
+    [SSE](https://four.htmx.org/extensions/hx-sse),
     [WS](https://four.htmx.org/docs/extensions/ws#upgrading-from-htmx-2x).
 
 ## Extension Auto-Registration
@@ -275,9 +291,13 @@ import "htmx-ext-sse";
 import "@alltuner/vibetuner/htmx/sse";
 ```
 
-Use `hx-sse:connect="/events"` (and `hx-sse:swap`, `hx-sse:close`) on elements
-that should subscribe to a server-sent events stream. The `hx-ext="sse"`
-attribute is no longer needed — the extension auto-registers on import.
+Use `hx-sse:connect="/events"` on the element that should subscribe to a
+server-sent events stream (`hx-sse:close="<event>"` closes it on a named event).
+There is no `hx-sse:swap` — named events are dispatched as DOM events and unnamed
+messages swap into the connecting element; see
+[SSE: Native Support Replaces Extension](#sse-native-support-replaces-extension).
+The `hx-ext="sse"` attribute is no longer needed — the extension auto-registers
+on import.
 
 ## Event Names Changed from camelCase to Colon-Separated
 
@@ -814,7 +834,9 @@ term hits the server.
 still being loaded, conflicting with htmx v4's built-in SSE support.
 
 **Fix:** Remove both the `hx-ext="sse"` attribute and any `<script>` tag loading
-`htmx-ext-sse`. The `sse-connect` and `sse-swap` attributes work natively in v4.
+`htmx-ext-sse`. Rename `sse-connect` to `hx-sse:connect`; `sse-swap` is removed,
+so replace it per the
+[SSE migration](#sse-native-support-replaces-extension) above.
 
 ### `window.htmx` is undefined in inline scripts
 

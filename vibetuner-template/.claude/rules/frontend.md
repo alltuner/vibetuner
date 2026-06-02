@@ -81,7 +81,13 @@ async def notifications_stream(request: Request): pass
 # Dynamic: return channel name from function body
 # Broadcast: await broadcast("channel", "event",
 #   data="<html>" or template=..., ctx=...)
-# HTMX: <div sse-connect="/events/..." sse-swap="event-name">
+# HTMX v4: <div id="s" hx-sse:connect="/events/..."></div>
+#   Named events -> DOM triggers: consume with
+#     hx-trigger="event from:#s" on a hx-get that re-fetches state.
+#   Unnamed (event="") messages swap into the connecting element.
+# pauseOnBackground (default on) drops events while the tab is hidden;
+#   add htmx:after:sse:connection from:#s to the consumer's hx-trigger
+#   to resync on reconnect. See development-guide.md#sse--real-time-streaming
 ```
 
 ## HTMX Response Headers
