@@ -457,6 +457,49 @@ class CoreConfiguration(BaseSettings):
         return kwargs
 
     @property
+    def _redis_resilience_kwargs(self) -> dict[str, Any]:
+        """Shared resilience kwargs for redis-py clients (``redis.asyncio``).
+
+        ``socket_keepalive`` and a periodic ``health_check_interval`` PING let a
+        silently-dropped TCP connection be detected and recycled. A timeout of 0
+        omits the corresponding kwarg.
+        """
+        kwargs: dict[str, Any] = {
+            "socket_keepalive": self.redis_socket_keepalive,
+        }
+        if self.redis_socket_connect_timeout > 0:
+            kwargs["socket_connect_timeout"] = self.redis_socket_connect_timeout
+        if self.redis_health_check_interval > 0:
+            kwargs["health_check_interval"] = int(self.redis_health_check_interval)
+        return kwargs
+
+    @property
+    def redis_client_kwargs(self) -> dict[str, Any]:
+        """redis-py kwargs for command clients (cache, health, SSE publish).
+
+        These run only non-blocking commands, so a ``socket_timeout`` safely turns
+        a silently-dropped connection's blocking read into a raised error instead
+        of an indefinite hang. A timeout of 0 omits it.
+        """
+        kwargs = self._redis_resilience_kwargs
+        if self.redis_socket_timeout > 0:
+            kwargs["socket_timeout"] = self.redis_socket_timeout
+        return kwargs
+
+    @property
+    def redis_subscriber_kwargs(self) -> dict[str, Any]:
+        """redis-py kwargs for the SSE pub/sub subscriber connection.
+
+        A subscriber blocks indefinitely waiting for the next message, so it must
+        never carry a ``socket_timeout`` — that would raise ``TimeoutError`` on any
+        channel idle longer than the timeout and kill the listener. Liveness relies
+        on ``health_check_interval`` PINGs and TCP keepalive instead.
+        """
+        kwargs = self._redis_resilience_kwargs
+        kwargs["socket_timeout"] = None
+        return kwargs
+
+    @property
     def resolved_test_mongodb_url(self) -> MongoDsn | None:
         """MongoDB server the test fixtures target.
 

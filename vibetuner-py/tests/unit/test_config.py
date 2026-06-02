@@ -274,6 +274,67 @@ class TestWorkerRedisKwargs:
             assert kwargs["max_idle_time"] == 15
 
 
+class TestRedisClientKwargs:
+    """Test redis-py kwargs for the shared async clients (redis.asyncio)."""
+
+    def test_command_client_carries_read_timeout(self):
+        """Command clients (cache, health, SSE publish) get a socket read timeout.
+
+        They run only non-blocking commands, so a read timeout safely turns a
+        silently-dropped connection's blocking read into a raised error.
+        """
+        config = CoreConfiguration(project=ProjectConfiguration())
+        kwargs = config.redis_client_kwargs
+        assert kwargs["socket_timeout"] == 30.0
+        assert kwargs["socket_connect_timeout"] == 10.0
+        assert kwargs["socket_keepalive"] is True
+        assert kwargs["health_check_interval"] == 30
+
+    def test_subscriber_never_carries_read_timeout(self):
+        """The SSE pub/sub subscriber must never carry a socket read timeout.
+
+        A subscriber blocks indefinitely between messages; a read timeout would
+        raise on any idle channel and kill the listener (issue #1958). Liveness
+        relies on health_check_interval PINGs and TCP keepalive instead.
+        """
+        config = CoreConfiguration(project=ProjectConfiguration())
+        kwargs = config.redis_subscriber_kwargs
+        assert kwargs["socket_timeout"] is None
+        assert kwargs["socket_connect_timeout"] == 10.0
+        assert kwargs["socket_keepalive"] is True
+        assert kwargs["health_check_interval"] == 30
+
+    def test_subscriber_drops_timeout_even_when_configured(self):
+        """A non-zero redis_socket_timeout still leaves the subscriber timeout-free."""
+        config = CoreConfiguration(
+            project=ProjectConfiguration(), redis_socket_timeout=5
+        )
+        assert config.redis_subscriber_kwargs["socket_timeout"] is None
+
+    def test_command_kwargs_accepted_by_redis_connection(self):
+        """The kwargs must construct a redis-py async client without raising."""
+        import redis.asyncio as aioredis
+
+        config = CoreConfiguration(project=ProjectConfiguration())
+        client = aioredis.Redis(**config.redis_client_kwargs)
+        assert client is not None
+
+    def test_command_timeout_disabled_when_zero(self):
+        """A zero socket_timeout is omitted from command kwargs."""
+        config = CoreConfiguration(
+            project=ProjectConfiguration(), redis_socket_timeout=0
+        )
+        assert "socket_timeout" not in config.redis_client_kwargs
+
+    def test_health_check_disabled_when_zero(self):
+        """A zero health_check_interval omits health_check_interval from both."""
+        config = CoreConfiguration(
+            project=ProjectConfiguration(), redis_health_check_interval=0
+        )
+        assert "health_check_interval" not in config.redis_client_kwargs
+        assert "health_check_interval" not in config.redis_subscriber_kwargs
+
+
 class TestCoreConfigurationLocaleDetection:
     """Test locale_detection field in CoreConfiguration."""
 

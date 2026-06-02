@@ -21,7 +21,7 @@ class TestGetRedisClient:
 
     @pytest.mark.asyncio
     async def test_creates_client_when_url_configured(self):
-        """Creates and caches a client when redis_url is set."""
+        """Creates and caches a command client with resilience kwargs when set."""
         redis_mod._client = None
         mock_client = AsyncMock()
 
@@ -30,10 +30,13 @@ class TestGetRedisClient:
             patch("redis.asyncio.from_url", return_value=mock_client) as mock_from_url,
         ):
             mock_settings.redis_url = "redis://localhost:6379/0"
+            mock_settings.redis_client_kwargs = {"socket_timeout": 30.0}
             result = await redis_mod.get_redis_client()
 
         assert result is mock_client
-        mock_from_url.assert_called_once_with("redis://localhost:6379/0")
+        mock_from_url.assert_called_once_with(
+            "redis://localhost:6379/0", socket_timeout=30.0
+        )
 
         # Cleanup
         redis_mod._client = None
@@ -80,3 +83,29 @@ class TestResetRedisClient:
         redis_mod._client = AsyncMock()
         redis_mod.reset_redis_client()
         assert redis_mod._client is None
+
+
+class TestCreateRedisClient:
+    """Test the dedicated pub/sub subscriber client factory."""
+
+    def test_returns_none_when_no_redis_url(self):
+        """Returns None if redis_url is not configured."""
+        with patch("vibetuner.config.settings") as mock_settings:
+            mock_settings.redis_url = None
+            assert redis_mod.create_redis_client() is None
+
+    def test_uses_timeout_free_subscriber_kwargs(self):
+        """The subscriber client is built with the timeout-free subscriber kwargs."""
+        mock_client = object()
+        with (
+            patch("vibetuner.config.settings") as mock_settings,
+            patch("redis.asyncio.from_url", return_value=mock_client) as mock_from_url,
+        ):
+            mock_settings.redis_url = "redis://localhost:6379/0"
+            mock_settings.redis_subscriber_kwargs = {"socket_timeout": None}
+            result = redis_mod.create_redis_client()
+
+        assert result is mock_client
+        mock_from_url.assert_called_once_with(
+            "redis://localhost:6379/0", socket_timeout=None
+        )

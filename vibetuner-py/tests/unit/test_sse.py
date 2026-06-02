@@ -324,6 +324,51 @@ class _FakeClient:
         pass
 
 
+class _FlakyPubSub:
+    """A subscriber whose first connection's ``listen()`` raises a Redis error."""
+
+    def __init__(self, fail: bool, subscribed: list[str], reconnected) -> None:
+        self._fail = fail
+        self._subscribed = subscribed
+        self._reconnected = reconnected
+
+    async def psubscribe(self, pattern: str) -> None:
+        self._subscribed.append(pattern)
+        if len(self._subscribed) >= 2:
+            self._reconnected.set()
+
+    async def punsubscribe(self) -> None:
+        pass
+
+    async def aclose(self) -> None:
+        pass
+
+    async def listen(self):
+        from redis.exceptions import TimeoutError as RedisTimeoutError
+
+        if self._fail:
+            raise RedisTimeoutError("Timeout reading from localhost:6379")
+        while True:
+            await asyncio.sleep(3600)
+            yield {}
+
+
+class _FlakyClient:
+    def __init__(self, fail: bool, subscribed: list[str], reconnected) -> None:
+        self._pubsub = _FlakyPubSub(fail, subscribed, reconnected)
+
+    def pubsub(self) -> _FlakyPubSub:
+        return self._pubsub
+
+    async def aclose(self) -> None:
+        pass
+
+
+def _enable_redis(monkeypatch) -> None:
+    """Make ``settings.redis_url`` look configured so the listener task starts."""
+    monkeypatch.setattr("vibetuner.config.settings.redis_url", "redis://localhost:6379")
+
+
 @pytest_asyncio.fixture
 async def sse_module():
     import vibetuner.sse as sse
@@ -349,6 +394,7 @@ class TestRedisListenerLifecycle:
     @pytest.mark.asyncio
     async def test_start_is_idempotent_while_alive(self, sse_module, monkeypatch):
         sse = sse_module
+        _enable_redis(monkeypatch)
         monkeypatch.setattr(
             "vibetuner.redis.create_redis_client", lambda: _FakeClient()
         )
@@ -363,6 +409,7 @@ class TestRedisListenerLifecycle:
     @pytest.mark.asyncio
     async def test_start_replaces_dead_task(self, sse_module, monkeypatch):
         sse = sse_module
+        _enable_redis(monkeypatch)
         monkeypatch.setattr(
             "vibetuner.redis.create_redis_client", lambda: _FakeClient()
         )
@@ -380,3 +427,42 @@ class TestRedisListenerLifecycle:
         second = sse._redis_listener_task
         assert second is not None and second is not first
         assert not second.done()
+
+    @pytest.mark.asyncio
+    async def test_no_task_without_redis_url(self, sse_module, monkeypatch):
+        """With Redis unconfigured the listener stays local-only (no task)."""
+        sse = sse_module
+        monkeypatch.setattr("vibetuner.config.settings.redis_url", None)
+
+        await start_redis_listener()
+        assert sse._redis_listener_task is None
+
+    @pytest.mark.asyncio
+    async def test_listener_reconnects_after_redis_error(self, sse_module, monkeypatch):
+        """A Redis error re-subscribes instead of killing the listener.
+
+        Issue #1958: the subscriber's 30s read timeout raised TimeoutError on idle
+        channels; the loop only caught CancelledError, so the task died and
+        PUBSUB NUMPAT decayed to 0. The loop must reconnect and re-subscribe.
+        """
+        sse = sse_module
+        _enable_redis(monkeypatch)
+        monkeypatch.setattr(sse, "_LISTENER_RECONNECT_DELAY", 0)
+
+        subscribed: list[str] = []
+        reconnected = asyncio.Event()
+        clients = iter(
+            [
+                _FlakyClient(fail=True, subscribed=subscribed, reconnected=reconnected),
+                _FlakyClient(
+                    fail=False, subscribed=subscribed, reconnected=reconnected
+                ),
+            ]
+        )
+        monkeypatch.setattr(
+            "vibetuner.redis.create_redis_client", lambda: next(clients)
+        )
+
+        await start_redis_listener()
+        await asyncio.wait_for(reconnected.wait(), timeout=2)
+        assert len(subscribed) >= 2
