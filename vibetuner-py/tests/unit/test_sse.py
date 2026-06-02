@@ -6,6 +6,7 @@ import asyncio
 
 import pytest
 from fastapi import APIRouter, Request
+from starlette.requests import Request as StarletteRequest
 from vibetuner.sse import (
     _channel_buffers,
     _dispatch_local,
@@ -14,6 +15,19 @@ from vibetuner.sse import (
     _stream_from_channel,
     sse_endpoint,
 )
+
+
+def _make_request(path: str = "/events") -> StarletteRequest:
+    """Build a minimal ASGI GET request for invoking an SSE endpoint directly."""
+    return StarletteRequest(
+        {
+            "type": "http",
+            "method": "GET",
+            "path": path,
+            "headers": [],
+            "query_string": b"",
+        }
+    )
 
 
 class TestEventBuffer:
@@ -175,3 +189,37 @@ class TestSseEndpointBuffering:
             pass
 
         assert "no-buf-test" not in _channel_buffers
+
+
+class TestSseAntiBufferingHeaders:
+    """SSE responses must defeat proxy/CDN buffering (Caddy, nginx, Cloudflare).
+
+    Without these headers a buffering reverse proxy holds ``text/event-stream``
+    responses, so the client sees a 200 that never delivers any bytes.
+    """
+
+    @pytest.mark.asyncio
+    async def test_channel_response_disables_buffering(self):
+        @sse_endpoint("/events-hdr-chan", channel="hdr-chan-test")
+        async def stream(request: Request):
+            pass
+
+        response = await stream(request=_make_request("/events-hdr-chan"))
+        try:
+            assert response.headers["cache-control"] == "no-cache"
+            assert response.headers["x-accel-buffering"] == "no"
+        finally:
+            await response.body_iterator.aclose()
+
+    @pytest.mark.asyncio
+    async def test_generator_response_disables_buffering(self):
+        @sse_endpoint("/events-hdr-gen")
+        async def stream(request: Request):
+            yield {"event": "tick", "data": "ping"}
+
+        response = await stream(request=_make_request("/events-hdr-gen"))
+        try:
+            assert response.headers["cache-control"] == "no-cache"
+            assert response.headers["x-accel-buffering"] == "no"
+        finally:
+            await response.body_iterator.aclose()

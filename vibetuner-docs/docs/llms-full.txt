@@ -1266,6 +1266,12 @@ await broadcast(
 SSE uses in-process channels by default. When Redis is configured, events are
 automatically bridged via Redis pub/sub for multi-worker support.
 
+SSE responses are sent with `Cache-Control: no-cache` and `X-Accel-Buffering: no`
+so reverse proxies and CDNs (Caddy, nginx, Cloudflare) stream events through
+immediately instead of buffering them. Without these, a proxy can hold the
+response open and deliver nothing to the client until the connection closes — so
+no extra proxy configuration is needed for live updates to work in production.
+
 **HTMX client example:**
 
 ```html

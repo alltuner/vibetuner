@@ -96,6 +96,15 @@ def _format_event(
     )
 
 
+# Headers that stop reverse proxies and CDNs (Caddy, nginx, Cloudflare) from
+# buffering the event stream. Without them the proxy holds the response, so the
+# client gets a 200 that never delivers any bytes until the connection closes.
+_SSE_HEADERS = {
+    "Cache-Control": "no-cache",
+    "X-Accel-Buffering": "no",
+}
+
+
 # ────────────────────────────────────────────────────────────────
 #  In-process connection registry
 # ────────────────────────────────────────────────────────────────
@@ -483,7 +492,8 @@ def sse_endpoint(
 
             if gen is not None:
                 return EventSourceResponse(
-                    _stream_from_generator(gen, template, request)
+                    _stream_from_generator(gen, template, request),
+                    headers=_SSE_HEADERS,
                 )
 
             if ch is None:
@@ -502,7 +512,8 @@ def sse_endpoint(
             return EventSourceResponse(
                 _stream_from_channel(
                     ch, last_event_id=_parse_last_event_id(request)
-                )
+                ),
+                headers=_SSE_HEADERS,
             )
 
         if router is not None:
