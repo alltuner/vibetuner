@@ -53,6 +53,15 @@ class Post(Document, TimeStampMixin):
 
 Export from `__init__.py`, list in `tune.py` `models=[]`.
 
+**`ty` and class-level queries**: `ty` doesn't model Beanie's class-level
+query access, so `just lint` flags spurious `unresolved-attribute` for an
+optional link in a query (`field: Link[X] | None` → `cls.field.id`) and for
+queries in a classmethod on a `BaseModel` mixin. This is a checker gap, not a
+bug; don't change field types or the `Link` alias to chase it (the `| None`
+error is fundamental to how `ty` treats unions). Suppress on the exact line:
+`await cls.find_one(Eq(cls.author.id, x))  # ty: ignore[unresolved-attribute]`.
+`ty` flags unused directives, so keep them on the erroring line only.
+
 **Soft delete**: Use `DocumentWithSoftDelete` instead of `Document`.
 `delete()` sets `deleted_at`, queries auto-filter deleted docs.
 `hard_delete()` for permanent removal.

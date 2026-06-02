@@ -228,6 +228,23 @@ class Post(Document):
 
 No `__init__.py` registration needed. The framework auto-discovers Beanie Documents.
 
+!!! note "Beanie class-level queries and `ty`"
+    Beanie builds queries from class-level field access (`Post.title == "x"`,
+    `Eq(cls.author.id, user.id)`). Static type checkers don't model this: `ty`
+    resolves `Model.field` from the field's *instance* annotation, not as a
+    query expression. Most comparisons type-check fine, but two patterns surface
+    a spurious `unresolved-attribute` from `just lint`. The first is an optional
+    link used in a query: `field: Link[X] | None` with `cls.field.id` reports
+    `id is not defined on None`. This one is fundamental, since `ty` rejects
+    attribute access on any `X | None`, so it can't be fixed by changing the
+    field type or the `Link` alias. The second is a query inside a classmethod
+    on a non-`Document` mixin (a `BaseModel` mixin), where `cls.find` and
+    `cls.field` aren't known to the checker.
+    Silence these on the exact line with an inline directive, e.g.
+    `await cls.find_one(Eq(cls.author.id, user.id))  # ty: ignore[unresolved-attribute]`.
+    `ty` flags directives that stop matching (`unused-ignore-comment`), so keep
+    the comment on the line that errors and drop it once it's no longer needed.
+
 #### SQL (SQLModel)
 
 ```python

@@ -244,6 +244,13 @@ class Post(Document, TimeStampMixin):
 
 Export from `__init__.py`, list in `tune.py` `models=[]`.
 
+`just lint` (`ty`) reports spurious `unresolved-attribute` on Beanie
+class-level queries: an optional link in a query
+(`field: Link[X] | None` with `cls.field.id`) or a query in a classmethod
+on a `BaseModel` mixin. It's a checker gap, not a bug; don't rework field
+types or the `Link` alias. Suppress on the erroring line with
+`# ty: ignore[unresolved-attribute]`.
+
 For detailed patterns (soft delete, encrypted fields, CRUD factory,
 SSE, HTMX helpers, caching, background tasks, deployment, testing,
 configuration, localization), see

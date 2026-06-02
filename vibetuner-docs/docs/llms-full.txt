@@ -257,6 +257,22 @@ class Post(Document):
         name = "posts"
 ```
 
+Beanie builds queries from class-level field access (`Post.title == "x"`,
+`Eq(cls.author.id, user.id)`), which static checkers don't model: `ty` resolves
+`Model.field` from the field's instance annotation, not as a query expression.
+Most comparisons type-check, but two patterns trip a spurious `unresolved-attribute`
+in `just lint`: an optional link in a query (`field: Link[X] | None` with
+`cls.field.id` → `id is not defined on None`, fundamental to how `ty` treats
+`X | None`, not fixable via field/alias changes), and queries inside a classmethod
+on a non-`Document` (`BaseModel`) mixin. Silence on the exact line:
+
+```python
+return await cls.find_one(Eq(cls.author.id, user.id))  # ty: ignore[unresolved-attribute]
+```
+
+`ty` reports directives that stop matching (`unused-ignore-comment`), so keep the
+comment on the erroring line and remove it when no longer needed.
+
 **SQL (SQLModel)**
 
 ```python
