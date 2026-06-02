@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.22.2](https://github.com/alltuner/vibetuner/compare/v10.22.1...v10.22.2) (2026-06-02)
+
+
+### Bug Fixes
+
+* stop SSE pub/sub subscriber dying on socket read timeout ([#1958](https://github.com/alltuner/vibetuner/issues/1958)) ([#1965](https://github.com/alltuner/vibetuner/issues/1965)) ([fec9228](https://github.com/alltuner/vibetuner/commit/fec9228254662df38e36bd5a27b02a012ebcc43a))
+
 ## [10.22.1](https://github.com/alltuner/vibetuner/compare/v10.22.0...v10.22.1) (2026-06-02)
 
 
