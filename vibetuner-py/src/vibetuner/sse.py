@@ -3,6 +3,7 @@
 import asyncio
 import json
 import re
+import uuid
 from collections import deque
 from collections.abc import AsyncGenerator, Callable
 from contextlib import suppress
@@ -81,9 +82,7 @@ class _EventBuffer:
 # ────────────────────────────────────────────────────────────────
 
 
-def _format_event(
-    payload: dict[str, str], *, event_id: str | None = None
-) -> bytes:
+def _format_event(payload: dict[str, str], *, event_id: str | None = None) -> bytes:
     """Encode an SSE payload dict into wire-format bytes.
 
     Wraps fastapi.sse.format_sse_event for internal use.
@@ -152,6 +151,12 @@ def _dispatch_local(channel: str, payload: dict[str, str]) -> int | None:
 _redis_listener_task: asyncio.Task | None = None
 _redis_publish_client = None
 
+# Identifies this process among all workers sharing the Redis pub/sub bus. Every
+# published message carries it so the publishing worker's own listener can skip
+# the message it already delivered locally (see _parse_redis_message).
+_WORKER_ID = uuid.uuid4().hex
+_ORIGIN_KEY = "_origin"
+
 
 def _parse_redis_message(message: dict, prefix: str) -> tuple[str, dict] | None:
     """Parse a Redis pub/sub message into (channel, payload) or None.
@@ -185,6 +190,11 @@ def _parse_redis_message(message: dict, prefix: str) -> tuple[str, dict] | None:
         )
         return None
 
+    # broadcast() already dispatched this to local subscribers before publishing,
+    # so the publishing worker must ignore its own loopback to avoid double delivery.
+    if payload.get(_ORIGIN_KEY) == _WORKER_ID:
+        return None
+
     if "event" not in payload and "data" not in payload:
         logger.warning(
             "SSE Redis message missing 'event' and 'data' keys on {}", channel
@@ -211,10 +221,15 @@ async def _redis_listen_loop(pubsub, client, prefix: str) -> None:
         await client.aclose()
 
 
-async def _start_redis_listener() -> None:
-    """Start a background task that relays Redis pub/sub messages to local queues."""
+async def start_redis_listener() -> None:
+    """Start a background task that relays Redis pub/sub messages to local queues.
+
+    Owned by the frontend lifespan so the worker's ``psubscribe`` stays live for
+    the whole process, not just one request. A task that has finished (cancelled
+    or errored) is replaced so the worker re-subscribes instead of going silent.
+    """
     global _redis_listener_task
-    if _redis_listener_task is not None:
+    if _redis_listener_task is not None and not _redis_listener_task.done():
         return
 
     try:
@@ -239,7 +254,7 @@ async def _start_redis_listener() -> None:
         logger.warning("Failed to start SSE Redis listener: {}", e)
 
 
-async def _stop_redis_listener() -> None:
+async def stop_redis_listener() -> None:
     """Cancel the Redis listener task and close the publish client."""
     global _redis_listener_task
     if _redis_listener_task is not None:
@@ -278,7 +293,8 @@ async def _publish_to_redis(channel: str, payload: dict[str, str]) -> None:
         from vibetuner.config import settings
 
         redis_channel = f"{settings.redis_key_prefix}sse:{channel}"
-        await client.publish(redis_channel, json.dumps(payload))
+        message = {**payload, _ORIGIN_KEY: _WORKER_ID}
+        await client.publish(redis_channel, json.dumps(message))
     except (ConnectionError, OSError):
         logger.debug(
             "Redis SSE publish failed due to connection error, resetting client"
@@ -379,9 +395,7 @@ async def _stream_from_channel(
     try:
         while True:
             try:
-                event_id, payload = await asyncio.wait_for(
-                    queue.get(), timeout=30
-                )
+                event_id, payload = await asyncio.wait_for(queue.get(), timeout=30)
                 yield _format_event(
                     payload,
                     event_id=str(event_id) if event_id is not None else None,
@@ -486,7 +500,9 @@ def sse_endpoint(
         @wraps(func)
         async def endpoint(**kwargs):
             request: Request = kwargs["request"]
-            await _start_redis_listener()
+            # The frontend lifespan normally owns the listener; this is a fallback
+            # for contexts that serve SSE without it. It no-ops if already running.
+            await start_redis_listener()
 
             ch, gen = await _resolve_channel_or_generator(func, kwargs, channel)
 
@@ -510,9 +526,7 @@ def sse_endpoint(
                 _channel_buffers[ch] = _EventBuffer(maxlen=buffer_size)
 
             return EventSourceResponse(
-                _stream_from_channel(
-                    ch, last_event_id=_parse_last_event_id(request)
-                ),
+                _stream_from_channel(ch, last_event_id=_parse_last_event_id(request)),
                 headers=_SSE_HEADERS,
             )
 

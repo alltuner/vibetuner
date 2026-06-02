@@ -3,17 +3,24 @@
 # ruff: noqa: S101
 
 import asyncio
+import contextlib
+import json
 
 import pytest
+import pytest_asyncio
 from fastapi import APIRouter, Request
 from starlette.requests import Request as StarletteRequest
 from vibetuner.sse import (
+    _WORKER_ID,
     _channel_buffers,
     _dispatch_local,
     _EventBuffer,
     _format_event,
+    _parse_redis_message,
+    _publish_to_redis,
     _stream_from_channel,
     sse_endpoint,
+    start_redis_listener,
 )
 
 
@@ -127,9 +134,7 @@ class TestStreamFromChannelResumption:
 
         try:
             gen = _stream_from_channel(ch, last_event_id=1)
-            items = await asyncio.wait_for(
-                self._collect_n(gen, 2), timeout=2.0
-            )
+            items = await asyncio.wait_for(self._collect_n(gen, 2), timeout=2.0)
             assert len(items) == 2
             assert b"data: b\n" in items[0]
             assert b"id: 2\n" in items[0]
@@ -223,3 +228,155 @@ class TestSseAntiBufferingHeaders:
             assert response.headers["x-accel-buffering"] == "no"
         finally:
             await response.body_iterator.aclose()
+
+
+def _redis_pmessage(prefix: str, channel: str, payload: dict) -> dict:
+    """Build a Redis pmessage dict as redis-py delivers it to the listen loop."""
+    return {
+        "type": "pmessage",
+        "pattern": f"{prefix}*".encode(),
+        "channel": f"{prefix}{channel}".encode(),
+        "data": json.dumps(payload).encode(),
+    }
+
+
+class TestRedisLoopbackDedup:
+    """Origin tagging stops a worker from re-delivering events it published itself.
+
+    ``broadcast()`` dispatches locally *and* publishes to Redis; the worker's own
+    listener then receives that publish. Without a same-origin filter the local
+    subscriber would see every event twice once the listener is reliably alive.
+    """
+
+    def test_parse_skips_own_published_message(self):
+        msg = _redis_pmessage(
+            "app:sse:",
+            "room",
+            {"event": "update", "data": "1", "_origin": _WORKER_ID},
+        )
+        assert _parse_redis_message(msg, "app:sse:") is None
+
+    def test_parse_dispatches_foreign_message(self):
+        msg = _redis_pmessage(
+            "app:sse:",
+            "room",
+            {"event": "update", "data": "1", "_origin": "some-other-worker"},
+        )
+        parsed = _parse_redis_message(msg, "app:sse:")
+        assert parsed is not None
+        channel, payload = parsed
+        assert channel == "room"
+        assert payload == {"event": "update", "data": "1"}
+
+    def test_parse_dispatches_message_without_origin(self):
+        # Messages from a publisher that predates origin tagging must still flow.
+        msg = _redis_pmessage("app:sse:", "room", {"event": "update", "data": "1"})
+        parsed = _parse_redis_message(msg, "app:sse:")
+        assert parsed is not None
+        _, payload = parsed
+        assert payload == {"event": "update", "data": "1"}
+
+    @pytest.mark.asyncio
+    async def test_publish_tags_message_with_worker_origin(self, monkeypatch):
+        published: list[tuple[str, str]] = []
+
+        class _Client:
+            async def publish(self, channel: str, data: str) -> None:
+                published.append((channel, data))
+
+        import vibetuner.sse as sse
+
+        monkeypatch.setattr(sse, "_redis_publish_client", _Client())
+        await _publish_to_redis("room", {"event": "update", "data": "1"})
+
+        assert len(published) == 1
+        _, raw = published[0]
+        sent = json.loads(raw)
+        assert sent["event"] == "update"
+        assert sent["data"] == "1"
+        assert sent["_origin"] == _WORKER_ID
+
+
+class _FakePubSub:
+    def __init__(self) -> None:
+        self.patterns: list[str] = []
+
+    async def psubscribe(self, pattern: str) -> None:
+        self.patterns.append(pattern)
+
+    async def punsubscribe(self) -> None:
+        pass
+
+    async def listen(self):
+        while True:
+            await asyncio.sleep(3600)
+            yield {}
+
+
+class _FakeClient:
+    def __init__(self) -> None:
+        self._pubsub = _FakePubSub()
+
+    def pubsub(self) -> _FakePubSub:
+        return self._pubsub
+
+    async def aclose(self) -> None:
+        pass
+
+
+@pytest_asyncio.fixture
+async def sse_module():
+    import vibetuner.sse as sse
+
+    sse._redis_listener_task = None
+    yield sse
+    task = sse._redis_listener_task
+    if task is not None:
+        task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await task
+    sse._redis_listener_task = None
+
+
+class TestRedisListenerLifecycle:
+    """The listener is a process-lifetime task, not tied to a single request.
+
+    A dead task must be replaced; a live one must not be duplicated. Issue #1958
+    was the lazy guard treating a dead-but-non-None task as still subscribed, so
+    the worker never re-subscribed and ``PUBSUB NUMPAT`` decayed to 0.
+    """
+
+    @pytest.mark.asyncio
+    async def test_start_is_idempotent_while_alive(self, sse_module, monkeypatch):
+        sse = sse_module
+        monkeypatch.setattr(
+            "vibetuner.redis.create_redis_client", lambda: _FakeClient()
+        )
+
+        await start_redis_listener()
+        first = sse._redis_listener_task
+        assert first is not None and not first.done()
+
+        await start_redis_listener()
+        assert sse._redis_listener_task is first
+
+    @pytest.mark.asyncio
+    async def test_start_replaces_dead_task(self, sse_module, monkeypatch):
+        sse = sse_module
+        monkeypatch.setattr(
+            "vibetuner.redis.create_redis_client", lambda: _FakeClient()
+        )
+
+        await start_redis_listener()
+        first = sse._redis_listener_task
+        assert first is not None
+
+        first.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await first
+        assert first.done()
+
+        await start_redis_listener()
+        second = sse._redis_listener_task
+        assert second is not None and second is not first
+        assert not second.done()
