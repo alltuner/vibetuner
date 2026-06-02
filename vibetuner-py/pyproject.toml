@@ -56,7 +56,7 @@ dependencies = [
 ]
 
 [project.scripts]
-vibetuner = "vibetuner.cli:app"
+vibetuner = "vibetuner.cli:main"
 
 [project.urls]
 Homepage = "https://vibetuner.alltuner.com/"
