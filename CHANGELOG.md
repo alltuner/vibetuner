@@ -1,5 +1,26 @@
 # Changelog
 
+## [10.22.0](https://github.com/alltuner/vibetuner/compare/v10.21.1...v10.22.0) (2026-06-02)
+
+
+### Features
+
+* log Resend rate-limit and quota response headers ([#1952](https://github.com/alltuner/vibetuner/issues/1952)) ([4e62682](https://github.com/alltuner/vibetuner/commit/4e6268226ac0141b8a6126fa85258b73a6060210))
+* support TEST_MONGODB_URL for isolated local test runs ([#1957](https://github.com/alltuner/vibetuner/issues/1957)) ([b89d1b7](https://github.com/alltuner/vibetuner/commit/b89d1b71cc7d2624d4a87299306181e6a037ea5c))
+
+
+### Bug Fixes
+
+* disable msgmerge fuzzy matching in i18n recipes ([#1960](https://github.com/alltuner/vibetuner/issues/1960)) ([7704f30](https://github.com/alltuner/vibetuner/commit/7704f309071bde59ba4cf60102981929e5d8e329))
+* make hx-on/hx-live CSP-safe by default via hx-csp + safeEval ([#1962](https://github.com/alltuner/vibetuner/issues/1962)) ([9b4c5a9](https://github.com/alltuner/vibetuner/commit/9b4c5a9da7f55aa7b425cb7ab10c7edf2062e919))
+* record file-only locations in i18n catalogs ([#1950](https://github.com/alltuner/vibetuner/issues/1950)) ([a1d12d6](https://github.com/alltuner/vibetuner/commit/a1d12d6bba61fc8a60ac16adb477d65a63505ff5))
+* set anti-buffering headers on SSE responses ([#1961](https://github.com/alltuner/vibetuner/issues/1961)) ([4661b27](https://github.com/alltuner/vibetuner/commit/4661b27bc0838c0b4d13d98e5c1b68e223b503a5))
+
+
+### Documentation Updates
+
+* note Beanie class-level query false positives in ty ([#1955](https://github.com/alltuner/vibetuner/issues/1955)) ([4633ca2](https://github.com/alltuner/vibetuner/commit/4633ca21a49eb6e98dbe8671873cf34186cd7a34))
+
 ## [10.21.1](https://github.com/alltuner/vibetuner/compare/v10.21.0...v10.21.1) (2026-06-01)
 
 
