@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.22.3](https://github.com/alltuner/vibetuner/compare/v10.22.2...v10.22.3) (2026-06-02)
+
+
+### Bug Fixes
+
+* keep i18n catalogs single-line with --no-wrap ([#1967](https://github.com/alltuner/vibetuner/issues/1967)) ([#1968](https://github.com/alltuner/vibetuner/issues/1968)) ([12c211b](https://github.com/alltuner/vibetuner/commit/12c211bcefd60050abbb9441d551bacf2fff6c36))
+
 ## [10.22.2](https://github.com/alltuner/vibetuner/compare/v10.22.1...v10.22.2) (2026-06-02)
 
 
