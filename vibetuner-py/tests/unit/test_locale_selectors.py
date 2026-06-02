@@ -17,8 +17,9 @@ for the same reason. The test validates the logic; integration tests verify the
 actual middleware configuration.
 """
 
-from starlette_babel import LocaleFromCookie, LocaleFromHeader, LocaleFromQuery
+from starlette_babel import LocaleFromCookie, LocaleFromQuery
 from vibetuner.config import LocaleDetectionSettings
+from vibetuner.i18n import LocaleFromAcceptLanguage
 
 
 def locale_selector(conn) -> str | None:
@@ -58,7 +59,9 @@ def build_locale_selectors(
     if config.cookie:
         selectors.append(LocaleFromCookie())
     if config.accept_language:
-        selectors.append(LocaleFromHeader(supported_locales=supported_languages))
+        selectors.append(
+            LocaleFromAcceptLanguage(supported_locales=supported_languages)
+        )
 
     return selectors
 
@@ -118,7 +121,7 @@ class TestBuildLocaleSelectors:
         assert "LocaleFromCookie" not in selector_types
 
     def test_accept_language_disabled(self):
-        """When accept_language is disabled, LocaleFromHeader not included."""
+        """When accept_language is disabled, LocaleFromAcceptLanguage not included."""
         config = LocaleDetectionSettings(accept_language=False)
         supported_languages = {"en", "ca", "es"}
 
@@ -126,7 +129,7 @@ class TestBuildLocaleSelectors:
 
         assert len(selectors) == 4
         selector_types = [type(s).__name__ for s in selectors]
-        assert "LocaleFromHeader" not in selector_types
+        assert "LocaleFromAcceptLanguage" not in selector_types
 
     def test_multiple_selectors_disabled(self):
         """Multiple selectors can be disabled simultaneously."""
@@ -143,7 +146,7 @@ class TestBuildLocaleSelectors:
         assert len(selectors) == 2
         selector_types = [type(s).__name__ for s in selectors]
         assert "LocaleFromQuery" not in selector_types
-        assert "LocaleFromHeader" not in selector_types
+        assert "LocaleFromAcceptLanguage" not in selector_types
 
     def test_all_selectors_disabled(self):
         """When all selectors are disabled, empty list is returned."""
@@ -168,7 +171,7 @@ class TestBuildLocaleSelectors:
         selectors = build_locale_selectors(config, supported_languages)
 
         selector_types = [type(s).__name__ for s in selectors]
-        # Order: LocaleFromQuery, function, function, LocaleFromCookie, LocaleFromHeader
+        # Order: LocaleFromQuery, function, function, LocaleFromCookie, LocaleFromAcceptLanguage
         assert selector_types[0] == "LocaleFromQuery"
         assert selector_types[3] == "LocaleFromCookie"
-        assert selector_types[4] == "LocaleFromHeader"
+        assert selector_types[4] == "LocaleFromAcceptLanguage"

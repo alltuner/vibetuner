@@ -1379,6 +1379,12 @@ Languages are detected in this order (first match wins):
 6. Accept-Language header (browser preference)
 7. Default language
 
+The Accept-Language step negotiates region-aware: each browser preference is
+matched against the supported languages by its full tag first, then by its
+language-only subtag, so a region-qualified top preference like `ca-ES` resolves
+to a supported `ca` instead of losing to a lower-ranked exact match such as `es`.
+The highest-quality preference with any supported match wins.
+
 #### Custom Locale Resolvers (`register_locale_resolver`)
 
 For per-tenant or domain-specific locale rules, register a custom resolver at

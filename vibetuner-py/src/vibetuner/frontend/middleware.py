@@ -14,7 +14,6 @@ from starlette.responses import Response as StarletteResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 from starlette_babel import (
     LocaleFromCookie,
-    LocaleFromHeader,
     LocaleFromQuery,
     LocaleMiddleware,
     get_translator,
@@ -579,7 +578,7 @@ def _build_locale_selectors() -> list:
     4. cookie - language cookie
     5. accept_language - browser Accept-Language header
     """
-    from vibetuner.i18n import combined_locale_selector
+    from vibetuner.i18n import LocaleFromAcceptLanguage, combined_locale_selector
 
     selectors: list = [combined_locale_selector]
     config = settings.locale_detection
@@ -593,7 +592,9 @@ def _build_locale_selectors() -> list:
     if config.cookie:
         selectors.append(LocaleFromCookie())
     if config.accept_language:
-        selectors.append(LocaleFromHeader(supported_locales=ctx.supported_languages))
+        selectors.append(
+            LocaleFromAcceptLanguage(supported_locales=ctx.supported_languages)
+        )
 
     return selectors
 

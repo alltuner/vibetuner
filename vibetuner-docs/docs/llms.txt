@@ -100,7 +100,11 @@ Important notes:
   returning `[{code, name}]` with names rendered in the current request's locale
   (browsing in Spanish gives "inglés / español / catalán"; never English-only).
   `language_picker` is also registered as a Jinja global so templates can call
-  it directly without overriding any existing template variable
+  it directly without overriding any existing template variable. The
+  Accept-Language selector (`LocaleFromAcceptLanguage` / `negotiate_accept_language`)
+  negotiates region-aware with language-only subtag fallback, so a region-qualified
+  top preference (`ca-ES`) resolves to supported `ca` instead of losing to a
+  lower-ranked exact match (`es`)
 - **Framework Translation Catalogs**: vibetuner ships compiled
   `.mo` files under `vibetuner/locales/<lang>/LC_MESSAGES/messages.mo`
   (currently `en`, `ca`). `frontend/middleware.py` loads them before the
