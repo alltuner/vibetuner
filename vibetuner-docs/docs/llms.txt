@@ -138,25 +138,31 @@ Important notes:
   no `Content-Type` (e.g. a bare `Response(status_code=404)`), so bare responses do
   not get turned into 0-byte browser downloads (Safari/Firefox) or generic error
   pages (Chrome)
-- **htmx CSP Protection (opt-in)**: htmx 4.0.0-beta4 ships an `hx-csp` extension
+- **htmx CSP Protection (default-on)**: htmx 4.0.0-beta4 ships an `hx-csp` extension
   (renamed from `hx-nonce` in beta3) that gates htmx attribute processing behind the
-  page CSP nonce. Enable by adding `import "@alltuner/vibetuner/htmx/csp";` to
-  `config.js` (re-exported from the framework's pinned htmx, no direct `htmx.org`
-  dep needed; added in 10.20.0) and stamping the nonce once via the skeleton's
-  `body_attrs` block: `hx-nonce:inherited="{{ csp_nonce }}"` — every htmx element
-  inherits it. Elements without a matching `hx-nonce` are stripped (fail-closed).
-  For `hx-on`/`hx-vals js:` (which need eval), add
-  `<meta name="htmx-config" content='extensions:"hx-csp",safeEval:true'>` via the
-  skeleton's `htmx_config` block (must precede the bundle script). The HTML
-  attribute is still named `hx-nonce`; only the extension was renamed
+  page CSP nonce. It is loaded by default from the framework-managed block of
+  `config.js` (`import "@alltuner/vibetuner/htmx/csp";`, alongside `hx-preload` /
+  `hx-live`), and it is what makes `hx-on:` / `hx-live` work at all under vibetuner's
+  strict `script-src 'nonce-…' 'strict-dynamic'` (no `'unsafe-eval'`): the import also
+  flips `htmx.config.safeEval = true` so htmx evaluates those expressions via
+  nonce-based `<script>` injection instead of `new Function()` (which the nonce +
+  `strict-dynamic` CSP would reject with an `EvalError`). The extension is fail-closed —
+  any element carrying an `hx-*` attribute needs a matching `hx-nonce` — but
+  `SecurityHeadersMiddleware` auto-stamps `hx-nonce` on every htmx element (the same
+  way it injects the `nonce` into `<script>` tags), so no manual stamping, no
+  `body_attrs` nonce, and no `safeEval` meta tag are required. Because the gate trusts
+  whatever the server renders, projects that render untrusted HTML (markdown,
+  user-supplied content) must still sanitize it. The HTML attribute is still named
+  `hx-nonce`; only the extension was renamed
 - **htmx Live Reactivity (default-on)**: htmx 4's `hx-live` extension is
   loaded by default from `config.js` since `@alltuner/vibetuner` 10.15.0. Use
   `hx-live="<expr>"` for derived state that recomputes on any DOM mutation,
   `hx-on:event="..."` with the `q()` proxy / sigil-`toggle()` / per-element
-  `debounce()` for richer event handlers. CSP-clean (evaluates through htmx's
-  nonced TrustedTypes path) where raw inline `onclick=` is not. Vibetuner's
-  preferred path for chip lists, paired controls, live filters, and inline
-  form-field validation — use this before reaching for Alpine.js or Stimulus.
+  `debounce()` for richer event handlers. CSP-safe (the default-on `hx-csp`
+  extension's `safeEval` evaluates them via nonce-based script injection) where raw
+  inline `onclick=` is not. Vibetuner's preferred path for chip lists, paired
+  controls, live filters, and inline form-field validation — use this before
+  reaching for Alpine.js or Stimulus.
   See `vibetuner-docs/docs/htmx-migration.md#live-reactivity-with-hx-live` for
   idiomatic patterns and rough edges
 - **Health Checks**: `/health`, `/health/ping`, `/health/ready`, `/health/id` endpoints

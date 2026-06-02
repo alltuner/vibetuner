@@ -67,6 +67,13 @@ tags** in templates. The middleware handles this. Adding `nonce="{{ csp_nonce }}
 causes the middleware to skip injection (it sees `nonce=` already present), resulting in an empty
 nonce that silently breaks scripts in production while appearing to work in dev mode.
 
+The middleware also stamps `hx-nonce="<nonce>"` on every element carrying an `hx-*` attribute, so the
+default-on `hx-csp` extension (which is fail-closed and strips htmx from elements without a matching
+nonce) accepts server-rendered htmx. **Do NOT manually add `hx-nonce=` in templates** either — the
+middleware handles it, the same way it does for `<script>` tags. SSE payloads go out as
+`text/event-stream` and are not rewritten, so htmx attributes delivered over SSE are not stamped
+(hx-csp logs a `console.error` when it strips them).
+
 For `<style>` tags or other elements that need the nonce, use `{{ csp_nonce }}` (available in all
 templates via context provider). Configure extra CSP sources via `CSP_*` env vars.
 

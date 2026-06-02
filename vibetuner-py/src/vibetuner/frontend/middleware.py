@@ -112,6 +112,18 @@ class HtmxMiddleware:
 _SCRIPT_WITHOUT_NONCE_RE = re.compile(rb"<script(?![^>]*\snonce=)", re.IGNORECASE)
 _EMPTY_NONCE_RE = re.compile(rb'<script[^>]*\snonce=""\s*', re.IGNORECASE)
 
+# Opening of any start tag that carries an htmx attribute (`hx-…`, including
+# `hx-on:…`) but no `hx-nonce` yet. The hx-csp extension is a fail-closed gate:
+# it strips htmx from any element whose hx-nonce does not match the page nonce,
+# so the framework stamps the nonce here just like it does for <script> tags.
+# Anchored on the tag name so the attribute is inserted right after `<tag` and
+# never after the tag's closing `>` — that stays correct even when an
+# `hx-on`/`hx-live` expression value contains a literal `>`.
+_HX_ELEMENT_WITHOUT_NONCE_RE = re.compile(
+    rb"<([a-zA-Z][a-zA-Z0-9-]*)(?=[^>]*\shx-)(?![^>]*\shx-nonce[\s=>])",
+    re.IGNORECASE,
+)
+
 
 class SecurityHeadersMiddleware:
     """Pure ASGI middleware that adds security headers (CSP with nonce, etc.) to responses.
@@ -197,8 +209,10 @@ class SecurityHeadersMiddleware:
                 "CSP nonces are auto-injected by SecurityHeadersMiddleware; "
                 "do not add nonce= attributes manually in templates."
             )
-        replacement = f'<script nonce="{nonce}"'.encode()
-        return _SCRIPT_WITHOUT_NONCE_RE.sub(replacement, body)
+        script_replacement = f'<script nonce="{nonce}"'.encode()
+        body = _SCRIPT_WITHOUT_NONCE_RE.sub(script_replacement, body)
+        hx_replacement = rb'<\g<1> hx-nonce="' + nonce.encode() + rb'"'
+        return _HX_ELEMENT_WITHOUT_NONCE_RE.sub(hx_replacement, body)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":

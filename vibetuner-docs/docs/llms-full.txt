@@ -2133,23 +2133,25 @@ templates for inline `style="..."` before flipping. On older releases
 the env var is silently ignored, so bump `vibetuner` in `pyproject.toml`
 and re-run `uv sync` first.
 
-**htmx CSP Protection (opt-in, requires `htmx.org@4.0.0-beta4`):**
+**htmx CSP Protection (default-on, requires `htmx.org@4.0.0-beta4`):**
 htmx 4.0.0-beta4 ships an `hx-csp` extension (renamed from `hx-nonce`
 in beta3) that strips htmx attributes from elements without a matching
-`hx-nonce`. Enable by adding `import "@alltuner/vibetuner/htmx/csp";` to
-`config.js` custom imports (re-exported from the framework's pinned
-htmx, so no direct `htmx.org` dep is needed; added in 10.20.0). Stamp
-the nonce once via the skeleton's `body_attrs` block —
-`hx-nonce:inherited="{{ csp_nonce }}"` — and every htmx element inherits
-it; stamp individual elements only to override. For features that need
-eval (`hx-on`, `hx-vals js:`, `hx-confirm js:`), enable `safeEval` via
-`<meta name="htmx-config" content='extensions:"hx-csp",safeEval:true'>`
-placed in the skeleton's `htmx_config` block (it must precede the bundle
-script, since htmx reads its meta config when the script evaluates).
-Useful defence-in-depth even though vibetuner already enforces strict
-script-src. The HTML attribute is still named `hx-nonce`; only the
-extension itself was renamed. On older releases that ship
-`htmx.org@4.0.0-beta3` the file is named `hx-nonce.js`.
+`hx-nonce`. It is loaded by default from the framework-managed block of
+`config.js` (`import "@alltuner/vibetuner/htmx/csp";`, re-exported from
+the framework's pinned htmx, so no direct `htmx.org` dep is needed;
+added in 10.20.0). It is not optional: it is what makes `hx-on:` /
+`hx-live` work at all under vibetuner's strict CSP. The extension is
+fail-closed — every element carrying an `hx-*` attribute needs a matching
+`hx-nonce` — but `SecurityHeadersMiddleware` auto-stamps `hx-nonce` on
+every htmx element (the same way it injects the `nonce` into `<script>`
+tags), so there is no `body_attrs` stamp and no per-element `hx-nonce`
+to add. The `csp` import also flips `htmx.config.safeEval = true` before
+the extension registers, so `hx-on` / `hx-vals js:` / `hx-confirm js:`
+are evaluated via nonce-based `<script>` injection rather than
+`new Function()`; no `safeEval` meta tag is required. The HTML attribute
+is still named `hx-nonce`; only the extension itself was renamed. On
+older releases that ship `htmx.org@4.0.0-beta3` the file is named
+`hx-nonce.js`.
 
 **htmx Live Reactivity (default-on, requires `@alltuner/vibetuner` ≥ 10.15.0):**
 htmx 4's `hx-live` extension is loaded by default from the
@@ -2160,10 +2162,13 @@ Reach for it before adding Alpine.js, Stimulus, or hand-rolled
 event-listener boilerplate.
 
 **Why it fits the stack.** Vibetuner's `script-src 'nonce-X' 'strict-dynamic'`
-CSP blocks inline `onclick="..."` / `onchange="..."` attributes at the spec
-level. `hx-on:` and `hx-live` evaluate through htmx's nonced TrustedTypes
-pipeline, so they work where raw handler attributes do not. Pair with the
-opt-in `hx-csp` extension for defence-in-depth.
+CSP (no `'unsafe-eval'`) blocks inline `onclick="..."` / `onchange="..."`
+attributes at the spec level, and would also reject htmx's own `new Function()`
+evaluation of `hx-on:` / `hx-live` expressions with an `EvalError`. The
+default-on `hx-csp` extension fixes that: with `safeEval` on, it evaluates
+those expressions via nonce-based `<script>` injection, which the nonce +
+`strict-dynamic` CSP does permit. That is what makes `hx-on:` and `hx-live`
+work where raw handler attributes do not — no `'unsafe-eval'` needed.
 
 **Primitives** (full reference at <https://four.htmx.org/extensions/hx-live/>):
 
@@ -2706,12 +2711,12 @@ relevant to vibetuner projects:
 
 - **`hx-csp` extension** (introduced in beta3 as `hx-nonce`, renamed in
   beta4) — gates htmx attribute processing behind the page CSP nonce.
-  Enable by importing `@alltuner/vibetuner/htmx/csp` in `config.js` (no
-  direct `htmx.org` dep; added in 10.20.0) and stamping the nonce once via
-  the skeleton's `body_attrs` block (`hx-nonce:inherited="{{ csp_nonce }}"`,
-  inherited by all htmx elements). Elements without a matching nonce
-  are stripped (fail-closed). The HTML attribute is still named
-  `hx-nonce`; only the extension itself was renamed
+  Loaded by default from the framework-managed block of `config.js`
+  (`import "@alltuner/vibetuner/htmx/csp"`; no direct `htmx.org` dep;
+  added in 10.20.0); `SecurityHeadersMiddleware` auto-stamps the matching
+  `hx-nonce` on every htmx element, so no manual stamping is needed.
+  Elements without a matching nonce are stripped (fail-closed). The HTML
+  attribute is still named `hx-nonce`; only the extension itself was renamed
 - **`hx-live` extension** — DOM-reactivity via `hx-live="..."` plus a
   richer `hx-on` JS surface (`q()`, `toggle()`, `debounce()`). **Default-on
   in vibetuner** since `@alltuner/vibetuner` 10.15.0; see the Live
