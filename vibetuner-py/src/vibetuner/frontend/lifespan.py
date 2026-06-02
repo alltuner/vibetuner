@@ -23,6 +23,12 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await init_mongodb()
     await init_sqlmodel()
 
+    # Own the SSE Redis listener for the worker's whole life, so its psubscribe
+    # stays live for every connection instead of being tied to one request.
+    from vibetuner.sse import start_redis_listener
+
+    await start_redis_listener()
+
     # Initialize runtime config cache after MongoDB is ready
     from vibetuner.config import settings
     from vibetuner.runtime_config import RuntimeConfig
@@ -53,6 +59,10 @@ async def base_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Vibetuner frontend stopping")
     if ctx.DEBUG:
         await hotreload.shutdown()
+
+    from vibetuner.sse import stop_redis_listener
+
+    await stop_redis_listener()
 
     from vibetuner.redis import close_redis_client
 
