@@ -1,5 +1,42 @@
 # Changelog
 
+## [11.0.0](https://github.com/alltuner/vibetuner/compare/v10.22.4...v11.0.0) (2026-06-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade streaq to v7 ([#1996](https://github.com/alltuner/vibetuner/issues/1996))
+
+  streaq v7 removes the `WorkerDepends()` / `TaskDepends()` dependency-injection
+  helpers. Background tasks written with `ctx=WorkerDepends()` will break.
+  **Migration:** drop the `ctx=WorkerDepends()` parameter and read the worker
+  lifespan context via `worker.context` (and the per-task `TaskContext` via the
+  registered task/middleware's `.context` property) instead. The framework's
+  own `robust_task` middleware and the task docs were updated accordingly.
+
+### Features
+
+* upgrade streaq to v7 ([#1996](https://github.com/alltuner/vibetuner/issues/1996)) ([517fac7](https://github.com/alltuner/vibetuner/commit/517fac7cfddf0cb008f6e9c7fed18cd6a75eb3ab))
+
+
+### Bug Fixes
+
+* **deps:** update redis[hiredis] to v8 ([#1995](https://github.com/alltuner/vibetuner/issues/1995)) ([3d1e240](https://github.com/alltuner/vibetuner/commit/3d1e2400bfe7ef6fbe931a362c86d9cde0072b56))
+* resolve type errors so ty can advance past 0.0.42 ([#1998](https://github.com/alltuner/vibetuner/issues/1998)) ([f3c722e](https://github.com/alltuner/vibetuner/commit/f3c722e0c7012849f427eee743fc36ba5981c488))
+
+
+### Miscellaneous Chores
+
+* **deps:** batch safe dependency bumps (aiohttp, granian, pytest-asyncio, ruff, rumdl, ty, typer) ([#1994](https://github.com/alltuner/vibetuner/issues/1994)) ([2ba8a76](https://github.com/alltuner/vibetuner/commit/2ba8a762cc60626370be0d07ef2bd79c3a4b5cc2))
+* **deps:** update anthropics/claude-code-action action to v1.0.140 ([#1991](https://github.com/alltuner/vibetuner/issues/1991)) ([be527f2](https://github.com/alltuner/vibetuner/commit/be527f2f1a3138b0578d47d2487ab2cad46376a2))
+* **deps:** update astral-sh/setup-uv action to v8.2.0 ([#1992](https://github.com/alltuner/vibetuner/issues/1992)) ([41ac097](https://github.com/alltuner/vibetuner/commit/41ac097a82a45cc49a70b9b41fe9345f533412ff))
+* update deps 2026-06-09 ([#1999](https://github.com/alltuner/vibetuner/issues/1999)) ([0fe586a](https://github.com/alltuner/vibetuner/commit/0fe586a436f2eb66885dd67da6bfcee254242d93))
+
+
+### Documentation Updates
+
+* update llms-full.txt for streaq v7 + markdown cleanup ([#1997](https://github.com/alltuner/vibetuner/issues/1997)) ([27f0a6e](https://github.com/alltuner/vibetuner/commit/27f0a6ea4651800ea57baf730478371d884d357a))
+
 ## [10.22.4](https://github.com/alltuner/vibetuner/compare/v10.22.3...v10.22.4) (2026-06-02)
 
 
