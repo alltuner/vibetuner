@@ -1,7 +1,7 @@
 import asyncio
 import re
 import secrets
-from typing import Any, MutableMapping
+from typing import Any, MutableMapping, cast
 
 from fastapi.middleware import Middleware
 from fastapi.requests import HTTPConnection
@@ -11,7 +11,7 @@ from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import Response as StarletteResponse
-from starlette.types import ASGIApp, Receive, Scope, Send
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from starlette_babel import (
     LocaleFromCookie,
     LocaleFromQuery,
@@ -229,11 +229,11 @@ class SecurityHeadersMiddleware:
             scope["state"] = {}
         scope["state"]["csp_nonce"] = nonce
 
-        initial_message = None
+        initial_message: Message | None = None
         is_html = False
         body_parts: list[bytes] = []
 
-        async def send_with_headers(message):
+        async def send_with_headers(message: Message) -> None:
             nonlocal initial_message, is_html
 
             if message["type"] == "http.response.start":
@@ -255,10 +255,13 @@ class SecurityHeadersMiddleware:
                 body_parts.append(message.get("body", b""))
                 more_body = message.get("more_body", False)
                 if not more_body:
+                    # is_html is only set on an http.response.start message, which
+                    # is also where initial_message is captured, so by here it is set.
+                    start_message = cast(Message, initial_message)
                     full_body = self._inject_nonces(b"".join(body_parts), nonce)
-                    headers = MutableHeaders(scope=initial_message)
+                    headers = MutableHeaders(scope=start_message)
                     headers["content-length"] = str(len(full_body))
-                    await send(initial_message)
+                    await send(start_message)
                     await send({"type": "http.response.body", "body": full_body})
                 return
 

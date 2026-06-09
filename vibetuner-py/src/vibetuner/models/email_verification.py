@@ -78,4 +78,5 @@ class EmailVerificationTokenModel(Document):
 
         # Mark token as used
         verification_token.used = True
-        return await verification_token.save()
+        await verification_token.save()
+        return verification_token
