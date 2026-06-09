@@ -404,7 +404,7 @@ Drop-in replacement for `@worker.task()` with retry and failure handling:
 from vibetuner.tasks.robust import robust_task
 
 @robust_task(max_retries=5, backoff_max=600)
-async def send_report(account_id: str, ctx=WorkerDepends()):
+async def send_report(account_id: str):
     ...
 ```
 

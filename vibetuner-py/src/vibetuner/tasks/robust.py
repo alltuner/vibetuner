@@ -113,16 +113,13 @@ def _ensure_middleware(worker: Any) -> None:
         _middleware_registered = True
 
         try:
-            from streaq.types import TaskContext
+            from streaq import StreaqError
 
-            @worker.middleware
             def robust_retry_middleware(next_fn: Any) -> Any:
                 async def wrapper(*args: Any, **kwargs: Any) -> Any:
-                    ctx = next(
-                        (v for v in kwargs.values() if isinstance(v, TaskContext)),
-                        None,
-                    )
-                    if ctx is None:
+                    try:
+                        ctx = robust_middleware.context
+                    except StreaqError:
                         return await next_fn(*args, **kwargs)
                     config = _configs.get(ctx.fn_name)
                     if config is None:
@@ -133,6 +130,8 @@ def _ensure_middleware(worker: Any) -> None:
                     )
 
                 return wrapper
+
+            robust_middleware = worker.middleware(robust_retry_middleware)
         except Exception:
             _middleware_registered = False
             raise
@@ -158,7 +157,9 @@ def robust_task(
         from vibetuner.tasks.robust import robust_task
 
         @robust_task(max_retries=5, backoff_max=600)
-        async def send_report(account_id: str, ctx=WorkerDepends()):
+        async def send_report(account_id: str):
+            # Worker context (db, http_client, ...) is available via
+            # ``get_worker().context`` when you need it.
             ...
 
     Args:
