@@ -5,17 +5,17 @@
     "": {
       "name": "vibetuner",
       "dependencies": {
-        "@alltuner/vibetuner-jinja": "^10.11.0",
+        "@alltuner/vibetuner-jinja": "10.22.4",
         "@tailwindcss/cli": "^4.3.0",
         "@tailwindcss/typography": "^0.5.19",
-        "daisyui": "^5.5.19",
+        "daisyui": "^5.5.23",
         "htmx.org": "4.0.0-beta4",
         "tailwindcss": "^4.3.0",
       },
     },
   },
   "packages": {
-    "@alltuner/vibetuner-jinja": ["@alltuner/vibetuner-jinja@10.11.0", "", {}, "sha512-yufO7h/EstDZtPY8E2zpSd3l+hoxMfPKoXoxIYGRVEM7Ut8dv8Xr/BQG7/F9z0GgJ3sFRDw9DPgvwsnjJkaLJw=="],
+    "@alltuner/vibetuner-jinja": ["@alltuner/vibetuner-jinja@10.22.4", "", {}, "sha512-dSr5TQTzs/ZYiPLe1y2OYlfk5Uo9rd2T4TXHD5gvmT7f+BDUc286v7RYqf+IOpMG8qq4PRT7ig9AOXFymm30Lg=="],
 
     "@jridgewell/gen-mapping": ["@jridgewell/gen-mapping@0.3.13", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.0", "@jridgewell/trace-mapping": "^0.3.24" } }, "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA=="],
 
@@ -91,7 +91,7 @@
 
     "cssesc": ["cssesc@3.0.0", "", { "bin": { "cssesc": "bin/cssesc" } }, "sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg=="],
 
-    "daisyui": ["daisyui@5.5.19", "", {}, "sha512-pbFAkl1VCEh/MPCeclKL61I/MqRIFFhNU7yiXoDDRapXN4/qNCoMxeCCswyxEEhqL5eiTTfwHvucFtOE71C9sA=="],
+    "daisyui": ["daisyui@5.5.23", "", {}, "sha512-xuheNUSL4T6ZVtWXoioqcNkjoyGX85QTDz4HTw2aBPfqk4fuMjax5HDo8qCmpV6M1YN8bGvfx5BpYCoDeRlt+A=="],
 
     "detect-libc": ["detect-libc@1.0.3", "", { "bin": { "detect-libc": "./bin/detect-libc.js" } }, "sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg=="],
 
