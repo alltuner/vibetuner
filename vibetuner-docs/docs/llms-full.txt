@@ -1,12 +1,19 @@
 # Vibetuner
 
-> Vibetuner is a production-ready FastAPI project scaffolding tool that generates full-stack web applications with authentication, flexible database support (MongoDB or SQL), frontend, Docker deployment, and CLI tools pre-configured in seconds. Built by All Tuner Labs for rapid iteration and modern development.
+> Vibetuner is a production-ready FastAPI project scaffolding tool that generates full-stack web applications with
+> authentication, flexible database support (MongoDB or SQL), frontend, Docker deployment, and CLI tools
+> pre-configured in seconds. Built by All Tuner Labs for rapid iteration and modern development.
 
 Important notes:
 
-- Vibetuner consists of four packages: a Python framework (`vibetuner`), a JavaScript build-deps package (`@alltuner/vibetuner`) which bundles tailwind, daisyui, htmx and an npm-shipped mirror of the framework's jinja templates (`@alltuner/vibetuner-jinja`, pulled in as a transitive — consumers don't install it directly), and a Copier scaffolding template
-- The framework separates immutable framework code (`vibetuner` package) from your application code (`src/app/`) for clean updates
-- In all examples, `app` refers to your project's Python package (the directory under `src/`). The actual name depends on your project slug (e.g., `src/myproject/` for a project named "myproject")
+- Vibetuner consists of four packages: a Python framework (`vibetuner`), a JavaScript build-deps package
+  (`@alltuner/vibetuner`) which bundles tailwind, daisyui, htmx and an npm-shipped mirror of the framework's jinja
+  templates (`@alltuner/vibetuner-jinja`, pulled in as a transitive — consumers don't install it directly), and a
+  Copier scaffolding template
+- The framework separates immutable framework code (`vibetuner` package) from your application code (`src/app/`) for
+  clean updates
+- In all examples, `app` refers to your project's Python package (the directory under `src/`). The actual name depends
+  on your project slug (e.g., `src/myproject/` for a project named "myproject")
 - HTMX is used instead of React/Vue for simplicity - server-rendered HTML with sprinkles of interactivity
 - All tools are chosen for speed: uv (Python), bun (JavaScript), Granian (ASGI server), Ruff (linting)
 - The project is designed to work excellently with AI coding assistants like Claude, Cursor, and ChatGPT
@@ -22,7 +29,7 @@ That's it! Vibetuner handles the rest.
 
 ### Create Your First Project
 
-**Using uvx (Recommended)**
+#### Using uvx (Recommended)
 
 No installation needed:
 
@@ -30,14 +37,14 @@ No installation needed:
 uvx vibetuner scaffold new my-app
 ```
 
-**Install Globally**
+#### Install Globally
 
 ```bash
 uv tool install vibetuner
 vibetuner scaffold new my-app
 ```
 
-**Interactive Setup**
+#### Interactive Setup
 
 The scaffold command will ask you:
 
@@ -46,7 +53,7 @@ The scaffold command will ask you:
 - **Author details**: Name and email
 - **Features**: OAuth providers, background jobs, etc.
 
-**Skip Prompts**
+#### Skip Prompts
 
 Use defaults for everything:
 
@@ -182,7 +189,7 @@ just deps-scaffolding-pr     # Update deps + scaffolding in a worktree and open 
 
 Vibetuner supports two development modes:
 
-**Docker Development (Recommended)**
+##### Docker Development (Recommended)
 
 Run everything in containers with hot reload:
 
@@ -199,7 +206,7 @@ This starts:
 
 Changes to Python code, templates, and assets automatically reload.
 
-**Local Development**
+##### Local Development
 
 Run services locally without Docker:
 
@@ -249,7 +256,7 @@ Returns `Response` objects unchanged (escape hatch for redirects, conditional lo
 
 Create models in `src/app/models/`. The approach depends on your database choice:
 
-**MongoDB (Beanie ODM)**
+##### MongoDB (Beanie ODM)
 
 ```python
 # src/app/models/post.py
@@ -281,7 +288,7 @@ return await cls.find_one(Eq(cls.author.id, user.id))  # ty: ignore[unresolved-a
 `ty` reports directives that stop matching (`unused-ignore-comment`), so keep the
 comment on the erroring line and remove it when no longer needed.
 
-**SQL (SQLModel)**
+##### SQL (SQLModel)
 
 ```python
 # src/app/models/post.py
@@ -305,7 +312,7 @@ __all__ = ["Post"]
 
 The model will be automatically registered with the database on startup.
 
-**Soft Delete (MongoDB)**
+##### Soft Delete (MongoDB)
 
 Use `DocumentWithSoftDelete` instead of `Document` to mark documents as deleted instead of removing them:
 
@@ -326,7 +333,7 @@ Use `find_many_in_all()` to include them. `delete()` sets `deleted_at` instead o
 `hard_delete()` permanently removes it. To restore: `doc.deleted_at = None; await doc.save()`.
 The CRUD factory's DELETE endpoint automatically performs a soft delete for these models.
 
-**Encrypted Fields (MongoDB)**
+##### Encrypted Fields (MongoDB)
 
 Encrypt sensitive fields at rest using `EncryptedFieldsMixin` and `EncryptedStr`:
 
@@ -454,9 +461,11 @@ Vibetuner provides several built-in template filters for common formatting needs
 | `format_datetime` | `{{ dt \| format_datetime }}` | "January 15, 2025 at 2:30 PM" |
 | `format_duration` / `duration` | `{{ seconds \| duration }}` | "5 min" or "30 sec" |
 
-The `timeago` filter converts a datetime to a human-readable relative time string. Use `short=True` for compact displays like "5m ago", "1d ago", "3mo ago".
+The `timeago` filter converts a datetime to a human-readable relative time string. Use `short=True` for compact
+displays like "5m ago", "1d ago", "3mo ago".
 
-Short format outputs: < 60 seconds = "just now", < 60 minutes = "Xm ago", < 24 hours = "Xh ago", < 7 days = "Xd ago", < 30 days = "Xw ago", < 365 days = "Xmo ago", < 4 years = "Xy ago", >= 4 years = "MMM DD, YYYY".
+Short format outputs: < 60 seconds = "just now", < 60 minutes = "Xm ago", < 24 hours = "Xh ago", < 7 days = "Xd ago",
+< 30 days = "Xw ago", < 365 days = "Xmo ago", < 4 years = "Xy ago", >= 4 years = "MMM DD, YYYY".
 
 #### Adding Custom Template Filters
 
@@ -680,7 +689,7 @@ Vibetuner generates full-stack web applications with clear separation between fr
 
 #### Four-Package Architecture
 
-**1. Scaffolding Template**
+##### 1. Scaffolding Template
 
 **Location**: Root repository (`copier.yml`, `vibetuner-template/`)
 The Copier-based template that generates new projects:
@@ -737,13 +746,13 @@ in consumer projects)
 
 #### Request Flow
 
-**1. HTTP Request**
+##### 1. HTTP Request
 
 ```text
 Client → Nginx/Caddy → FastAPI (Granian) → Route Handler
 ```
 
-**2. Route Handler**
+##### 2. Route Handler
 
 ```python
 # src/app/frontend/routes/blog.py
@@ -755,7 +764,7 @@ async def view_post(post_id: str):
     })
 ```
 
-**3. Database Query**
+##### 3. Database Query
 
 ```text
 # MongoDB
@@ -765,13 +774,13 @@ Route → Beanie ODM → Motor (async) → MongoDB
 Route → SQLModel → SQLAlchemy (async) → PostgreSQL/MySQL/SQLite
 ```
 
-**4. Template Rendering**
+##### 4. Template Rendering
 
 ```text
 Jinja2 Template → HTML with HTMX → Client
 ```
 
-**5. HTMX Interaction**
+##### 5. HTMX Interaction
 
 ```text
 User Action → HTMX Request → FastAPI → Partial HTML → Update DOM
@@ -781,7 +790,7 @@ User Action → HTMX Request → FastAPI → Partial HTML → Update DOM
 
 #### Backend Stack
 
-**FastAPI**
+##### FastAPI
 
 **Why:** Modern, fast, async-first Python web framework.
 
@@ -795,7 +804,7 @@ User Action → HTMX Request → FastAPI → Partial HTML → Update DOM
 
 Vibetuner supports multiple database backends. All are optional - choose what fits your project.
 
-**MongoDB + Beanie ODM**
+##### MongoDB + Beanie ODM
 
 **Why:** Flexible document database for rapid prototyping.
 
@@ -805,7 +814,7 @@ Vibetuner supports multiple database backends. All are optional - choose what fi
 - Automatic validation
 - Horizontal scaling with sharding
 
-**SQLModel + SQLAlchemy**
+##### SQLModel + SQLAlchemy
 
 **Why:** SQL databases when you need relational data.
 
@@ -815,7 +824,7 @@ Vibetuner supports multiple database backends. All are optional - choose what fi
 - Full SQL power when needed
 - CLI command: `vibetuner db create-schema`
 
-**Granian**
+##### Granian
 
 **Why:** High-performance ASGI server written in Rust.
 
@@ -826,7 +835,7 @@ Vibetuner supports multiple database backends. All are optional - choose what fi
 
 #### Frontend Stack
 
-**HTMX**
+##### HTMX
 
 **Why:** Interactivity without complex JavaScript.
 
@@ -836,7 +845,7 @@ Vibetuner supports multiple database backends. All are optional - choose what fi
 - Works with any backend
 - Small footprint (~14kb)
 
-**Tailwind CSS**
+##### Tailwind CSS
 
 **Why:** Utility-first CSS framework.
 
@@ -846,7 +855,7 @@ Vibetuner supports multiple database backends. All are optional - choose what fi
 - Responsive design made simple
 - Customizable design system
 
-**DaisyUI**
+##### DaisyUI
 
 **Why:** Beautiful Tailwind CSS components.
 
@@ -856,7 +865,7 @@ Vibetuner supports multiple database backends. All are optional - choose what fi
 - Semantic class names
 - Accessibility built-in
 
-**Jinja2**
+##### Jinja2
 
 **Why:** Powerful template engine for Python.
 
@@ -868,7 +877,7 @@ Vibetuner supports multiple database backends. All are optional - choose what fi
 
 #### Development Tools
 
-**uv**
+##### uv
 
 **Why:** Extremely fast Python package manager.
 
@@ -877,7 +886,7 @@ Vibetuner supports multiple database backends. All are optional - choose what fi
 - Compatible with pip/requirements.txt
 - Built in Rust
 
-**bun**
+##### bun
 
 **Why:** Fast all-in-one JavaScript runtime and toolkit.
 
@@ -886,7 +895,7 @@ Vibetuner supports multiple database backends. All are optional - choose what fi
 - Drop-in Node.js replacement
 - Native TypeScript support
 
-**just**
+##### just
 
 **Why:** Command runner (better Make).
 
@@ -908,7 +917,7 @@ Vibetuner includes:
 
 #### OAuth Setup
 
-**Google OAuth**
+##### Google OAuth
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project or select existing
@@ -923,7 +932,7 @@ GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-client-secret
 ```
 
-**GitHub OAuth**
+##### GitHub OAuth
 
 1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
 2. Create a new OAuth App
@@ -940,7 +949,7 @@ GITHUB_CLIENT_SECRET=your-client-secret
 
 Magic links provide passwordless authentication via email.
 
-**Configuration**
+##### Configuration
 
 Magic links are enabled by default. Configure email settings:
 
@@ -964,7 +973,7 @@ When multiple providers are configured, auto-detection prefers Resend, then
 Mailjet, then Cloudflare. Set `MAIL_PROVIDER=cloudflare` (or `resend` /
 `mailjet`) to pick explicitly.
 
-**Resend rate limits and quota**
+##### Resend rate limits and quota
 
 Resend caps sends at 5 requests/second per team and enforces a monthly quota.
 When a send exceeds either limit, Resend returns HTTP 429 and the provider
@@ -975,7 +984,7 @@ example, by sending mail from a background task) if you expect to approach
 `x-resend-monthly-quota` response headers at `DEBUG`, and logs a `WARNING` with
 those headers when a `RateLimitError` is raised.
 
-**How It Works**
+##### How It Works
 
 1. User enters email address
 2. System sends email with unique token
@@ -983,7 +992,7 @@ those headers when a `RateLimitError` is raised.
 4. System validates token and logs user in
 5. Session created
 
-**Custom OAuth Providers**
+##### Custom OAuth Providers
 
 Add any OAuth provider using `custom_oauth_providers` in `tune.py`:
 
@@ -1016,7 +1025,7 @@ app = VibetunerApp(
 `login_routes` (bool, default `True`; set to `False` to register a provider for credential
 management only without creating login/callback routes, useful for account linking flows).
 
-**Compliance Fixes**
+##### Compliance Fixes
 
 Some providers need response patching before Authlib can parse them. Pass a
 `compliance_fix` callable to `OauthProviderModel`:
@@ -1035,7 +1044,7 @@ OauthProviderModel(
 The fix is applied to both env-var-based and database-backed OAuth apps using
 the same provider.
 
-**Database-Backed OAuth Apps**
+##### Database-Backed OAuth Apps
 
 For multiple sets of credentials per provider (e.g., different LinkedIn apps for
 different organizations), use `OAuthProviderAppModel`:
@@ -1075,7 +1084,7 @@ providers will not appear on the login page.
 
 #### Protecting Routes
 
-**Require Authentication**
+##### Require Authentication
 
 Use the `@require_auth` decorator:
 
@@ -1090,7 +1099,7 @@ async def dashboard(request: Request):
     })
 ```
 
-**Optional Authentication**
+##### Optional Authentication
 
 Access user if authenticated, but don't require it:
 
@@ -2368,16 +2377,19 @@ just worker-dev
 # Or: uv run vibetuner run dev worker
 ```
 
-#### Worker Dependency Injection
+#### Worker Context
 
-Use `WorkerDepends()` from Streaq to inject the worker context:
+Access the worker context (the object yielded by the worker lifespan) with
+`worker.context` inside a running task:
 
 ```python
-from streaq import WorkerDepends
+from vibetuner.tasks.worker import get_worker
+
+worker = get_worker()
 
 @worker.task()
-async def fetch_external_data(url: str, ctx=WorkerDepends()) -> dict:
-    response = await ctx.http_client.get(url)
+async def fetch_external_data(url: str) -> dict:
+    response = await worker.context.http_client.get(url)
     return {"status": response.status_code, "data": response.text[:100]}
 ```
 
@@ -2835,7 +2847,7 @@ app = VibetunerApp(
 
 #### `vibetuner scaffold`
 
-**`new`**
+##### `new`
 
 ```bash
 vibetuner scaffold new DESTINATION [options]
@@ -2843,7 +2855,7 @@ vibetuner scaffold new DESTINATION [options]
 
 Creates a project from the local Vibetuner Copier template.
 
-**Options**
+###### Options
 
 - `--template`, `-t` – Use a different template source (local path, git URL, `github:user/repo`, etc.).
 - `--defaults`, `-d` – Accept default answers for every prompt (non-interactive).
@@ -2851,7 +2863,7 @@ Creates a project from the local Vibetuner Copier template.
 - `--branch`, `-b` – Use specific branch/tag from the vibetuner template repository.
 - `DESTINATION` must not already exist.
 
-**Examples**
+###### Examples
 
 ```bash
 # Interactive run
@@ -2868,7 +2880,7 @@ vibetuner scaffold new my-project \
 vibetuner scaffold new my-project --branch fix/scaffold-command
 ```
 
-**`update`**
+##### `update`
 
 ```bash
 vibetuner scaffold update [PATH] [options]
@@ -2881,7 +2893,7 @@ Brings an existing project up to date with the current template.
 - `--branch`, `-b` – Use specific branch/tag from the vibetuner template repository.
 - Exits with an error if `.copier-answers.yml` is missing.
 
-**`adopt`**
+##### `adopt`
 
 ```bash
 vibetuner scaffold adopt [PATH] [options]
@@ -2893,7 +2905,7 @@ Adopts vibetuner scaffolding for an existing project that already has vibetuner 
 - Requires `pyproject.toml` with vibetuner in dependencies.
 - Fails if `.copier-answers.yml` already exists (use `update` instead).
 
-**Options**
+###### Options
 
 - `--defaults`, `-d` – Accept default answers for every prompt (non-interactive).
 - `--data key=value` – Override individual template variables.
@@ -2903,7 +2915,7 @@ Adopts vibetuner scaffolding for an existing project that already has vibetuner 
 
 Starts framework services without Docker.
 
-**`dev`**
+##### `dev`
 
 ```bash
 vibetuner run dev [frontend|worker] [--port PORT] [--host HOST] [--workers COUNT] [--auto-port]
@@ -2915,7 +2927,7 @@ vibetuner run dev [frontend|worker] [--port PORT] [--host HOST] [--workers COUNT
 - Frontend watches `src/app/` and `templates/` for changes.
 - Worker runs the Streaq worker with reload enabled (ignores `--workers` > 1).
 
-**`prod`**
+##### `prod`
 
 ```bash
 vibetuner run prod [frontend|worker] [--port PORT] [--host HOST] [--workers COUNT]
@@ -2929,7 +2941,7 @@ vibetuner run prod [frontend|worker] [--port PORT] [--host HOST] [--workers COUN
 
 Database management commands for SQL databases (SQLModel/SQLAlchemy).
 
-**`create-schema`**
+##### `create-schema`
 
 ```bash
 vibetuner db create-schema
@@ -2964,7 +2976,7 @@ are found.
 
 Manage runtime configuration values. Requires a project directory with MongoDB.
 
-**`list`**
+##### `list`
 
 ```bash
 vibetuner config list
@@ -2973,7 +2985,7 @@ vibetuner config list
 Displays all registered config keys with values, types, sources, and categories.
 Secret values are masked.
 
-**`set`**
+##### `set`
 
 ```bash
 vibetuner config set KEY [--value VALUE]
@@ -2983,7 +2995,7 @@ Sets a config value and persists to MongoDB. When `--value` is omitted for
 secret keys, a hidden input prompt is used (avoids shell history exposure).
 When omitted for non-secret keys, a regular prompt is used.
 
-**`delete`**
+##### `delete`
 
 ```bash
 vibetuner config delete KEY [--yes]
@@ -2996,7 +3008,7 @@ Deletes a config value from MongoDB, reverting to the registered default.
 
 Access debug dashboards on deployed applications.
 
-**`open`**
+##### `open`
 
 ```bash
 vibetuner debug open URL [--secret SECRET]
@@ -3021,7 +3033,7 @@ uvx vibetuner debug open https://myapp.com --secret mysecretkey
 
 Manage encryption keys for fields encrypted with `EncryptedFieldsMixin`.
 
-**`set-key`**
+##### `set-key`
 
 ```bash
 vibetuner crypto set-key [--key PASSPHRASE] [--env-file PATH]
@@ -3031,7 +3043,7 @@ Sets the encryption key and encrypts all existing plaintext secrets.
 A secure random key is generated if `--key` is omitted. Errors if a key
 is already configured (use `rotate-key` instead).
 
-**`rotate-key`**
+##### `rotate-key`
 
 ```bash
 vibetuner crypto rotate-key [--new-key PASSPHRASE] [--env-file PATH]
@@ -3048,7 +3060,7 @@ Show version information.
 vibetuner version [--app]
 ```
 
-**Options**
+##### Options
 
 - `--app`, `-a` – Show app settings version even if not in a project directory.
 
@@ -3060,32 +3072,40 @@ vibetuner version [--app]
 - `author_name` – default `Developer`. Used for attribution in project metadata.
 - `author_email` – default `dev@example.com`. Included in scaffolded docs and config.
 - `project_name` – default `_folder_name`. Human-friendly name used throughout the README and docs.
-- `project_slug` – default `_folder_name`. Must match `^[a-z][a-z0-9\-]*[a-z0-9]$` (used for Python package name, Docker image, compose project name).
+- `project_slug` – default `_folder_name`. Must match `^[a-z][a-z0-9\-]*[a-z0-9]$` (used for Python package name,
+  Docker image, compose project name).
 - `project_description` – default `A project that does something useful.` Populates package metadata.
 - `fqdn` – default empty. When set, enables production deployment extras (Caddy, Watchtower, etc.).
 - `python_version` – default `3.14`. Controls `.python-version`, Docker images, and `uv` settings.
-- `supported_languages` – default `[]`. JSON/YAML list of language codes (for example `["es", "fr"]`), adds translation skeletons.
+- `supported_languages` – default `[]`. JSON/YAML list of language codes (for example `["es", "fr"]`), adds
+  translation skeletons.
 - `redis_url` – default empty. Used when background jobs are enabled.
 - `mongodb_url` – default empty. MongoDB connection string written to `.env.local`.
 - `database_url` – default empty. SQL database connection string (PostgreSQL, MySQL, MariaDB, SQLite) written to `.env.local`.
-- `docker_registry` – default `localhost:5050`. Only prompted when `fqdn` is set. Docker registry hostname for pushing and pulling production images.
-- `use_self_hosted_runner` – default `false`. Only prompted when `fqdn` is set. Includes a GitHub Actions workflow for building and pushing Docker images on a self-hosted runner, triggered by releases.
-- `enable_watchtower` – default `false`. Only prompted when `fqdn` is set; adds Watchtower service to production Docker Compose.
+- `docker_registry` – default `localhost:5050`. Only prompted when `fqdn` is set. Docker registry hostname for pushing
+  and pulling production images.
+- `use_self_hosted_runner` – default `false`. Only prompted when `fqdn` is set. Includes a GitHub Actions workflow for
+  building and pushing Docker images on a self-hosted runner, triggered by releases.
+- `enable_watchtower` – default `false`. Only prompted when `fqdn` is set; adds Watchtower service to production
+  Docker Compose.
 
 #### Updating Existing Projects
 
 There are two supported update flows:
 
 1. **`vibetuner scaffold update`** (works everywhere)
+
 - Reads `.copier-answers.yml` and reapplies the latest template files.
 - Respects previous answers by default; pass `--no-skip-answered` to revisit prompts.
 - Runs the same post-generation tasks after updating files.
 
 2. **`just update-scaffolding`** (inside generated projects)
+
 - Shells out to `copier update -A --trust`, then re-syncs dependencies (`bun install`, `uv sync --all-extras`).
 - Useful when you already have the project checked out with scaffolded `justfile`.
 
-Both commands update tracked files. Always commit or stash local changes before running them, review the results, and resolve any merge prompts Copier surfaces.
+Both commands update tracked files. Always commit or stash local changes before running them, review the results, and
+resolve any merge prompts Copier surfaces.
 
 ### Deployment
 
@@ -3093,7 +3113,7 @@ Both commands update tracked files. Always commit or stash local changes before 
 
 Vibetuner includes a multi-stage Dockerfile optimized for production.
 
-**Test Production Build Locally**
+##### Test Production Build Locally
 
 ```bash
 just test-build-prod
@@ -3101,7 +3121,7 @@ just test-build-prod
 
 This builds and runs the production image locally.
 
-**Build and Push**
+##### Build and Push
 
 ```bash
 just release
@@ -3109,10 +3129,9 @@ just release
 
 This builds the production image and pushes to your container registry.
 
-
 #### Environment Configuration
 
-**Production Environment Variables**
+##### Production Environment Variables
 
 Create a `.env` file for production:
 
@@ -3152,7 +3171,7 @@ AWS_REGION=us-east-1
 
 #### Deployment Options
 
-**Docker Compose**
+##### Docker Compose
 
 Use `compose.prod.yml` for production deployment:
 
@@ -3166,16 +3185,16 @@ This starts:
 - Redis (if enabled)
 - Your application
 
-**Cloud Platforms**
+##### Cloud Platforms
 
-*Railway*
+###### Railway
 
 1. Connect GitHub repository
 2. Add database plugin (MongoDB or PostgreSQL)
 3. Configure environment variables
 4. Deploy automatically on push
 
-*Render*
+###### Render
 
 1. Create new Web Service
 2. Connect repository
@@ -3204,19 +3223,21 @@ While we welcome feedback and are happy to see community interest, please note:
 - **Breaking changes may occur** - We prioritize our internal requirements
 - **No guarantees on feature requests** - We'll consider them, but can't commit to implementing everything
 
-That said, we do appreciate good contributions that align with our core beliefs (simplicity, speed, modern stack, assistant-friendly) and will do our best to review them when time allows.
+That said, we do appreciate good contributions that align with our core beliefs (simplicity, speed, modern stack,
+assistant-friendly) and will do our best to review them when time allows.
 
 #### PR Title Format (Important!)
 
-This project uses **Release Please** for automated changelog generation. Since we squash PRs, **PR title becomes the commit message** that determines version bumps and changelog entries.
+This project uses **Release Please** for automated changelog generation. Since we squash PRs, **PR title becomes the
+commit message** that determines version bumps and changelog entries.
 
-**Required Format**
+##### Required Format
 
 ```text
 <type>[optional scope]: <description>
 ```
 
-**Supported Types and Version Impact**
+##### Supported Types and Version Impact
 
 | Type | Description | Version Impact |
 |------|-------------|----------------|
@@ -3236,16 +3257,16 @@ When reverting a change, the PR title must start with `revert:` (not the default
 `Revert "..."` subject `git revert` produces). Otherwise Release Please silently
 drops the entry and the changelog still shows the reverted feature as added.
 
-**Breaking Changes**
+##### Breaking Changes
 
 Add `!` to indicate breaking changes (triggers **MAJOR** version):
 
 - `feat!: remove deprecated API`
 - `fix!: change database schema`
 
-**Examples**
+##### Examples
 
-*Good PR Titles*
+###### Good PR Titles
 
 ```text
 feat: add OAuth authentication support
@@ -3256,7 +3277,7 @@ feat(auth): add Google OAuth provider
 feat!: remove deprecated authentication system
 ```
 
-*Bad PR Titles (Release Please can't categorize)*
+###### Bad PR Titles (Release Please can't categorize)
 
 ```text
 Add OAuth
@@ -3283,6 +3304,7 @@ Published to PyPI, provides:
 **Install**: `uv add vibetuner`
 
 **Dependencies**:
+
 - FastAPI with async support
 - MongoDB with Beanie ODM
 - SQLModel with SQLAlchemy
@@ -3305,6 +3327,7 @@ Published to npm, provides:
 **Install**: `bun add @alltuner/vibetuner`
 
 **Dependencies**:
+
 - Tailwind CSS v4
 - DaisyUI components
 - HTMX and extensions
@@ -3315,6 +3338,7 @@ Published to npm, provides:
 **Source Code**: [github.com/alltuner/vibetuner](https://github.com/alltuner/vibetuner)
 
 Contains:
+
 - Scaffolding template (`vibetuner-template/`)
 - Python package source (`vibetuner-py/`)
 - JavaScript package source (`vibetuner-js/`)
@@ -3372,9 +3396,11 @@ just dev  # Should start without errors
 
 ### Internal Documentation
 
-The `vibetuner-docs/docs/` directory contains the source files for all documentation. These are built using MkDocs and deployed to GitHub Pages.
+The `vibetuner-docs/docs/` directory contains the source files for all documentation. These are built using MkDocs and
+deployed to GitHub Pages.
 
 **Documentation Structure**:
+
 - `index.md` - Main landing page
 - `quick-start.md` - Getting started guide
 - `development-guide.md` - Daily development workflow
