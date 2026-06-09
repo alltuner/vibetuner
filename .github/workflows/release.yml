@@ -72,7 +72,7 @@ jobs:
 
       - name: Install uv
         if: steps.release.outputs.prs_created == 'true'
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
 
       - name: Regenerate uv.lock files on release PR
         if: steps.release.outputs.prs_created == 'true'
@@ -114,7 +114,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           cache-dependency-glob: |
             vibetuner-py/**/*requirements*.txt
@@ -424,7 +424,7 @@ jobs:
           path: ./
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           cache-dependency-glob: |
             vibetuner-py/**/*requirements*.txt
@@ -571,7 +571,7 @@ jobs:
           path: ./
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -619,7 +619,7 @@ jobs:
           path: dist/
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
 
       - name: Publish to PyPI
         # `--check-url` makes uv consult the PyPI simple index for an existing
