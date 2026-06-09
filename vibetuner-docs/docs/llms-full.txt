@@ -2061,6 +2061,7 @@ auto-discovered.
 | `vibetuner_client` | Async HTTP test client with full middleware |
 | `vibetuner_app` | The FastAPI app instance (override for custom apps) |
 | `vibetuner_db` | Session-scoped MongoDB DB on `TEST_MONGODB_URL` (falls back to `MONGODB_URL`); collections truncated per test |
+| _(autouse)_ | Session-scoped fixture points Redis (rate limiter, cache, pub/sub) at `TEST_REDIS_URL` (falls back to `REDIS_URL`) |
 | `mock_auth` | Mock authentication without real sessions |
 | `mock_tasks` | Mock background tasks without Redis |
 | `override_config` | Override RuntimeConfig values with auto-cleanup |
@@ -2118,6 +2119,28 @@ TEST_MONGODB_URL=mongodb://localhost:27017/ pytest
 The session start logs the resolved server and throwaway database name, so it is
 always obvious where the test database is being created. The suite is skipped
 entirely when neither `TEST_MONGODB_URL` nor `MONGODB_URL` is set.
+
+**Running tests against a local Redis:**
+
+Redis follows the same precedent. A session-scoped autouse fixture overrides
+`settings.redis_url` with `TEST_REDIS_URL` when set, so the rate limiter,
+response cache, pub/sub, and the shared Redis client all target the test Redis.
+Without `TEST_REDIS_URL` they fall back to `REDIS_URL`, leaving existing behavior
+unchanged. Pointing `REDIS_URL` at a remote/production Redis makes every request
+through `vibetuner_client` pay round-trip latency on rate-limit and cache lookups,
+so set `TEST_REDIS_URL` to a local Redis to keep the suite fast and off prod:
+
+```bash
+# .env (or .env.local) — prod stays for the app, tests use local Redis
+REDIS_URL=redis://prod-cache.internal:6379/0
+TEST_REDIS_URL=redis://localhost:6379/0
+```
+
+```bash
+# Or spin up a throwaway local Redis just for the suite
+docker run -d --rm -p 6379:6379 redis:7
+TEST_REDIS_URL=redis://localhost:6379/0 pytest
+```
 
 ### Default Language Configuration
 

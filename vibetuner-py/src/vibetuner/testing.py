@@ -188,6 +188,38 @@ async def vibetuner_db(_vibetuner_db_session: str) -> AsyncGenerator[str, None]:
 
 
 # ---------------------------------------------------------------------------
+# Redis test server
+# ---------------------------------------------------------------------------
+
+
+@pytest_asyncio.fixture(scope="session", loop_scope="session", autouse=True)
+async def _vibetuner_redis_session() -> AsyncGenerator[None, None]:
+    """Point every Redis consumer at the test Redis for the whole session.
+
+    Overrides ``settings.redis_url`` with ``resolved_test_redis_url`` so the
+    rate limiter, response cache, pub/sub, and the shared Redis client all
+    target ``TEST_REDIS_URL`` when set. Falling back to ``redis_url`` when
+    ``TEST_REDIS_URL`` is unset keeps existing behavior unchanged, exactly as
+    ``TEST_MONGODB_URL`` does for Mongo.
+
+    Pointing ``TEST_REDIS_URL`` at a local Redis keeps the suite off a
+    prod-pointing ``redis_url`` so requests through ``vibetuner_client`` don't
+    pay remote round-trip latency on every rate-limit and cache lookup.
+    """
+    from vibetuner.config import settings
+    from vibetuner.redis import close_redis_client
+
+    original_url = settings.redis_url
+    settings.redis_url = settings.resolved_test_redis_url
+    await close_redis_client()
+    try:
+        yield
+    finally:
+        await close_redis_client()
+        settings.redis_url = original_url
+
+
+# ---------------------------------------------------------------------------
 # Authentication mocking
 # ---------------------------------------------------------------------------
 
