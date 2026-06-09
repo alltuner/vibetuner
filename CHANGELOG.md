@@ -7,6 +7,13 @@
 
 * upgrade streaq to v7 ([#1996](https://github.com/alltuner/vibetuner/issues/1996))
 
+  streaq v7 removes the `WorkerDepends()` / `TaskDepends()` dependency-injection
+  helpers. Background tasks written with `ctx=WorkerDepends()` will break.
+  **Migration:** drop the `ctx=WorkerDepends()` parameter and read the worker
+  lifespan context via `worker.context` (and the per-task `TaskContext` via the
+  registered task/middleware's `.context` property) instead. The framework's
+  own `robust_task` middleware and the task docs were updated accordingly.
+
 ### Features
 
 * upgrade streaq to v7 ([#1996](https://github.com/alltuner/vibetuner/issues/1996)) ([517fac7](https://github.com/alltuner/vibetuner/commit/517fac7cfddf0cb008f6e9c7fed18cd6a75eb3ab))
