@@ -155,28 +155,28 @@ app = VibetunerApp(
 )
 ```
 
-## Worker Dependency Injection
+## Worker Context
 
-Use `WorkerDepends()` from Streaq to inject the worker context into your tasks.
-The context provides access to shared resources initialized during the worker
-lifespan (such as HTTP clients and database connections):
+Tasks can reach the worker context — the object yielded by the worker lifespan,
+which holds shared resources initialized at startup (such as HTTP clients and
+database connections). Access it with `worker.context` inside a running task:
 
 ```python
-from streaq import WorkerDepends
 from vibetuner.tasks.worker import get_worker
 
 worker = get_worker()
 
 @worker.task()
-async def fetch_external_data(url: str, ctx=WorkerDepends()) -> dict:
-    """Fetch data using the shared HTTP client from worker context."""
-    response = await ctx.http_client.get(url)
+async def fetch_external_data(url: str) -> dict:
+    """Fetch data using the shared HTTP client from the worker context."""
+    response = await worker.context.http_client.get(url)
     return {"status": response.status_code, "data": response.text[:100]}
 ```
 
-The `ctx` parameter receives the context object yielded by the worker lifespan.
-By default, this is a `Context` instance with project metadata. You can extend
-it with a custom worker lifespan (see [Worker Lifecycle](#worker-lifecycle)).
+`worker.context` returns the object yielded by the worker lifespan. By default,
+this is a `Context` instance with project metadata. You can extend it with a
+custom worker lifespan (see [Worker Lifecycle](#worker-lifecycle)) to attach
+shared resources like HTTP clients or database connections.
 
 ## The `@robust_task()` Decorator
 

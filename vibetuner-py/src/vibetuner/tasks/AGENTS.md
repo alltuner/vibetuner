@@ -41,19 +41,17 @@ Your application tasks in `src/app/tasks/` should follow this pattern:
 
 ```python
 # src/app/tasks/emails.py
-from streaq import WorkerDepends
 from vibetuner.models import UserModel
 from vibetuner.tasks.worker import get_worker
 
 worker = get_worker()
 
 @worker.task()
-async def send_welcome_email(user_id: str, ctx=WorkerDepends()) -> dict[str, str]:
+async def send_welcome_email(user_id: str) -> dict[str, str]:
     """Example background job."""
 
-    # Access worker context via dependency injection
-    res = await ctx.http_client.get(url)
-
+    # Need the worker lifespan context (db, project config, ...)?
+    # Access it inside the task with ``worker.context``.
     if user := await UserModel.get(user_id):
         # Perform side effects
         return {"status": "sent", "user": user.email}

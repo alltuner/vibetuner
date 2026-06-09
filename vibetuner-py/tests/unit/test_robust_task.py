@@ -1,13 +1,16 @@
 # ABOUTME: Tests for the robust_task decorator and retry middleware.
-# ABOUTME: Verifies TaskContext extraction from kwargs and retry/dead-letter behavior.
+# ABOUTME: Verifies TaskContext access via streaq's context var and retry/dead-letter behavior.
 # ruff: noqa: S101
 
+from contextlib import contextmanager
 from datetime import timedelta
+from typing import Iterator
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 import vibetuner.tasks.robust as robust_mod
 from streaq import StreaqRetry
+from streaq.task import RegisteredMiddleware, _task_context
 from streaq.types import TaskContext
 from vibetuner.tasks.robust import (
     _configs,
@@ -15,6 +18,20 @@ from vibetuner.tasks.robust import (
     _handle_permanent_failure,
     _RobustConfig,
 )
+
+
+@contextmanager
+def _active_context(ctx: TaskContext) -> Iterator[None]:
+    """Set streaq's task context var for the duration of the block.
+
+    Mirrors how the worker exposes the running task's context to middleware
+    via ``RegisteredMiddleware.context`` in streaq v7.
+    """
+    token = _task_context.set(ctx)
+    try:
+        yield
+    finally:
+        _task_context.reset(token)
 
 
 @pytest.fixture(autouse=True)
@@ -71,23 +88,29 @@ class TestEnsureMiddleware:
 
 
 class TestMiddlewareContextExtraction:
-    """Verify middleware extracts TaskContext from kwargs (not ContextVar)."""
+    """Verify middleware reads the running task's context from streaq's context var."""
 
     def _register_and_get_wrapper(self):
-        """Register middleware and return the inner wrapper function."""
+        """Register middleware and return the inner wrapper function.
+
+        ``worker.middleware`` returns a real ``RegisteredMiddleware`` so the
+        wrapper resolves the task context through its ``.context`` property,
+        exactly as streaq does at runtime.
+        """
         worker = MagicMock()
         captured = {}
 
         def fake_middleware_decorator(fn):
             captured["middleware_fn"] = fn
-            return fn
+            return RegisteredMiddleware(fn)
 
         worker.middleware = fake_middleware_decorator
         _ensure_middleware(worker)
         return captured["middleware_fn"]
 
     @pytest.mark.asyncio
-    async def test_passes_through_when_no_task_context_in_kwargs(self):
+    async def test_passes_through_when_no_context(self):
+        """With no running task context, the wrapper is a transparent pass-through."""
         middleware_fn = self._register_and_get_wrapper()
         next_fn = AsyncMock(return_value="result")
         wrapper = middleware_fn(next_fn)
@@ -103,12 +126,13 @@ class TestMiddlewareContextExtraction:
         ctx = _make_task_context(fn_name="unconfigured_task")
         wrapper = middleware_fn(next_fn)
 
-        result = await wrapper("arg1", ctx=ctx)
+        with _active_context(ctx):
+            result = await wrapper("arg1")
         assert result == "ok"
 
     @pytest.mark.asyncio
-    async def test_extracts_task_context_from_kwargs(self):
-        """Core test: middleware finds TaskContext in kwargs by type."""
+    async def test_reads_task_context_from_context_var(self):
+        """Core test: middleware resolves the running task's context for its config."""
         middleware_fn = self._register_and_get_wrapper()
         _configs["my_task"] = _RobustConfig(
             max_retries=3, backoff_base=2.0, backoff_max=300.0, on_failure=None
@@ -117,8 +141,25 @@ class TestMiddlewareContextExtraction:
         ctx = _make_task_context(fn_name="my_task")
         wrapper = middleware_fn(next_fn)
 
-        result = await wrapper(ctx=ctx)
+        with _active_context(ctx):
+            result = await wrapper()
         assert result == "success"
+
+    @pytest.mark.asyncio
+    async def test_forwards_task_args_unchanged(self):
+        """The task receives only its own args — no context kwarg is injected."""
+        middleware_fn = self._register_and_get_wrapper()
+        _configs["my_task"] = _RobustConfig(
+            max_retries=3, backoff_base=2.0, backoff_max=300.0, on_failure=None
+        )
+        next_fn = AsyncMock(return_value="ok")
+        ctx = _make_task_context(fn_name="my_task")
+        wrapper = middleware_fn(next_fn)
+
+        with _active_context(ctx):
+            result = await wrapper("a", key="v")
+        assert result == "ok"
+        next_fn.assert_awaited_once_with("a", key="v")
 
     @pytest.mark.asyncio
     async def test_retries_on_failure_below_max(self):
@@ -131,8 +172,8 @@ class TestMiddlewareContextExtraction:
         ctx = _make_task_context(fn_name="my_task", tries=1)
         wrapper = middleware_fn(next_fn)
 
-        with pytest.raises(StreaqRetry):
-            await wrapper(ctx=ctx)
+        with _active_context(ctx), pytest.raises(StreaqRetry):
+            await wrapper()
 
     @pytest.mark.asyncio
     async def test_propagates_streaq_retry_without_wrapping(self):
@@ -146,8 +187,8 @@ class TestMiddlewareContextExtraction:
         ctx = _make_task_context(fn_name="my_task", tries=1)
         wrapper = middleware_fn(next_fn)
 
-        with pytest.raises(StreaqRetry) as exc_info:
-            await wrapper(ctx=ctx)
+        with _active_context(ctx), pytest.raises(StreaqRetry) as exc_info:
+            await wrapper()
         assert exc_info.value is original_retry
 
     @pytest.mark.asyncio
@@ -163,28 +204,13 @@ class TestMiddlewareContextExtraction:
         ctx = _make_task_context(fn_name="my_task", tries=3)
         wrapper = middleware_fn(next_fn)
 
-        with pytest.raises(ValueError, match="permanent"):
-            await wrapper(ctx=ctx)
+        with _active_context(ctx), pytest.raises(ValueError, match="permanent"):
+            await wrapper()
 
         mock_handle.assert_awaited_once()
         call_args = mock_handle.call_args
         assert call_args[0][0] is ctx
         assert call_args[0][2] is exc
-
-    @pytest.mark.asyncio
-    async def test_context_found_regardless_of_kwarg_name(self):
-        """TaskContext should be found by type, not by parameter name."""
-        middleware_fn = self._register_and_get_wrapper()
-        _configs["my_task"] = _RobustConfig(
-            max_retries=3, backoff_base=2.0, backoff_max=300.0, on_failure=None
-        )
-        next_fn = AsyncMock(return_value="ok")
-        ctx = _make_task_context(fn_name="my_task")
-        wrapper = middleware_fn(next_fn)
-
-        # Use a different kwarg name than "ctx"
-        result = await wrapper(task_deps=ctx)
-        assert result == "ok"
 
 
 class TestHandlePermanentFailure:
