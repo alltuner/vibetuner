@@ -1,5 +1,12 @@
 # Changelog
 
+## [11.1.0](https://github.com/alltuner/vibetuner/compare/v11.0.0...v11.1.0) (2026-06-09)
+
+
+### Features
+
+* add TEST_REDIS_URL test-only Redis DSN to mirror TEST_MONGODB_URL ([#2001](https://github.com/alltuner/vibetuner/issues/2001)) ([257704b](https://github.com/alltuner/vibetuner/commit/257704b21e7d7c1e56403b2e045920feb88635d8))
+
 ## [11.0.0](https://github.com/alltuner/vibetuner/compare/v10.22.4...v11.0.0) (2026-06-09)
 
 
