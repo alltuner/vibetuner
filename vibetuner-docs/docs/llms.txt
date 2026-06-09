@@ -196,7 +196,8 @@ Important notes:
   entry, with a worker/frontend restart reminder
 - **Testing Fixtures**: `vibetuner_client`, `mock_auth`, `mock_tasks`,
   `override_config`, `vibetuner_db` pytest fixtures. Set `TEST_MONGODB_URL` to
-  run the suite against a local Mongo while `MONGODB_URL` stays pointed at prod
+  run the suite against a local Mongo while `MONGODB_URL` stays pointed at prod;
+  `TEST_REDIS_URL` does the same for Redis (rate limiter, cache, pub/sub)
 - **Error Messages**: Actionable error messages with env var examples, Docker
   commands, and documentation links
 - **Docker Builds**: Production Docker image builds (linux/amd64) via

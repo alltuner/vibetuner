@@ -2184,6 +2184,31 @@ The test is skipped when neither variable is set.
 - If a test crashes mid-run, the next test re-truncates on setup so
   state is self-healing.
 
+#### `TEST_REDIS_URL` — Isolating the Test Redis
+
+A session-scoped autouse fixture points every Redis consumer (the rate
+limiter, response cache, pub/sub, and the shared Redis client) at the
+test Redis for the whole run. By default that is `REDIS_URL`, so if your
+`.env` points at a remote or production Redis, every request through
+`vibetuner_client` pays the full round-trip latency on rate-limit and
+cache lookups. Set `TEST_REDIS_URL` to keep the suite on a local Redis
+while `REDIS_URL` stays pointed at your app's instance:
+
+```bash
+# .env (or .env.local)
+REDIS_URL=redis://prod-cache.internal:6379/0
+TEST_REDIS_URL=redis://localhost:6379/0
+```
+
+```bash
+# Or stand up a throwaway local Redis just for the suite
+docker run -d --rm -p 6379:6379 redis:7
+TEST_REDIS_URL=redis://localhost:6379/0 pytest
+```
+
+When `TEST_REDIS_URL` is unset the fixtures fall back to `REDIS_URL`, so
+existing behavior is unchanged. This mirrors `TEST_MONGODB_URL` for Mongo.
+
 #### `mock_auth` — Authentication Mocking
 
 Patches the auth backend so requests appear authenticated without real

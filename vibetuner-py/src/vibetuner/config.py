@@ -311,6 +311,11 @@ class CoreConfiguration(BaseSettings):
     # remote/production cluster can still run its suite against a local Mongo.
     test_mongodb_url: MongoDsn | None = None
 
+    # Optional test-only Redis DSN. When set, the pytest fixtures target this
+    # server instead of ``redis_url`` so a project whose ``.env`` points at a
+    # remote/production Redis can still run its suite against a local Redis.
+    test_redis_url: RedisDsn | None = None
+
     # Mail provider settings (MAIL_* env vars)
     mail: MailSettings = Field(default_factory=MailSettings)
 
@@ -510,6 +515,16 @@ class CoreConfiguration(BaseSettings):
         to ``mongodb_url`` otherwise.
         """
         return self.test_mongodb_url or self.mongodb_url
+
+    @property
+    def resolved_test_redis_url(self) -> RedisDsn | None:
+        """Redis server the test fixtures target.
+
+        Prefers ``test_redis_url`` (``TEST_REDIS_URL``) when set so a
+        prod-pointing ``redis_url`` stays out of the test path, falling back
+        to ``redis_url`` otherwise.
+        """
+        return self.test_redis_url or self.redis_url
 
     @cached_property
     def mongo_dbname(self) -> str:

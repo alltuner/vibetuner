@@ -223,6 +223,38 @@ class TestResolvedTestMongodbUrl:
             assert str(config.resolved_test_mongodb_url) == "mongodb://localhost:27018/"
 
 
+class TestResolvedTestRedisUrl:
+    """Test resolved_test_redis_url fallback for the test fixtures."""
+
+    def test_falls_back_to_redis_url_when_test_url_unset(self):
+        """Without TEST_REDIS_URL, tests target the production redis_url."""
+        config = CoreConfiguration(
+            project=ProjectConfiguration(),
+            redis_url="redis://prod-host:6379/0",
+        )
+        assert str(config.resolved_test_redis_url) == "redis://prod-host:6379/0"
+
+    def test_prefers_test_url_when_set(self):
+        """TEST_REDIS_URL wins over redis_url so a prod .env stays isolated."""
+        config = CoreConfiguration(
+            project=ProjectConfiguration(),
+            redis_url="redis://prod-host:6379/0",
+            test_redis_url="redis://localhost:6380/0",
+        )
+        assert str(config.resolved_test_redis_url) == "redis://localhost:6380/0"
+
+    def test_is_none_when_neither_set(self):
+        """Resolves to None when no Redis URL is configured at all."""
+        config = CoreConfiguration(project=ProjectConfiguration())
+        assert config.resolved_test_redis_url is None
+
+    def test_test_url_from_env_var(self):
+        """test_redis_url is read from the TEST_REDIS_URL env var."""
+        with patch.dict("os.environ", {"TEST_REDIS_URL": "redis://localhost:6380/0"}):
+            config = CoreConfiguration(project=ProjectConfiguration())
+            assert str(config.resolved_test_redis_url) == "redis://localhost:6380/0"
+
+
 class TestLoadProjectConfig:
     """Test _load_project_config behavior outside a project directory."""
 
