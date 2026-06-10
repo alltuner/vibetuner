@@ -81,6 +81,21 @@ async def _rotate_key_impl(
     typer.echo(f"Rotated {rotated_count} secret(s) across {len(apps)} app(s).")
 
 
+@crypto_app.command("generate-key")
+def generate_key(
+    length: Annotated[
+        int,
+        typer.Option(
+            "--length",
+            "-l",
+            help="Number of random bytes to encode into the key.",
+        ),
+    ] = 32,
+) -> None:
+    """Print a fresh URL-safe random key, suitable for SESSION_KEY."""
+    typer.echo(secrets.token_urlsafe(length))
+
+
 @crypto_app.command("set-key")
 def set_key(
     key: Annotated[

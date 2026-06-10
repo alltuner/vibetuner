@@ -76,6 +76,7 @@ class TestResolvedPort:
 
         config = CoreConfiguration(
             environment="prod",
+            session_key="real-session-key",
             _env_file=None,
         )
         assert config.resolved_port == 8000
@@ -123,6 +124,7 @@ class TestResolvedWorkerPort:
 
         config = CoreConfiguration(
             environment="prod",
+            session_key="real-session-key",
             _env_file=None,
         )
         assert config.resolved_worker_port == 18000
