@@ -71,6 +71,11 @@
         {
           "type": "generic",
           "path": "vibetuner-template/pyproject.toml.j2"
+        },
+        {
+          "type": "json",
+          "path": "vibetuner-template/package.json",
+          "jsonpath": "$.devDependencies['@alltuner/vibetuner']"
         }
       ]
     }
