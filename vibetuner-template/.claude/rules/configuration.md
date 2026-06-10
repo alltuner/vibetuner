@@ -9,7 +9,11 @@ description: Environment variables, settings, security headers, and request ID
 # Configuration
 
 **Env vars** (`.env`, not committed): `DATABASE_URL`, `REDIS_URL`,
-`SECRET_KEY`, `DEBUG`.
+`SESSION_KEY`, `DEBUG`.
+
+`SESSION_KEY` signs sessions. The shipped placeholder makes startup **fail**
+when `ENVIRONMENT=prod` (and warn otherwise) — generate a real value with
+`uv run vibetuner crypto generate-key` before deploying.
 
 **Settings**: `from vibetuner.config import settings` —
 `.environment`, `.debug`, `.resolved_port`,
