@@ -115,7 +115,7 @@ def _check_env_vars() -> list[CheckResult]:
     results: list[CheckResult] = []
     try:
         from vibetuner.config import (
-            DEFAULT_SESSION_KEY_PLACEHOLDER,
+            KNOWN_INSECURE_SESSION_KEYS,
             CoreConfiguration,
             ProjectConfiguration,
         )
@@ -132,7 +132,7 @@ def _check_env_vars() -> list[CheckResult]:
         )
     )
 
-    if config.session_key.get_secret_value() == DEFAULT_SESSION_KEY_PLACEHOLDER:
+    if config.session_key.get_secret_value() in KNOWN_INSECURE_SESSION_KEYS:
         results.append(
             CheckResult(
                 "SESSION_KEY", "warn", "Using default — set a unique secret in .env"

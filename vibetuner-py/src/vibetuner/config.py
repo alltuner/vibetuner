@@ -87,10 +87,17 @@ current_year: int = datetime.now().year
 
 UnprivilegedPort = Annotated[int, Field(ge=1024, le=65535)]
 
-# Placeholder session key shipped in the template's .env. The startup
-# validator refuses to run with this value in production (DEBUG off) so a
-# project can never reach prod signing sessions with a publicly-known key.
+# Placeholder session key the config field defaults to and the template's .env
+# ships. The startup validator refuses to run with a known placeholder in
+# production so a project can never sign prod sessions with a publicly-known key.
 DEFAULT_SESSION_KEY_PLACEHOLDER = "CHANGE_ME_RUN_vibetuner_crypto_generate"
+
+# Every session key value that is publicly known and therefore unsafe to sign
+# sessions with. Includes the historical placeholder so projects upgrading from
+# an older scaffold (whose .env still carries it) are guarded on upgrade.
+KNOWN_INSECURE_SESSION_KEYS = frozenset(
+    {"ct-!secret-must-change-me", DEFAULT_SESSION_KEY_PLACEHOLDER}
+)
 
 
 class SecurityHeadersSettings(BaseSettings):
@@ -551,15 +558,16 @@ class CoreConfiguration(BaseSettings):
 
     @model_validator(mode="after")
     def fail_closed_on_placeholder_session_key(self) -> Self:
-        """Refuse to run in production with the shipped placeholder session key.
+        """Refuse to run in production with a known placeholder session key.
 
-        Sessions are signed with ``session_key``; the publicly-known
-        placeholder would let anyone forge a session, so a production startup
-        (``environment == "prod"``) fails fast. Outside production it only
-        warns, keeping local development friction free while making the
-        required action obvious before deploy.
+        Sessions are signed with ``session_key``; any publicly-known
+        placeholder (the shipped default or a historical one left in an
+        upgraded project's ``.env``) would let anyone forge a session, so a
+        production startup (``environment == "prod"``) fails fast. Outside
+        production it only warns, keeping local development friction free while
+        making the required action obvious before deploy.
         """
-        if self.session_key.get_secret_value() != DEFAULT_SESSION_KEY_PLACEHOLDER:
+        if self.session_key.get_secret_value() not in KNOWN_INSECURE_SESSION_KEYS:
             return self
 
         if self.environment == "prod":
