@@ -54,8 +54,10 @@ Important notes:
   Key derived from path + query params. Use `vary_on=lambda r: str(r.state.user.id)`
   for request-dependent keys (per-user, per-tenant). Disabled in debug mode
   (override with `force_caching=True`). No-op if Redis unavailable.
-  `invalidate(path)` and `invalidate_pattern(path)` for cache busting.
-  Import from `vibetuner.cache`
+  `invalidate(path, query_params=..., vary=...)` deletes one exact entry
+  (pass `vary` to hit a `vary_on` variant); `invalidate_pattern(path)` removes
+  every variant of a path (or a glob match) via per-path key registries —
+  no keyspace SCAN. Import from `vibetuner.cache`
 - **`@cache_control` Decorator**: `@cache_control(max_age=300, public=True)` sets
   `Cache-Control` headers declaratively. Supports `public`, `private`, `no_cache`,
   `no_store`, `max_age`, `s_maxage`, `must_revalidate`, `stale_while_revalidate`,

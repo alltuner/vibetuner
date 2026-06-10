@@ -212,6 +212,11 @@ for handlers on dynamically-inserted elements. Full reference:
 `vary_on=lambda r: str(r.state.user.id)` for per-user/tenant keys.
 Disabled in debug mode (`force_caching=True` to override).
 No-op without Redis.
+`invalidate(path, query_params=..., vary=...)` deletes one exact
+entry — pass `vary` to hit a `vary_on` variant.
+`invalidate_pattern(path)` removes every variant of a path (or a
+glob match like `"/api/*"`) via per-path key registries, never a
+keyspace SCAN.
 
 ## Cache Control (Browser-Side)
 
