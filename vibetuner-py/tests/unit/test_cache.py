@@ -12,6 +12,8 @@ from vibetuner.cache import (
     _restore_response,
     _serialize_response,
     cache,
+    invalidate,
+    invalidate_pattern,
 )
 
 
@@ -46,6 +48,15 @@ def _mock_settings(
     mock.redis_url = redis_url
     mock.redis_key_prefix = redis_key_prefix
     return mock
+
+
+def _mock_redis_client():
+    """Mock Redis client whose pipeline() queues commands synchronously."""
+    client = AsyncMock()
+    pipe = MagicMock()
+    pipe.execute = AsyncMock()
+    client.pipeline = MagicMock(return_value=pipe)
+    return client, pipe
 
 
 class TestBuildCacheKey:
@@ -131,7 +142,7 @@ class TestCacheDecorator:
     async def test_force_caching_in_debug(self):
         """force_caching=True enables caching even in debug mode."""
         call_count = 0
-        mock_client = AsyncMock()
+        mock_client, _ = _mock_redis_client()
         mock_client.get = AsyncMock(return_value=None)
         mock_client.set = AsyncMock()
 
@@ -217,7 +228,7 @@ class TestCacheDecorator:
             }
         ).encode()
 
-        mock_client = AsyncMock()
+        mock_client, _ = _mock_redis_client()
         mock_client.get = AsyncMock(return_value=cached_data)
         mock_client.set = AsyncMock()
 
@@ -311,7 +322,7 @@ class TestVaryOn:
     @pytest.mark.asyncio
     async def test_vary_on_produces_different_keys(self):
         """Different vary_on values produce different cache keys."""
-        mock_client = AsyncMock()
+        mock_client, _ = _mock_redis_client()
         mock_client.get = AsyncMock(return_value=None)
         mock_client.set = AsyncMock()
 
@@ -410,3 +421,271 @@ class TestVaryOn:
             await handler(request=request)
 
         assert call_count == 2
+
+
+class TestInvalidate:
+    """Test exact-key invalidation, including vary'd variants."""
+
+    @pytest.mark.asyncio
+    async def test_invalidate_deletes_path_key(self):
+        client, _ = _mock_redis_client()
+        client.delete = AsyncMock(return_value=1)
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+        ):
+            result = await invalidate("/api/stats")
+
+        assert result is True
+        expected = _build_cache_key("test:", "/api/stats", "")
+        client.delete.assert_awaited_once_with(expected)
+
+    @pytest.mark.asyncio
+    async def test_invalidate_with_vary_targets_varied_key(self):
+        """invalidate(path, vary=...) deletes the key written for that variant."""
+        client, _ = _mock_redis_client()
+        client.delete = AsyncMock(return_value=1)
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+        ):
+            result = await invalidate("/dashboard", vary="user-123")
+
+        assert result is True
+        expected = _build_cache_key("test:", "/dashboard", "", "user-123")
+        client.delete.assert_awaited_once_with(expected)
+
+    @pytest.mark.asyncio
+    async def test_invalidate_with_query_and_vary(self):
+        client, _ = _mock_redis_client()
+        client.delete = AsyncMock(return_value=0)
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+        ):
+            result = await invalidate(
+                "/reports", query_params="page=1", vary="tenant-a"
+            )
+
+        assert result is False
+        expected = _build_cache_key("test:", "/reports", "page=1", "tenant-a")
+        client.delete.assert_awaited_once_with(expected)
+
+
+class TestKeyRegistry:
+    """Cache writes register their key in a per-path Redis set."""
+
+    @pytest.mark.asyncio
+    async def test_write_registers_key_with_ttl_floor(self):
+        """A cache write SADDs the key and bumps registry TTLs via NX then GT."""
+        client, pipe = _mock_redis_client()
+        client.get = AsyncMock(return_value=None)
+        client.set = AsyncMock()
+
+        @cache(expire=120)
+        async def handler(request: Request):
+            return JSONResponse({"ok": True})
+
+        request = _make_request(path="/api/stats")
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH),
+        ):
+            await handler(request=request)
+
+        cache_key = _build_cache_key("test:", "/api/stats", "")
+        registry = "test:cache-index:/api/stats"
+        paths_index = "test:cache-paths"
+
+        pipe.sadd.assert_any_call(registry, cache_key)
+        pipe.sadd.assert_any_call(paths_index, "/api/stats")
+        pipe.expire.assert_any_call(registry, 120, nx=True)
+        pipe.expire.assert_any_call(registry, 120, gt=True)
+        pipe.expire.assert_any_call(paths_index, 120, nx=True)
+        pipe.expire.assert_any_call(paths_index, 120, gt=True)
+        pipe.execute.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_varied_writes_register_in_same_path_registry(self):
+        """Vary'd variants of a path land in the same per-path registry set."""
+        client, pipe = _mock_redis_client()
+        client.get = AsyncMock(return_value=None)
+        client.set = AsyncMock()
+
+        @cache(expire=60, vary_on=lambda r: r.headers.get("x-tenant", ""))
+        async def handler(request: Request):
+            return JSONResponse({"ok": True})
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH),
+        ):
+            await handler(request=_make_request(headers={"x-tenant": "a"}))
+            await handler(request=_make_request(headers={"x-tenant": "b"}))
+
+        registry = "test:cache-index:/test"
+        key_a = _build_cache_key("test:", "/test", "", "a")
+        key_b = _build_cache_key("test:", "/test", "", "b")
+        pipe.sadd.assert_any_call(registry, key_a)
+        pipe.sadd.assert_any_call(registry, key_b)
+
+    @pytest.mark.asyncio
+    async def test_registry_failure_does_not_rerun_handler(self):
+        """A failed registry write must not re-execute the handler."""
+        client, pipe = _mock_redis_client()
+        client.get = AsyncMock(return_value=None)
+        client.set = AsyncMock()
+        pipe.execute = AsyncMock(side_effect=ConnectionError("refused"))
+        call_count = 0
+
+        @cache(expire=60)
+        async def handler(request: Request):
+            nonlocal call_count
+            call_count += 1
+            return JSONResponse({"ok": True})
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH),
+        ):
+            result = await handler(request=_make_request())
+
+        assert call_count == 1
+        assert json.loads(result.body) == {"ok": True}
+
+
+class TestInvalidatePattern:
+    """Pattern invalidation works off the key registry, never a keyspace SCAN."""
+
+    @staticmethod
+    def _client_with_sets(sets: dict[str, set]):
+        client, _ = _mock_redis_client()
+
+        async def smembers(key):
+            return sets.get(key, set())
+
+        client.smembers = AsyncMock(side_effect=smembers)
+        client.unlink = AsyncMock(side_effect=lambda *keys: len(keys))
+        client.srem = AsyncMock()
+        return client
+
+    @pytest.mark.asyncio
+    async def test_exact_path_deletes_all_variants(self):
+        """A bare path removes every registered variant plus the registry set."""
+        key_plain = _build_cache_key("test:", "/dashboard", "")
+        key_u1 = _build_cache_key("test:", "/dashboard", "", "u1")
+        key_u2 = _build_cache_key("test:", "/dashboard", "", "u2")
+        client = self._client_with_sets(
+            {"test:cache-index:/dashboard": {key_plain, key_u1, key_u2}}
+        )
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+        ):
+            deleted = await invalidate_pattern("/dashboard")
+
+        assert deleted == 3
+        unlinked = {k for call_ in client.unlink.await_args_list for k in call_.args}
+        assert {key_plain, key_u1, key_u2} <= unlinked
+        assert "test:cache-index:/dashboard" in unlinked
+        client.srem.assert_awaited_once_with("test:cache-paths", "/dashboard")
+        client.scan_iter.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_glob_pattern_deletes_matching_variants(self):
+        """A glob pattern matches registered keys across paths, without SCAN."""
+        key_stats = _build_cache_key("test:", "/api/stats", "page=1")
+        key_users = _build_cache_key("test:", "/api/users", "", "u1")
+        key_home = _build_cache_key("test:", "/home", "")
+        client = self._client_with_sets(
+            {
+                "test:cache-paths": {"/api/stats", "/api/users", "/home"},
+                "test:cache-index:/api/stats": {key_stats},
+                "test:cache-index:/api/users": {key_users},
+                "test:cache-index:/home": {key_home},
+            }
+        )
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+        ):
+            deleted = await invalidate_pattern("/api/*")
+
+        assert deleted == 2
+        unlinked = {k for call_ in client.unlink.await_args_list for k in call_.args}
+        assert key_stats in unlinked
+        assert key_users in unlinked
+        assert key_home not in unlinked
+        client.scan_iter.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_glob_partial_match_keeps_registry(self):
+        """Unmatched variants stay registered; matched ones are SREM'd."""
+        key_p1 = _build_cache_key("test:", "/api/stats", "page=1")
+        key_bare = _build_cache_key("test:", "/api/stats", "")
+        client = self._client_with_sets(
+            {
+                "test:cache-paths": {"/api/stats"},
+                "test:cache-index:/api/stats": {key_p1, key_bare},
+            }
+        )
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+        ):
+            deleted = await invalidate_pattern("/api/stats[?]page=*")
+
+        assert deleted == 1
+        unlinked = {k for call_ in client.unlink.await_args_list for k in call_.args}
+        assert key_p1 in unlinked
+        assert key_bare not in unlinked
+        assert "test:cache-index:/api/stats" not in unlinked
+        client.srem.assert_awaited_once_with("test:cache-index:/api/stats", key_p1)
+
+    @pytest.mark.asyncio
+    async def test_bytes_members_are_decoded(self):
+        """Registry members stored as bytes are handled transparently."""
+        key = _build_cache_key("test:", "/api/stats", "")
+        client = self._client_with_sets({"test:cache-index:/api/stats": {key.encode()}})
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+        ):
+            deleted = await invalidate_pattern("/api/stats")
+
+        assert deleted == 1
+        unlinked = {k for call_ in client.unlink.await_args_list for k in call_.args}
+        assert key in unlinked
+
+    @pytest.mark.asyncio
+    async def test_no_entries_returns_zero(self):
+        client = self._client_with_sets({})
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+        ):
+            assert await invalidate_pattern("/nothing") == 0
+            assert await invalidate_pattern("/nothing/*") == 0
+
+    @pytest.mark.asyncio
+    async def test_redis_unavailable_returns_zero(self):
+        client, _ = _mock_redis_client()
+        client.smembers = AsyncMock(side_effect=ConnectionError("refused"))
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+        ):
+            assert await invalidate_pattern("/api/*") == 0
