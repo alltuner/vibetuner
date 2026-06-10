@@ -992,6 +992,16 @@ those headers when a `RateLimitError` is raised.
 4. System validates token and logs user in
 5. Session created
 
+##### Template autoescaping
+
+Magic-link emails (and other static pages) are rendered by the framework's
+static-render engine (`render_static_template` in `vibetuner.templates`). It
+**auto-escapes context for HTML and XML templates** (`.html.jinja`,
+`.xml.jinja`) and leaves plain-text templates (`.txt.jinja`) verbatim, keying
+the decision off the format extension under the `.jinja` wrapper. User-derived
+values (display names, profile fields) are escaped automatically, closing the
+XSS gap. Inject pre-rendered, trusted markup with Jinja's `| safe` filter.
+
 ##### Custom OAuth Providers
 
 Add any OAuth provider using `custom_oauth_providers` in `tune.py`:
