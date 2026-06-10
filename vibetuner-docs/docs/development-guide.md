@@ -1158,7 +1158,7 @@ Use the `require_htmx` dependency to reject non-HTMX requests with a 400 error:
 
 ```python
 from fastapi import Depends
-from vibetuner.frontend.deps import require_htmx
+from vibetuner import require_htmx
 
 @router.post("/items/create", dependencies=[Depends(require_htmx)])
 async def create_item(request: Request):
@@ -1586,7 +1586,7 @@ Generate complete REST API endpoints from Beanie Document models with a single f
 ### Basic Usage
 
 ```python
-from vibetuner.crud import create_crud_routes
+from vibetuner import create_crud_routes
 from app.models.post import Post
 
 post_routes = create_crud_routes(Post, prefix="/posts", tags=["posts"])
@@ -1693,7 +1693,8 @@ post_routes = create_crud_routes(
 Only generate the endpoints you need:
 
 ```python
-from vibetuner.crud import create_crud_routes, Operation
+from vibetuner import create_crud_routes
+from vibetuner.crud import Operation
 
 # Read-only API
 post_routes = create_crud_routes(
@@ -1725,7 +1726,7 @@ designed for use with HTMX.
 Subscribe clients to a named channel and broadcast updates from anywhere:
 
 ```python
-from vibetuner.sse import sse_endpoint, broadcast
+from vibetuner import sse_endpoint, broadcast
 
 router = APIRouter()
 
@@ -1743,7 +1744,7 @@ async def notifications_stream(request: Request):
 Broadcast from any route or background task:
 
 ```python
-from vibetuner.sse import broadcast
+from vibetuner import broadcast
 
 @router.post("/posts")
 async def create_post(request: Request):

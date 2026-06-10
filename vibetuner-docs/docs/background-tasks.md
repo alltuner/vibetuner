@@ -390,7 +390,7 @@ Server-Sent Events. This is useful for progress indicators, live feeds, and
 notifications.
 
 ```python
-from vibetuner.sse import broadcast
+from vibetuner import broadcast
 from vibetuner.tasks.worker import get_worker
 
 worker = get_worker()
@@ -443,7 +443,7 @@ connecting element via its `hx-swap`:
 With a corresponding SSE endpoint:
 
 ```python
-from vibetuner.sse import sse_endpoint
+from vibetuner import sse_endpoint
 
 @sse_endpoint("/events/upload/{user_id}", router=router)
 async def upload_stream(request: Request, user_id: str):
