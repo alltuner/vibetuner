@@ -462,10 +462,13 @@ Vibetuner provides several built-in template filters for common formatting needs
 | `format_duration` / `duration` | `{{ seconds \| duration }}` | "5 min" or "30 sec" |
 
 The `timeago` filter converts a datetime to a human-readable relative time string. Use `short=True` for compact
-displays like "5m ago", "1d ago", "3mo ago".
+displays like "5m ago", "1d ago", "3mo ago". Future datetimes render with mirrored "in ..." forms: "in 23 hours",
+"tomorrow", "in 3 months" (verbose) or "in 23h", "in 1d", "in 3mo" (short).
 
 Short format outputs: < 60 seconds = "just now", < 60 minutes = "Xm ago", < 24 hours = "Xh ago", < 7 days = "Xd ago",
-< 30 days = "Xw ago", < 365 days = "Xmo ago", < 4 years = "Xy ago", >= 4 years = "MMM DD, YYYY".
+< 30 days = "Xw ago", < 365 days = "Xmo ago", < 4 years = "Xy ago", >= 4 years = "MMM DD, YYYY". Future datetimes
+use the same buckets with "in Xm", "in Xh", "in Xd", "in Xw", "in Xmo", "in Xy", and the same absolute-date fallback
+beyond 4 years.
 
 #### Adding Custom Template Filters
 

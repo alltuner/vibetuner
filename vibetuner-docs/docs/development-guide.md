@@ -551,20 +551,24 @@ The `timeago` filter converts a datetime to a human-readable relative time strin
 <!-- Short format for compact displays -->
 <span>{{ post.created_at | timeago(short=True) }}</span>
 <!-- Output: "5m ago", "1d ago", "3mo ago", etc. -->
+
+<!-- Future datetimes render with mirrored "in ..." forms -->
+<span>Next run {{ schedule.next_run_at | timeago }}</span>
+<!-- Output: "in 23 hours", "tomorrow", "in 3 months", etc. -->
 ```
 
 Short format outputs:
 
-| Time Range | Short Format |
-|------------|--------------|
-| < 60 seconds | "just now" |
-| < 60 minutes | "Xm ago" |
-| < 24 hours | "Xh ago" |
-| < 7 days | "Xd ago" |
-| < 30 days | "Xw ago" |
-| < 365 days | "Xmo ago" |
-| < 4 years | "Xy ago" |
-| >= 4 years | "MMM DD, YYYY" |
+| Time Range | Past | Future |
+|------------|------|--------|
+| < 60 seconds | "just now" | "just now" |
+| < 60 minutes | "Xm ago" | "in Xm" |
+| < 24 hours | "Xh ago" | "in Xh" |
+| < 7 days | "Xd ago" | "in Xd" |
+| < 30 days | "Xw ago" | "in Xw" |
+| < 365 days | "Xmo ago" | "in Xmo" |
+| < 4 years | "Xy ago" | "in Xy" |
+| >= 4 years | "MMM DD, YYYY" | "MMM DD, YYYY" |
 
 ### Adding Custom Template Filters
 
