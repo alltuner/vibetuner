@@ -16,7 +16,7 @@ format-jinja:
 # Format YAML files with dprint
 [group('Code quality: formatting')]
 format-yaml:
-    @uvx --from dprint-py dprint fmt --plugins https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.1.wasm
+    @uvx --from dprint-py dprint fmt --config-discovery=ignore-descendants --plugins https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.1.wasm
 
 # Format Markdown files with rumdl
 [group('Code quality: formatting')]

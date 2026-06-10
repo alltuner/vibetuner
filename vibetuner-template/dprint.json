@@ -1,0 +1,9 @@
+{
+  "excludes": [
+    "**/.claude",
+    "**/.tmp",
+    "**/.venv",
+    "**/node_modules",
+    "**/packages"
+  ]
+}
