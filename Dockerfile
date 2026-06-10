@@ -81,26 +81,30 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # ────────────────────────────────────────────────────────────────────────────────
 FROM python:${PYTHON_VERSION}-slim AS runtime
 
+# Run as an unprivileged user; create it before copying so files land owned by it
+RUN groupadd --gid 1000 appuser && \
+    useradd --uid 1000 --gid 1000 --create-home appuser
+
 WORKDIR /app
 
 # Copy Python virtual environment with all dependencies and project installed
-COPY --link --from=python-app /app/.venv/ .venv/
+COPY --link --chown=1000:1000 --from=python-app /app/.venv/ .venv/
 
 # Copy static assets
-COPY --link --from=python-app /app/assets/ assets/
+COPY --link --chown=1000:1000 --from=python-app /app/assets/ assets/
 
 # Copy templates
-COPY --link --from=python-app /app/templates/ templates/
+COPY --link --chown=1000:1000 --from=python-app /app/templates/ templates/
 
 # Copy built frontend assets (CSS and JS bundles)
-COPY --link --from=frontend-build /app/assets/statics/css/bundle.css assets/statics/css/bundle.css
-COPY --link --from=frontend-build /app/assets/statics/js/bundle.js assets/statics/js/bundle.js
+COPY --link --chown=1000:1000 --from=frontend-build /app/assets/statics/css/bundle.css assets/statics/css/bundle.css
+COPY --link --chown=1000:1000 --from=frontend-build /app/assets/statics/js/bundle.js assets/statics/js/bundle.js
 
 # Copy configuration file (used as project root marker)
-COPY --link --from=python-app /app/.copier-answers.yml ./
+COPY --link --chown=1000:1000 --from=python-app /app/.copier-answers.yml ./
 
 # Copy startup script
-COPY --link --from=python-app /app/start.sh /start.sh
+COPY --link --chown=1000:1000 --from=python-app /app/start.sh /start.sh
 
 # Configure environment for Python application
 # No PYTHONPATH needed - app is installed in site-packages via non-editable install
@@ -108,5 +112,11 @@ ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1
 
 EXPOSE 8000
+
+# Probe the dependency-free liveness endpoint using only the stdlib (no curl in image)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD ["python", "-c", "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health/ping', timeout=4).status == 200 else 1)"]
+
+USER appuser
 
 ENTRYPOINT ["/start.sh"]
