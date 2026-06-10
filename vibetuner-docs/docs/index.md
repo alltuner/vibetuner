@@ -55,6 +55,7 @@ projects:
 - **[Tech Stack](tech-stack.md)** - Technologies and why we chose them
 - **[CLI Reference](cli-reference.md)** - Command-line usage for `vibetuner`
 - **[Scaffolding Reference](scaffolding.md)** - Template prompts and update workflow
+- **[Upgrading to v12](upgrading-to-v12.md)** - Breaking changes and migration steps for v11 → v12
 - **[Contributing](contributing.md)** - Help improve Vibetuner
 
 ## Tech Stack

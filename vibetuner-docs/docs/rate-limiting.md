@@ -130,6 +130,7 @@ prefix:
 |---|---|---|
 | `RATE_LIMIT_ENABLED` | `true` | Enable/disable rate limiting globally |
 | `RATE_LIMIT_DEFAULT_LIMITS` | `[]` | Default limits for all routes (JSON list) |
+| `RATE_LIMIT_AUTH_LIMITS` | `5/minute` | Per-IP limit on the unauthenticated auth endpoints |
 | `RATE_LIMIT_HEADERS_ENABLED` | `true` | Include `X-RateLimit-*` response headers |
 | `RATE_LIMIT_STRATEGY` | `fixed-window` | Rate limiting strategy |
 | `RATE_LIMIT_SWALLOW_ERRORS` | `true` | Swallow storage errors instead of crashing |

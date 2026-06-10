@@ -25,6 +25,7 @@ Important notes:
 - [Authentication](https://vibetuner.alltuner.com/authentication/): OAuth and magic link authentication setup and configuration
 - [Background Tasks](https://vibetuner.alltuner.com/background-tasks/): Background task system powered by Streaq and Redis with retries, cron scheduling, and SSE integration
 - [Runtime Configuration](https://vibetuner.alltuner.com/runtime-config/): Layered configuration system with MongoDB persistence, debug UI, and feature flags
+- [Upgrading to v12](https://vibetuner.alltuner.com/upgrading-to-v12/): v11 → v12 breaking changes — fail-closed `SESSION_KEY` guard (`vibetuner crypto generate-key`), Jinja autoescaping in the static-render path, and a `5/minute` default auth rate limit (`RATE_LIMIT_AUTH_LIMITS`)
 - [HTMX v2 to v4 Migration](https://vibetuner.alltuner.com/htmx-migration/): Breaking changes and migration guide for upgrading from HTMX v2 to v4
 - [Theming](https://vibetuner.alltuner.com/theming/): Build-time brand palette via cascade override of DaisyUI's `[data-theme="…"]` selectors in `config.css` (no consumer-side `daisyui` dep needed), a CSP-nonced no-flash light/dark/system setter (`base/theme_init.html.jinja`) that sets `data-theme` before first paint and exposes `window.cycleTheme()`, plus runtime per-tenant overrides via the embedded `TenantTheme` model + opt-in `register_tenant_theme_provider()` helper + shipped `base/theme.html.jinja` partial that injects DaisyUI role-color overrides at request time
 

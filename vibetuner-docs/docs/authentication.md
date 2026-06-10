@@ -609,7 +609,7 @@ Use a strong, unique secret key:
 
 ```bash
 # Generate a secure key
-python -c "import secrets; print(secrets.token_urlsafe(32))"
+vibetuner crypto generate-key
 ```
 
 Add to `.env`:
@@ -617,6 +617,11 @@ Add to `.env`:
 ```bash
 SESSION_KEY=your-generated-secret-key
 ```
+
+In production (`ENVIRONMENT=prod`) the app refuses to start while
+`SESSION_KEY` is still a known placeholder, so set a real key before
+deploying. See [Upgrading to v12](upgrading-to-v12.md#fail-closed-session_key-guard)
+for details.
 
 ### OAuth Callback URLs
 
