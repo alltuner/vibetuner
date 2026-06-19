@@ -21,7 +21,7 @@ jobs:
 
       - name: Checkout release PR branch
         if: steps.release.outputs.prs_created == 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
           token: ${{ secrets.GITHUB_TOKEN }}
