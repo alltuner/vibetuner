@@ -1,8 +1,6 @@
 # ABOUTME: Integration test for vibetuner_db against a Dockerised MongoDB.
 # ABOUTME: Verifies cross-test isolation, session DB reuse, and index persistence.
 # ruff: noqa: S101
-import os
-
 import pytest
 import vibetuner.mongo as mongo_mod
 from beanie import Document
@@ -34,7 +32,7 @@ def _patched_get_all_models() -> list[type]:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def mongo_container():
+def mongo_container(docker_host):
     """Spin up a MongoDB container for the test session."""
     from pydantic import MongoDsn
 
@@ -42,8 +40,6 @@ def mongo_container():
         url = container.get_connection_url()
         original_url = settings.mongodb_url
         settings.mongodb_url = MongoDsn(url)
-        original_env = os.environ.get("MONGODB_URL")
-        os.environ["MONGODB_URL"] = url
         # Patch model registry to include our probe.
         mongo_mod.get_all_models = _patched_get_all_models
         try:
@@ -51,10 +47,6 @@ def mongo_container():
         finally:
             mongo_mod.get_all_models = _original_get_all_models
             settings.mongodb_url = original_url
-            if original_env is None:
-                os.environ.pop("MONGODB_URL", None)
-            else:
-                os.environ["MONGODB_URL"] = original_env
 
 
 @pytest.mark.integration
