@@ -283,10 +283,28 @@ class TestWorkerRedisKwargs:
         """By default, stream/connect timeouts, keepalive and idle recycling are on."""
         config = CoreConfiguration(project=ProjectConfiguration())
         kwargs = config.worker_redis_kwargs
-        assert kwargs["stream_timeout"] == 30.0
+        assert kwargs["stream_timeout"] == 90.0
         assert kwargs["connect_timeout"] == 10.0
         assert kwargs["socket_keepalive"] is True
-        assert kwargs["max_idle_time"] == 30
+        assert kwargs["max_idle_time"] == 90
+
+    def test_stream_timeout_safely_exceeds_idle_timeout(self):
+        """stream_timeout and max_idle_time must exceed worker_idle_timeout.
+
+        streaq calls XREADGROUP BLOCK <idle_timeout> on the Redis server.
+        coredis enforces stream_timeout during that blocking wait, so if
+        stream_timeout < idle_timeout the worker raises a premature timeout
+        error after stream_timeout seconds (issue #2035).
+        """
+        config = CoreConfiguration(
+            project=ProjectConfiguration(),
+            worker_idle_timeout=60.0,
+            redis_socket_timeout=30.0,
+            redis_health_check_interval=30.0,
+        )
+        kwargs = config.worker_redis_kwargs
+        assert kwargs["stream_timeout"] > config.worker_idle_timeout
+        assert kwargs["max_idle_time"] > config.worker_idle_timeout
 
     def test_kwargs_accepted_by_coredis_connection(self):
         """The kwargs must construct a coredis connection without raising.
@@ -324,7 +342,11 @@ class TestWorkerRedisKwargs:
         assert "max_idle_time" not in config.worker_redis_kwargs
 
     def test_overrides_from_env_vars(self):
-        """REDIS_SOCKET_* and REDIS_HEALTH_CHECK_INTERVAL env vars are honored."""
+        """REDIS_SOCKET_* and REDIS_HEALTH_CHECK_INTERVAL env vars are honored.
+
+        stream_timeout and max_idle_time are derived to safely exceed
+        worker_idle_timeout, so they are not simply the raw env-var values.
+        """
         with patch.dict(
             "os.environ",
             {
@@ -337,10 +359,12 @@ class TestWorkerRedisKwargs:
         ):
             config = CoreConfiguration(project=ProjectConfiguration())
             kwargs = config.worker_redis_kwargs
-            assert kwargs["stream_timeout"] == 5.0
+            # stream_timeout = max(5.0, 60.0 * 1.5) = 90.0
+            assert kwargs["stream_timeout"] == 90.0
             assert kwargs["connect_timeout"] == 2.0
             assert kwargs["socket_keepalive"] is False
-            assert kwargs["max_idle_time"] == 15
+            # max_idle_time = int(max(15.0, 60.0 * 1.5)) = 90
+            assert kwargs["max_idle_time"] == 90
 
 
 class TestRedisClientKwargs:

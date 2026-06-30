@@ -2596,7 +2596,13 @@ a blocking read that never returns, wedging the worker's event loop
 indefinitely. `REDIS_SOCKET_TIMEOUT` (default 30s, 0 disables),
 `REDIS_SOCKET_CONNECT_TIMEOUT` (default 10s), `REDIS_SOCKET_KEEPALIVE` (default
 true), and `REDIS_HEALTH_CHECK_INTERVAL` (default 30s) make a dead connection
-raise instead of hang, so the worker reconnects or exits and is restarted.
+raise instead of hang, so the worker reconnects or exits and is restarted. The
+worker's coredis client issues `XREADGROUP BLOCK <idle_timeout>`, a legitimate
+blocking wait up to `WORKER_IDLE_TIMEOUT` seconds (default 60s); the actual
+coredis stream timeout and idle-recycling threshold are derived as
+`max(REDIS_SOCKET_TIMEOUT, WORKER_IDLE_TIMEOUT × 1.5)` so coredis never
+interrupts a healthy blocking wait. `WORKER_IDLE_TIMEOUT` must be set here and
+passed to the streaq Worker so the two stay in sync.
 
 Liveness watchdog: as a backstop for any event-loop stall (not just Redis), the
 worker runs a daemon thread that force-exits the process if the loop stops
