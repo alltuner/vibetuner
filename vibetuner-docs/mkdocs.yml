@@ -79,8 +79,10 @@ nav:
       - Deployment: deployment.md
       - URL Routing: url-routing.md
       - Per-Tenant Theming: theming.md
+      - Upgrading: upgrading.md
       - Upgrading to v12: upgrading-to-v12.md
       - HTMX v2 → v4 Migration: htmx-migration.md
+      - Troubleshooting: troubleshooting.md
   - Contributing:
       - Development Workflow: development.md
       - Contributing Guidelines: contributing.md
