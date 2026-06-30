@@ -22,7 +22,7 @@ Important notes:
 - [Development Guide](https://vibetuner.alltuner.com/development-guide/): Daily development workflow, adding routes, models, templates, and background jobs
 - [Architecture](https://vibetuner.alltuner.com/architecture/): System design, four-package architecture, request flow, and core components
 - [Tech Stack](https://vibetuner.alltuner.com/tech-stack/): Detailed information about all technologies used and why they were chosen
-- [Authentication](https://vibetuner.alltuner.com/authentication/): OAuth and magic link authentication setup and configuration
+- [Authentication](https://vibetuner.alltuner.com/authentication/): OAuth and magic link authentication setup and configuration, plus built-in hardening: `SESSION_KEY` fails closed in production while the shipped placeholder is unchanged (`vibetuner crypto generate-key`), auth endpoints carry a per-IP rate limit (`RATE_LIMIT_AUTH_LIMITS`, default `5/minute`), and post-login redirects (`next`/`current`) are validated against open redirects
 - [Background Tasks](https://vibetuner.alltuner.com/background-tasks/): Background task system powered by Streaq and Redis with retries, cron scheduling, and SSE integration
 - [Runtime Configuration](https://vibetuner.alltuner.com/runtime-config/): Layered configuration system with MongoDB persistence, debug UI, and feature flags
 - [Upgrading to v12](https://vibetuner.alltuner.com/upgrading-to-v12/): v11 → v12 breaking changes — fail-closed `SESSION_KEY` guard (`vibetuner crypto generate-key`), Jinja autoescaping in the static-render path, and a `5/minute` default auth rate limit (`RATE_LIMIT_AUTH_LIMITS`)
@@ -34,11 +34,11 @@ Important notes:
 - **HTMX Request Detection**: `request.state.htmx` available on every request
   (via `starlette-htmx` middleware). Properties: `.boosted`, `.target`, `.trigger`,
   `.trigger_name`, `.current_url`, `.prompt`. Use `require_htmx` dependency from
-  `vibetuner.frontend.deps` to reject non-HTMX requests with 400
+  `vibetuner` to reject non-HTMX requests with 400
 - **CRUD Factory**: `create_crud_routes()` generates list/create/read/update/delete
   endpoints for Beanie models with pagination, filtering, sorting, and search
 - **SSE Helpers**: `@sse_endpoint()` and `broadcast()` for real-time streaming with
-  HTMX. Import from `vibetuner.sse`. Redis pub/sub for multi-worker support
+  HTMX. Import from `vibetuner`. Redis pub/sub for multi-worker support
 - **`@render` Decorator**: `@render("template.html.jinja")` eliminates
   `render_template()` boilerplate — route returns a dict, decorator handles rendering.
   Returns `Response` objects unchanged (escape hatch). Import from `vibetuner`
@@ -55,8 +55,10 @@ Important notes:
   Key derived from path + query params. Use `vary_on=lambda r: str(r.state.user.id)`
   for request-dependent keys (per-user, per-tenant). Disabled in debug mode
   (override with `force_caching=True`). No-op if Redis unavailable.
-  `invalidate(path)` and `invalidate_pattern(path)` for cache busting.
-  Import from `vibetuner.cache`
+  `invalidate(path, query_params=..., vary=...)` deletes one exact entry
+  (pass `vary` to hit a `vary_on` variant); `invalidate_pattern(path)` removes
+  every variant of a path (or a glob match) via per-path key registries —
+  no keyspace SCAN. Import from `vibetuner.cache`
 - **`@cache_control` Decorator**: `@cache_control(max_age=300, public=True)` sets
   `Cache-Control` headers declaratively. Supports `public`, `private`, `no_cache`,
   `no_store`, `max_age`, `s_maxage`, `must_revalidate`, `stale_while_revalidate`,

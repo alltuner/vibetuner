@@ -462,10 +462,13 @@ Vibetuner provides several built-in template filters for common formatting needs
 | `format_duration` / `duration` | `{{ seconds \| duration }}` | "5 min" or "30 sec" |
 
 The `timeago` filter converts a datetime to a human-readable relative time string. Use `short=True` for compact
-displays like "5m ago", "1d ago", "3mo ago".
+displays like "5m ago", "1d ago", "3mo ago". Future datetimes render with mirrored "in ..." forms: "in 23 hours",
+"tomorrow", "in 3 months" (verbose) or "in 23h", "in 1d", "in 3mo" (short).
 
 Short format outputs: < 60 seconds = "just now", < 60 minutes = "Xm ago", < 24 hours = "Xh ago", < 7 days = "Xd ago",
-< 30 days = "Xw ago", < 365 days = "Xmo ago", < 4 years = "Xy ago", >= 4 years = "MMM DD, YYYY".
+< 30 days = "Xw ago", < 365 days = "Xmo ago", < 4 years = "Xy ago", >= 4 years = "MMM DD, YYYY". Future datetimes
+use the same buckets with "in Xm", "in Xh", "in Xd", "in Xw", "in Xmo", "in Xy", and the same absolute-date fallback
+beyond 4 years.
 
 #### Adding Custom Template Filters
 
@@ -679,7 +682,7 @@ Properties: `bool(request.state.htmx)`, `.boosted`, `.target`, `.trigger`,
 `.trigger_name`, `.current_url`, `.prompt`.
 
 HTMX-only routes — use the `require_htmx` dependency from
-`vibetuner.frontend.deps` to reject non-HTMX requests with a 400.
+`vibetuner` to reject non-HTMX requests with a 400.
 
 ### Architecture
 
@@ -992,6 +995,16 @@ those headers when a `RateLimitError` is raised.
 4. System validates token and logs user in
 5. Session created
 
+##### Template autoescaping
+
+Magic-link emails (and other static pages) are rendered by the framework's
+static-render engine (`render_static_template` in `vibetuner.templates`). It
+**auto-escapes context for HTML and XML templates** (`.html.jinja`,
+`.xml.jinja`) and leaves plain-text templates (`.txt.jinja`) verbatim, keying
+the decision off the format extension under the `.jinja` wrapper. User-derived
+values (display names, profile fields) are escaped automatically, closing the
+XSS gap. Inject pre-rendered, trusted markup with Jinja's `| safe` filter.
+
 ##### Custom OAuth Providers
 
 Add any OAuth provider using `custom_oauth_providers` in `tune.py`:
@@ -1112,13 +1125,51 @@ async def home(request: Request):
     })
 ```
 
+##### Session Key Fails Closed in Production
+
+Sessions are signed with `SESSION_KEY`. The framework ships a placeholder so a
+fresh project runs without configuration, but startup **raises** when that
+placeholder is still set and `ENVIRONMENT=prod` — production sessions can never
+be signed with a publicly known key. Outside production it logs a loud warning
+instead. Generate a real value with:
+
+```bash
+uv run vibetuner crypto generate-key
+```
+
+```bash
+# .env
+SESSION_KEY=your-generated-secret-key
+```
+
+##### Auth Endpoint Rate Limits
+
+The magic-link send (`POST /auth/magic-link-login`) and OAuth-initiation routes
+carry a conservative per-IP limit out of the box (default `5/minute`) to curb
+email flooding and account enumeration. Override it without touching the routes:
+
+```bash
+# .env
+RATE_LIMIT_AUTH_LIMITS=10/minute
+```
+
+##### Safe Post-Login Redirects
+
+Redirect targets that come from user input — the `next` query/form value on
+login and the `current` value on the language switcher — are validated with an
+`is_safe_redirect` check. Only same-origin relative paths are honored; absolute
+(`https://evil.com`) and protocol-relative (`//evil.com`) values fall back to
+the homepage, so a crafted link can never bounce a freshly authenticated user
+off-site.
+
 ### CRUD Factory
 
 Vibetuner includes a CRUD route factory that generates list, create, read, update,
 and delete endpoints for Beanie Document models with one function call.
 
 ```python
-from vibetuner.crud import create_crud_routes, Operation
+from vibetuner import create_crud_routes
+from vibetuner.crud import Operation
 from app.models import Post
 
 # Generate all CRUD routes
@@ -1218,17 +1269,17 @@ input. If they return `None`, the original data is used.
 ### Server-Sent Events (SSE)
 
 Vibetuner provides SSE helpers for real-time streaming with HTMX. Import from
-`vibetuner.sse` (not `vibetuner.frontend.sse`).
+the top-level `vibetuner` package.
 
 ```python
-from vibetuner.sse import sse_endpoint, broadcast
+from vibetuner import sse_endpoint, broadcast
 ```
 
 **Channel-based endpoint (auto-subscribe):**
 
 ```python
 from fastapi import APIRouter, Request
-from vibetuner.sse import sse_endpoint
+from vibetuner import sse_endpoint
 
 router = APIRouter()
 
@@ -1260,7 +1311,7 @@ async def custom_stream(request: Request):
 **Broadcasting events:**
 
 ```python
-from vibetuner.sse import broadcast
+from vibetuner import broadcast
 
 # Raw data
 await broadcast("notifications", "update", data="<div>New item!</div>")
@@ -1361,8 +1412,21 @@ from vibetuner.cache import invalidate, invalidate_pattern
 
 await invalidate("/api/stats")
 await invalidate("/api/stats", query_params="page=1")
-await invalidate_pattern("/api/*")
+await invalidate("/dashboard", vary=str(user.id))  # one vary_on variant
+await invalidate_pattern("/dashboard")  # every variant of one path
+await invalidate_pattern("/api/*")  # glob across paths
 ```
+
+`invalidate()` deletes one exact entry (path + sorted query string +
+`vary` value). For routes cached with `vary_on`, pass the value the
+`vary_on` callable returns to target that variant.
+
+`invalidate_pattern()` resolves matches from per-path key registries
+maintained at cache-write time, so cost is proportional to the number of
+cached variants — never a full-keyspace Redis `SCAN` (which could block a
+request for minutes). A bare path removes every cached variant of that
+path; a glob is matched against the `path?query|vary:value` portion of
+registered keys. Only entries written through `@cache` are tracked.
 
 ### Template Context Providers
 
@@ -2482,7 +2546,7 @@ Cron tasks only execute inside the worker process.
 Broadcast real-time updates from background tasks to connected clients:
 
 ```python
-from vibetuner.sse import broadcast
+from vibetuner import broadcast
 
 @worker.task()
 async def process_upload(file_id: str, user_id: str) -> dict:

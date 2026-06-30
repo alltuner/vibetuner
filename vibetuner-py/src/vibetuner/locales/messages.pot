@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vibetuner VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/alltuner/vibetuner/issues\n"
-"POT-Creation-Date: 2026-06-02 16:38+0200\n"
+"POT-Creation-Date: 2026-06-10 11:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,6 +108,94 @@ msgstr[1] ""
 #, python-format
 msgid "%(years)dy ago"
 msgid_plural "%(years)dy ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py
+#, python-format
+msgid "in %(seconds)d second"
+msgid_plural "in %(seconds)d seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py
+#, python-format
+msgid "in %(minutes)d minute"
+msgid_plural "in %(minutes)d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py
+#, python-format
+msgid "in %(hours)d hour"
+msgid_plural "in %(hours)d hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py
+msgid "tomorrow"
+msgstr ""
+
+#: src/vibetuner/rendering.py
+#, python-format
+msgid "in %(days)d day"
+msgid_plural "in %(days)d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py
+#, python-format
+msgid "in %(months)d month"
+msgid_plural "in %(months)d months"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py
+#, python-format
+msgid "in %(years)d year"
+msgid_plural "in %(years)d years"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py
+#, python-format
+msgid "in %(minutes)dm"
+msgid_plural "in %(minutes)dm"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py
+#, python-format
+msgid "in %(hours)dh"
+msgid_plural "in %(hours)dh"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py
+#, python-format
+msgid "in %(days)dd"
+msgid_plural "in %(days)dd"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py
+#, python-format
+msgid "in %(weeks)dw"
+msgid_plural "in %(weeks)dw"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py
+#, python-format
+msgid "in %(months)dmo"
+msgid_plural "in %(months)dmo"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/vibetuner/rendering.py
+#, python-format
+msgid "in %(years)dy"
+msgid_plural "in %(years)dy"
 msgstr[0] ""
 msgstr[1] ""
 

@@ -462,6 +462,13 @@ Edit `templates/email/magic_link.html.jinja`:
 </html>
 ```
 
+These templates are rendered by the framework's static-render engine, which
+**auto-escapes context variables for HTML and XML templates** (`.html.jinja`,
+`.xml.jinja`). Plain-text templates (`.txt.jinja`) are emitted verbatim. So any
+user-derived value (display name, profile field) is safely escaped in the HTML
+email without action on your part. If you need to inject pre-rendered, trusted
+markup, opt out explicitly with Jinja's `| safe` filter.
+
 ## User Model
 
 The built-in User model supports both OAuth and magic link authentication:
@@ -603,24 +610,25 @@ SESSION_COOKIE_SECURE = True  # HTTPS only
 SESSION_COOKIE_SAMESITE = "lax"  # CSRF protection
 ```
 
-### Secret Key
+### Session Key
 
-Use a strong, unique secret key:
+Sessions are signed with `SESSION_KEY`. Generate a strong, unique value and
+add it to your `.env`:
 
 ```bash
 # Generate a secure key
-vibetuner crypto generate-key
+uv run vibetuner crypto generate-key
 ```
-
-Add to `.env`:
 
 ```bash
 SESSION_KEY=your-generated-secret-key
 ```
 
-In production (`ENVIRONMENT=prod`) the app refuses to start while
-`SESSION_KEY` is still a known placeholder, so set a real key before
-deploying. See [Upgrading to v12](upgrading-to-v12.md#fail-closed-session_key-guard)
+The framework ships a placeholder `SESSION_KEY` so a fresh project runs
+without configuration. Startup **fails closed** when this placeholder is still
+in place and `ENVIRONMENT=prod`, so you can never sign production sessions
+with a publicly known key. Outside production it only logs a loud warning.
+See [Upgrading to v12](upgrading-to-v12.md#fail-closed-session_key-guard)
 for details.
 
 ### OAuth Callback URLs
@@ -649,17 +657,24 @@ the visitor's session. Use a form, not a link, in your own templates:
 
 ### Rate Limiting
 
-Consider adding rate limiting for authentication endpoints:
+The magic-link send and OAuth-initiation endpoints carry a conservative
+per-IP rate limit out of the box (default `5/minute`) to curb email flooding
+and account enumeration. Tune it via `RATE_LIMIT_AUTH_LIMITS`:
 
-```python
-from slowapi import Limiter
-limiter = Limiter(key_func=lambda: request.client.host)
-@router.post("/auth/magic-link")
-@limiter.limit("5/minute")
-async def request_magic_link(email: str):
-# Send magic link
-pass
+```bash
+# .env
+RATE_LIMIT_AUTH_LIMITS=10/minute
 ```
+
+See [Rate Limiting](rate-limiting.md) for the full configuration surface and
+how to apply limits to your own routes.
+
+### Safe Redirects
+
+Post-login redirect targets (the `next` query/form value and the language
+switcher's `current`) are validated before use. Only same-origin relative
+paths are honored; absolute (`https://evil.com`) and protocol-relative
+(`//evil.com`) values fall back to the homepage, preventing open redirects.
 
 ## Troubleshooting
 

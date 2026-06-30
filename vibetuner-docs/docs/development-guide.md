@@ -551,20 +551,24 @@ The `timeago` filter converts a datetime to a human-readable relative time strin
 <!-- Short format for compact displays -->
 <span>{{ post.created_at | timeago(short=True) }}</span>
 <!-- Output: "5m ago", "1d ago", "3mo ago", etc. -->
+
+<!-- Future datetimes render with mirrored "in ..." forms -->
+<span>Next run {{ schedule.next_run_at | timeago }}</span>
+<!-- Output: "in 23 hours", "tomorrow", "in 3 months", etc. -->
 ```
 
 Short format outputs:
 
-| Time Range | Short Format |
-|------------|--------------|
-| < 60 seconds | "just now" |
-| < 60 minutes | "Xm ago" |
-| < 24 hours | "Xh ago" |
-| < 7 days | "Xd ago" |
-| < 30 days | "Xw ago" |
-| < 365 days | "Xmo ago" |
-| < 4 years | "Xy ago" |
-| >= 4 years | "MMM DD, YYYY" |
+| Time Range | Past | Future |
+|------------|------|--------|
+| < 60 seconds | "just now" | "just now" |
+| < 60 minutes | "Xm ago" | "in Xm" |
+| < 24 hours | "Xh ago" | "in Xh" |
+| < 7 days | "Xd ago" | "in Xd" |
+| < 30 days | "Xw ago" | "in Xw" |
+| < 365 days | "Xmo ago" | "in Xmo" |
+| < 4 years | "Xy ago" | "in Xy" |
+| >= 4 years | "MMM DD, YYYY" | "MMM DD, YYYY" |
 
 ### Adding Custom Template Filters
 
@@ -1066,9 +1070,29 @@ await invalidate("/api/stats")
 # Invalidate a specific query variant
 await invalidate("/api/stats", query_params="page=1")
 
-# Invalidate all matching paths (uses Redis SCAN)
+# Invalidate the entry cached for one vary_on value (e.g. one user)
+await invalidate("/dashboard", vary=str(user.id))
+
+# Invalidate every cached variant of a path (all queries and vary values)
+await invalidate_pattern("/dashboard")
+
+# Invalidate all matching paths with a glob pattern
 await invalidate_pattern("/api/*")
 ```
+
+`invalidate()` deletes one exact entry: the combination of path, sorted
+query string, and `vary` value. For routes cached with `vary_on`, pass the
+same value the `vary_on` callable returns to target that variant.
+
+`invalidate_pattern()` works off per-path key registries that `@cache`
+maintains at write time, so its cost is proportional to the number of
+cached variants — it never runs a full-keyspace Redis `SCAN`, which could
+block a request handler for minutes on a large or remote Redis. A bare
+path (no glob characters) removes every cached variant of that path; a
+glob pattern is matched against the `path?query|vary:value` portion of
+each registered key. Only entries written through `@cache` are tracked —
+entries written by older framework versions are not in the registry and
+simply expire via their own TTL.
 
 ### Cache Control Headers (Browser-Side)
 
@@ -1158,7 +1182,7 @@ Use the `require_htmx` dependency to reject non-HTMX requests with a 400 error:
 
 ```python
 from fastapi import Depends
-from vibetuner.frontend.deps import require_htmx
+from vibetuner import require_htmx
 
 @router.post("/items/create", dependencies=[Depends(require_htmx)])
 async def create_item(request: Request):
@@ -1586,7 +1610,7 @@ Generate complete REST API endpoints from Beanie Document models with a single f
 ### Basic Usage
 
 ```python
-from vibetuner.crud import create_crud_routes
+from vibetuner import create_crud_routes
 from app.models.post import Post
 
 post_routes = create_crud_routes(Post, prefix="/posts", tags=["posts"])
@@ -1693,7 +1717,8 @@ post_routes = create_crud_routes(
 Only generate the endpoints you need:
 
 ```python
-from vibetuner.crud import create_crud_routes, Operation
+from vibetuner import create_crud_routes
+from vibetuner.crud import Operation
 
 # Read-only API
 post_routes = create_crud_routes(
@@ -1725,7 +1750,7 @@ designed for use with HTMX.
 Subscribe clients to a named channel and broadcast updates from anywhere:
 
 ```python
-from vibetuner.sse import sse_endpoint, broadcast
+from vibetuner import sse_endpoint, broadcast
 
 router = APIRouter()
 
@@ -1743,7 +1768,7 @@ async def notifications_stream(request: Request):
 Broadcast from any route or background task:
 
 ```python
-from vibetuner.sse import broadcast
+from vibetuner import broadcast
 
 @router.post("/posts")
 async def create_post(request: Request):

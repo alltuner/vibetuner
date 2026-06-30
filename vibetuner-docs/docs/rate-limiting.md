@@ -17,6 +17,18 @@ configured, limits are shared across workers with automatic in-memory fallback
 if Redis becomes unavailable. Without Redis, limits use in-memory storage
 (per-process, suitable for development).
 
+### Auth Endpoints Are Limited by Default
+
+The built-in magic-link send (`POST /auth/magic-link-login`) and
+OAuth-initiation routes carry a conservative per-IP limit out of the box
+(default `5/minute`) to curb email flooding and account enumeration. Override
+it with `RATE_LIMIT_AUTH_LIMITS` without touching the routes:
+
+```bash
+# .env
+RATE_LIMIT_AUTH_LIMITS=10/minute
+```
+
 ## Quick Start
 
 ### Per-Route Limits
@@ -130,7 +142,7 @@ prefix:
 |---|---|---|
 | `RATE_LIMIT_ENABLED` | `true` | Enable/disable rate limiting globally |
 | `RATE_LIMIT_DEFAULT_LIMITS` | `[]` | Default limits for all routes (JSON list) |
-| `RATE_LIMIT_AUTH_LIMITS` | `5/minute` | Per-IP limit on the unauthenticated auth endpoints |
+| `RATE_LIMIT_AUTH_LIMITS` | `5/minute` | Per-IP limit on built-in auth endpoints |
 | `RATE_LIMIT_HEADERS_ENABLED` | `true` | Include `X-RateLimit-*` response headers |
 | `RATE_LIMIT_STRATEGY` | `fixed-window` | Rate limiting strategy |
 | `RATE_LIMIT_SWALLOW_ERRORS` | `true` | Swallow storage errors instead of crashing |

@@ -21,7 +21,7 @@ lint-jinja:
 # Lint YAML files with dprint
 [group('Code quality: linting')]
 lint-yaml:
-    @uvx --from dprint-py dprint check --plugins https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.1.wasm
+    @uvx --from dprint-py dprint check --config-discovery=ignore-descendants --plugins https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.1.wasm
 
 # Lint PO translation files with lint-po
 [group('Code quality: linting')]

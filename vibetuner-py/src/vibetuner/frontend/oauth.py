@@ -11,10 +11,11 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types.language_code import LanguageAlpha2
 from starlette.authentication import BaseUser
 
-from vibetuner.frontend.routes import get_homepage_url
+from vibetuner.frontend.routes import get_homepage_url, is_safe_redirect
 from vibetuner.logging import logger
 from vibetuner.models.oauth import OAuthAccountModel, OauthProviderModel
 from vibetuner.models.user import UserModel
+from vibetuner.ratelimit import auth_rate_limit, limiter
 
 
 if TYPE_CHECKING:
@@ -366,12 +367,16 @@ def _wrap_oauth_relay_state(location: str, public_origin: str) -> str:
 
 
 def _create_auth_login_handler(provider_name: str):
+    @limiter.limit(auth_rate_limit)
     async def auth_login(
         request: Request, next: str | None = None, app_id: str | None = None
     ):
         from vibetuner.config import settings
 
-        request.session["next_url"] = next or get_homepage_url(request)
+        if next and is_safe_redirect(next):
+            request.session["next_url"] = next
+        else:
+            request.session["next_url"] = get_homepage_url(request)
 
         try:
             client_name = await resolve_oauth_client(provider_name, app_id)

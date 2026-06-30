@@ -108,7 +108,9 @@ async def health(request: Request): ...
 ```
 
 Configure via `RATE_LIMIT_*` env vars. Redis shares limits across
-workers; falls back to in-memory.
+workers; falls back to in-memory. Built-in auth endpoints (magic-link
+send, OAuth init) already carry a per-IP limit (`RATE_LIMIT_AUTH_LIMITS`,
+default `5/minute`).
 
 ## CLI Commands
 

@@ -141,3 +141,49 @@ class TestCircularImportPrevention:
             f"Importing render_template_string triggered load_app_config():\n"
             f"stderr: {result.stderr}"
         )
+
+    def test_public_api_importable_from_vibetuner_top_level(self):
+        """SSE, CRUD, and HTMX helpers must be importable from the top-level package.
+
+        These are documented as first-class features, so users should be able to do
+        `from vibetuner import sse_endpoint, broadcast, create_crud_routes, require_htmx`
+        without reaching into submodules and without triggering load_app_config().
+
+        Each re-export must be the same object as its submodule original.
+
+        See: https://github.com/alltuner/vibetuner/issues/2014
+        """
+        code = textwrap.dedent("""\
+            import unittest.mock as mock
+            import vibetuner.loader
+
+            mock.patch.object(
+                vibetuner.loader,
+                "load_app_config",
+                side_effect=RuntimeError("load_app_config called during import"),
+            ).start()
+
+            from vibetuner import sse_endpoint, broadcast, create_crud_routes, require_htmx
+            import vibetuner.sse
+            import vibetuner.crud
+            import vibetuner.frontend.deps
+
+            assert vibetuner.sse.sse_endpoint is sse_endpoint
+            assert vibetuner.sse.broadcast is broadcast
+            assert vibetuner.crud.create_crud_routes is create_crud_routes
+            assert vibetuner.frontend.deps.require_htmx is require_htmx
+
+            print("OK")
+        """)
+
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+
+        assert "OK" in result.stdout, (
+            f"Importing the public API from vibetuner failed or identities mismatched:\n"
+            f"stderr: {result.stderr}"
+        )

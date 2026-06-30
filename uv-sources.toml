@@ -1,3 +1,2 @@
 
-[tool.uv.sources]
 vibetuner = { path = "/vibetuner-py", editable = true }

@@ -5,6 +5,7 @@ from vibetuner.context import ctx
 
 from ..deps import require_htmx
 from ..templates import render_template
+from . import is_safe_redirect
 
 
 # Cookie expiry: 1 year in seconds
@@ -19,15 +20,15 @@ async def set_language(request: Request, lang: str, current: str) -> RedirectRes
     if lang not in ctx.supported_languages:
         raise HTTPException(status_code=400, detail="Unsupported language")
 
-    # Validate current URL is an internal path (prevent open redirect)
-    # Must start with /{lang}/ pattern and be a relative path
-    if current:
+    # Validate current URL is an internal path (prevent open redirect).
+    # Reject absolute and protocol-relative values before deriving the target.
+    if current and is_safe_redirect(current):
         # Strip the language prefix from current URL
         parts = current.strip("/").split("/", 1)
         if parts and len(parts[0]) == 2 and parts[0].isalpha():
             base_path = "/" + parts[1] if len(parts) > 1 else "/"
         else:
-            base_path = current if current.startswith("/") else f"/{current}"
+            base_path = current
         new_url = f"/{lang}{base_path}"
     else:
         new_url = request.url_for("homepage").path

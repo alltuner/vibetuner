@@ -1,5 +1,6 @@
 # ABOUTME: Response caching decorator backed by Redis.
 # ABOUTME: Provides @cache for server-side route caching and invalidate() for cache busting.
+import fnmatch
 import functools
 import hashlib
 import inspect
@@ -8,6 +9,9 @@ from collections.abc import Callable
 from typing import Any
 
 from vibetuner.logging import logger
+
+
+_GLOB_CHARS = frozenset("*?[")
 
 
 def _build_cache_key(
@@ -19,6 +23,20 @@ def _build_cache_key(
         raw = f"{raw}|vary:{vary_value}"
     key_hash = hashlib.sha256(raw.encode()).hexdigest()[:16]
     return f"{prefix}cache:{key_hash}:{raw}"
+
+
+def _registry_key(prefix: str, path: str) -> str:
+    """Redis SET holding every cache key written for a route path."""
+    return f"{prefix}cache-index:{path}"
+
+
+def _paths_key(prefix: str) -> str:
+    """Redis SET holding every route path with a key registry."""
+    return f"{prefix}cache-paths"
+
+
+def _as_str(value: bytes | str) -> str:
+    return value.decode() if isinstance(value, bytes) else value
 
 
 def cache(
@@ -129,6 +147,9 @@ async def _cached_call(
         serialized = _serialize_response(response)
         if serialized is not None:
             await client.set(cache_key, serialized, ex=expire)
+            await _register_cache_key(
+                client, settings.redis_key_prefix, request.url.path, cache_key, expire
+            )
 
         return response
 
@@ -141,12 +162,18 @@ async def _cached_call(
         return await _call_handler(func, *args, **kwargs)
 
 
-async def invalidate(path: str, *, query_params: str = "") -> bool:
+async def invalidate(
+    path: str, *, query_params: str = "", vary: str | None = None
+) -> bool:
     """Remove a cached response by route path.
 
     Args:
         path: The URL path to invalidate (e.g. ``"/api/stats"``).
         query_params: Optional sorted query string to target a specific variant.
+        vary: Optional vary value to target the entry written for a route
+            cached with ``vary_on`` (e.g. the user id returned by the
+            ``vary_on`` callable). Without it, only the non-vary'd entry
+            for the path can be hit.
 
     Returns:
         ``True`` if a cached entry was deleted, ``False`` otherwise.
@@ -159,7 +186,9 @@ async def invalidate(path: str, *, query_params: str = "") -> bool:
         if client is None:
             return False
 
-        cache_key = _build_cache_key(settings.redis_key_prefix, path, query_params)
+        cache_key = _build_cache_key(
+            settings.redis_key_prefix, path, query_params, vary
+        )
         deleted = await client.delete(cache_key)
         return deleted > 0
     except (ConnectionError, OSError, TimeoutError):
@@ -171,16 +200,28 @@ async def invalidate(path: str, *, query_params: str = "") -> bool:
 
 
 async def invalidate_pattern(pattern: str) -> int:
-    """Remove all cached responses matching a key pattern.
+    """Remove cached responses for a route path or glob pattern.
 
-    Uses Redis ``SCAN`` to find matching keys without blocking.
+    Works off the per-path key registries maintained at cache-write time,
+    so cost is proportional to the number of cached variants — never a
+    full-keyspace ``SCAN``. A full keyspace scan against a large or remote
+    Redis can block for minutes and must never run in the request path;
+    this function intentionally has no such fallback.
+
+    A bare path (no ``*``, ``?``, or ``[`` glob characters) removes **every**
+    cached variant of that path: all query-string and ``vary_on`` variants,
+    plus the registry itself. A glob pattern is matched against the raw
+    ``path?query|vary:value`` portion of each registered key.
+
+    Only entries written through ``@cache`` are registered; anything else
+    is untouched and expires via its own TTL.
 
     Args:
-        pattern: Glob pattern relative to the cache namespace
-            (e.g. ``"/api/*"``).
+        pattern: Route path or glob pattern relative to the cache namespace
+            (e.g. ``"/dashboard"`` or ``"/api/*"``).
 
     Returns:
-        Number of keys deleted.
+        Number of cache entries deleted.
     """
     try:
         from vibetuner.config import settings
@@ -190,11 +231,25 @@ async def invalidate_pattern(pattern: str) -> int:
         if client is None:
             return 0
 
-        full_pattern = f"{settings.redis_key_prefix}cache:*:{pattern}"
+        prefix = settings.redis_key_prefix
+        if not _GLOB_CHARS & set(pattern):
+            return await _invalidate_path(client, prefix, pattern)
+
+        full_pattern = f"{prefix}cache:*:{pattern}"
+        paths = [_as_str(p) for p in await client.smembers(_paths_key(prefix))]
         deleted = 0
-        async for key in client.scan_iter(match=full_pattern, count=100):
-            await client.delete(key)
-            deleted += 1
+        for path in paths:
+            registry = _registry_key(prefix, path)
+            keys = [_as_str(m) for m in await client.smembers(registry)]
+            matching = [k for k in keys if fnmatch.fnmatchcase(k, full_pattern)]
+            if not matching:
+                continue
+            deleted += await client.unlink(*matching)
+            if len(matching) == len(keys):
+                await client.unlink(registry)
+                await client.srem(_paths_key(prefix), path)
+            else:
+                await client.srem(registry, *matching)
         return deleted
     except (ConnectionError, OSError, TimeoutError):
         logger.debug("Redis unavailable during pattern invalidation")
@@ -204,7 +259,45 @@ async def invalidate_pattern(pattern: str) -> int:
         return 0
 
 
+async def _invalidate_path(client: Any, prefix: str, path: str) -> int:
+    """Delete every registered cache entry for a path plus its registry."""
+    registry = _registry_key(prefix, path)
+    keys = [_as_str(m) for m in await client.smembers(registry)]
+    deleted = await client.unlink(*keys) if keys else 0
+    await client.unlink(registry)
+    await client.srem(_paths_key(prefix), path)
+    return deleted
+
+
 # ── Internal helpers ────────────────────────────────────────────────
+
+
+async def _register_cache_key(
+    client: Any, prefix: str, path: str, cache_key: str, expire: int
+) -> None:
+    """Record a written cache key in the per-path registry sets.
+
+    The registry set and the path index get their TTL bumped to at least
+    ``expire`` (``EXPIRE NX`` seeds a TTL, ``EXPIRE GT`` only ever extends
+    it), so a registry always outlives the longest-lived entry it tracks
+    and expired-entry bookkeeping cannot accumulate forever.
+
+    Failures are swallowed: the response is already cached and registry
+    bookkeeping must not affect the request.
+    """
+    try:
+        registry = _registry_key(prefix, path)
+        paths = _paths_key(prefix)
+        pipe = client.pipeline(transaction=False)
+        pipe.sadd(registry, cache_key)
+        pipe.expire(registry, expire, nx=True)
+        pipe.expire(registry, expire, gt=True)
+        pipe.sadd(paths, path)
+        pipe.expire(paths, expire, nx=True)
+        pipe.expire(paths, expire, gt=True)
+        await pipe.execute()
+    except Exception:
+        logger.debug("Cache key registry update failed")
 
 
 async def _call_handler(func: Callable, *args: Any, **kwargs: Any) -> Any:

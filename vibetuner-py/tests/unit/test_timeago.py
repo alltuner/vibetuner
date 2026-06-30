@@ -300,6 +300,216 @@ class TestTimeagoShort:
         assert timeago("not a date", short=True) == ""
 
 
+class TestTimeagoFutureVerbose:
+    """Test the verbose timeago format for future datetimes."""
+
+    @patch("vibetuner.time.now")
+    def test_in_seconds(self, mock_now):
+        """Test that future seconds are displayed correctly."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(seconds=30)
+        result = timeago(dt)
+
+        assert result == "in 30 seconds"
+
+    @patch("vibetuner.time.now")
+    def test_in_one_second(self, mock_now):
+        """Test that one future second uses the singular form."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(seconds=1)
+        result = timeago(dt)
+
+        assert result == "in 1 second"
+
+    @patch("vibetuner.time.now")
+    def test_in_minutes(self, mock_now):
+        """Test that future minutes are displayed correctly."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(minutes=5)
+        result = timeago(dt)
+
+        assert result == "in 5 minutes"
+
+    @patch("vibetuner.time.now")
+    def test_in_hours(self, mock_now):
+        """Test that future hours are displayed correctly."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(hours=23, minutes=39)
+        result = timeago(dt)
+
+        assert result == "in 23 hours"
+
+    @patch("vibetuner.time.now")
+    def test_tomorrow(self, mock_now):
+        """Test that a datetime one to two days away shows tomorrow."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(days=1, hours=12)
+        result = timeago(dt)
+
+        assert "tomorrow" in result.lower()
+
+    @patch("vibetuner.time.now")
+    def test_in_days(self, mock_now):
+        """Test that future days are displayed correctly."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(days=5)
+        result = timeago(dt)
+
+        assert result == "in 5 days"
+
+    @patch("vibetuner.time.now")
+    def test_in_months(self, mock_now):
+        """Test that future months are displayed correctly."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(days=90)
+        result = timeago(dt)
+
+        assert result == "in 3 months"
+
+    @patch("vibetuner.time.now")
+    def test_in_years(self, mock_now):
+        """Test that future years are displayed correctly."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(days=730)
+        result = timeago(dt)
+
+        assert result == "in 2 years"
+
+    @patch("vibetuner.time.now")
+    def test_far_future_date_shows_formatted_date(self, mock_now):
+        """Test that dates more than 4 years away show formatted date."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = datetime(2030, 3, 15, tzinfo=UTC)
+        result = timeago(dt)
+
+        assert "Mar" in result
+        assert "15" in result
+        assert "2030" in result
+
+
+class TestTimeagoFutureShort:
+    """Test the short timeago format for future datetimes."""
+
+    @patch("vibetuner.time.now")
+    def test_seconds_shows_just_now(self, mock_now):
+        """Test that future seconds show 'just now' in short format."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(seconds=30)
+        result = timeago(dt, short=True)
+
+        assert result == "just now"
+
+    @patch("vibetuner.time.now")
+    def test_in_minutes(self, mock_now):
+        """Test that future minutes show 'in Xm' in short format."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(minutes=45)
+        result = timeago(dt, short=True)
+
+        assert result == "in 45m"
+
+    @patch("vibetuner.time.now")
+    def test_in_hours(self, mock_now):
+        """Test that future hours show 'in Xh' in short format."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(hours=23, minutes=39)
+        result = timeago(dt, short=True)
+
+        assert result == "in 23h"
+
+    @patch("vibetuner.time.now")
+    def test_tomorrow_shows_in_1d(self, mock_now):
+        """Test that tomorrow shows 'in 1d' in short format."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(days=1, hours=12)
+        result = timeago(dt, short=True)
+
+        assert result == "in 1d"
+
+    @patch("vibetuner.time.now")
+    def test_in_days(self, mock_now):
+        """Test that future days (2-6) show 'in Xd' in short format."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(days=5)
+        result = timeago(dt, short=True)
+
+        assert result == "in 5d"
+
+    @patch("vibetuner.time.now")
+    def test_in_weeks(self, mock_now):
+        """Test that future weeks show 'in Xw' in short format."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(days=14)
+        result = timeago(dt, short=True)
+
+        assert result == "in 2w"
+
+    @patch("vibetuner.time.now")
+    def test_in_months(self, mock_now):
+        """Test that future months show 'in Xmo' in short format."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(days=90)
+        result = timeago(dt, short=True)
+
+        assert result == "in 3mo"
+
+    @patch("vibetuner.time.now")
+    def test_in_years(self, mock_now):
+        """Test that future years show 'in Xy' in short format."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = current_time + timedelta(days=730)
+        result = timeago(dt, short=True)
+
+        assert result == "in 2y"
+
+    @patch("vibetuner.time.now")
+    def test_far_future_date_shows_formatted_date(self, mock_now):
+        """Test that dates more than 4 years away show formatted date."""
+        current_time = datetime(2025, 1, 15, 12, 0, 0, tzinfo=UTC)
+        mock_now.return_value = current_time
+
+        dt = datetime(2030, 3, 15, tzinfo=UTC)
+        result = timeago(dt, short=True)
+
+        assert "Mar" in result
+        assert "15" in result
+        assert "2030" in result
+
+
 class TestTimeagoEdgeCases:
     """Test edge cases and threshold boundaries."""
 

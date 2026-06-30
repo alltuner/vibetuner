@@ -13,6 +13,7 @@ from pydantic import EmailStr
 from starlette.responses import HTMLResponse
 
 from vibetuner.models import EmailVerificationTokenModel, UserModel
+from vibetuner.ratelimit import auth_rate_limit, limiter
 from vibetuner.services.email import EmailService
 
 from ..email import send_magic_link_email
@@ -23,7 +24,7 @@ from ..oauth import (
     get_registered_providers,
 )
 from ..templates import render_template
-from . import get_homepage_url
+from . import get_homepage_url, is_safe_redirect
 
 
 def get_email_service() -> EmailService:
@@ -97,6 +98,7 @@ async def auth_login(
 
 
 @router.post("/magic-link-login", response_model=None)
+@limiter.limit(auth_rate_limit)
 async def send_magic_link(
     request: Request,
     email_service: Annotated[EmailService, Depends(get_email_service)],
@@ -158,8 +160,10 @@ async def email_verify(
     # Set session
     request.session["user"] = user.session_dict
 
-    # Redirect
-    return next or get_homepage_url(request)
+    # Redirect (only to a same-origin path; otherwise fall back to homepage)
+    if next and is_safe_redirect(next):
+        return next
+    return get_homepage_url(request)
 
 
 def register_oauth_routes() -> None:
