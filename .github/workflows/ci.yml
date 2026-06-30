@@ -43,9 +43,12 @@ jobs:
         with:
           cache-dependency-glob: "vibetuner-py/uv.lock"
 
-      - name: Ruff lint
+      - name: Pre-commit (lint suite)
+        run: uvx pre-commit run --all-files --show-diff-on-failure
+
+      - name: Ruff format check
         working-directory: vibetuner-py
-        run: uv run --frozen --extra dev ruff check .
+        run: uv run --frozen --extra dev ruff format --check .
 
       - name: Type check
         working-directory: vibetuner-py

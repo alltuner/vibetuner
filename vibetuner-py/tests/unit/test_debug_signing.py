@@ -66,9 +66,7 @@ class TestVerifyDebugSignature:
         with patch("vibetuner.debug_signing.time") as mock_time:
             mock_time.time.return_value = future_time
             # 60s TTL should reject a 120s old link
-            assert (
-                verify_debug_signature(**params, secret="mysecret", ttl=60) is False
-            )
+            assert verify_debug_signature(**params, secret="mysecret", ttl=60) is False
 
     def test_tampered_nonce_rejected(self):
         params = self._generate_params("mysecret")

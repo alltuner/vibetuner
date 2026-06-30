@@ -145,8 +145,7 @@ def test_app_catalog_overrides_framework_catalog(tmp_path) -> None:
     translator.load_from_directories([tmp_path / "locales"])
 
     assert (
-        translator.gettext("Welcome Back", locale="ca")
-        == "Hola de nou (app override)"
+        translator.gettext("Welcome Back", locale="ca") == "Hola de nou (app override)"
     )
     # Untouched framework strings still translate
     assert translator.gettext("Sign In", locale="ca") == "Inicia la sessió"
@@ -155,4 +154,5 @@ def test_app_catalog_overrides_framework_catalog(tmp_path) -> None:
 def test_module_level_gettext_uses_shared_translator() -> None:
     """Importing the middleware also wires up module-level gettext()."""
     import vibetuner.frontend.middleware  # noqa: F401
+
     assert gettext("Welcome Back", locale="ca") == "Et donem la benvinguda de nou"

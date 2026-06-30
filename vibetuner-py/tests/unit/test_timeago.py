@@ -614,7 +614,9 @@ class TestFilterErrorHandling:
 
     def test_timeago_unexpected_exception_propagates(self):
         """timeago() lets unexpected exception types propagate instead of silently returning ''."""
-        with patch("vibetuner.rendering.age_in_timedelta", side_effect=RuntimeError("boom")):
+        with patch(
+            "vibetuner.rendering.age_in_timedelta", side_effect=RuntimeError("boom")
+        ):
             with pytest.raises(RuntimeError, match="boom"):
                 timeago("anything")
 

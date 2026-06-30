@@ -65,9 +65,7 @@ def decrypt_or_passthrough(value: str, passphrase: str | None) -> str:
     try:
         return decrypt_value(value, passphrase)
     except InvalidToken:
-        logger.warning(
-            "Failed to decrypt value. The encryption key may be incorrect."
-        )
+        logger.warning("Failed to decrypt value. The encryption key may be incorrect.")
         return value
 
 

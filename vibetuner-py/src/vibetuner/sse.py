@@ -257,7 +257,9 @@ async def _redis_listen_loop(prefix: str) -> None:
             raise
         except RedisError as e:
             logger.warning(
-                "SSE Redis listener lost connection, reconnecting in {:.1f}s: {}", delay, e
+                "SSE Redis listener lost connection, reconnecting in {:.1f}s: {}",
+                delay,
+                e,
             )
             await _close_subscriber(pubsub, client)
             await asyncio.sleep(delay)
