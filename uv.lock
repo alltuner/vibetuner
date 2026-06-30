@@ -1597,6 +1597,15 @@ wheels = [
 ]
 
 [[package]]
+name = "lint-po"
+version = "0.1.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/3e/4b/31ee4d62c31262d6d891381882df2bfd64cf8473c7deca40d41881fe9b49/lint_po-0.1.5.tar.gz", hash = "sha256:3e67ed31568163a9a9e1770dce7ce543dc120a576da17e8343a478763b732213", size = 7913, upload-time = "2026-05-05T17:10:56.039Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/68/20/9a3127fb08285c7a4fc7a8abf8910ea3cca6f926dab634f9f4f75f45e894/lint_po-0.1.5-py3-none-any.whl", hash = "sha256:bc5b316104c2a61e54c5132e1ab2f20f9452886d69548719eb37d87570661806", size = 8418, upload-time = "2026-05-05T17:10:54.904Z" },
+]
+
+[[package]]
 name = "loguru"
 version = "0.7.3"
 source = { registry = "https://pypi.org/simple" }
@@ -3259,13 +3268,17 @@ source = { virtual = "." }
 
 [package.dev-dependencies]
 dev = [
+    { name = "lint-po" },
     { name = "vibetuner", extra = ["dev"] },
 ]
 
 [package.metadata]
 
 [package.metadata.requires-dev]
-dev = [{ name = "vibetuner", extras = ["dev"], directory = "vibetuner-py" }]
+dev = [
+    { name = "lint-po", specifier = ">=0.1.5" },
+    { name = "vibetuner", extras = ["dev"], directory = "vibetuner-py" },
+]
 
 [[package]]
 name = "watchfiles"

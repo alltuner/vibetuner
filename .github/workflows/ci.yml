@@ -44,6 +44,10 @@ jobs:
           cache-dependency-glob: "vibetuner-py/uv.lock"
 
       - name: Pre-commit (lint suite)
+        # no-commit-to-branch is a local guard against committing to main; it
+        # has no meaning in CI and fails on push-to-main runs.
+        env:
+          SKIP: no-commit-to-branch
         run: uvx pre-commit run --all-files --show-diff-on-failure
 
       - name: Ruff format check

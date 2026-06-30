@@ -8,5 +8,6 @@ vibetuner = { path = "vibetuner-py" }
 
 [dependency-groups]
 dev = [
+    "lint-po>=0.1.5",
     "vibetuner[dev]",
 ]
