@@ -2077,6 +2077,22 @@ Checks performed:
 Output uses colored status icons and a summary table. Exits with code 1 if
 any errors are found.
 
+### Troubleshooting
+
+Run `vibetuner doctor` any time something behaves unexpectedly: after cloning,
+after upgrading, or when services fail to connect. It auto-detects the project
+root. Exit code 1 when errors are present — safe to use in CI or pre-deploy
+hooks. Full guide: <https://vibetuner.alltuner.com/troubleshooting/>.
+
+Common issues it surfaces:
+
+- **SESSION_KEY placeholder in prod** — warns or errors depending on environment;
+  fix with `vibetuner crypto generate-key`
+- **MongoDB / Redis unreachable** — TCP socket check against the URL from `.env`
+- **tune.py import error** — shows the full traceback so the root cause is visible
+- **Missing .copier-answers.yml** — prevents `vibetuner scaffold update` from running
+- **Port conflicts** — warns when 8000 (frontend) or 11111 (worker UI) are in use
+
 ### Config Decorators and ConfigGroup
 
 In addition to `register_config_value()`, you can use decorators and classes:
@@ -2793,6 +2809,54 @@ vibetuner config delete features.dark_mode --yes   # Delete, revert to default
 When MongoDB is configured, values can be persisted and survive restarts. Config
 values from MongoDB are cached for 60 seconds. Use `RuntimeConfig.refresh_cache()`
 or the debug UI refresh button to force refresh.
+
+### Upgrading Your Project
+
+General upgrade workflow for keeping a Vibetuner project current. Full guide:
+<https://vibetuner.alltuner.com/upgrading/>.
+
+#### Versioning policy
+
+Vibetuner uses semantic versioning driven by conventional-commit PR titles via
+Release Please:
+
+- **MAJOR** — breaking changes (`feat!:`, `fix!:`). Read the migration guide.
+- **MINOR** — new features (`feat:`) or performance (`perf:`). Safe in most cases.
+- **PATCH** — bug fixes, docs, chores. Always safe.
+
+Breaking changes carry a `⚠ BREAKING CHANGES` header in the changelog.
+
+#### Updating the scaffold template
+
+Pull the latest template changes (justfile targets, compose files, tooling):
+
+```bash
+vibetuner scaffold update
+```
+
+Uses Copier's update: shows diffs for changed files and asks you to accept or
+skip each. `--skip-answered` (default on) re-uses previous answers.
+`--no-skip-answered` re-prompts all questions. `--branch BRANCH` targets a
+specific template branch. After updating: review `git diff`, resolve conflicts,
+run `uv sync`, then `vibetuner doctor`.
+
+#### Upgrading the framework package
+
+`vibetuner scaffold update` updates project files, not the `vibetuner` package:
+
+```bash
+uv add "vibetuner>=NEW_VERSION"
+```
+
+For MAJOR version upgrades, read the migration guide before bumping.
+
+#### v10 → v11: WorkerDepends() / TaskDepends() removed
+
+streaq v7 (shipped with vibetuner v11) removed `WorkerDepends()` and
+`TaskDepends()`. Drop the `ctx=WorkerDepends()` parameter and access the worker
+lifespan context via `worker.context` instead. See
+[Background Tasks](background-tasks.md#worker-context) and
+[PR #1996](https://github.com/alltuner/vibetuner/issues/1996).
 
 ### Upgrading to v12
 

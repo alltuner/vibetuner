@@ -157,6 +157,33 @@ app = VibetunerApp(
 
 ## Worker Context
 
+!!! warning "v10 → v11 migration: `WorkerDepends()` and `TaskDepends()` removed"
+    Vibetuner v11 upgraded streaq to v7, which removed the `WorkerDepends()` and
+    `TaskDepends()` dependency-injection helpers. Tasks that declare
+    `ctx=WorkerDepends()` will raise an `ImportError` after upgrading to v11.
+
+    **Before (v10 and earlier — no longer works):**
+
+    ```python
+    from streaq import WorkerDepends
+
+    @worker.task()
+    async def my_task(ctx=WorkerDepends()) -> None:
+        ctx.http_client.get(...)
+    ```
+
+    **After (v11+):**
+
+    ```python
+    @worker.task()
+    async def my_task() -> None:
+        worker.context.http_client.get(...)
+    ```
+
+    See [PR #1996](https://github.com/alltuner/vibetuner/issues/1996) and the
+    [v11.0.0 changelog entry](https://github.com/alltuner/vibetuner/blob/main/CHANGELOG.md)
+    for the full migration description.
+
 Tasks can reach the worker context — the object yielded by the worker lifespan,
 which holds shared resources initialized at startup (such as HTTP clients and
 database connections). Access it with `worker.context` inside a running task:
