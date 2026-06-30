@@ -1,11 +1,12 @@
-# ABOUTME: Unit tests for the timeago template filter
+# ABOUTME: Unit tests for the timeago, format_date, and format_datetime template filters
 # ABOUTME: Tests both verbose (default) and short format output for relative time display
 # ruff: noqa: S101
 
 from datetime import UTC, datetime, timedelta
 from unittest.mock import patch
 
-from vibetuner.frontend.templates import timeago
+import pytest
+from vibetuner.frontend.templates import format_date, format_datetime, timeago
 
 
 class TestTimeagoVerbose:
@@ -582,3 +583,57 @@ class TestTimeagoEdgeCases:
         assert "7" in result
         assert "day" in result
         assert "week" not in result.lower()
+
+
+class TestFilterErrorHandling:
+    """Test that date/time filters log warnings on invalid input and let unexpected exceptions propagate."""
+
+    def test_timeago_bad_input_logs_warning_and_returns_empty(self, log_sink):
+        """timeago() logs a WARNING when given a non-datetime value."""
+        result = timeago("not a date")
+        assert result == ""
+        assert any("WARNING" in m for m in log_sink)
+
+    def test_timeago_none_logs_warning_and_returns_empty(self, log_sink):
+        """timeago(None) logs a WARNING."""
+        result = timeago(None)
+        assert result == ""
+        assert any("WARNING" in m for m in log_sink)
+
+    def test_format_date_bad_input_logs_warning_and_returns_empty(self, log_sink):
+        """format_date() logs a WARNING when given a non-datetime value."""
+        result = format_date(42)
+        assert result == ""
+        assert any("WARNING" in m for m in log_sink)
+
+    def test_format_datetime_bad_input_logs_warning_and_returns_empty(self, log_sink):
+        """format_datetime() logs a WARNING when given a non-datetime value."""
+        result = format_datetime(42)
+        assert result == ""
+        assert any("WARNING" in m for m in log_sink)
+
+    def test_timeago_unexpected_exception_propagates(self):
+        """timeago() lets unexpected exception types propagate instead of silently returning ''."""
+        with patch("vibetuner.rendering.age_in_timedelta", side_effect=RuntimeError("boom")):
+            with pytest.raises(RuntimeError, match="boom"):
+                timeago("anything")
+
+    def test_format_date_unexpected_exception_propagates(self):
+        """format_date() lets unexpected exception types propagate instead of silently returning ''."""
+
+        class BadObj:
+            def strftime(self, fmt: str) -> str:
+                raise RuntimeError("unexpected")
+
+        with pytest.raises(RuntimeError, match="unexpected"):
+            format_date(BadObj())
+
+    def test_format_datetime_unexpected_exception_propagates(self):
+        """format_datetime() lets unexpected exception types propagate instead of silently returning ''."""
+
+        class BadObj:
+            def strftime(self, fmt: str) -> str:
+                raise RuntimeError("unexpected")
+
+        with pytest.raises(RuntimeError, match="unexpected"):
+            format_datetime(BadObj())

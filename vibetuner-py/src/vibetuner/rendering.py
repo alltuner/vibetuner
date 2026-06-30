@@ -385,7 +385,8 @@ def timeago(dt, short: bool = False):
         if short:
             return _timeago_short(diff, dt)
         return _timeago_verbose(diff, dt)
-    except Exception:
+    except (TypeError, ValueError, AttributeError) as e:
+        logger.warning(f"timeago filter received invalid value {dt!r}: {e}")
         return ""
 
 
@@ -403,7 +404,8 @@ def format_date(dt):
         return ""
     try:
         return dt.strftime("%B %d, %Y")
-    except Exception:
+    except (TypeError, ValueError, AttributeError) as e:
+        logger.warning(f"format_date filter received invalid value {dt!r}: {e}")
         return ""
 
 
@@ -421,7 +423,8 @@ def format_datetime(dt):
         return ""
     try:
         return dt.strftime("%B %d, %Y at %I:%M %p")
-    except Exception:
+    except (TypeError, ValueError, AttributeError) as e:
+        logger.warning(f"format_datetime filter received invalid value {dt!r}: {e}")
         return ""
 
 
