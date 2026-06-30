@@ -462,6 +462,13 @@ Edit `templates/email/magic_link.html.jinja`:
 </html>
 ```
 
+These templates are rendered by the framework's static-render engine, which
+**auto-escapes context variables for HTML and XML templates** (`.html.jinja`,
+`.xml.jinja`). Plain-text templates (`.txt.jinja`) are emitted verbatim. So any
+user-derived value (display name, profile field) is safely escaped in the HTML
+email without action on your part. If you need to inject pre-rendered, trusted
+markup, opt out explicitly with Jinja's `| safe` filter.
+
 ## User Model
 
 The built-in User model supports both OAuth and magic link authentication:

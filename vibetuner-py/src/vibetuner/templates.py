@@ -6,6 +6,27 @@ from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 from . import paths
 
 
+# Markup formats whose output must escape interpolated context to prevent
+# injection. Framework templates are named ``<name>.<format>.jinja``, so the
+# autoescape decision keys off the format extension underneath the ``.jinja``
+# wrapper, not the wrapper itself (a ``.txt.jinja`` email stays plain text).
+_AUTOESCAPE_FORMATS = ("html", "xml")
+
+
+def _autoescape_for_template(template_name: str | None) -> bool:
+    """Decide autoescaping for a template, unwrapping the ``.jinja`` suffix.
+
+    Strings rendered without a template name default to escaping (the safe
+    choice for ``Environment.from_string`` callers).
+    """
+    if template_name is None:
+        return True
+    name = template_name
+    if name.endswith(".jinja"):
+        name = name[: -len(".jinja")]
+    return name.rsplit(".", 1)[-1].lower() in _AUTOESCAPE_FORMATS
+
+
 def _get_base_paths_for_namespace(
     namespace: str | None,
     template_path: Path | list[Path] | None,
@@ -141,8 +162,12 @@ def render_static_template(
         )
 
     # Create Jinja environment with search paths
-    env = Environment(  # noqa: S701
+    # The S701 suppression is required because ruff only recognises ``True`` or
+    # ``select_autoescape`` as safe; the callable escapes by markup format under
+    # the ``.jinja`` wrapper, which select_autoescape cannot express here.
+    env = Environment(
         loader=FileSystemLoader(search_paths),
+        autoescape=_autoescape_for_template,  # noqa: S701
         trim_blocks=True,
         lstrip_blocks=True,
     )
