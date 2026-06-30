@@ -277,6 +277,84 @@ def _timeago_short(diff: timedelta, dt) -> str:
     return dt.strftime("%b %d, %Y")
 
 
+def _timeuntil_verbose(diff: timedelta, dt) -> str:
+    """Format timedelta as verbose relative time string for future datetimes."""
+    from starlette_babel import gettext_lazy as _
+
+    ngettext = _
+    if diff < timedelta(seconds=60):
+        seconds = diff.seconds
+        return ngettext(
+            "in %(seconds)d second",
+            "in %(seconds)d seconds",
+            seconds,
+        ) % {"seconds": seconds}
+    if diff < timedelta(minutes=60):
+        minutes = diff.seconds // 60
+        return ngettext(
+            "in %(minutes)d minute",
+            "in %(minutes)d minutes",
+            minutes,
+        ) % {"minutes": minutes}
+    if diff < timedelta(days=1):
+        hours = diff.seconds // 3600
+        return ngettext("in %(hours)d hour", "in %(hours)d hours", hours) % {
+            "hours": hours,
+        }
+    if diff < timedelta(days=2):
+        return _("tomorrow")
+    if diff < timedelta(days=65):
+        days = diff.days
+        return ngettext("in %(days)d day", "in %(days)d days", days) % {
+            "days": days,
+        }
+    if diff < timedelta(days=365):
+        months = diff.days // 30
+        return ngettext("in %(months)d month", "in %(months)d months", months) % {
+            "months": months,
+        }
+    if diff < timedelta(days=365 * 4):
+        years = diff.days // 365
+        return ngettext("in %(years)d year", "in %(years)d years", years) % {
+            "years": years,
+        }
+    return dt.strftime("%b %d, %Y")
+
+
+def _timeuntil_short(diff: timedelta, dt) -> str:
+    """Format timedelta as compact relative time string for future datetimes."""
+    from starlette_babel import gettext_lazy as _
+
+    ngettext = _
+    if diff < timedelta(seconds=60):
+        return ngettext("just now", "just now", 1)
+    if diff < timedelta(minutes=60):
+        minutes = diff.seconds // 60
+        return ngettext("in %(minutes)dm", "in %(minutes)dm", minutes) % {
+            "minutes": minutes,
+        }
+    if diff < timedelta(days=1):
+        hours = diff.seconds // 3600
+        return ngettext("in %(hours)dh", "in %(hours)dh", hours) % {"hours": hours}
+    if diff < timedelta(days=2):
+        return ngettext("in %(days)dd", "in %(days)dd", 1) % {"days": 1}
+    if diff < timedelta(days=7):
+        days = diff.days
+        return ngettext("in %(days)dd", "in %(days)dd", days) % {"days": days}
+    if diff < timedelta(days=30):
+        weeks = diff.days // 7
+        return ngettext("in %(weeks)dw", "in %(weeks)dw", weeks) % {"weeks": weeks}
+    if diff < timedelta(days=365):
+        months = diff.days // 30
+        return ngettext("in %(months)dmo", "in %(months)dmo", months) % {
+            "months": months,
+        }
+    if diff < timedelta(days=365 * 4):
+        years = diff.days // 365
+        return ngettext("in %(years)dy", "in %(years)dy", years) % {"years": years}
+    return dt.strftime("%b %d, %Y")
+
+
 def timeago(dt, short: bool = False):
     """Converts a datetime object to a human-readable string representing the time elapsed since the given datetime.
 
@@ -290,11 +368,20 @@ def timeago(dt, short: bool = False):
         "X months ago", or "X years ago". If the datetime is more than 4 years old,
         it returns the date in the format "MMM DD, YYYY".
 
-        In short format, returns compact strings like "just now", "5m ago", "2h ago", etc.
+        Future datetimes use the mirrored "in X ..." forms, such as "in X seconds",
+        "in X hours", "tomorrow", or "in X years", with the same absolute-date
+        fallback beyond 4 years.
+
+        In short format, returns compact strings like "just now", "5m ago", "2h ago",
+        or "in 5m", "in 2h" for future datetimes.
 
     """
     try:
         diff = age_in_timedelta(dt)
+        if diff < timedelta(0):
+            if short:
+                return _timeuntil_short(-diff, dt)
+            return _timeuntil_verbose(-diff, dt)
         if short:
             return _timeago_short(diff, dt)
         return _timeago_verbose(diff, dt)
