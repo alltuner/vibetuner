@@ -1,5 +1,6 @@
 # ABOUTME: Scaffolding commands for creating new projects from the vibetuner template
 # ABOUTME: Uses Copier to generate FastAPI+MongoDB+HTMX projects with interactive prompts
+import os
 import tomllib
 from pathlib import Path
 from typing import Annotated, Any
@@ -11,6 +12,23 @@ def _console():
     from rich.console import Console
 
     return Console()
+
+
+def _is_debug_mode() -> bool:
+    """Return True when the DEBUG environment variable is set to a truthy value."""
+    return os.environ.get("DEBUG", "").lower() in ("1", "true", "yes")
+
+
+def _handle_scaffold_error(e: Exception, action: str) -> None:
+    """Print friendly error message; in debug mode also print the full traceback.
+
+    Must be called from within an except block so sys.exc_info() is populated
+    for Rich's print_exception().
+    """
+    console = _console()
+    console.print(f"[red]Error {action}: {e}[/red]")
+    if _is_debug_mode():
+        console.print_exception()
 
 
 def _get_git_config(key: str, cwd: Path) -> str | None:
@@ -221,6 +239,12 @@ def new(
 ) -> None:
     """Create a new project from the vibetuner template.
 
+    Note: Template tasks defined in the vibetuner template are executed during project
+    creation (copier unsafe mode). Review the template source at
+    https://github.com/alltuner/vibetuner before running in untrusted environments.
+
+    Set DEBUG=1 in the environment to print full tracebacks on failure.
+
     Examples:
 
         # Interactive mode (prompts for all values)
@@ -285,8 +309,8 @@ def new(
         _console().print("  just dev")
 
     except Exception as e:
-        _console().print(f"[red]Error creating project: {e}[/red]")
-        raise typer.Exit(code=1) from None
+        _handle_scaffold_error(e, "creating project")
+        raise typer.Exit(code=1) from e
 
 
 @scaffold_app.command(name="update")
@@ -318,6 +342,12 @@ def update(
 
     This will update the project's files to match the latest template version,
     while preserving your answers to the original questions.
+
+    Note: Template tasks defined in the vibetuner template are executed during the update
+    (copier unsafe mode). Review the template source at
+    https://github.com/alltuner/vibetuner before running in untrusted environments.
+
+    Set DEBUG=1 in the environment to print full tracebacks on failure.
 
     Examples:
 
@@ -373,8 +403,8 @@ def update(
         _console().print("\n[green]✓ Project updated successfully![/green]")
 
     except Exception as e:
-        _console().print(f"[red]Error updating project: {e}[/red]")
-        raise typer.Exit(code=1) from None
+        _handle_scaffold_error(e, "updating project")
+        raise typer.Exit(code=1) from e
 
 
 @scaffold_app.command(name="copy-core-templates", hidden=True)
@@ -420,6 +450,12 @@ def adopt(
     This command allows projects that already have vibetuner installed as a
     dependency to adopt the full scaffolding infrastructure, enabling future
     `scaffold update` commands.
+
+    Note: Template tasks defined in the vibetuner template are executed during adoption
+    (copier unsafe mode). Review the template source at
+    https://github.com/alltuner/vibetuner before running in untrusted environments.
+
+    Set DEBUG=1 in the environment to print full tracebacks on failure.
 
     The command will:
     1. Infer template variables from existing project files (pyproject.toml, etc.)
@@ -499,5 +535,5 @@ def adopt(
         )
 
     except Exception as e:
-        _console().print(f"[red]Error adopting scaffolding: {e}[/red]")
-        raise typer.Exit(code=1) from None
+        _handle_scaffold_error(e, "adopting scaffolding")
+        raise typer.Exit(code=1) from e
