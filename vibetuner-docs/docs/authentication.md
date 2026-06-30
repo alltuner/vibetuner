@@ -616,6 +616,7 @@ Sessions are signed with `SESSION_KEY`. Generate a strong, unique value and
 add it to your `.env`:
 
 ```bash
+# Generate a secure key
 uv run vibetuner crypto generate-key
 ```
 
@@ -627,6 +628,8 @@ The framework ships a placeholder `SESSION_KEY` so a fresh project runs
 without configuration. Startup **fails closed** when this placeholder is still
 in place and `ENVIRONMENT=prod`, so you can never sign production sessions
 with a publicly known key. Outside production it only logs a loud warning.
+See [Upgrading to v12](upgrading-to-v12.md#fail-closed-session_key-guard)
+for details.
 
 ### OAuth Callback URLs
 

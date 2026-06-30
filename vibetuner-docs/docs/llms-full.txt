@@ -2780,6 +2780,64 @@ When MongoDB is configured, values can be persisted and survive restarts. Config
 values from MongoDB are cached for 60 seconds. Use `RuntimeConfig.refresh_cache()`
 or the debug UI refresh button to force refresh.
 
+### Upgrading to v12
+
+Three security-hardening breaking changes when upgrading a project from
+v11 to v12. Full guide: <https://vibetuner.alltuner.com/upgrading-to-v12/>.
+
+#### Fail-closed SESSION_KEY guard
+
+`CoreConfiguration` validates `session_key` at startup. When
+`environment == "prod"` and the key is still a known placeholder (the
+historical `ct-!secret-must-change-me` or the current
+`CHANGE_ME_RUN_vibetuner_crypto_generate`), startup raises and the app
+refuses to boot. Outside production it logs a warning instead. Sessions
+are signed with this key, so a publicly-known value lets anyone forge a
+session. Action: generate and set a unique key before deploying.
+
+```bash
+vibetuner crypto generate-key   # prints a URL-safe random key (-l for length)
+# .env
+SESSION_KEY=<the-generated-key>
+```
+
+#### Jinja autoescaping in the static-render path
+
+The `Environment` behind `render_static_template` (`vibetuner.templates`)
+now autoescapes by markup format, keying off the format extension under the
+`.jinja` wrapper: `*.html.jinja` and `*.xml.jinja` escape; `*.txt.jinja`
+(plain-text emails) do not; a bare string with no template name defaults to
+escaping. Action only for projects rendering custom HTML templates through
+this path that emit trusted, pre-rendered HTML — add `|safe` to those
+values. Never add `|safe` to user input. The bundled transactional emails
+are unaffected.
+
+```jinja
+{{ prerendered_html | safe }}   {# only for values you produced and trust #}
+```
+
+#### Default auth rate limits
+
+`POST /auth/magic-link-login` and the OAuth-init endpoint default to
+`5/minute` per IP via `RateLimitSettings.auth_limits` (env
+`RATE_LIMIT_AUTH_LIMITS`), curbing email flooding and account enumeration.
+Action only if you have high auth traffic or tests that hammer these
+endpoints — raise or effectively disable the limit:
+
+```bash
+RATE_LIMIT_AUTH_LIMITS=60/minute      # raise
+RATE_LIMIT_AUTH_LIMITS=10000/minute   # effectively disable
+```
+
+#### See also (no action required)
+
+- Cache invalidation has a public `invalidate(path, *, query_params="",
+  vary=None)` in `vibetuner.cache`; use it instead of the private
+  `_build_cache_key`. `vary` targets an entry written for a route cached
+  with `vary_on`.
+- Run `vibetuner scaffold update` to pick up template/tooling improvements
+  (e.g. the new `dprint.json`).
+
 ### HTMX v2 to v4 Migration
 
 Breaking changes when upgrading from htmx v2 to v4 in Vibetuner projects.
