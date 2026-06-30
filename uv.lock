@@ -1611,14 +1611,15 @@ wheels = [
 
 [[package]]
 name = "mailjet-rest"
-version = "1.6.0"
+version = "1.7.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "requests" },
+    { name = "typing-extensions", marker = "python_full_version < '3.12'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/21/9d/da11994307d39ee627ecea393dd8ae16ee77dc776897c8d0b301f16f4eb8/mailjet_rest-1.6.0.tar.gz", hash = "sha256:0afe56d1776226acd9ba25b90bbe57deef124daa5ed6a64f2a88cb464d6ef635", size = 69730, upload-time = "2026-04-27T12:10:06.822Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b2/c2/f709f5e281b48325608c1ae21ce8f7712b033d991c844d821790a632713a/mailjet_rest-1.7.0.tar.gz", hash = "sha256:e8f3f7db2d132417465e72cad555af582712076332e08b781821a5a3bbc00ac9", size = 54072, upload-time = "2026-06-12T10:43:39.535Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ce/29/f03f7096184893229f62f57596a73adc25e14c3044bfcca2ca1c5bbcaf6f/mailjet_rest-1.6.0-py3-none-any.whl", hash = "sha256:3c2165385a76d3752d961c3241dae5adb270e2aab56e0f7c13f71b5ea68a4f4b", size = 53240, upload-time = "2026-04-27T12:10:05.704Z" },
+    { url = "https://files.pythonhosted.org/packages/4e/8a/9da0a7a81a097ad76b515dbc666f70f670b890f98b5bf6f47fb60c287cd5/mailjet_rest-1.7.0-py3-none-any.whl", hash = "sha256:c1d039eed9527a12bfe493e0e92bb62e74646d4269a44f2c33436a7fde197e16", size = 36119, upload-time = "2026-06-12T10:43:38.409Z" },
 ]
 
 [[package]]
@@ -3236,7 +3237,7 @@ requires-dist = [
     { name = "httpx", extras = ["http2"], specifier = ">=0.28.1" },
     { name = "itsdangerous", specifier = ">=2.2.0" },
     { name = "loguru", specifier = ">=0.7.3" },
-    { name = "mailjet-rest", specifier = ">=1.6.0" },
+    { name = "mailjet-rest", specifier = ">=1.7.0" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.13.4" },
     { name = "pydantic-extra-types", extras = ["pycountry"], specifier = ">=2.11.1" },
     { name = "pydantic-settings", specifier = ">=2.14.2" },
