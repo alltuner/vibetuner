@@ -33,8 +33,17 @@
 
         {# Pre-script head hook. Anything here is parsed before the bundle
            below, so htmx reads a `<meta name="htmx-config">` placed here at
-           startup (it reads config when the script evaluates, not later). -#}
+           startup (it reads config when the script evaluates, not later).
+
+           The default restores htmx 2 error-swap behavior: 4xx/5xx response
+           bodies are not swapped into the target, so a validation 422 or a
+           500 never replaces a fragment with an error page. Per-element
+           `hx-status:<code>` attributes still win (exact codes are matched
+           before the 4xx/5xx wildcards). Override this block to customize
+           the htmx config; keep `noSwap` unless you handle error swapping
+           some other way. -#}
         {% block htmx_config %}
+            <meta name="htmx-config" content='{"noSwap": [204, 304, "4xx", "5xx"]}' />
         {% endblock htmx_config %}
         {% block scripts %}
             <script src="{{ url_for('js', path='bundle.js').path }}"></script>

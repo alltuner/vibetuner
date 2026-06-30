@@ -70,6 +70,12 @@ Important notes:
   `hx_push_url()`, `hx_reswap()`, `hx_retarget()`, `hx_refresh()`,
   `hx_replace_url()`. Handles JSON serialization internally. Import from
   `vibetuner.htmx`
+- **HTMX Error-Swap Default**: the skeleton ships
+  `<meta name="htmx-config" content='{"noSwap": [204, 304, "4xx", "5xx"]}'>`,
+  so 4xx/5xx response bodies are not swapped into the target (htmx 2 behavior)
+  — a stray `422` never replaces a fragment with an error page. Opt a specific
+  element back in with `hx-status:<code>` (wins over the wildcards). Override
+  the `htmx_config` block to customize; keep `noSwap`
 - **Built-in Template Globals**: `request`, `language`, `DEBUG`, `now`
   (UTC datetime), `today` (ISO date string), `project` (`settings.project`),
   `brand` (`settings.brand`), `csp_nonce`, and `hotreload` are available
