@@ -105,34 +105,38 @@ FROM python:${PYTHON_VERSION}-slim AS runtime
 ARG ENVIRONMENT=dev
 ARG VERSION=0.0.0
 
+# Run as an unprivileged user; create it before copying so files land owned by it
+RUN groupadd --gid 1000 appuser && \
+    useradd --uid 1000 --gid 1000 --create-home appuser
+
 WORKDIR /app
 
 # Copy Python virtual environment with all dependencies and project installed
-COPY --link --from=python-app /app/.venv/ .venv/
+COPY --link --chown=1000:1000 --from=python-app /app/.venv/ .venv/
 
 # Copy application source code (required for editable install)
-COPY --link --from=python-app /app/src/ src/
+COPY --link --chown=1000:1000 --from=python-app /app/src/ src/
 
 # Copy static assets and markdown content (not full frontend source)
-COPY --link assets/statics/ assets/statics/
-COPY --link templates/markdown/ templates/markdown/
+COPY --link --chown=1000:1000 assets/statics/ assets/statics/
+COPY --link --chown=1000:1000 templates/markdown/ templates/markdown/
 
 # Copy compiled localization files (smaller than source .po files)
-COPY --link --from=locales --parents /app/locales/*/LC_MESSAGES/messages.mo /
+COPY --link --chown=1000:1000 --from=locales --parents /app/locales/*/LC_MESSAGES/messages.mo /
 
 # Copy template files
-COPY --link templates/frontend templates/frontend/
-COPY --link templates/email templates/email/
+COPY --link --chown=1000:1000 templates/frontend templates/frontend/
+COPY --link --chown=1000:1000 templates/email templates/email/
 
 # Copy built frontend assets (CSS and JS bundles)
-COPY --link --from=frontend-build /app/assets/statics/css/bundle.css assets/statics/css/bundle.css
-COPY --link --from=frontend-build /app/assets/statics/js/bundle.js assets/statics/js/bundle.js
+COPY --link --chown=1000:1000 --from=frontend-build /app/assets/statics/css/bundle.css assets/statics/css/bundle.css
+COPY --link --chown=1000:1000 --from=frontend-build /app/assets/statics/js/bundle.js assets/statics/js/bundle.js
 
 # Copy configuration files (used as project root marker and for package metadata)
-COPY --link .copier-answers.yml pyproject.toml ./
+COPY --link --chown=1000:1000 .copier-answers.yml pyproject.toml ./
 
 # Copy startup script with executable permissions (--chmod eliminates separate RUN layer)
-COPY --link --chmod=755 start.sh /start.sh
+COPY --link --chmod=755 --chown=1000:1000 start.sh /start.sh
 
 # Configure environment for Python application
 ENV PATH="/app/.venv/bin:$PATH" \
@@ -142,12 +146,21 @@ ENV PATH="/app/.venv/bin:$PATH" \
 
 EXPOSE 8000
 
+# Probe the dependency-free liveness endpoint using only the stdlib (no curl in image)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD ["python", "-c", "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health/ping', timeout=4).status == 200 else 1)"]
+
+USER appuser
+
 ENTRYPOINT ["/start.sh"]
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Stage 8: Dev Runtime (extends runtime with bun + watcher inputs for asset rebuild)
 # ────────────────────────────────────────────────────────────────────────────────
 FROM runtime AS dev-runtime
+
+# Dev containers run as root so bun watchers can write rebuilt assets to /app
+USER root
 
 # Bun binary for tailwind/bundler watchers. oven/bun:1 is debian-glibc, matching
 # python:slim, so the static binary works without extra libs.
