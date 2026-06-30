@@ -27,6 +27,7 @@ services:
   app:
     build: .
     environment:
+      - ENVIRONMENT=prod
       - MONGODB_URL=mongodb://mongo:27017/
       - REDIS_URL=redis://redis:6379/
     depends_on:
