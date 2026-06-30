@@ -2,7 +2,7 @@
 
 This guide covers the breaking changes when upgrading from htmx v2 to v4
 in Vibetuner projects. It also documents what changed between htmx 4
-pre-release versions (alpha → beta1 → beta3 → beta4), so users on
+pre-release versions (alpha → beta1 → beta3 → beta4 → beta5), so users on
 any pre-release can migrate.
 
 ## Quick Start
@@ -484,6 +484,12 @@ CSS transition rules per the
     extension. Use it as you did in htmx 2 to mark the element whose
     inner HTML is captured for history snapshots.
 
+!!! note
+    `hx-prompt` was **restored in beta5** as an opt-in `hx-prompt`
+    extension (it sends the answer in the `HX-Prompt` request header,
+    like htmx 2). Vibetuner does not ship it by default — see
+    [Beta4 to Beta5 Changes](#beta4-to-beta5-changes).
+
 ## New Attributes
 
 | Attribute | Purpose |
@@ -494,6 +500,8 @@ CSS transition rules per the
 | `hx-config` | Per-element request config (replaces `hx-request`) |
 | `hx-ignore` | Disable htmx processing (replaces `hx-disable`) |
 | `hx-validate` | Control form validation behavior |
+| `hx-morph-skip` | Skip morphing for the matching element (beta5) |
+| `hx-morph-skip-children` | Morph the element but leave its children untouched (beta5) |
 
 ## New Extensions
 
@@ -512,6 +520,7 @@ htmx 4 ships with these core extensions. All auto-register when imported.
 | `htmx-2-compat` | Backward compatibility layer for htmx 2.x code |
 | `csp` | CSP nonce-based protection for inline scripts and `eval`-style code paths (beta3, renamed from `nonce` in beta4) |
 | `live` | DOM-reactivity via `hx-live` and richer `hx-on` helpers: `q()`, `toggle()`, `debounce()` (beta3) |
+| `hx-prompt` | Restores htmx 2's `hx-prompt` attribute: prompts before the request and sends the answer in the `HX-Prompt` header (beta5, opt-in) |
 
 htmx also provides an `htmax` bundle (`htmax.min.js`) that includes htmx
 plus the most popular extensions (SSE, WebSockets, preload,
@@ -714,6 +723,103 @@ migration here.
 The `hx-trigger="..." queue:..."` modifier (a no-op since 4.0) was
 also hard-removed in beta4; use `hx-sync="this:queue all"` instead.
 Vibetuner templates do not use the `queue:` modifier either.
+
+## Beta4 to Beta5 Changes
+
+Beta5 is another small follow-up to the 4.0 release candidate. Nothing in it
+breaks a clean htmx 4 codebase, and Vibetuner's templates need no changes. The
+notable additions are a restored `hx-prompt`, a formalized config grammar
+(HCON), and an SSE-friendly empty-swap default.
+
+### Upgrade Recipe
+
+For most projects this is a two-step bump:
+
+1. Bump `@alltuner/vibetuner` in `package.json` to a release that ships
+   `htmx.org@4.0.0-beta5` (or run `just deps-scaffolding-pr` /
+   `just deps-scaffolding`).
+2. Run `bun install` to refresh `node_modules` and `bun.lock`.
+
+Run `just lint` and `just dev` to confirm the build still passes; no template
+changes are required.
+
+### HCON: the config-attribute grammar is formalized
+
+htmx 4's config attributes (`hx-trigger`, `hx-swap`, `hx-vals`, `hx-config`,
+`hx-headers`, and the `<meta name="htmx-config">` tag) now parse through a
+single documented mini-language, **HCON**. It is a backward-compatible
+superset of what beta4 accepted:
+
+- A value starting with `{` is still parsed as JSON, so JSON `hx-vals` and
+  `<meta>` config keep working unchanged.
+- Space- or comma-separated `key:value` pairs work as before, plus flag-style
+  booleans (`key` alone means `true`), dotted nesting (`sse.reconnect:true`),
+  and single- or double-quoted values for spaces/commas.
+- The `js:` prefix on `hx-vals` / `hx-confirm` is unaffected — it is still
+  evaluated as JavaScript, not parsed as HCON.
+
+No action required: Vibetuner's templates don't use these config attributes, and
+any existing JSON or modifier strings parse identically.
+
+### `hx-prompt` restored as an opt-in extension
+
+Beta5 adds an `hx-prompt` extension that brings back htmx 2's `hx-prompt`
+attribute: it prompts the user before the request and sends the answer in the
+`HX-Prompt` request header (read it via `request.state.htmx.prompt`). Vibetuner
+does **not** load it by default; add it to your `config.js` if you want it:
+
+```javascript
+import "htmx.org/dist/ext/hx-prompt.js";
+```
+
+### `swapEmpty` and the SSE empty-response default
+
+A new `swapEmpty` swap modifier and `htmx.config.defaultSwapEmpty` control
+whether an empty response still swaps. **SSE now defaults to not swapping empty
+responses**, which is the behavior Vibetuner's streams already want — empty
+keepalive frames no longer blank out the connected element. Override per element
+with `hx-swap="innerHTML swapEmpty:true"` if you need the old behavior.
+
+### Morph skip attributes
+
+`hx-morph-skip` and `hx-morph-skip-children` mark elements the morph swap should
+leave alone (the whole element, or just its children). They default to the
+`[hx-morph-skip]` / `[hx-morph-skip-children]` selectors. Only relevant if you
+use a `morph` swap.
+
+### `hx-live` expansion
+
+The `hx-live` extension gained declarative bindings, a reactive engine, a JSON
+data proxy, and xpath + Alpine conflict handling. One behavior change: the
+`take` helper now defaults to **sibling** scope. Vibetuner's documented
+`hx-live` patterns (see [Live Reactivity](#live-reactivity-with-hx-live)) are
+unaffected, but review any custom `htmx.live.take(...)` calls that relied on the
+previous default scope.
+
+### Other beta5 changes (no action required)
+
+- `ctx` (the request context) is now passed to `hx-confirm`, `hx-vals`, and
+  `hx-headers` JavaScript expressions.
+- Download links (`<a download>`) are no longer boosted.
+- `hx-encode` falls back to the enclosing form's `enctype`.
+- The `hx-csp` extension's nonce rewriting now handles unquoted `nonce`
+  attributes — relevant to Vibetuner's default-on CSP, and a pure improvement.
+- Click modifiers pass through only on links; `hx-preload` uses passive event
+  listeners; the `optimistic` extension supports live content.
+
+### Framework-side changes in Vibetuner
+
+Landing on beta5, Vibetuner also brought its server-side htmx surface in line
+with htmx 4:
+
+- `request.state.htmx` now exposes the htmx 4 request headers — `.source`
+  (`HX-Source`, the renamed request-side `HX-Trigger`) and `.request_type`
+  (`HX-Request-Type`). The htmx 2 `.trigger` / `.trigger_name` properties are
+  gone.
+- The `hx_trigger_after_settle` and `hx_trigger_after_swap` response helpers
+  were removed — htmx 4 dropped the `HX-Trigger-After-Settle` /
+  `HX-Trigger-After-Swap` headers they set. Use `hx_trigger` (the `HX-Trigger`
+  response header is unchanged).
 
 ## Live Reactivity with `hx-live`
 
@@ -969,3 +1075,21 @@ that beta4 requires:
   4.0), migrate to `hx-sync="this:queue all"` — removed in beta4
 - [ ] No template changes required — `hx-nonce="{{ csp_nonce }}"`
   attributes keep working
+
+## Beta4 to Beta5 Checklist
+
+If you are already on htmx 4.0.0-beta4, this is the only work beta5 requires:
+
+- [ ] Bump `@alltuner/vibetuner` in `package.json` to a release that ships
+  `htmx.org@4.0.0-beta5`
+- [ ] Run `bun install`
+- [ ] No template changes required — HCON parses existing `hx-*` config
+  attributes identically, and Vibetuner's templates don't use them anyway
+- [ ] If your server reads the request-side trigger, switch from the htmx 2
+  `HX-Trigger` / `request.state.htmx.trigger` to `HX-Source` /
+  `request.state.htmx.source`
+- [ ] If you set the `HX-Trigger-After-Settle` / `HX-Trigger-After-Swap`
+  response headers (or used the removed `hx_trigger_after_settle` /
+  `hx_trigger_after_swap` helpers), move to `HX-Trigger` / `hx_trigger`
+- [ ] (Optional) Add `import "htmx.org/dist/ext/hx-prompt.js";` to `config.js`
+  if you want the restored `hx-prompt` attribute
