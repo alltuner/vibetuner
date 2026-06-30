@@ -52,7 +52,11 @@ class TestCoreConfigurationEnvironment:
 
     def test_environment_from_env_var(self):
         """Test that environment can be set via ENVIRONMENT env var."""
-        with patch.dict("os.environ", {"ENVIRONMENT": "prod"}, clear=False):
+        with patch.dict(
+            "os.environ",
+            {"ENVIRONMENT": "prod", "SESSION_KEY": "real-session-key"},
+            clear=False,
+        ):
             config = CoreConfiguration(project=ProjectConfiguration())
             assert config.environment == "prod"
 
@@ -74,7 +78,9 @@ class TestRedisKeyPrefix:
     def test_redis_key_prefix_prod_environment(self):
         """Test redis_key_prefix format for prod environment."""
         project = ProjectConfiguration(project_slug="myproject")
-        config = CoreConfiguration(project=project, environment="prod")
+        config = CoreConfiguration(
+            project=project, environment="prod", session_key="real-session-key"
+        )
         assert config.redis_key_prefix == "myproject:"
 
     def test_redis_key_prefix_with_different_slugs(self):
@@ -88,7 +94,9 @@ class TestRedisKeyPrefix:
 
         for slug, env, expected in test_cases:
             project = ProjectConfiguration(project_slug=slug)
-            config = CoreConfiguration(project=project, environment=env)
+            config = CoreConfiguration(
+                project=project, environment=env, session_key="real-session-key"
+            )
             assert config.redis_key_prefix == expected, (
                 f"Failed for slug={slug}, env={env}"
             )

@@ -114,7 +114,11 @@ def _check_tune_py(root: Path | None) -> list[CheckResult]:
 def _check_env_vars() -> list[CheckResult]:
     results: list[CheckResult] = []
     try:
-        from vibetuner.config import CoreConfiguration, ProjectConfiguration
+        from vibetuner.config import (
+            KNOWN_INSECURE_SESSION_KEYS,
+            CoreConfiguration,
+            ProjectConfiguration,
+        )
 
         config = CoreConfiguration(project=ProjectConfiguration())
     except Exception as exc:
@@ -128,7 +132,7 @@ def _check_env_vars() -> list[CheckResult]:
         )
     )
 
-    if config.session_key.get_secret_value() == "ct-!secret-must-change-me":
+    if config.session_key.get_secret_value() in KNOWN_INSECURE_SESSION_KEYS:
         results.append(
             CheckResult(
                 "SESSION_KEY", "warn", "Using default — set a unique secret in .env"

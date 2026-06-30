@@ -3,7 +3,7 @@ import hashlib
 import os
 from datetime import datetime
 from functools import cached_property
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, Self
 
 import yaml
 from pydantic import (
@@ -19,6 +19,7 @@ from pydantic import (
     SecretStr,
     UrlConstraints,
     computed_field,
+    model_validator,
 )
 from pydantic_extra_types.color import Color as _PydanticColor
 from pydantic_extra_types.language_code import LanguageAlpha2
@@ -86,6 +87,18 @@ current_year: int = datetime.now().year
 
 UnprivilegedPort = Annotated[int, Field(ge=1024, le=65535)]
 
+# Placeholder session key the config field defaults to and the template's .env
+# ships. The startup validator refuses to run with a known placeholder in
+# production so a project can never sign prod sessions with a publicly-known key.
+DEFAULT_SESSION_KEY_PLACEHOLDER = "CHANGE_ME_RUN_vibetuner_crypto_generate"
+
+# Every session key value that is publicly known and therefore unsafe to sign
+# sessions with. Includes the historical placeholder so projects upgrading from
+# an older scaffold (whose .env still carries it) are guarded on upgrade.
+KNOWN_INSECURE_SESSION_KEYS = frozenset(
+    {"ct-!secret-must-change-me", DEFAULT_SESSION_KEY_PLACEHOLDER}
+)
+
 
 class SecurityHeadersSettings(BaseSettings):
     """Settings for built-in security headers middleware.
@@ -123,6 +136,9 @@ class RateLimitSettings(BaseSettings):
 
     enabled: bool = True
     default_limits: list[str] = []
+    # Per-IP limit applied to unauthenticated auth endpoints (magic-link send,
+    # OAuth initiation) to curb email flooding and account enumeration.
+    auth_limits: str = "5/minute"
     headers_enabled: bool = True
     strategy: str = "fixed-window"
     swallow_errors: bool = True
@@ -299,7 +315,7 @@ class CoreConfiguration(BaseSettings):
 
     debug: bool = False
     environment: Literal["dev", "prod"] = "dev"
-    session_key: SecretStr = SecretStr("ct-!secret-must-change-me")
+    session_key: SecretStr = SecretStr(DEFAULT_SESSION_KEY_PLACEHOLDER)
 
     # Database and Cache URLs
     mongodb_url: MongoDsn | None = None
@@ -539,6 +555,35 @@ class CoreConfiguration(BaseSettings):
         if self.environment == "dev":
             return f"{self.project.project_slug}:dev:"
         return f"{self.project.project_slug}:"
+
+    @model_validator(mode="after")
+    def fail_closed_on_placeholder_session_key(self) -> Self:
+        """Refuse to run in production with a known placeholder session key.
+
+        Sessions are signed with ``session_key``; any publicly-known
+        placeholder (the shipped default or a historical one left in an
+        upgraded project's ``.env``) would let anyone forge a session, so a
+        production startup (``environment == "prod"``) fails fast. Outside
+        production it only warns, keeping local development friction free while
+        making the required action obvious before deploy.
+        """
+        if self.session_key.get_secret_value() not in KNOWN_INSECURE_SESSION_KEYS:
+            return self
+
+        if self.environment == "prod":
+            raise ValueError(
+                "SESSION_KEY is still the placeholder value. Set a unique "
+                "SESSION_KEY in your .env before running in production. "
+                "Generate one with: vibetuner crypto generate-key"
+            )
+
+        logger.warning(
+            "SESSION_KEY is the insecure placeholder value. This is only "
+            "tolerated outside production. Set a unique SESSION_KEY in your "
+            ".env (generate one with: vibetuner crypto generate-key) before "
+            "deploying."
+        )
+        return self
 
     model_config = SettingsConfigDict(
         case_sensitive=False, extra="ignore", env_file=_ENV_FILES

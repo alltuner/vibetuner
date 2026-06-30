@@ -1125,6 +1125,43 @@ async def home(request: Request):
     })
 ```
 
+##### Session Key Fails Closed in Production
+
+Sessions are signed with `SESSION_KEY`. The framework ships a placeholder so a
+fresh project runs without configuration, but startup **raises** when that
+placeholder is still set and `ENVIRONMENT=prod` — production sessions can never
+be signed with a publicly known key. Outside production it logs a loud warning
+instead. Generate a real value with:
+
+```bash
+uv run vibetuner crypto generate-key
+```
+
+```bash
+# .env
+SESSION_KEY=your-generated-secret-key
+```
+
+##### Auth Endpoint Rate Limits
+
+The magic-link send (`POST /auth/magic-link-login`) and OAuth-initiation routes
+carry a conservative per-IP limit out of the box (default `5/minute`) to curb
+email flooding and account enumeration. Override it without touching the routes:
+
+```bash
+# .env
+RATE_LIMIT_AUTH_LIMITS=10/minute
+```
+
+##### Safe Post-Login Redirects
+
+Redirect targets that come from user input — the `next` query/form value on
+login and the `current` value on the language switcher — are validated with an
+`is_safe_redirect` check. Only same-origin relative paths are honored; absolute
+(`https://evil.com`) and protocol-relative (`//evil.com`) values fall back to
+the homepage, so a crafted link can never bounce a freshly authenticated user
+off-site.
+
 ### CRUD Factory
 
 Vibetuner includes a CRUD route factory that generates list, create, read, update,

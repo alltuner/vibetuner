@@ -39,4 +39,14 @@ def _build_limiter() -> Limiter:
 
 limiter: Limiter = _build_limiter()
 
-__all__ = ["limiter", "SlowAPIASGIMiddleware"]
+
+def auth_rate_limit() -> str:
+    """Resolve the per-IP limit for auth endpoints at request time.
+
+    Used as a callable limit so ``RATE_LIMIT_AUTH_LIMITS`` (and runtime
+    overrides in tests) take effect without re-importing the decorated routes.
+    """
+    return settings.rate_limit.auth_limits
+
+
+__all__ = ["auth_rate_limit", "limiter", "SlowAPIASGIMiddleware"]

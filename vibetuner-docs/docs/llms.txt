@@ -22,7 +22,7 @@ Important notes:
 - [Development Guide](https://vibetuner.alltuner.com/development-guide/): Daily development workflow, adding routes, models, templates, and background jobs
 - [Architecture](https://vibetuner.alltuner.com/architecture/): System design, four-package architecture, request flow, and core components
 - [Tech Stack](https://vibetuner.alltuner.com/tech-stack/): Detailed information about all technologies used and why they were chosen
-- [Authentication](https://vibetuner.alltuner.com/authentication/): OAuth and magic link authentication setup and configuration
+- [Authentication](https://vibetuner.alltuner.com/authentication/): OAuth and magic link authentication setup and configuration, plus built-in hardening: `SESSION_KEY` fails closed in production while the shipped placeholder is unchanged (`vibetuner crypto generate-key`), auth endpoints carry a per-IP rate limit (`RATE_LIMIT_AUTH_LIMITS`, default `5/minute`), and post-login redirects (`next`/`current`) are validated against open redirects
 - [Background Tasks](https://vibetuner.alltuner.com/background-tasks/): Background task system powered by Streaq and Redis with retries, cron scheduling, and SSE integration
 - [Runtime Configuration](https://vibetuner.alltuner.com/runtime-config/): Layered configuration system with MongoDB persistence, debug UI, and feature flags
 - [HTMX v2 to v4 Migration](https://vibetuner.alltuner.com/htmx-migration/): Breaking changes and migration guide for upgrading from HTMX v2 to v4
