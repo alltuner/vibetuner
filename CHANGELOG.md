@@ -1,5 +1,74 @@
 # Changelog
 
+## [12.0.0](https://github.com/alltuner/vibetuner/compare/v11.1.0...v12.0.0) (2026-06-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* **htmx:** htmx 4 server-side support — own request detection, drop dead response helpers ([#2073](https://github.com/alltuner/vibetuner/issues/2073))
+* **security:** Apps running with environment=prod now refuse to start if SESSION_KEY is still a known placeholder (old `ct-!secret-must-change-me` or new `CHANGE_ME_RUN_vibetuner_crypto_generate`). Set a unique SESSION_KEY (`vibetuner crypto generate-key`) before deploying. Auth endpoints (magic-link send, OAuth init) are now rate-limited to 5/minute per IP by default; tune via RATE_LIMIT_AUTH_LIMITS. See the v11->v12 upgrade guide ([#2034](https://github.com/alltuner/vibetuner/issues/2034)).
+
+### Features
+
+* **api:** export sse_endpoint, broadcast, create_crud_routes, require_htmx from the top-level package ([#2021](https://github.com/alltuner/vibetuner/issues/2021)) ([f8a1511](https://github.com/alltuner/vibetuner/commit/f8a1511f634294354ebf0268ddc48e5bcbeb77cc))
+* **htmx:** htmx 4 server-side support — own request detection, drop dead response helpers ([#2073](https://github.com/alltuner/vibetuner/issues/2073)) ([e7812da](https://github.com/alltuner/vibetuner/commit/e7812da0a72abc24c480f21c17b70ae35d3bc4d8))
+* ship a safe .worktreeinclude for worktree-based dev ([#2064](https://github.com/alltuner/vibetuner/issues/2064)) ([622000b](https://github.com/alltuner/vibetuner/commit/622000beaeed4112e3b557fa4262cfd4867181b4))
+* targeted cache invalidation for vary'd keys and O(variants) pattern invalidation ([#2009](https://github.com/alltuner/vibetuner/issues/2009)) ([5d7a813](https://github.com/alltuner/vibetuner/commit/5d7a81380d58cbf060bb329bc403162c7b6400be))
+
+
+### Bug Fixes
+
+* **cli:** preserve scaffold error tracebacks and surface template-task execution ([#2068](https://github.com/alltuner/vibetuner/issues/2068)) ([bf567a7](https://github.com/alltuner/vibetuner/commit/bf567a78d4dc41549ab9b81485ece32625cd1e2d))
+* **deps:** update dependency htmx.org to v4.0.0-beta5 ([#2062](https://github.com/alltuner/vibetuner/issues/2062)) ([fd2d43c](https://github.com/alltuner/vibetuner/commit/fd2d43c86eeb841155fc13f8f1f9eb19152403a5))
+* **docker:** run runtime image as non-root and add a HEALTHCHECK ([#2019](https://github.com/alltuner/vibetuner/issues/2019)) ([7a39121](https://github.com/alltuner/vibetuner/commit/7a391215c30cb9eb8072fff6f3f2f72812073a2c))
+* **docker:** run scaffolded template image as non-root with a HEALTHCHECK ([#2067](https://github.com/alltuner/vibetuner/issues/2067)) ([9602507](https://github.com/alltuner/vibetuner/commit/96025077af338883b4811547728ca3ddd64c12d8))
+* **htmx:** don't swap 4xx/5xx error bodies into fragment targets ([#2079](https://github.com/alltuner/vibetuner/issues/2079)) ([d68c70b](https://github.com/alltuner/vibetuner/commit/d68c70be646e26cd3032d4725f3970ab3ccc41ad))
+* **release:** track scaffolded @alltuner/vibetuner pin in release-please extra-files ([#2071](https://github.com/alltuner/vibetuner/issues/2071)) ([ee48d32](https://github.com/alltuner/vibetuner/commit/ee48d3206e6495a65ef08d364848989a6af74c84))
+* render future datetimes as "in N &lt;unit&gt;" in timeago filter ([#2008](https://github.com/alltuner/vibetuner/issues/2008)) ([593ad53](https://github.com/alltuner/vibetuner/commit/593ad535ea647e9fe7f555987fbec3ea811cf339))
+* **rendering:** log and narrow exception handling in date/timeago filters ([#2074](https://github.com/alltuner/vibetuner/issues/2074)) ([b20237e](https://github.com/alltuner/vibetuner/commit/b20237ee895df5c39cd73f0f1b84da02f17a4e54))
+* scope dprint yaml linting to non-gitignored project files ([#2007](https://github.com/alltuner/vibetuner/issues/2007)) ([1cbb86c](https://github.com/alltuner/vibetuner/commit/1cbb86c74f80c12773f463aada1bb7dac75eb809))
+* **security:** allow enabled OAuth providers' avatar hosts in default CSP img-src ([#2072](https://github.com/alltuner/vibetuner/issues/2072)) ([4c0adec](https://github.com/alltuner/vibetuner/commit/4c0adec8840a80df828cd3092f29c1c32d1f0ba1))
+* **security:** validate post-auth redirects, fail closed on default session key, rate-limit auth endpoints ([#2020](https://github.com/alltuner/vibetuner/issues/2020)) ([9f9b80c](https://github.com/alltuner/vibetuner/commit/9f9b80c16787a73b516aea73114372dabd1e3929))
+* **sse:** log and back off when the Redis listener loses its connection ([#2069](https://github.com/alltuner/vibetuner/issues/2069)) ([d6a07f7](https://github.com/alltuner/vibetuner/commit/d6a07f7f4144718deee555ba11177f341dc92eaa))
+* **worker:** derive stream_timeout/max_idle_time from idle_timeout to prevent premature connection closure ([#2070](https://github.com/alltuner/vibetuner/issues/2070)) ([4b4010d](https://github.com/alltuner/vibetuner/commit/4b4010d73060f863d1916a1689b6ee21fdd6ab82))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump @alltuner/vibetuner from 10.22.4 to 11.1.0 in /vibetuner-template ([#2039](https://github.com/alltuner/vibetuner/issues/2039)) ([069d35f](https://github.com/alltuner/vibetuner/commit/069d35f19a9d26efb6597f1d362e40967850a988))
+* **deps:** bump aiohttp from 3.14.0 to 3.14.1 ([#2053](https://github.com/alltuner/vibetuner/issues/2053)) ([217255b](https://github.com/alltuner/vibetuner/commit/217255b0227b0bd22b09731d403f7c5c130954d0))
+* **deps:** bump aiohttp from 3.14.0 to 3.14.1 in /vibetuner-py ([#2054](https://github.com/alltuner/vibetuner/issues/2054)) ([e5eb5ab](https://github.com/alltuner/vibetuner/commit/e5eb5ab75fb3ef71f6b10222478db0e981f35746))
+* **deps:** bump cloudflare from 5.2.0 to 5.3.0 ([#2049](https://github.com/alltuner/vibetuner/issues/2049)) ([b2e1f5f](https://github.com/alltuner/vibetuner/commit/b2e1f5f69756f0eae34486c22d3bfcce27deba53))
+* **deps:** bump cryptography from 48.0.0 to 49.0.0 ([#2044](https://github.com/alltuner/vibetuner/issues/2044)) ([b508f66](https://github.com/alltuner/vibetuner/commit/b508f661878d779022da8351d4da906ee1c527a8))
+* **deps:** bump cryptography from 48.0.0 to 49.0.0 in /vibetuner-py ([#2050](https://github.com/alltuner/vibetuner/issues/2050)) ([f1ece7e](https://github.com/alltuner/vibetuner/commit/f1ece7e822ff63464bf4d70b02463035b8cbbfed))
+* **deps:** bump djlint from 1.39.0 to 1.39.2 in /vibetuner-py ([#2048](https://github.com/alltuner/vibetuner/issues/2048)) ([1d3f749](https://github.com/alltuner/vibetuner/commit/1d3f74940addd161c89d549aad4b1f0d10e74a34))
+* **deps:** bump mailjet-rest from 1.6.0 to 1.7.0 ([#2042](https://github.com/alltuner/vibetuner/issues/2042)) ([f466fcd](https://github.com/alltuner/vibetuner/commit/f466fcde91632496320deeec4505cb0d7b037d33))
+* **deps:** bump mailjet-rest from 1.6.0 to 1.7.0 in /vibetuner-py ([#2043](https://github.com/alltuner/vibetuner/issues/2043)) ([765b1f8](https://github.com/alltuner/vibetuner/commit/765b1f8b123dc09e7ca19b64af055972b205010f))
+* **deps:** bump pydantic-settings from 2.14.1 to 2.14.2 ([#2058](https://github.com/alltuner/vibetuner/issues/2058)) ([b2acde1](https://github.com/alltuner/vibetuner/commit/b2acde1c6e6e4c0bbe95b025b6ca3bd1c194880b))
+* **deps:** bump pydantic-settings from 2.14.1 to 2.14.2 in /vibetuner-py ([#2057](https://github.com/alltuner/vibetuner/issues/2057)) ([9ed083c](https://github.com/alltuner/vibetuner/commit/9ed083c1925f4ace4e9f455f811744c166a94872))
+* **deps:** bump pytest from 9.0.3 to 9.1.0 in /vibetuner-py ([#2045](https://github.com/alltuner/vibetuner/issues/2045)) ([633506b](https://github.com/alltuner/vibetuner/commit/633506bcc85db5c242bd71e41bf135f9a9236c58))
+* **deps:** bump pytest from 9.0.3 to 9.1.1 ([#2047](https://github.com/alltuner/vibetuner/issues/2047)) ([ca6ff43](https://github.com/alltuner/vibetuner/commit/ca6ff43d559c1bb0a0eacbbc04b582420f49c419))
+* **deps:** bump rumdl from 0.2.9 to 0.2.16 in /vibetuner-py ([#2041](https://github.com/alltuner/vibetuner/issues/2041)) ([238e12a](https://github.com/alltuner/vibetuner/commit/238e12ad17bc31f15b78b78e173febab13a48506))
+* **deps:** bump slowapi from 0.1.9 to 0.1.10 ([#2052](https://github.com/alltuner/vibetuner/issues/2052)) ([2f35e3c](https://github.com/alltuner/vibetuner/commit/2f35e3ce45ce5ec3ffcf7665053e56feab2188cc))
+* **deps:** sync vibetuner-py/uv.lock with bumped pytest floor ([#2066](https://github.com/alltuner/vibetuner/issues/2066)) ([d199d2c](https://github.com/alltuner/vibetuner/commit/d199d2c66e1cc906a82f03229506e8f0e8002b7c))
+* **deps:** update actions/checkout action to v7 ([#2056](https://github.com/alltuner/vibetuner/issues/2056)) ([eadaeb5](https://github.com/alltuner/vibetuner/commit/eadaeb53ae1d3a5e20a735c5f0f1ce76c15b674a))
+* **deps:** update anthropics/claude-code-action action to v1.0.159 ([#2036](https://github.com/alltuner/vibetuner/issues/2036)) ([94f70a3](https://github.com/alltuner/vibetuner/commit/94f70a3191350cf6fe5acc70f6bb1e7dc65cf2c4))
+* **deps:** update mongo docker tag to v8.3.4 ([#2038](https://github.com/alltuner/vibetuner/issues/2038)) ([c9241e5](https://github.com/alltuner/vibetuner/commit/c9241e5994a8c4eb5c3e71aa95bb83cab8098530))
+
+
+### Documentation Updates
+
+* add framework upgrade workflow, v11 background-tasks migration callout, and troubleshooting page ([#2076](https://github.com/alltuner/vibetuner/issues/2076)) ([f33e1a6](https://github.com/alltuner/vibetuner/commit/f33e1a6f48a9c1ddb3de89bb999142809f373cf1))
+* add v11 to v12 upgrade guide ([#2034](https://github.com/alltuner/vibetuner/issues/2034)) ([a6e3ccc](https://github.com/alltuner/vibetuner/commit/a6e3cccff942e33e3b4a6dfa107b1451b7f67852))
+* **htmx:** document htmx 4 attribute-inheritance removal in migration guide and agent rules ([#2075](https://github.com/alltuner/vibetuner/issues/2075)) ([7b3707a](https://github.com/alltuner/vibetuner/commit/7b3707a7ea43b1db4dbb86b4a2b2886d9fe06f52))
+
+
+### CI/CD Changes
+
+* add test, lint, and type-check workflow for PRs and pushes ([#2077](https://github.com/alltuner/vibetuner/issues/2077)) ([ea289fb](https://github.com/alltuner/vibetuner/commit/ea289fbddaed2ec356a040885dd0e05f9d5a0388))
+* fix lint job failing on no-commit-to-branch and lint-po ([#2081](https://github.com/alltuner/vibetuner/issues/2081)) ([b5c5c24](https://github.com/alltuner/vibetuner/commit/b5c5c24fdb086c339c7c2756a8ee44d67cbc2620))
+* run the full pre-commit suite in CI and fix dev-tooling drift ([#2078](https://github.com/alltuner/vibetuner/issues/2078)) ([d576973](https://github.com/alltuner/vibetuner/commit/d5769730a0a02a55fb721bbbe5044b38aa8af4ee))
+
 ## [11.1.0](https://github.com/alltuner/vibetuner/compare/v11.0.0...v11.1.0) (2026-06-09)
 
 
