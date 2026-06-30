@@ -125,6 +125,13 @@ longer exists. Use `event.detail.ctx.response` instead:
 **Events do not bubble** to `document.body` in v4. Attach listeners
 directly to elements or use `hx-on` attributes.
 
+**Attribute inheritance is explicit.** htmx 4 does not inherit `hx-target`,
+`hx-swap`, `hx-trigger`, or any other attribute from ancestors. Every element must
+carry its own attributes. Without them, htmx falls back to its defaults (target:
+the element itself; swap: `innerHTML`) with no console error. To share attributes
+across children, add `:inherited` to the parent attribute (e.g.,
+`hx-target:inherited="this" hx-swap:inherited="outerHTML"`).
+
 See the [HTMX migration guide](https://vibetuner.alltuner.com/htmx-migration/)
 for full details.
 
