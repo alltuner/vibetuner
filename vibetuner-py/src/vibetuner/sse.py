@@ -208,6 +208,12 @@ def _parse_redis_message(message: dict, prefix: str) -> tuple[str, dict] | None:
 
 
 _LISTENER_RECONNECT_DELAY = 1.0
+_LISTENER_RECONNECT_CAP_DELAY = 30.0
+
+
+def _next_reconnect_delay(current: float) -> float:
+    """Return the next reconnect delay with capped exponential backoff."""
+    return min(current * 2, _LISTENER_RECONNECT_CAP_DELAY)
 
 
 async def _close_subscriber(pubsub, client) -> None:
@@ -231,6 +237,7 @@ async def _redis_listen_loop(prefix: str) -> None:
 
     from vibetuner.redis import create_redis_client
 
+    delay = _LISTENER_RECONNECT_DELAY
     while True:
         client = create_redis_client()
         if client is None:
@@ -240,6 +247,7 @@ async def _redis_listen_loop(prefix: str) -> None:
         try:
             await pubsub.psubscribe(f"{prefix}*")
             logger.debug("SSE Redis pub/sub listener subscribed to {}*", prefix)
+            delay = _LISTENER_RECONNECT_DELAY  # reset backoff after successful connect
             async for message in pubsub.listen():
                 parsed = _parse_redis_message(message, prefix)
                 if parsed is not None:
@@ -249,10 +257,11 @@ async def _redis_listen_loop(prefix: str) -> None:
             raise
         except RedisError as e:
             logger.warning(
-                "SSE Redis listener lost its connection, reconnecting: {}", e
+                "SSE Redis listener lost connection, reconnecting in {:.1f}s: {}", delay, e
             )
             await _close_subscriber(pubsub, client)
-            await asyncio.sleep(_LISTENER_RECONNECT_DELAY)
+            await asyncio.sleep(delay)
+            delay = _next_reconnect_delay(delay)
 
 
 async def start_redis_listener() -> None:
