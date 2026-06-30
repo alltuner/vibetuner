@@ -13,6 +13,7 @@ worker: Worker | None = (
         queue_name=settings.redis_key_prefix.rstrip(":"),
         lifespan=lifespan,
         concurrency=settings.worker_concurrency,
+        idle_timeout=settings.worker_idle_timeout,
     )
     if settings.workers_available
     else None

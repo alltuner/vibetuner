@@ -358,6 +358,11 @@ class CoreConfiguration(BaseSettings):
 
     worker_concurrency: int = 16
 
+    # How long (seconds) streaq waits for new tasks before re-checking idle tasks.
+    # Matches streaq's Worker(idle_timeout=...) default so the two stay in sync.
+    # Must be set here so worker_redis_kwargs can derive safe coredis timeouts.
+    worker_idle_timeout: float = 60.0
+
     # Redis connection resilience for long-lived clients (e.g. the streaq worker).
     # Without a socket timeout, a silently-dropped TCP connection leaves a blocking
     # read that never returns, wedging the worker's event loop indefinitely. A
@@ -467,16 +472,25 @@ class CoreConfiguration(BaseSettings):
         ``max_idle_time`` recycles long-idle connections so a stale one is
         never reused. A timeout of 0 is omitted, which coredis treats as no
         timeout.
+
+        Both ``stream_timeout`` and ``max_idle_time`` must safely exceed
+        ``worker_idle_timeout``: streaq calls ``XREADGROUP BLOCK idle_timeout``
+        on the Redis server, and coredis would otherwise time out during that
+        legitimate blocking wait and raise a premature timeout error.
         """
         kwargs: dict[str, Any] = {
             "socket_keepalive": self.redis_socket_keepalive,
         }
+        safe_timeout = max(
+            self.redis_socket_timeout, self.worker_idle_timeout * 1.5
+        )
         if self.redis_socket_timeout > 0:
-            kwargs["stream_timeout"] = self.redis_socket_timeout
+            kwargs["stream_timeout"] = safe_timeout
         if self.redis_socket_connect_timeout > 0:
             kwargs["connect_timeout"] = self.redis_socket_connect_timeout
         if self.redis_health_check_interval > 0:
-            kwargs["max_idle_time"] = int(self.redis_health_check_interval)
+            safe_idle = max(self.redis_health_check_interval, self.worker_idle_timeout * 1.5)
+            kwargs["max_idle_time"] = int(safe_idle)
         return kwargs
 
     @property

@@ -591,10 +591,11 @@ vibetuner run prod worker --workers 4
 | Concurrency | `WORKER_CONCURRENCY` | `16` | Max concurrent tasks per worker |
 | Queue name | — | Project slug | Derived from `REDIS_KEY_PREFIX` |
 | Monitoring port | `--port` flag | `11111` | Port for the worker web UI |
-| Socket timeout | `REDIS_SOCKET_TIMEOUT` | `30` | Seconds before a hung Redis read raises (0 disables) |
+| Idle timeout | `WORKER_IDLE_TIMEOUT` | `60` | Seconds streaq waits for new tasks before re-checking idle tasks |
+| Socket timeout | `REDIS_SOCKET_TIMEOUT` | `30` | Floor for the coredis stream timeout (0 disables) |
 | Connect timeout | `REDIS_SOCKET_CONNECT_TIMEOUT` | `10` | Seconds before a Redis connect attempt gives up (0 disables) |
 | Keepalive | `REDIS_SOCKET_KEEPALIVE` | `true` | Enable TCP keepalive on the Redis connection |
-| Idle recycling | `REDIS_HEALTH_CHECK_INTERVAL` | `30` | Seconds before an idle connection is recycled instead of reused (0 disables) |
+| Idle recycling | `REDIS_HEALTH_CHECK_INTERVAL` | `30` | Floor for idle connection recycling (0 disables) |
 | Watchdog timeout | `WORKER_WATCHDOG_TIMEOUT` | `60` | Seconds of event-loop stall before the process force-exits (0 disables) |
 | Watchdog interval | `WORKER_WATCHDOG_INTERVAL` | `5` | Seconds between watchdog heartbeats/checks |
 
@@ -608,10 +609,15 @@ stays up but stops processing tasks and crons, with no automatic recovery.
 The `REDIS_SOCKET_TIMEOUT`, `REDIS_SOCKET_CONNECT_TIMEOUT`,
 `REDIS_SOCKET_KEEPALIVE`, and `REDIS_HEALTH_CHECK_INTERVAL` settings guard
 against this: a dead connection raises an error instead of hanging, so the
-worker reconnects or exits and is restarted by its `restart` policy. The
-defaults are safe for the worker, whose blocking reads are bounded to well
-under a second. Raise `REDIS_SOCKET_TIMEOUT` if your network has high latency,
-or set it to `0` to disable it entirely.
+worker reconnects or exits and is restarted by its `restart` policy.
+
+The worker's coredis client calls `XREADGROUP BLOCK <idle_timeout>`, which is a
+legitimate blocking read that can last up to `WORKER_IDLE_TIMEOUT` seconds (60 s
+by default). The actual coredis stream timeout and connection idle-recycling
+threshold are therefore derived as `max(REDIS_SOCKET_TIMEOUT, WORKER_IDLE_TIMEOUT
+× 1.5)`, so coredis never interrupts a healthy blocking wait. `REDIS_SOCKET_TIMEOUT`
+acts as a floor — raise it if your network has high latency, or set it to `0` to
+disable stream timeout enforcement entirely.
 
 ### Liveness watchdog
 
