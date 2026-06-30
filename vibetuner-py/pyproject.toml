@@ -23,7 +23,7 @@ dependencies = [
   # These are the base dependencies of AllTuner's blessed stack
   "aioboto3>=15.5.0",
   "arel>=0.4.0",
-  "asyncer>=0.0.17",
+  "asyncer>=0.0.18",
   "authlib>=1.7.2",
   "beanie[zstd]>=2.1.0",
   "click>=8.4.1",
