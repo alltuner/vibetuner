@@ -95,15 +95,15 @@ async def notifications_stream(request: Request): pass
 From `vibetuner.htmx`: `hx_redirect(url)`,
 `hx_location(path, target=, swap=)`,
 `hx_trigger(response, event, detail)`, `hx_push_url`,
-`hx_replace_url`, `hx_reswap`, `hx_retarget`, `hx_refresh`,
-`hx_trigger_after_settle`, `hx_trigger_after_swap`.
+`hx_replace_url`, `hx_reswap`, `hx_retarget`, `hx_refresh`.
 
 ## HTMX 4 Event Handling
 
 htmx 4 changed event handling significantly. Key differences:
 
 **Event names** use colon-separated format (not camelCase):
-`htmx:after:request`, `htmx:before:swap`, `htmx:after:settle`.
+`htmx:after:request`, `htmx:before:swap`, `htmx:after:swap` (the htmx 2
+settle phase folded into swap, so there is no `htmx:after:settle`).
 
 **`hx-on` attributes** — the `hx-on::` shorthand works in beta1+
 (it was broken in alpha8). Both forms are valid:
@@ -234,5 +234,7 @@ request, ctx)` — renders a single `{% block %}`.
 ## HTMX Request Detection
 
 `request.state.htmx` — truthy for HTMX requests. Properties:
-`.boosted`, `.target`, `.trigger`, `.trigger_name`, `.current_url`,
-`.prompt`. Use `Depends(require_htmx)` for HTMX-only routes.
+`.boosted`, `.target` (`tag#id`), `.source` (`HX-Source`; the htmx 2 request
+`HX-Trigger`), `.request_type` (`"full"`/`"partial"`), `.current_url`,
+`.history_restore_request`, `.prompt` (via the `hx-prompt` extension).
+Use `Depends(require_htmx)` for HTMX-only routes.

@@ -1,10 +1,12 @@
 # ruff: noqa: S101
-"""Tests for HTMX response header helpers."""
+"""Tests for htmx request detection and response header helpers."""
 
 import json
 
+from starlette.requests import Request
 from starlette.responses import HTMLResponse
 from vibetuner.htmx import (
+    HtmxDetails,
     hx_location,
     hx_push_url,
     hx_redirect,
@@ -13,9 +15,63 @@ from vibetuner.htmx import (
     hx_reswap,
     hx_retarget,
     hx_trigger,
-    hx_trigger_after_settle,
-    hx_trigger_after_swap,
 )
+
+
+def _request(headers: dict[str, str]) -> Request:
+    raw = [(key.lower().encode(), value.encode()) for key, value in headers.items()]
+    return Request({"type": "http", "headers": raw})
+
+
+class TestHtmxDetails:
+    def test_bool_true_for_htmx_request(self):
+        assert bool(HtmxDetails(_request({"HX-Request": "true"})))
+
+    def test_bool_false_without_header(self):
+        assert not bool(HtmxDetails(_request({})))
+
+    def test_source_reads_hx_source(self):
+        details = HtmxDetails(_request({"HX-Source": "button#save"}))
+        assert details.source == "button#save"
+
+    def test_request_type(self):
+        assert (
+            HtmxDetails(_request({"HX-Request-Type": "partial"})).request_type
+            == "partial"
+        )
+
+    def test_target_boosted_and_current_url(self):
+        details = HtmxDetails(
+            _request(
+                {
+                    "HX-Target": "div#main",
+                    "HX-Boosted": "true",
+                    "HX-Current-URL": "/dashboard",
+                }
+            )
+        )
+        assert details.target == "div#main"
+        assert details.boosted is True
+        assert details.current_url == "/dashboard"
+
+    def test_prompt(self):
+        assert HtmxDetails(_request({"HX-Prompt": "Bob"})).prompt == "Bob"
+
+    def test_uri_autoencoded_value_is_decoded(self):
+        details = HtmxDetails(
+            _request(
+                {
+                    "HX-Current-URL": "%2Ffoo%20bar",
+                    "HX-Current-URL-URI-AutoEncoded": "true",
+                }
+            )
+        )
+        assert details.current_url == "/foo bar"
+
+    def test_no_legacy_htmx2_request_attributes(self):
+        details = HtmxDetails(_request({"HX-Request": "true"}))
+        assert not hasattr(details, "trigger")
+        assert not hasattr(details, "trigger_name")
 
 
 class TestHxRedirect:
@@ -70,26 +126,6 @@ class TestHxTrigger:
         response = HTMLResponse("<html>ok</html>")
         result = hx_trigger(response, "test")
         assert result is response
-
-
-class TestHxTriggerAfterSettle:
-    def test_sets_header(self):
-        response = HTMLResponse("<html>ok</html>")
-        hx_trigger_after_settle(response, "settled")
-        assert response.headers["HX-Trigger-After-Settle"] == "settled"
-
-    def test_with_detail(self):
-        response = HTMLResponse("<html>ok</html>")
-        hx_trigger_after_settle(response, "done", {"count": 5})
-        parsed = json.loads(response.headers["HX-Trigger-After-Settle"])
-        assert parsed == {"done": {"count": 5}}
-
-
-class TestHxTriggerAfterSwap:
-    def test_sets_header(self):
-        response = HTMLResponse("<html>ok</html>")
-        hx_trigger_after_swap(response, "swapped")
-        assert response.headers["HX-Trigger-After-Swap"] == "swapped"
 
 
 class TestHxPushUrl:

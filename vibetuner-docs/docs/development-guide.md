@@ -944,8 +944,8 @@ async def list_posts(page: int = 1):
 
 ### HTMX Request Detection
 
-Every request has `request.state.htmx` available (provided by the `starlette-htmx`
-middleware). Use it to serve different responses for HTMX vs regular requests:
+Every request has `request.state.htmx` available (provided by the framework's
+HTMX middleware). Use it to serve different responses for HTMX vs regular requests:
 
 ```python
 from fastapi import Request
@@ -972,11 +972,12 @@ async def list_items(request: Request):
 |----------|-------------|
 | `bool(request.state.htmx)` | `True` if this is an HTMX request |
 | `.boosted` | `True` if request came via `hx-boost` |
-| `.target` | ID of the target element (`hx-target`) |
-| `.trigger` | ID of the element that triggered the request |
-| `.trigger_name` | Name attribute of the triggering element |
+| `.target` | Target element as `tag#id` (`hx-target`) |
+| `.source` | Triggering element as `tag#id` (`HX-Source`; was `HX-Trigger` in htmx 2) |
+| `.request_type` | `"full"` or `"partial"` (`HX-Request-Type`) |
 | `.current_url` | Browser's current URL when request was made |
-| `.prompt` | User response from `hx-prompt` |
+| `.history_restore_request` | `True` if this is a history-restore request |
+| `.prompt` | User reply from the `hx-prompt` extension (when loaded) |
 
 ### HTMX Response Headers
 
@@ -998,8 +999,7 @@ return response
 ```
 
 Available helpers: `hx_redirect`, `hx_location`, `hx_trigger`,
-`hx_trigger_after_settle`, `hx_trigger_after_swap`, `hx_push_url`,
-`hx_replace_url`, `hx_reswap`, `hx_retarget`, `hx_refresh`.
+`hx_push_url`, `hx_replace_url`, `hx_reswap`, `hx_retarget`, `hx_refresh`.
 
 JSON serialization is handled internally — you never need to call `json.dumps()`.
 

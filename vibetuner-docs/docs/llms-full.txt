@@ -658,7 +658,7 @@ async def list_posts(page: int = 1):
 
 #### HTMX Request Detection
 
-Every request has `request.state.htmx` available (via `starlette-htmx` middleware).
+Every request has `request.state.htmx` available.
 Use it to serve different responses for HTMX vs regular requests:
 
 ```python
@@ -678,8 +678,10 @@ async def list_items(request: Request):
     return render_template("items/list.html.jinja", request, ctx)
 ```
 
-Properties: `bool(request.state.htmx)`, `.boosted`, `.target`, `.trigger`,
-`.trigger_name`, `.current_url`, `.prompt`.
+Properties: `bool(request.state.htmx)`, `.boosted`, `.target` (`tag#id`),
+`.source` (`HX-Source`; the htmx 2 request `HX-Trigger`), `.request_type`
+(`"full"`/`"partial"`), `.current_url`, `.history_restore_request`, `.prompt`
+(via the `hx-prompt` extension).
 
 HTMX-only routes — use the `require_htmx` dependency from
 `vibetuner` to reject non-HTMX requests with a 400.
@@ -2962,8 +2964,34 @@ relevant to vibetuner projects:
   swap from downgrading origin enforcement
 - **`hx-on::` shorthand fixed** — works in beta1+ (was broken in alpha8)
 
+#### Beta5 Additions
+
+htmx 4.0.0-beta5 is a small follow-up; nothing breaks a clean htmx 4 codebase
+and vibetuner templates need no changes:
+
+- **HCON config grammar formalized** — `hx-trigger`, `hx-swap`, `hx-vals`,
+  `hx-config`, `hx-headers`, and `<meta name="htmx-config">` parse through one
+  documented mini-language. Backward compatible: `{`-prefixed values are still
+  JSON and the `js:` prefix still evaluates as JavaScript
+- **`hx-prompt` extension** — opt-in, restores htmx 2's `hx-prompt` attribute
+  and the `HX-Prompt` request header (read via `request.state.htmx.prompt`).
+  Not loaded by default; add `import "htmx.org/dist/ext/hx-prompt.js";`
+- **`swapEmpty` / `htmx.config.defaultSwapEmpty`** — SSE now defaults to not
+  swapping empty responses, so keepalive frames no longer blank the element
+- **`hx-morph-skip` / `hx-morph-skip-children`** — skip morphing for matching
+  elements (only relevant with a `morph` swap)
+- **`hx-live` expansion** — declarative bindings + reactive engine; the `take`
+  helper now defaults to sibling scope
+- **`ctx` passed to `hx-confirm` / `hx-vals` / `hx-headers` JS**, download links
+  no longer boosted, `hx-encode` falls back to the form `enctype`, and `hx-csp`
+  handles unquoted nonce attributes
+- **Vibetuner server-side**: `request.state.htmx` exposes `.source`
+  (`HX-Source`) and `.request_type` (`HX-Request-Type`); the htmx 2 `.trigger` /
+  `.trigger_name` props and the `hx_trigger_after_settle` / `hx_trigger_after_swap`
+  response helpers were removed
+
 See [HTMX v2 to v4 Migration Guide](https://vibetuner.alltuner.com/htmx-migration/)
-for the full list and the dedicated "Beta1 to Beta3 Changes" section.
+for the full list and the dedicated "Beta4 to Beta5 Changes" section.
 
 ### Import Ordering in tune.py
 

@@ -31,10 +31,11 @@ Important notes:
 
 ## Features
 
-- **HTMX Request Detection**: `request.state.htmx` available on every request
-  (via `starlette-htmx` middleware). Properties: `.boosted`, `.target`, `.trigger`,
-  `.trigger_name`, `.current_url`, `.prompt`. Use `require_htmx` dependency from
-  `vibetuner` to reject non-HTMX requests with 400
+- **HTMX Request Detection**: `request.state.htmx` available on every request.
+  Properties: `.boosted`, `.target` (`tag#id`), `.source` (`HX-Source`; the htmx 2
+  request `HX-Trigger`), `.request_type` (`"full"`/`"partial"`), `.current_url`,
+  `.history_restore_request`, `.prompt` (via the `hx-prompt` extension). Use
+  `require_htmx` dependency from `vibetuner` to reject non-HTMX requests with 400
 - **CRUD Factory**: `create_crud_routes()` generates list/create/read/update/delete
   endpoints for Beanie models with pagination, filtering, sorting, and search
 - **SSE Helpers**: `@sse_endpoint()` and `broadcast()` for real-time streaming with
@@ -65,8 +66,8 @@ Important notes:
   `immutable`. Import from `vibetuner.decorators`
 - **HTMX Response Helpers**: `hx_redirect()`, `hx_location()`, `hx_trigger()`,
   `hx_push_url()`, `hx_reswap()`, `hx_retarget()`, `hx_refresh()`,
-  `hx_replace_url()`, `hx_trigger_after_settle()`, `hx_trigger_after_swap()`.
-  Handles JSON serialization internally. Import from `vibetuner.htmx`
+  `hx_replace_url()`. Handles JSON serialization internally. Import from
+  `vibetuner.htmx`
 - **Built-in Template Globals**: `request`, `language`, `DEBUG`, `now`
   (UTC datetime), `today` (ISO date string), `project` (`settings.project`),
   `brand` (`settings.brand`), `csp_nonce`, and `hotreload` are available
