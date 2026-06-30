@@ -171,6 +171,14 @@ the sixth returns `429 Too Many Requests`. After raising
   [Development Guide](development-guide.md).
 - **Pick up template improvements**: run `vibetuner scaffold update` to pull
   in template and tooling updates (for example the new `dprint.json`).
+- **htmx bumped to 4.0.0-beta5 and the server-side surface aligned with htmx
+  4**: `request.state.htmx` now exposes `.source` (`HX-Source`) and
+  `.request_type` (`HX-Request-Type`) instead of the htmx 2 `.trigger` /
+  `.trigger_name`, and the `hx_trigger_after_settle` / `hx_trigger_after_swap`
+  response helpers were removed (htmx 4 dropped the headers they set — use
+  `hx_trigger`). Only act if your project reads those request props or calls
+  those helpers. See the
+  [htmx migration guide](htmx-migration.md#beta4-to-beta5-changes).
 
 ## Migration Checklist
 
