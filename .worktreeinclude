@@ -3,4 +3,4 @@
 # regenerable trees are deliberately left out (recreate them in the worktree
 # with `uv sync` / `bun install`).
 .env
-# .env.local      # add if/when the project adopts local env overrides
+.env.local
