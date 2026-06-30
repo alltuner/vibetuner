@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Unit tests run on a Python version matrix; lint and type-check use the
+# project's primary Python version (from root .python-version).
+jobs:
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache-dependency-glob: "vibetuner-py/uv.lock"
+
+      - name: Run unit tests
+        working-directory: vibetuner-py
+        run: uv run --frozen --extra dev python -m pytest tests/unit/ -v
+
+  lint-and-type-check:
+    name: Lint and type check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          cache-dependency-glob: "vibetuner-py/uv.lock"
+
+      - name: Ruff lint
+        working-directory: vibetuner-py
+        run: uv run --frozen --extra dev ruff check .
+
+      - name: Type check
+        working-directory: vibetuner-py
+        run: uv run --frozen --extra dev ty check .
