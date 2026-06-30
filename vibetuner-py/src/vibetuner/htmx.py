@@ -1,9 +1,71 @@
-# ABOUTME: Helper functions for setting HTMX response headers.
-# ABOUTME: Reduces boilerplate when building interactive HTMX flows.
+# ABOUTME: htmx 4 request detection (HtmxDetails) and response-header helpers.
+# ABOUTME: Reduces boilerplate when building interactive htmx flows.
 import json
+from functools import cached_property
 from typing import Any
+from urllib.parse import unquote
 
+from starlette.requests import Request
 from starlette.responses import HTMLResponse, Response
+
+
+class HtmxDetails:
+    """htmx request metadata read from the ``HX-*`` request headers.
+
+    Wired onto ``request.state.htmx`` by ``HtmxMiddleware``. Truthiness tells
+    whether the request originated from htmx::
+
+        if request.state.htmx:
+            ...  # htmx-driven request
+
+    Only the headers htmx 4 sends are exposed. The htmx 2 request ``HX-Trigger``
+    was renamed to ``HX-Source`` (read it via :attr:`source`) and
+    ``HX-Trigger-Name`` was dropped, so neither has an attribute here.
+    """
+
+    def __init__(self, request: Request) -> None:
+        self.request = request
+
+    def _header(self, name: str) -> str | None:
+        value = self.request.headers.get(name) or None
+        if value and self.request.headers.get(f"{name}-URI-AutoEncoded") == "true":
+            value = unquote(value)
+        return value
+
+    def __bool__(self) -> bool:
+        return self._header("HX-Request") == "true"
+
+    @cached_property
+    def boosted(self) -> bool:
+        return self._header("HX-Boosted") == "true"
+
+    @cached_property
+    def current_url(self) -> str | None:
+        return self._header("HX-Current-URL")
+
+    @cached_property
+    def history_restore_request(self) -> bool:
+        return self._header("HX-History-Restore-Request") == "true"
+
+    @cached_property
+    def prompt(self) -> str | None:
+        """User reply captured by the ``hx-prompt`` extension (``HX-Prompt``)."""
+        return self._header("HX-Prompt")
+
+    @cached_property
+    def target(self) -> str | None:
+        """Target element as ``tag#id`` (``HX-Target``)."""
+        return self._header("HX-Target")
+
+    @cached_property
+    def source(self) -> str | None:
+        """Triggering element as ``tag#id`` (``HX-Source``; the htmx 2 request ``HX-Trigger``)."""
+        return self._header("HX-Source")
+
+    @cached_property
+    def request_type(self) -> str | None:
+        """``"full"`` or ``"partial"`` (``HX-Request-Type``)."""
+        return self._header("HX-Request-Type")
 
 
 def hx_redirect(url: str) -> HTMLResponse:
@@ -120,42 +182,6 @@ def hx_trigger(
         response.headers["HX-Trigger"] = json.dumps({event: detail})
     else:
         response.headers["HX-Trigger"] = event
-    return response
-
-
-def hx_trigger_after_settle(
-    response: Response,
-    event: str | dict[str, Any],
-    detail: dict[str, Any] | None = None,
-) -> Response:
-    """Set the ``HX-Trigger-After-Settle`` header on a response.
-
-    Same as :func:`hx_trigger` but fires after the settle phase.
-    """
-    if isinstance(event, dict):
-        response.headers["HX-Trigger-After-Settle"] = json.dumps(event)
-    elif detail is not None:
-        response.headers["HX-Trigger-After-Settle"] = json.dumps({event: detail})
-    else:
-        response.headers["HX-Trigger-After-Settle"] = event
-    return response
-
-
-def hx_trigger_after_swap(
-    response: Response,
-    event: str | dict[str, Any],
-    detail: dict[str, Any] | None = None,
-) -> Response:
-    """Set the ``HX-Trigger-After-Swap`` header on a response.
-
-    Same as :func:`hx_trigger` but fires after the swap phase.
-    """
-    if isinstance(event, dict):
-        response.headers["HX-Trigger-After-Swap"] = json.dumps(event)
-    elif detail is not None:
-        response.headers["HX-Trigger-After-Swap"] = json.dumps({event: detail})
-    else:
-        response.headers["HX-Trigger-After-Swap"] = event
     return response
 
 

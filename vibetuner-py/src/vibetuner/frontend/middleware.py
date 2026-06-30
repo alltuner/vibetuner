@@ -20,10 +20,10 @@ from starlette_babel import (
 )
 from starlette_context.middleware import RawContextMiddleware
 from starlette_context.plugins import RequestIdPlugin
-from starlette_htmx.middleware import HtmxDetails
 
 from vibetuner.config import settings
 from vibetuner.context import ctx
+from vibetuner.htmx import HtmxDetails
 from vibetuner.logging import logger
 from vibetuner.paths import locales as locales_path, package_locales
 
@@ -84,16 +84,13 @@ if locales_path is not None and locales_path.exists() and locales_path.is_dir():
 
 
 class HtmxMiddleware:
-    """Pure ASGI replacement for starlette_htmx.middleware.HtmxMiddleware.
+    """Attach htmx request details to ``request.state.htmx``.
 
-    The upstream starlette-htmx uses BaseHTTPMiddleware, which adds an extra
-    empty sentinel body chunk on response completion. This triggers a bug in
-    slowapi's SlowAPIASGIMiddleware where http.response.start is re-sent on
-    every body chunk, causing "ASGI flow error: Response already started".
-    See: https://github.com/laurentS/slowapi/issues/XXX
-
-    This pure ASGI version avoids the issue. Can be removed once slowapi
-    fixes SlowAPIASGIMiddleware upstream.
+    Implemented as pure ASGI rather than BaseHTTPMiddleware: the base-class
+    variant adds an extra empty sentinel body chunk on response completion,
+    which trips slowapi's SlowAPIASGIMiddleware into re-sending
+    http.response.start on every body chunk ("ASGI flow error: Response
+    already started"). See: https://github.com/laurentS/slowapi/issues/XXX
     """
 
     def __init__(self, app: ASGIApp):

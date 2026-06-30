@@ -2857,18 +2857,6 @@ wheels = [
 ]
 
 [[package]]
-name = "starlette-htmx"
-version = "0.1.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "starlette" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/30/16/dcb7da6006564a0af5f0dccb5c8710ca9b6da665a86d1c41473744a74c38/starlette_htmx-0.1.1.tar.gz", hash = "sha256:686b507eae5492d3e78963fa5783ecfb4bbaa06fe43a858d4676a2c76f7a83ac", size = 2881, upload-time = "2022-01-22T17:10:48.941Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/bd/ea/da6b4aecca60cac91643b6e2733969d64a658bac79aa35df551b9e97e879/starlette_htmx-0.1.1-py2.py3-none-any.whl", hash = "sha256:f81e0ab89c02ede60203b458c3a9a088e87d47c7583a7e9fd7f11b92e27cef99", size = 2767, upload-time = "2022-01-22T17:10:47.645Z" },
-]
-
-[[package]]
 name = "streaq"
 version = "7.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3190,7 +3178,6 @@ dependencies = [
     { name = "sqlmodel" },
     { name = "starlette-babel" },
     { name = "starlette-context" },
-    { name = "starlette-htmx" },
     { name = "streaq", extra = ["web"] },
     { name = "typer" },
 ]
@@ -3254,7 +3241,6 @@ requires-dist = [
     { name = "sqlmodel", specifier = ">=0.0.38" },
     { name = "starlette-babel", specifier = ">=1.1.0" },
     { name = "starlette-context", specifier = ">=0.5.1" },
-    { name = "starlette-htmx", specifier = ">=0.1.1" },
     { name = "streaq", extras = ["web"], specifier = ">=7.0.0,<8.0.0" },
     { name = "taplo", marker = "extra == 'dev'", specifier = ">=0.9.3" },
     { name = "testcontainers", extras = ["mongodb"], marker = "extra == 'dev'", specifier = ">=4.14.2" },
