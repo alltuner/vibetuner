@@ -679,7 +679,7 @@ Properties: `bool(request.state.htmx)`, `.boosted`, `.target`, `.trigger`,
 `.trigger_name`, `.current_url`, `.prompt`.
 
 HTMX-only routes — use the `require_htmx` dependency from
-`vibetuner.frontend.deps` to reject non-HTMX requests with a 400.
+`vibetuner` to reject non-HTMX requests with a 400.
 
 ### Architecture
 
@@ -1118,7 +1118,8 @@ Vibetuner includes a CRUD route factory that generates list, create, read, updat
 and delete endpoints for Beanie Document models with one function call.
 
 ```python
-from vibetuner.crud import create_crud_routes, Operation
+from vibetuner import create_crud_routes
+from vibetuner.crud import Operation
 from app.models import Post
 
 # Generate all CRUD routes
@@ -1218,17 +1219,17 @@ input. If they return `None`, the original data is used.
 ### Server-Sent Events (SSE)
 
 Vibetuner provides SSE helpers for real-time streaming with HTMX. Import from
-`vibetuner.sse` (not `vibetuner.frontend.sse`).
+the top-level `vibetuner` package.
 
 ```python
-from vibetuner.sse import sse_endpoint, broadcast
+from vibetuner import sse_endpoint, broadcast
 ```
 
 **Channel-based endpoint (auto-subscribe):**
 
 ```python
 from fastapi import APIRouter, Request
-from vibetuner.sse import sse_endpoint
+from vibetuner import sse_endpoint
 
 router = APIRouter()
 
@@ -1260,7 +1261,7 @@ async def custom_stream(request: Request):
 **Broadcasting events:**
 
 ```python
-from vibetuner.sse import broadcast
+from vibetuner import broadcast
 
 # Raw data
 await broadcast("notifications", "update", data="<div>New item!</div>")
@@ -2482,7 +2483,7 @@ Cron tasks only execute inside the worker process.
 Broadcast real-time updates from background tasks to connected clients:
 
 ```python
-from vibetuner.sse import broadcast
+from vibetuner import broadcast
 
 @worker.task()
 async def process_upload(file_id: str, user_id: str) -> dict:

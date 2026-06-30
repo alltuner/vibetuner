@@ -346,7 +346,7 @@ Generate a full set of list/create/read/update/delete routes from a Beanie
 Document model with one function call:
 
 ```python
-from vibetuner.crud import create_crud_routes
+from vibetuner import create_crud_routes
 from app.models import Post
 
 router = create_crud_routes(
@@ -375,7 +375,7 @@ Features:
 Real-time streaming over HTTP with HTMX integration:
 
 ```python
-from vibetuner.sse import sse_endpoint, broadcast
+from vibetuner import sse_endpoint, broadcast
 
 # Subscribe clients to a channel
 @sse_endpoint("/events/notifications", channel="notifications", router=router)
