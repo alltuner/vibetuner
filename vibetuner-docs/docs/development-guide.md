@@ -795,13 +795,20 @@ fall back to the legacy soft mode (where debug emits
 `Content-Security-Policy-Report-Only`), set
 `CSP_ENFORCE_CSP_IN_DEBUG=false`.
 
+**OAuth provider avatars.** When an OAuth provider (Google, GitHub) is enabled and
+has credentials configured, the middleware automatically adds that provider's avatar
+CDN host to `img-src` so profile pictures load without any manual configuration
+(`https://lh3.googleusercontent.com` for Google, `https://avatars.githubusercontent.com`
+for GitHub). Use `CSP_EXTRA_IMG_SRC` only if you need additional image sources beyond
+what the active providers supply.
+
 Configure extra allowed sources via environment variables:
 
 | Variable | Description |
 |----------|-------------|
 | `CSP_EXTRA_SCRIPT_SRC` | Additional script sources |
 | `CSP_EXTRA_STYLE_SRC` | Additional style sources |
-| `CSP_EXTRA_IMG_SRC` | Additional image sources |
+| `CSP_EXTRA_IMG_SRC` | Additional image sources (OAuth provider avatar hosts are added automatically) |
 | `CSP_EXTRA_CONNECT_SRC` | Additional connect sources |
 | `CSP_EXTRA_FONT_SRC` | Additional font sources |
 | `CSP_EXTRA_MEDIA_SRC` | Additional media sources |
