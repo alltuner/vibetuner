@@ -2893,7 +2893,12 @@ hx-vals='js:{"token": getToken()}'
 
 #### Attribute Inheritance Requires `:inherited`
 
-In v4, inheritance must be explicitly opted into:
+In v4, inheritance must be explicitly opted into — every element must carry its own
+`hx-target`, `hx-swap`, `hx-trigger`, etc. Without them, htmx falls back to its
+defaults (target: the element itself; swap: `innerHTML`) silently, with no console
+error. The `<div hx-target="this" hx-swap="outerHTML">` wrapper pattern is the
+common casualty: clicks nest the response inside the child instead of replacing
+the fragment.
 
 ```html
 <!-- Before: <div hx-target="#results"> -->

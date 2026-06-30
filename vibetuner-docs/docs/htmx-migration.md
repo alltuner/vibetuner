@@ -90,6 +90,14 @@ inheritance must be explicitly opted into using the `:inherited` modifier.
 
 Without `:inherited`, each child element must set its own attributes explicitly.
 
+!!! warning "Silent failure: no console error"
+    When a child element has no `hx-target` or `hx-swap` of its own, htmx 4 falls
+    back to its defaults (target: the element itself; swap: `innerHTML`) with no
+    warning. The common `<div hx-target="this" hx-swap="outerHTML">` wrapper pattern
+    is the typical casualty — clicking a child button nests the response *inside* the
+    button instead of replacing the outer fragment. No console error is emitted, and
+    any click handlers on the child stay armed for repeated firing.
+
 Use `:append` to add to an inherited value instead of replacing it:
 
 ```html
@@ -959,16 +967,37 @@ window.htmx = htmx;
 
 ### Attributes no longer inherited by child elements
 
-**Symptom:** Buttons or links inside a container stop working because they relied on
-a parent's `hx-target`, `hx-swap`, or similar attribute.
+**Symptom:** A child element's request silently targets itself with `innerHTML` swap
+instead of using the ancestor's `hx-target`/`hx-swap`. The classic failure is a
+`<div hx-target="this" hx-swap="outerHTML">` wrapper: clicking a child button nests
+the server response *inside* the button rather than replacing the outer fragment.
+No console error is emitted, and click handlers on the child remain armed.
 
-**Cause:** htmx v4 no longer inherits attributes by default.
+**Cause:** htmx v4 no longer inherits attributes from ancestors by default. Every
+element must carry its own `hx-target`, `hx-swap`, `hx-trigger`, etc.
 
-**Fix:** Add `:inherited` to the parent attribute:
+**Fix (each element carries its own attributes):**
 
 ```html
-<!-- Before: <div hx-target="#results"> -->
-<div hx-target:inherited="#results">
+<!-- v2: child inherits hx-target/hx-swap from parent -->
+<div hx-target="this" hx-swap="outerHTML">
+    <button hx-get="/fragment">Refresh</button>
+</div>
+
+<!-- v4: child declares its own attributes -->
+<div>
+    <button hx-get="/fragment"
+            hx-target="closest div"
+            hx-swap="outerHTML">Refresh</button>
+</div>
+```
+
+**Fix (keep the wrapper — add `:inherited` to parent attributes):**
+
+```html
+<div hx-target:inherited="this" hx-swap:inherited="outerHTML">
+    <button hx-get="/fragment">Refresh</button>
+</div>
 ```
 
 ### Preload extension not working
