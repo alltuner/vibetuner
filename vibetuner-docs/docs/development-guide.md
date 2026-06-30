@@ -1070,9 +1070,29 @@ await invalidate("/api/stats")
 # Invalidate a specific query variant
 await invalidate("/api/stats", query_params="page=1")
 
-# Invalidate all matching paths (uses Redis SCAN)
+# Invalidate the entry cached for one vary_on value (e.g. one user)
+await invalidate("/dashboard", vary=str(user.id))
+
+# Invalidate every cached variant of a path (all queries and vary values)
+await invalidate_pattern("/dashboard")
+
+# Invalidate all matching paths with a glob pattern
 await invalidate_pattern("/api/*")
 ```
+
+`invalidate()` deletes one exact entry: the combination of path, sorted
+query string, and `vary` value. For routes cached with `vary_on`, pass the
+same value the `vary_on` callable returns to target that variant.
+
+`invalidate_pattern()` works off per-path key registries that `@cache`
+maintains at write time, so its cost is proportional to the number of
+cached variants — it never runs a full-keyspace Redis `SCAN`, which could
+block a request handler for minutes on a large or remote Redis. A bare
+path (no glob characters) removes every cached variant of that path; a
+glob pattern is matched against the `path?query|vary:value` portion of
+each registered key. Only entries written through `@cache` are tracked —
+entries written by older framework versions are not in the registry and
+simply expire via their own TTL.
 
 ### Cache Control Headers (Browser-Side)
 
