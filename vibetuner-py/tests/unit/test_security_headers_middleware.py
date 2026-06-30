@@ -12,6 +12,12 @@ from starlette.testclient import TestClient
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 
+_PROVIDER_AVATAR_HOSTS: dict[str, str] = {
+    "google": "https://lh3.googleusercontent.com",
+    "github": "https://avatars.githubusercontent.com",
+}
+
+
 @dataclass
 class _SecurityHeadersConfig:
     enabled: bool = True
@@ -24,6 +30,7 @@ class _SecurityHeadersConfig:
     frame_ancestors: str = "'self'"
     enforce_csp_in_debug: bool = True
     style_src_strict: bool = False
+    oauth_providers: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -55,6 +62,11 @@ class SecurityHeadersMiddleware:
     def __init__(self, app: ASGIApp, settings: _Settings | None = None):
         self.app = app
         self._settings = settings or _Settings()
+        self._oauth_img_src = " ".join(
+            _PROVIDER_AVATAR_HOSTS[name]
+            for name in self._settings.security_headers.oauth_providers
+            if name in _PROVIDER_AVATAR_HOSTS
+        )
 
     def _apply_headers(self, headers: MutableHeaders, nonce: str) -> None:
         config = self._settings.security_headers
@@ -70,9 +82,9 @@ class SecurityHeadersMiddleware:
         if config.extra_style_src:
             style_src += f" {config.extra_style_src}"
 
-        img_src = "'self' data:"
-        if config.extra_img_src:
-            img_src += f" {config.extra_img_src}"
+        img_src = " ".join(
+            filter(None, ["'self' data:", self._oauth_img_src, config.extra_img_src])
+        )
 
         media_src = "'self' blob:"
         if config.extra_media_src:
@@ -612,3 +624,62 @@ class TestBareResponseContentType:
         resp = client.get("/")
         assert resp.status_code == 418
         assert resp.headers["Content-Type"] == "application/json"
+
+
+class TestOAuthAvatarImgSrc:
+    """Test that enabled OAuth providers' avatar hosts appear in CSP img-src."""
+
+    def _img_src(self, csp: str) -> str:
+        return next(d.strip() for d in csp.split(";") if "img-src" in d)
+
+    def test_google_provider_adds_avatar_host(self):
+        """Enabling google adds lh3.googleusercontent.com to img-src."""
+        config = _SecurityHeadersConfig(oauth_providers=["google"])
+        app = _make_app(settings=_Settings(security_headers=config))
+        client = TestClient(app)
+        resp = client.get("/")
+        assert "https://lh3.googleusercontent.com" in self._img_src(
+            resp.headers["Content-Security-Policy"]
+        )
+
+    def test_github_provider_adds_avatar_host(self):
+        """Enabling github adds avatars.githubusercontent.com to img-src."""
+        config = _SecurityHeadersConfig(oauth_providers=["github"])
+        app = _make_app(settings=_Settings(security_headers=config))
+        client = TestClient(app)
+        resp = client.get("/")
+        assert "https://avatars.githubusercontent.com" in self._img_src(
+            resp.headers["Content-Security-Policy"]
+        )
+
+    def test_multiple_providers_add_all_avatar_hosts(self):
+        """Enabling multiple providers adds all their avatar hosts to img-src."""
+        config = _SecurityHeadersConfig(oauth_providers=["google", "github"])
+        app = _make_app(settings=_Settings(security_headers=config))
+        client = TestClient(app)
+        resp = client.get("/")
+        img_src = self._img_src(resp.headers["Content-Security-Policy"])
+        assert "https://lh3.googleusercontent.com" in img_src
+        assert "https://avatars.githubusercontent.com" in img_src
+
+    def test_no_providers_does_not_add_avatar_hosts(self):
+        """No oauth providers means no extra avatar hosts in img-src."""
+        app = _make_app()
+        client = TestClient(app)
+        resp = client.get("/")
+        img_src = self._img_src(resp.headers["Content-Security-Policy"])
+        assert "googleusercontent.com" not in img_src
+        assert "githubusercontent.com" not in img_src
+
+    def test_extra_img_src_additive_with_oauth_hosts(self):
+        """extra_img_src is additive alongside oauth avatar hosts."""
+        config = _SecurityHeadersConfig(
+            oauth_providers=["google"],
+            extra_img_src="https://custom.example.com",
+        )
+        app = _make_app(settings=_Settings(security_headers=config))
+        client = TestClient(app)
+        resp = client.get("/")
+        img_src = self._img_src(resp.headers["Content-Security-Policy"])
+        assert "https://lh3.googleusercontent.com" in img_src
+        assert "https://custom.example.com" in img_src

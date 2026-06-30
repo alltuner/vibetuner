@@ -2267,6 +2267,12 @@ instead. Configure extra sources via `CSP_EXTRA_SCRIPT_SRC`,
 `CSP_EXTRA_STYLE_SRC`, `CSP_EXTRA_IMG_SRC`, `CSP_EXTRA_CONNECT_SRC`,
 `CSP_EXTRA_FONT_SRC`, `CSP_EXTRA_MEDIA_SRC` environment variables.
 
+When an OAuth provider (Google, GitHub) is enabled and has credentials
+configured, its avatar CDN host is added to `img-src` automatically
+(`https://lh3.googleusercontent.com` for Google,
+`https://avatars.githubusercontent.com` for GitHub). Use
+`CSP_EXTRA_IMG_SRC` for any additional sources beyond those.
+
 The middleware always sets `X-Content-Type-Options: nosniff`. If a
 response has no `Content-Type` header (e.g. a bare
 `Response(status_code=404)` with no `media_type=`), the middleware fills

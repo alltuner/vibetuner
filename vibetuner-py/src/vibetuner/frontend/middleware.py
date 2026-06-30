@@ -121,6 +121,16 @@ _HX_ELEMENT_WITHOUT_NONCE_RE = re.compile(
 )
 
 
+# Avatar CDN hosts for each supported OAuth provider.
+# When a provider is registered and active, its avatar host is automatically
+# included in the CSP img-src directive so profile pictures load without
+# requiring a manual CSP_EXTRA_IMG_SRC entry.
+_PROVIDER_AVATAR_HOSTS: dict[str, str] = {
+    "google": "https://lh3.googleusercontent.com",
+    "github": "https://avatars.githubusercontent.com",
+}
+
+
 class SecurityHeadersMiddleware:
     """Pure ASGI middleware that adds security headers (CSP with nonce, etc.) to responses.
 
@@ -133,6 +143,13 @@ class SecurityHeadersMiddleware:
 
     def __init__(self, app: ASGIApp):
         self.app = app
+        from .oauth import get_oauth_providers
+
+        self._oauth_img_src = " ".join(
+            _PROVIDER_AVATAR_HOSTS[name]
+            for name in get_oauth_providers()
+            if name in _PROVIDER_AVATAR_HOSTS
+        )
 
     def _apply_headers(self, headers: MutableHeaders, nonce: str) -> None:
         config = settings.security_headers
@@ -148,9 +165,9 @@ class SecurityHeadersMiddleware:
         if config.extra_style_src:
             style_src += f" {config.extra_style_src}"
 
-        img_src = "'self' data:"
-        if config.extra_img_src:
-            img_src += f" {config.extra_img_src}"
+        img_src = " ".join(
+            filter(None, ["'self' data:", self._oauth_img_src, config.extra_img_src])
+        )
 
         media_src = "'self' blob:"
         if config.extra_media_src:

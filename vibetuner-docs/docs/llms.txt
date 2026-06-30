@@ -141,11 +141,13 @@ Important notes:
   environment variables (e.g., `CSP_EXTRA_SCRIPT_SRC`). Set `CSP_STYLE_SRC_STRICT=true`
   to drop `'unsafe-inline'` from `style-src` and require nonces on `<style>` tags
   (opt-in hardening; framework templates already nonce every `<style>`). Requires
-  `vibetuner` ≥ 10.11.0 (older releases silently ignore the env var). The middleware
-  also pairs nosniff with a `text/plain; charset=utf-8` fallback when a response has
-  no `Content-Type` (e.g. a bare `Response(status_code=404)`), so bare responses do
-  not get turned into 0-byte browser downloads (Safari/Firefox) or generic error
-  pages (Chrome)
+  `vibetuner` ≥ 10.11.0 (older releases silently ignore the env var). When an OAuth
+  provider (Google, GitHub) is enabled and has credentials configured, its avatar CDN
+  host is added to `img-src` automatically — no `CSP_EXTRA_IMG_SRC` entry needed for
+  OAuth provider profile pictures. The middleware also pairs nosniff with a
+  `text/plain; charset=utf-8` fallback when a response has no `Content-Type` (e.g. a
+  bare `Response(status_code=404)`), so bare responses do not get turned into 0-byte
+  browser downloads (Safari/Firefox) or generic error pages (Chrome)
 - **htmx CSP Protection (default-on)**: htmx 4.0.0-beta4 ships an `hx-csp` extension
   (renamed from `hx-nonce` in beta3) that gates htmx attribute processing behind the
   page CSP nonce. It is loaded by default from the framework-managed block of
