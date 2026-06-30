@@ -58,7 +58,9 @@ class TestWorkerProcessDaemonFlag:
         # At minimum, the web UI process should be spawned
         assert len(created_processes) >= 1, "Expected at least one child process"
         for proc in created_processes:
-            assert proc.daemon is True, "Child process must be daemon to prevent orphans"
+            assert proc.daemon is True, (
+                "Child process must be daemon to prevent orphans"
+            )
 
     def test_multiple_worker_processes_are_daemon(self, mock_streaq):
         """With multiple workers, all spawned processes should be daemon."""

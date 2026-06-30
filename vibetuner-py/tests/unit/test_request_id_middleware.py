@@ -70,6 +70,7 @@ class TestRequestIdMiddleware:
 
     def test_response_header_present_on_all_status_codes(self):
         """X-Request-ID is returned even on error responses."""
+
         async def error_handler(request):
             return PlainTextResponse("Not Found", status_code=404)
 

@@ -41,7 +41,7 @@ to ensure proper changelog generation.
 feat: add new feature
 feat(scope): specific feature
 
-# Bug Fixes → PATCH release  
+# Bug Fixes → PATCH release
 fix: resolve issue
 fix(scope): specific fix
 

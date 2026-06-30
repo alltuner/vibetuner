@@ -5,7 +5,9 @@ from typing import Annotated
 import typer
 
 
-debug_app = typer.Typer(help="Debug access for deployed applications", no_args_is_help=True)
+debug_app = typer.Typer(
+    help="Debug access for deployed applications", no_args_is_help=True
+)
 
 
 @debug_app.command()

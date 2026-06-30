@@ -481,15 +481,15 @@ class CoreConfiguration(BaseSettings):
         kwargs: dict[str, Any] = {
             "socket_keepalive": self.redis_socket_keepalive,
         }
-        safe_timeout = max(
-            self.redis_socket_timeout, self.worker_idle_timeout * 1.5
-        )
+        safe_timeout = max(self.redis_socket_timeout, self.worker_idle_timeout * 1.5)
         if self.redis_socket_timeout > 0:
             kwargs["stream_timeout"] = safe_timeout
         if self.redis_socket_connect_timeout > 0:
             kwargs["connect_timeout"] = self.redis_socket_connect_timeout
         if self.redis_health_check_interval > 0:
-            safe_idle = max(self.redis_health_check_interval, self.worker_idle_timeout * 1.5)
+            safe_idle = max(
+                self.redis_health_check_interval, self.worker_idle_timeout * 1.5
+            )
             kwargs["max_idle_time"] = int(safe_idle)
         return kwargs
 

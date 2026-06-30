@@ -57,7 +57,9 @@ def _run_worker(mode: Literal["dev", "prod"], port: int, workers: int) -> None:
     web_host = "0.0.0.0"  # noqa: S104
     processes: list[Process] = []
 
-    web_process = Process(target=run_web, args=(web_host, port, worker_path), daemon=True)
+    web_process = Process(
+        target=run_web, args=(web_host, port, worker_path), daemon=True
+    )
     web_process.start()
     processes.append(web_process)
 

@@ -475,7 +475,9 @@ class TestRedisListenerLifecycle:
 class _PsubFailPubSub:
     """Fake pub/sub whose psubscribe raises RedisError until `fail_until` phases have passed."""
 
-    def __init__(self, phase: int, done: asyncio.Event, real_sleep, fail_until: int) -> None:
+    def __init__(
+        self, phase: int, done: asyncio.Event, real_sleep, fail_until: int
+    ) -> None:
         self._phase = phase
         self._done = done
         self._real_sleep = real_sleep
@@ -493,21 +495,27 @@ class _PsubFailPubSub:
     async def listen(self):
         self._done.set()
         while True:
-            await self._real_sleep(3600)  # real sleep so capturing_sleep isn't called here
+            await self._real_sleep(
+                3600
+            )  # real sleep so capturing_sleep isn't called here
             yield {}  # pragma: no cover
 
 
 class _PsubFailClient:
     """Fake Redis client that pairs with _PsubFailPubSub."""
 
-    def __init__(self, phase: int, done: asyncio.Event, real_sleep, fail_until: int) -> None:
+    def __init__(
+        self, phase: int, done: asyncio.Event, real_sleep, fail_until: int
+    ) -> None:
         self._phase = phase
         self._done = done
         self._real_sleep = real_sleep
         self._fail_until = fail_until
 
     def pubsub(self) -> _PsubFailPubSub:
-        return _PsubFailPubSub(self._phase, self._done, self._real_sleep, self._fail_until)
+        return _PsubFailPubSub(
+            self._phase, self._done, self._real_sleep, self._fail_until
+        )
 
     async def aclose(self) -> None:
         pass
@@ -569,7 +577,10 @@ class TestRedisListenerBackoff:
 
     def test_delay_is_capped_at_cap(self):
         assert _next_reconnect_delay(999.0) == _LISTENER_RECONNECT_CAP_DELAY
-        assert _next_reconnect_delay(_LISTENER_RECONNECT_CAP_DELAY) == _LISTENER_RECONNECT_CAP_DELAY
+        assert (
+            _next_reconnect_delay(_LISTENER_RECONNECT_CAP_DELAY)
+            == _LISTENER_RECONNECT_CAP_DELAY
+        )
 
     def test_delay_clamps_just_before_cap(self):
         # 16 * 2 = 32, which exceeds the 30s cap
@@ -589,10 +600,14 @@ class TestRedisListenerBackoff:
         clients = iter(
             [
                 _FlakyClient(fail=True, subscribed=subscribed, reconnected=reconnected),
-                _FlakyClient(fail=False, subscribed=subscribed, reconnected=reconnected),
+                _FlakyClient(
+                    fail=False, subscribed=subscribed, reconnected=reconnected
+                ),
             ]
         )
-        monkeypatch.setattr("vibetuner.redis.create_redis_client", lambda: next(clients))
+        monkeypatch.setattr(
+            "vibetuner.redis.create_redis_client", lambda: next(clients)
+        )
 
         with patch("vibetuner.sse.logger") as mock_logger:
             await start_redis_listener()
@@ -603,7 +618,9 @@ class TestRedisListenerBackoff:
         assert "lost connection" in warning_call
 
     @pytest.mark.asyncio
-    async def test_backoff_delay_grows_when_psubscribe_fails(self, sse_module, monkeypatch):
+    async def test_backoff_delay_grows_when_psubscribe_fails(
+        self, sse_module, monkeypatch
+    ):
         """When psubscribe itself keeps failing (Redis stays down), sleep grows each attempt.
 
         The delay resets only after psubscribe succeeds, so consecutive psubscribe
@@ -641,7 +658,9 @@ class TestRedisListenerBackoff:
         assert sleep_calls[1] > sleep_calls[0]
 
     @pytest.mark.asyncio
-    async def test_backoff_resets_after_successful_psubscribe(self, sse_module, monkeypatch):
+    async def test_backoff_resets_after_successful_psubscribe(
+        self, sse_module, monkeypatch
+    ):
         """Once psubscribe succeeds (Redis is back), delay resets so the next failure starts fresh.
 
         Scenario: psubscribe fails once (delay grows to 2s), then psubscribe succeeds
