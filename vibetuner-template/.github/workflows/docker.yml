@@ -65,7 +65,7 @@ jobs:
 
       - name: Checkout release tag
         if: steps.version.outputs.skip != 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ steps.version.outputs.tag }}
 
