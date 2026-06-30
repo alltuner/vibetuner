@@ -2969,6 +2969,19 @@ the fragment.
 <div hx-target:inherited="#results">
 ```
 
+#### Error Responses (4xx/5xx) Do Not Swap by Default
+
+htmx 4 swaps every response into the target (only `204`/`304` are skipped),
+so a validation `422` would replace a fragment with whatever the error
+handler returns. The framework skeleton ships
+`<meta name="htmx-config" content='{"noSwap": [204, 304, "4xx", "5xx"]}'>`,
+restoring htmx 2 behavior: error bodies are dropped, not swapped. To swap an
+error fragment for a specific element use `hx-status:<code>` (wins over the
+`4xx`/`5xx` wildcards), e.g.
+`hx-status:422="swap:innerHTML target:#errors"`. Overriding the
+`htmx_config` block in `skeleton.html.jinja` replaces this default — keep
+`noSwap` unless you handle error swapping another way.
+
 #### JavaScript Import Changes
 
 ```javascript

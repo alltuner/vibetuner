@@ -132,6 +132,17 @@ the element itself; swap: `innerHTML`) with no console error. To share attribute
 across children, add `:inherited` to the parent attribute (e.g.,
 `hx-target:inherited="this" hx-swap:inherited="outerHTML"`).
 
+**Error responses (4xx/5xx) do not swap by default.** htmx 4 swaps every
+response into the target (only `204`/`304` are skipped), so a validation
+`422` would otherwise replace a fragment with whatever the error handler
+returns. The framework skeleton ships
+`<meta name="htmx-config" content='{"noSwap": [204, 304, "4xx", "5xx"]}'>`
+to restore htmx 2 behavior: error bodies are dropped, not swapped. To swap
+an error fragment for a specific element, use `hx-status:<code>` (it wins
+over the `4xx`/`5xx` wildcards), e.g.
+`hx-status:422="swap:innerHTML target:#errors"`. If you override the
+`htmx_config` block in `skeleton.html.jinja`, keep the `noSwap` default.
+
 See the [HTMX migration guide](https://vibetuner.alltuner.com/htmx-migration/)
 for full details.
 

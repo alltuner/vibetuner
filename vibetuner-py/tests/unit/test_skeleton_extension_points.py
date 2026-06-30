@@ -268,6 +268,45 @@ def test_before_main_and_after_main_wrap_body():
     assert pre < body < post
 
 
+# ── htmx config default ──────────────────────────────────────────────
+
+
+class TestHtmxConfigDefault:
+    def test_ships_a_default_htmx_config_meta(self):
+        """The skeleton ships an htmx-config meta tag out of the box."""
+        out = _render(_make_env())
+        flat = " ".join(out.split())
+        assert 'name="htmx-config"' in flat
+
+    def test_default_disables_error_response_swapping(self):
+        """4xx/5xx response bodies must not swap into the target by default
+        (htmx 2 behavior), so a stray 422 never replaces a fragment with an
+        error page. See issue #2033."""
+        out = _render(_make_env())
+        flat = " ".join(out.split())
+        assert "noSwap" in flat
+        assert '"4xx"' in flat
+        assert '"5xx"' in flat
+
+    def test_default_config_renders_before_bundle_js(self):
+        """htmx reads its meta config when the bundle evaluates, so the
+        default config must precede the bundle script."""
+        out = _render(_make_env())
+        assert out.index("htmx-config") < out.index("bundle.js")
+
+    def test_block_override_replaces_default(self):
+        """A child template overriding the block replaces the framework
+        default entirely."""
+        env = _make_env(
+            child_body=(
+                "{% block htmx_config %}<!-- CUSTOM -->{% endblock htmx_config %}"
+            )
+        )
+        out = _render(env)
+        assert "<!-- CUSTOM -->" in out
+        assert "noSwap" not in out
+
+
 # ── scrollbar gutter ─────────────────────────────────────────────────
 
 

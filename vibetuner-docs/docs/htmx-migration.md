@@ -37,12 +37,21 @@ In v2, `4xx` and `5xx` responses were not swapped. In v4, if your server
 returns HTML with a `422` or `500`, that HTML gets swapped into the target.
 This means your error responses need to produce valid swap content.
 
+**Vibetuner ships the v2 behavior by default.** The framework skeleton
+includes `<meta name="htmx-config" content='{"noSwap": [204, 304, "4xx",
+"5xx"]}'>`, so scaffolded apps drop error bodies instead of swapping them.
+A stray validation `422` never replaces an inline-edit fragment with an
+error page. Override the `htmx_config` block in `skeleton.html.jinja` to
+change this (keep `noSwap` unless you handle error swapping another way).
+
 **Options:**
 
-- Design error responses as HTML fragments suitable for swapping
+- Design error responses as HTML fragments suitable for swapping, then
+  opt a specific element back into swapping with `hx-status`
 - Use the new [`hx-status`](#per-status-code-swap-control) attribute for
-  fine-grained control
-- Revert globally: `htmx.config.noSwap = [204, 304, '4xx', '5xx']`
+  fine-grained control (it wins over the `4xx`/`5xx` wildcards)
+- The skeleton already reverts globally via
+  `noSwap: [204, 304, '4xx', '5xx']`
 
 ## Per-Status-Code Swap Control
 
