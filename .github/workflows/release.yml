@@ -649,7 +649,7 @@ jobs:
           path: ./
 
       - name: Setup Node.js (for npm CLI)
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "latest"
 
@@ -689,7 +689,7 @@ jobs:
           path: ./
 
       - name: Setup Node.js (for npm CLI)
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "latest"
 
