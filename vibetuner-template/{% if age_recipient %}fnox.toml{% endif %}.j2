@@ -1,0 +1,13 @@
+# ABOUTME: fnox secrets for this project; age-encrypted values are safe to commit.
+# ABOUTME: Decrypted at deploy time by `fnox exec` — see .justfiles/cicd.justfile.
+
+default_provider = "age"
+
+[providers.age]
+type = "age"
+recipients = ["{{ age_recipient }}"]
+
+# Add secrets with `fnox set NAME`, then declare them in compose.secrets.yml.
+# Never paste a decrypted value into a shell argument — prefer stdin or the
+# interactive prompt.
+[secrets]
