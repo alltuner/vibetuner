@@ -87,6 +87,15 @@ docker_registry:
   default: "localhost:5050"
   when: "{{ fqdn }}"
 
+age_recipient:
+  type: str
+  help: |
+    age public key that production secrets are encrypted to, for fnox.
+    Leave blank to keep secrets in a plaintext .env instead.
+  placeholder: age1...
+  default: ""
+  when: "{{ fqdn }}"
+
 use_self_hosted_runner:
   type: bool
   help: Include a GitHub Actions workflow for building Docker images on a self-hosted runner?

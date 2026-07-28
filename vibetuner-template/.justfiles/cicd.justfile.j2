@@ -41,10 +41,24 @@ release: _check-clean _check-last-commit-tagged
     ENVIRONMENT=prod docker buildx bake -f compose.prod.yml --push
 
 # Deploys to a remote host, pulling from the configured registry.
+{%- if age_recipient %}
+# Secrets are decrypted here, at deploy time, and never reach the host or a
+# plaintext file. --env-file /dev/null stops Compose interpolating a local
+# .env, so a deploy outside `fnox exec` fails loudly rather than using stale
+# values. They live in compose.secrets.yml and not compose.prod.yml because
+# `buildx bake` interpolates the whole file it builds from, with no secrets set.
+{%- endif %}
 [group('CI/CD')]
 deploy-latest HOST:
     #!/usr/bin/env bash
     set -euo pipefail
     eval "$(just _project-vars)"
-    DOCKER_HOST="ssh://{{ HOST }}" ENVIRONMENT=prod \
+{%- if age_recipient %}
+    DOCKER_HOST="ssh://{{ '{{ HOST }}' }}" ENVIRONMENT=prod \
+    fnox exec -- docker compose --env-file /dev/null \
+      -f compose.prod.yml -f compose.secrets.yml \
+      up -d --remove-orphans --pull always
+{%- else %}
+    DOCKER_HOST="ssh://{{ '{{ HOST }}' }}" ENVIRONMENT=prod \
     docker compose -f compose.prod.yml up -d --remove-orphans --pull always
+{%- endif %}
