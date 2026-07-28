@@ -2,9 +2,11 @@ services:
   worker:
     image: ${DOCKER_REGISTRY:-localhost:5050}/${COMPOSE_PROJECT_NAME}:${VERSION:-latest}
     restart: unless-stopped
+{%- if not age_recipient %}
     env_file:
       - path: .env
         required: false
+{%- endif %}
     command: ["prod", "worker"]
     healthcheck:
       test: ["CMD", "vibetuner", "worker-health"]
@@ -45,9 +47,11 @@ services:
       retries: 3
       start_period: 5s
     restart: unless-stopped
+{%- if not age_recipient %}
     env_file:
       - path: .env
         required: false
+{%- endif %}
     labels:
       com.centurylinklabs.watchtower.enable: "${ENABLE_WATCHTOWER:-false}"
 
