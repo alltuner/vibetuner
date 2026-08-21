@@ -132,11 +132,15 @@ uvx git+https://github.com/alltuner/vibetuner@BRANCH_NAME#subdirectory=vibetuner
 just docs-serve
 # Build docs
 just docs-build
-# Deploy docs to GitHub Pages
-just docs-deploy
 ```
 
 Visit [localhost:8000](http://localhost:8000) to view the documentation site.
+
+There is no deploy recipe. Merging to `main` runs `publish-site.yml`, which
+builds the docs and attaches them to the current GitHub Release as
+`site.tar.gz`. The fleet's site publisher syncs that asset into the bucket
+serving vibetuner.alltuner.com; nothing in this repo holds a storage
+credential.
 
 ### Adding New Features
 
@@ -207,7 +211,6 @@ When you push a tag (e.g., `v0.0.2`), GitHub Actions will:
 1. Build both Python and JavaScript packages
 2. Publish `vibetuner` to PyPI
 3. Publish `@alltuner/vibetuner` to npm
-4. Deploy documentation to GitHub Pages
 
 The workflow is in `.github/workflows/publish.yml`.
 
@@ -344,7 +347,6 @@ just clean               # Clean test artifacts
 # Documentation
 just docs-serve          # Serve docs with live reload
 just docs-build          # Build docs
-just docs-deploy         # Deploy docs to GitHub Pages
 # Releases
 just bump-patch          # Bump patch version
 just bump-minor          # Bump minor version

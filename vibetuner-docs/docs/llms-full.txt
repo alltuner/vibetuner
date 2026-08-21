@@ -3664,7 +3664,8 @@ just dev  # Should start without errors
 ### Internal Documentation
 
 The `vibetuner-docs/docs/` directory contains the source files for all documentation. These are built using MkDocs and
-deployed to GitHub Pages.
+attached to the current GitHub Release as `site.tar.gz`, which the fleet's site publisher syncs into the bucket serving
+vibetuner.alltuner.com.
 
 **Documentation Structure**:
 
