@@ -1,5 +1,40 @@
 # Changelog
 
+## [12.1.0](https://github.com/alltuner/vibetuner/compare/v12.0.0...v12.1.0) (2026-08-21)
+
+
+### Features
+
+* **site:** publish through the fleet's registry instead of GitHub Pages ([#2156](https://github.com/alltuner/vibetuner/issues/2156)) ([d3e43d8](https://github.com/alltuner/vibetuner/commit/d3e43d8e84f2173d86f7b7f94b29778ffc9585fd))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump asyncer from 0.0.17 to 0.0.18 ([#2084](https://github.com/alltuner/vibetuner/issues/2084)) ([6088c71](https://github.com/alltuner/vibetuner/commit/6088c7109263d3deb0ca9cf2e3ec043e2d7ab290))
+* **deps:** bump asyncer from 0.0.17 to 0.0.18 in /vibetuner-py ([#2083](https://github.com/alltuner/vibetuner/issues/2083)) ([7365ba7](https://github.com/alltuner/vibetuner/commit/7365ba743e5549e004395ce907b10a31a6ebd203))
+* **deps:** bump click from 8.4.1 to 8.4.2 ([#2090](https://github.com/alltuner/vibetuner/issues/2090)) ([848f5c0](https://github.com/alltuner/vibetuner/commit/848f5c0c46ffcae5b3ca6ab1c2ffb8d56412daf3))
+* **deps:** bump cloudflare from 5.2.0 to 5.4.0 in /vibetuner-py ([#2089](https://github.com/alltuner/vibetuner/issues/2089)) ([b8f7516](https://github.com/alltuner/vibetuner/commit/b8f7516591a28dee0bdd021f637f580b7c5b086a))
+* **deps:** bump copier from 9.15.1 to 9.16.0 ([#2088](https://github.com/alltuner/vibetuner/issues/2088)) ([09c41d6](https://github.com/alltuner/vibetuner/commit/09c41d69e27d38a1972e3f2932c1fdf7007c210d))
+* **deps:** bump djlint from 1.39.2 to 1.39.4 in /vibetuner-py ([#2082](https://github.com/alltuner/vibetuner/issues/2082)) ([2798663](https://github.com/alltuner/vibetuner/commit/27986634239b37de7401e7f0c3d6a84bab3fdc15))
+* **deps:** bump gitpython from 3.1.50 to 3.1.54 ([#2110](https://github.com/alltuner/vibetuner/issues/2110)) ([7aa3180](https://github.com/alltuner/vibetuner/commit/7aa3180351e16321cf014a9f4f0a7f211a4eff5b))
+* **deps:** bump gitpython from 3.1.50 to 3.1.54 in /vibetuner-py ([#2109](https://github.com/alltuner/vibetuner/issues/2109)) ([11dce6d](https://github.com/alltuner/vibetuner/commit/11dce6d367f87bcb786f417aac25a64cc42116c5))
+* **deps:** bump rumdl from 0.2.9 to 0.2.25 ([#2091](https://github.com/alltuner/vibetuner/issues/2091)) ([8e537e7](https://github.com/alltuner/vibetuner/commit/8e537e76bd32cff682e75b5adff043f6e2a45558))
+* **deps:** bump slowapi from 0.1.9 to 0.1.10 in /vibetuner-py ([#2087](https://github.com/alltuner/vibetuner/issues/2087)) ([60b2b27](https://github.com/alltuner/vibetuner/commit/60b2b27c4e28b0be96d3e0219bb0d7115cd14928))
+* **deps:** bump typer from 0.26.7 to 0.26.8 in /vibetuner-py ([#2085](https://github.com/alltuner/vibetuner/issues/2085)) ([66c6246](https://github.com/alltuner/vibetuner/commit/66c6246092a47faa22544288c3e8d95444912073))
+* **deps:** sync vibetuner-py lockfile with pyproject constraints ([#2115](https://github.com/alltuner/vibetuner/issues/2115)) ([23d0fa6](https://github.com/alltuner/vibetuner/commit/23d0fa680bfa7a1777de6b6d6814508977ca4385))
+* **deps:** update actions/setup-node action to v7 ([#2100](https://github.com/alltuner/vibetuner/issues/2100)) ([f8893d1](https://github.com/alltuner/vibetuner/commit/f8893d1c7302ade41adbda20ce04ec3c74e7d55d))
+* **deps:** update actions/setup-python action to v7 ([#2104](https://github.com/alltuner/vibetuner/issues/2104)) ([70b353f](https://github.com/alltuner/vibetuner/commit/70b353ffeba076137077e784b3e4063348547b3c))
+* **deps:** update anthropics/claude-code-action action to v1.0.183 ([#2093](https://github.com/alltuner/vibetuner/issues/2093)) ([9cc7551](https://github.com/alltuner/vibetuner/commit/9cc7551591a6f6a6a2b4cf4d99f49f9932630405))
+* **deps:** update astral-sh/setup-uv action to v9 ([#2105](https://github.com/alltuner/vibetuner/issues/2105)) ([f2db067](https://github.com/alltuner/vibetuner/commit/f2db067ccb662b3d0e15f2c4e9d8060f1698d8fe))
+* **deps:** update granian[pname] requirement from &gt;=2.7.5 to &gt;=2.7.9 ([#2086](https://github.com/alltuner/vibetuner/issues/2086)) ([18ae2cf](https://github.com/alltuner/vibetuner/commit/18ae2cf30996519285361f7f48f25115955c3b57))
+* **deps:** update mongo docker tag to v8.3.7 ([#2111](https://github.com/alltuner/vibetuner/issues/2111)) ([af180db](https://github.com/alltuner/vibetuner/commit/af180db45cff4ce7a64a3d4ee1aaeef0070d323b))
+* drop the GitHub Pages jobs from the release workflow ([#2157](https://github.com/alltuner/vibetuner/issues/2157)) ([5d55864](https://github.com/alltuner/vibetuner/commit/5d55864e8bc3a3709a62dc9368c35d130f3a6c49))
+
+
+### Documentation Updates
+
+* the docs site publishes from a release asset, not GitHub Pages ([#2158](https://github.com/alltuner/vibetuner/issues/2158)) ([a9dc7e8](https://github.com/alltuner/vibetuner/commit/a9dc7e813d3386ced60b81c53b327655c45bd81b))
+
 ## [12.0.0](https://github.com/alltuner/vibetuner/compare/v11.1.0...v12.0.0) (2026-06-30)
 
 
