@@ -141,6 +141,31 @@ just release                 # Build and release production image
 just deploy-latest HOST      # Deploy to remote host
 ```
 
+### Production Secrets
+
+Answer `age_recipient` at generation time to keep production secrets in an
+age-encrypted `fnox.toml`, which is safe to commit. `deploy-latest` then runs
+Compose under `fnox exec`, so values are decrypted on the deploying machine and
+never reach the host or a plaintext file. Leave the answer blank to keep the
+plaintext `.env` flow instead.
+
+Secrets live in `compose.secrets.yml`, an overlay applied only at deploy —
+**not** in `compose.prod.yml`. CI builds the image with
+`docker buildx bake -f compose.prod.yml`, which interpolates that entire file
+rather than only its build sections, so a `${VAR:?}` guard there fails every
+build with no secrets set.
+
+Adding a secret means two places:
+
+```bash
+fnox set SOME_KEY            # prompts; the value is encrypted into fnox.toml
+# then declare SOME_KEY in the x-secrets map in compose.secrets.yml
+```
+
+The deploy passes `--env-file /dev/null` so Compose never interpolates a local
+`.env`. A deploy outside `fnox exec` therefore fails loudly instead of starting
+the app with blank credentials or stale file values.
+
 ### Scaffolding Updates
 
 ```bash
