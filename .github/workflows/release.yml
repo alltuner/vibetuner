@@ -34,7 +34,6 @@ permissions:
   issues: write
   pull-requests: write
   id-token: write
-  pages: write
 
 concurrency:
   group: "release"
@@ -544,61 +543,6 @@ jobs:
           path: vibetuner-jinja/*.tgz
 
   # Build documentation
-  build-docs:
-    needs: [create-releases, plan-release]
-    if: |
-      always() &&
-      ((needs.create-releases.result == 'success' && needs.create-releases.outputs.releases_created == 'true') ||
-       github.event_name == 'release' ||
-       github.event_name == 'workflow_dispatch') &&
-      needs.plan-release.outputs.docs-needed == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    outputs:
-      success: ${{ steps.build.outcome }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Download version files
-        uses: actions/download-artifact@v8
-        with:
-          name: version-files
-          path: ./
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v9.0.0
-
-      - name: Setup Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: "3.14"
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v6
-
-      - name: Build docs
-        id: build
-        working-directory: vibetuner-docs
-        run: |
-          uvx --with mkdocs-material mkdocs build --strict --site-dir site
-          echo "Build completed successfully"
-
-      - name: Add CNAME
-        if: github.event_name == 'release'
-        run: |
-          echo "vibetuner.alltuner.com" > vibetuner-docs/site/CNAME
-
-      - name: Upload docs artifacts
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: vibetuner-docs/site
-
-  # Publish Python package
   publish-python:
     needs: [build-python, plan-release]
     if: |
@@ -707,18 +651,3 @@ jobs:
           npm publish "./$TARBALL" --access public
 
   # Deploy documentation
-  deploy-docs:
-    needs: [build-docs]
-    if: |
-      always() &&
-      needs.build-docs.result == 'success' &&
-      (github.event_name == 'release' || github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
