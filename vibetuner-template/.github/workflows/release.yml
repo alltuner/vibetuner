@@ -28,7 +28,7 @@ jobs:
 
       - name: Install uv
         if: steps.release.outputs.prs_created == 'true'
-        uses: astral-sh/setup-uv@v9.0.0
+        uses: astral-sh/setup-uv@v10.0.1
 
       - name: Regenerate uv.lock on release PR
         if: steps.release.outputs.prs_created == 'true'
