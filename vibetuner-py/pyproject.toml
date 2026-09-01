@@ -72,7 +72,7 @@ dev = [
   # These are the development dependencies of AllTuner's blessed stack
   "babel>=2.18.0",
   "cloudflare>=5.2.0",
-  "djlint>=1.39.0",
+  "djlint>=1.42.3",
   "granian[pname,reload]>=2.7.9",
   "pytest>=9.1.1",
   "pytest-asyncio>=1.4.0",
