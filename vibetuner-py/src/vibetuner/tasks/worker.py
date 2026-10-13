@@ -3,10 +3,11 @@
 from streaq import Worker
 
 from vibetuner.config import settings
+from vibetuner.context import Context
 from vibetuner.tasks.lifespan import lifespan
 
 
-worker: Worker | None = (
+worker: Worker[Context] | None = (
     Worker(
         redis_url=str(settings.redis_url),
         redis_kwargs=settings.worker_redis_kwargs,
@@ -20,7 +21,7 @@ worker: Worker | None = (
 )
 
 
-def get_worker() -> Worker:
+def get_worker() -> Worker[Context]:
     """Get the worker instance, raising if workers are not configured.
 
     Use this instead of importing `worker` directly to get proper type checking:
