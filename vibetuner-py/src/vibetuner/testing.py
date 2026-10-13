@@ -96,7 +96,7 @@ async def _vibetuner_db_session() -> AsyncGenerator[str, None]:
     from beanie import init_beanie
 
     from vibetuner.config import settings
-    from vibetuner.mongo import _mongo_endpoint, get_all_models
+    from vibetuner.mongo import _mongo_endpoint, create_client, get_all_models
 
     test_url = settings.resolved_test_mongodb_url
     if test_url is None:
@@ -120,10 +120,7 @@ async def _vibetuner_db_session() -> AsyncGenerator[str, None]:
     type(settings).mongo_dbname = property(lambda self: test_db_name)  # type: ignore[assignment]  # ty: ignore[invalid-assignment]
     settings.__dict__.pop("mongo_dbname", None)
 
-    session_client: AsyncMongoClient = AsyncMongoClient(
-        host=str(test_url),
-        compressors=["zstd"],
-    )
+    session_client: AsyncMongoClient = create_client(str(test_url))
     try:
         await init_beanie(
             database=session_client[test_db_name],

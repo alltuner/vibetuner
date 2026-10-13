@@ -1,7 +1,6 @@
 import asyncio
 import os
 import time
-from datetime import datetime
 from typing import Any
 
 from fastapi import APIRouter
@@ -9,6 +8,7 @@ from fastapi import APIRouter
 from vibetuner.config import settings
 from vibetuner.logging import logger
 from vibetuner.paths import root as root_path
+from vibetuner.time import now
 
 
 router = APIRouter(prefix="/health")
@@ -26,7 +26,7 @@ def _sanitize_error(e: Exception, *, service: str = "unknown") -> str:
 
 
 # Store startup time for instance identification and uptime calculation
-_startup_time = datetime.now()
+_startup_time = now()
 _startup_monotonic = time.monotonic()
 
 

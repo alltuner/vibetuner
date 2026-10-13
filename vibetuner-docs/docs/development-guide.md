@@ -317,6 +317,25 @@ For SQL databases, create tables with: `vibetuner db create-schema`
     Projects that only use SQLModel/Postgres do not need `MONGODB_URL`.
     The framework silently skips MongoDB initialization when the URL is not set.
 
+#### Datetimes Are Timezone-Aware (MongoDB)
+
+The framework's MongoDB client is created with `tz_aware=True`, so every `datetime` loaded from
+MongoDB comes back timezone-aware in UTC, matching what `vibetuner.time.now()` and
+`TimeStampMixin` write. Compare and subtract loaded values against aware datetimes:
+
+```python
+from datetime import timedelta
+from vibetuner.time import now
+
+post = await Post.find_one(Post.title == "Draft")
+if now() - post.db_insert_dt > timedelta(days=30):  # both sides are aware
+    ...
+```
+
+Avoid `datetime.utcnow()` and bare `datetime.now()`: they return naive values. Ordering or
+subtracting naive and aware datetimes raises `TypeError`, and `==` between them is always `False`.
+Naive values your code writes are stored as UTC and come back aware.
+
 #### Soft Delete
 
 Instead of permanently removing documents, soft delete marks them with a `deleted_at` timestamp.

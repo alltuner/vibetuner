@@ -321,6 +321,30 @@ return await cls.find_one(Eq(cls.author.id, user.id))  # ty: ignore[unresolved-a
 `ty` reports directives that stop matching (`unused-ignore-comment`), so keep the
 comment on the erroring line and remove it when no longer needed.
 
+##### Timezone-Aware Datetimes (MongoDB)
+
+The MongoDB client is created with `tz_aware=True`: every `datetime` loaded from MongoDB is
+timezone-aware UTC, matching what `vibetuner.time.now()` and `TimeStampMixin` write. Compare
+loaded values only with aware datetimes:
+
+```python
+from datetime import UTC, datetime, timedelta
+from vibetuner.time import now
+
+post = await Post.get(post_id)
+now() - post.db_insert_dt > timedelta(days=30)        # OK
+post.db_insert_dt > datetime(2026, 1, 1, tzinfo=UTC)  # OK
+post.db_insert_dt > datetime.utcnow()                 # TypeError: naive vs aware
+post.db_insert_dt == datetime.utcnow()                # always False, no error
+```
+
+Naive values your code writes are stored as UTC and come back aware.
+
+**Migration (breaking change, v12 → v13):** before this change loaded datetimes were naive.
+Replace `datetime.utcnow()` / bare `datetime.now()` in comparisons with `vibetuner.time.now()`,
+and drop any `.replace(tzinfo=UTC)` or `field_validator` that reattached UTC to loaded values.
+No data migration is needed.
+
 ##### SQL (SQLModel)
 
 ```python

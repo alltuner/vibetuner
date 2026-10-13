@@ -261,6 +261,12 @@ class Post(Document, TimeStampMixin):
 
 Export from `__init__.py`, list in `tune.py` `models=[]`.
 
+Datetimes loaded from MongoDB are timezone-aware UTC (the client uses
+`tz_aware=True`). Compare them with `vibetuner.time.now()` or
+`datetime.now(UTC)`, never `datetime.utcnow()` or bare `datetime.now()`:
+ordering or subtracting naive and aware datetimes raises `TypeError`, and
+`==` between them is always `False`.
+
 `just lint` (`ty`) reports spurious `unresolved-attribute` on Beanie
 class-level queries: an optional link in a query
 (`field: Link[X] | None` with `cls.field.id`) or a query in a classmethod

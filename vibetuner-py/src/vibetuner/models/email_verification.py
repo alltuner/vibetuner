@@ -66,14 +66,7 @@ class EmailVerificationTokenModel(Document):
         if not verification_token:
             return None
 
-        # Ensure expires_at is timezone-aware for comparison
-        expires_at = verification_token.expires_at
-        if expires_at.tzinfo is None:
-            from datetime import timezone
-
-            expires_at = expires_at.replace(tzinfo=timezone.utc)
-
-        if expires_at < now():
+        if verification_token.expires_at < now():
             return None
 
         # Mark token as used

@@ -194,4 +194,6 @@ expiry). Uses `SESSION_KEY` from `.env`.
 
 Uses `pymongo` (not `motor`). Use `AsyncMongoClient` and
 `get_pymongo_collection()`. Existing documents may have `None` for
-fields with Pydantic defaults — include `None` in filters.
+fields with Pydantic defaults — include `None` in filters. Pass
+`tz_aware=True` to any `AsyncMongoClient` you create so datetimes load
+as timezone-aware UTC, like the framework's client.
