@@ -1,7 +1,7 @@
 # ABOUTME: Integration test for vibetuner_db against a Dockerised MongoDB.
-# ABOUTME: Verifies isolation, session DB reuse, indexes, views, and time-series collections.
+# ABOUTME: Verifies isolation, indexes, views, time-series collections, and tz-aware datetimes.
 # ruff: noqa: S101
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 import pytest
 import vibetuner.mongo as mongo_mod
@@ -10,6 +10,8 @@ from pydantic import Field
 from pymongo import IndexModel
 from testcontainers.mongodb import MongoDbContainer
 from vibetuner.config import settings
+from vibetuner.models.config_entry import ConfigEntryModel
+from vibetuner.models.email_verification import EmailVerificationTokenModel
 from vibetuner.mongo import get_all_models
 
 
@@ -107,3 +109,28 @@ class TestVibetunerDbIsolation:
         await FixtureProbe(label="viewed").insert()
         labels = [doc.label for doc in await FixtureProbeLabels.find_all().to_list()]
         assert labels == ["viewed"]
+
+
+@pytest.mark.integration
+class TestDatetimeRoundTrip:
+    async def test_loaded_datetimes_are_timezone_aware_utc(self, vibetuner_db):
+        created = await EmailVerificationTokenModel.create_token("a@example.com")
+        loaded = await EmailVerificationTokenModel.get(created.id)
+
+        assert loaded is not None
+        assert loaded.expires_at.utcoffset() == timedelta(0)
+
+    async def test_timestamp_mixin_age_works_on_loaded_documents(self, vibetuner_db):
+        entry = await ConfigEntryModel(key="features.probe", value="on").insert()
+        loaded = await ConfigEntryModel.get(entry.id)
+
+        assert loaded is not None
+        assert timedelta(0) <= loaded.age() < timedelta(minutes=1)
+
+    async def test_verify_token_accepts_unexpired_token(self, vibetuner_db):
+        created = await EmailVerificationTokenModel.create_token("b@example.com")
+
+        verified = await EmailVerificationTokenModel.verify_token(created.token)
+
+        assert verified is not None
+        assert verified.used is True

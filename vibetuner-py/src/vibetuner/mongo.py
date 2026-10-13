@@ -41,6 +41,16 @@ def _mongo_endpoint(url: object) -> str:
     return "unknown"
 
 
+def create_client(url: str) -> AsyncMongoClient:
+    """Create a MongoDB client with the framework's standard options.
+
+    ``tz_aware=True`` makes BSON datetimes decode as timezone-aware UTC, so
+    values loaded from the database compare and subtract cleanly with
+    ``vibetuner.time.now()`` and anything else the framework writes.
+    """
+    return AsyncMongoClient(host=url, compressors=["zstd"], tz_aware=True)
+
+
 # Global singleton, created lazily
 mongo_client: Optional[AsyncMongoClient] = None
 
@@ -56,10 +66,7 @@ def _ensure_client() -> None:
         return
 
     if mongo_client is None:
-        mongo_client = AsyncMongoClient(
-            host=str(settings.mongodb_url),
-            compressors=["zstd"],
-        )
+        mongo_client = create_client(str(settings.mongodb_url))
         logger.debug("MongoDB client created.")
 
 

@@ -82,6 +82,26 @@ early.
 
 ### Past breaking changes
 
+#### v12 → v13: MongoDB datetimes load as timezone-aware UTC
+
+The framework's MongoDB client now uses `tz_aware=True`. Every `datetime` loaded from MongoDB
+(including `TimeStampMixin`'s `db_insert_dt` / `db_update_dt`) is timezone-aware UTC instead of
+naive. Before, a value saved as aware UTC came back naive, so equality checks against freshly
+built aware values silently failed and `TimeStampMixin.age()` raised `TypeError` on loaded
+documents.
+
+What to check in your app:
+
+- Code that compares or subtracts loaded datetimes with naive ones (`datetime.utcnow()`, bare
+  `datetime.now()`, `datetime(2026, 1, 1)`) now raises `TypeError`. Use `vibetuner.time.now()` or
+  `datetime.now(UTC)` and build literals with `tzinfo=UTC`.
+- Code that called `.replace(tzinfo=UTC)` on loaded values, or a `field_validator` that reattached
+  UTC to naive values, is now redundant and can be removed.
+- No data migration is needed. BSON stores datetimes as UTC; only the decoded Python type changes.
+  Naive values your code writes are still stored as UTC and now come back aware.
+
+Full notes: [issue #2159](https://github.com/alltuner/vibetuner/issues/2159).
+
 #### v10 → v11: `WorkerDepends()` / `TaskDepends()` removed
 
 Vibetuner v11 upgraded to streaq v7, which removed the `WorkerDepends()` and
