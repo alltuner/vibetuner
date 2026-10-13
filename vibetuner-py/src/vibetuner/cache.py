@@ -146,7 +146,7 @@ async def _cached_call(
                 return _restore_response(cached)
     except CONNECTION_ERRORS:
         logger.debug("Redis cache unavailable, executing handler directly")
-        reset_redis_client()
+        await reset_redis_client()
         client = None
     except Exception:  # noqa: BLE001
         logger.debug("Redis cache error, executing handler directly")
@@ -167,7 +167,7 @@ async def _cached_call(
             )
     except CONNECTION_ERRORS:
         logger.debug("Redis cache unavailable, response not cached")
-        reset_redis_client()
+        await reset_redis_client()
     except Exception:  # noqa: BLE001
         logger.debug("Redis cache error, response not cached")
 
@@ -205,7 +205,7 @@ async def invalidate(
         return deleted > 0
     except CONNECTION_ERRORS:
         logger.debug("Redis unavailable during cache invalidation")
-        reset_redis_client()
+        await reset_redis_client()
         return False
     except Exception:  # noqa: BLE001
         logger.debug("Cache invalidation failed")
@@ -266,7 +266,7 @@ async def invalidate_pattern(pattern: str) -> int:
         return deleted
     except CONNECTION_ERRORS:
         logger.debug("Redis unavailable during pattern invalidation")
-        reset_redis_client()
+        await reset_redis_client()
         return 0
     except Exception:  # noqa: BLE001
         logger.debug("Pattern invalidation failed")

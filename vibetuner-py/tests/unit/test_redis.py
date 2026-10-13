@@ -79,9 +79,23 @@ class TestCloseRedisClient:
 class TestResetRedisClient:
     """Test client reset after connection errors."""
 
-    def test_resets_to_none(self):
-        redis_mod._client = AsyncMock()
-        redis_mod.reset_redis_client()
+    async def test_resets_to_none_and_closes_dropped_client(self):
+        old_client = AsyncMock()
+        redis_mod._client = old_client
+        await redis_mod.reset_redis_client()
+        assert redis_mod._client is None
+        old_client.aclose.assert_awaited_once()
+
+    async def test_close_failure_still_resets(self):
+        old_client = AsyncMock()
+        old_client.aclose.side_effect = ConnectionError("gone")
+        redis_mod._client = old_client
+        await redis_mod.reset_redis_client()
+        assert redis_mod._client is None
+
+    async def test_noop_when_no_client(self):
+        redis_mod._client = None
+        await redis_mod.reset_redis_client()
         assert redis_mod._client is None
 
 

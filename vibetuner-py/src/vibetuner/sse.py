@@ -316,7 +316,7 @@ async def _publish_to_redis(channel: str, payload: dict[str, str]) -> None:
         logger.debug(
             "Redis SSE publish failed due to connection error, resetting client"
         )
-        reset_redis_client()
+        await reset_redis_client()
     except Exception:  # noqa: BLE001
         logger.debug("Redis SSE publish failed (local dispatch still succeeded)")
 

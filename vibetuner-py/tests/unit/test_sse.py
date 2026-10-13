@@ -357,10 +357,11 @@ class TestRedisPublishClient:
         async def _get_client() -> _FailingPublishClient:
             return _FailingPublishClient(error)
 
+        async def _reset() -> None:
+            resets.append(None)
+
         monkeypatch.setattr("vibetuner.redis.get_redis_client", _get_client)
-        monkeypatch.setattr(
-            "vibetuner.redis.reset_redis_client", lambda: resets.append(None)
-        )
+        monkeypatch.setattr("vibetuner.redis.reset_redis_client", _reset)
         await _publish_to_redis("room", {"event": "update", "data": "1"})
 
         assert len(resets) == 1
