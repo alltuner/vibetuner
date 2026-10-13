@@ -2,7 +2,7 @@
 # ABOUTME: Checks broadcasts follow the shared client when it is recreated against another Redis.
 # ruff: noqa: S101
 import json
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncGenerator, Iterator
 from contextlib import ExitStack, asynccontextmanager
 from typing import Any
 
@@ -36,7 +36,7 @@ def redis_urls(docker_host: None) -> Iterator[tuple[str, str]]:
 
 
 @asynccontextmanager
-async def _subscribed(url: str, channel: str) -> AsyncIterator[PubSub]:
+async def _subscribed(url: str, channel: str) -> AsyncGenerator[PubSub, None]:
     client = aioredis.from_url(url)
     pubsub = client.pubsub()
     try:
