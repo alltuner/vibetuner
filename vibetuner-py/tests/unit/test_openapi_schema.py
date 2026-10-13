@@ -12,7 +12,7 @@ class TestVibetunerAppApiRoutes:
     def test_api_routes_defaults_to_empty(self):
         """api_routes defaults to an empty list."""
         app = VibetunerApp()
-        assert app.api_routes == []
+        assert app.api_routes == ()
 
     def test_accepts_api_routes(self):
         """VibetunerApp accepts APIRouter instances in api_routes."""

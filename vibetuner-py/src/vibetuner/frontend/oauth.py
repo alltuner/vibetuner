@@ -1,5 +1,6 @@
 # ABOUTME: OAuth provider integration using Authlib.
 # ABOUTME: Handles provider registration, builtin configs, and auth flow handlers.
+from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, Any, Optional
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
@@ -190,8 +191,8 @@ _BUILTIN_PROVIDERS: dict[str, OauthProviderModel] = {
 
 
 def auto_register_providers(
-    provider_names: list[str],
-    custom_providers: dict[str, OauthProviderModel] | None = None,
+    provider_names: Sequence[str],
+    custom_providers: Mapping[str, OauthProviderModel] | None = None,
 ) -> None:
     """Register OAuth providers from builtin configs, settings credentials, and custom configs."""
     from vibetuner.config import settings
