@@ -8,7 +8,7 @@ import vibetuner.mongo as mongo_mod
 from beanie import Document, TimeSeriesConfig, View
 from pydantic import Field
 from pymongo import IndexModel
-from testcontainers.mongodb import MongoDbContainer
+from testcontainers.community.mongodb import MongoDbContainer
 from vibetuner.config import settings
 from vibetuner.models.config_entry import ConfigEntryModel
 from vibetuner.models.email_verification import EmailVerificationTokenModel

@@ -5,8 +5,8 @@ on:
   push:
     branches: [main]
 
-# Unit tests run on a Python version matrix; lint and type-check use the
-# project's primary Python version (from root .python-version).
+# Unit tests run on a Python version matrix; integration tests, lint and
+# type-check use the project's primary Python version (from root .python-version).
 jobs:
   test:
     name: Test (Python ${{ matrix.python-version }})
@@ -29,6 +29,25 @@ jobs:
       - name: Run unit tests
         working-directory: vibetuner-py
         run: uv run --frozen --extra dev python -m pytest tests/unit/ -v
+
+  integration:
+    name: Integration tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.0
+        with:
+          cache-dependency-glob: "vibetuner-py/uv.lock"
+
+      # Real MongoDB and Redis via testcontainers on the runner's Docker. If
+      # Docker is unusable the container fixtures error, so the job fails.
+      - name: Run integration tests
+        working-directory: vibetuner-py
+        run: uv run --frozen --extra dev python -m pytest tests/integration/ -v --durations=10
 
   lint-and-type-check:
     name: Lint and type check
