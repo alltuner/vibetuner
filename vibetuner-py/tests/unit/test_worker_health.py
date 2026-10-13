@@ -1,10 +1,10 @@
 # ABOUTME: Tests for the `vibetuner worker-health` CLI command.
-# ABOUTME: Verifies exit codes based on the presence of a fresh streaq health key.
+# ABOUTME: Verifies exit codes and Redis client cleanup around the live-worker lookup.
 # ruff: noqa: S101, S603
 import subprocess
 import sys
 import textwrap
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from typer.testing import CliRunner
 from vibetuner.cli import app
@@ -14,24 +14,10 @@ runner = CliRunner()
 
 
 class FakeRedis:
-    """Minimal async Redis stand-in for the health check."""
+    """Async Redis stand-in that only records being closed."""
 
-    def __init__(self, keys: list[str], scan_error: Exception | None = None) -> None:
-        self._keys = keys
-        self._scan_error = scan_error
+    def __init__(self) -> None:
         self.closed = False
-
-    def scan_iter(self, match=None, count=None):
-        keys = self._keys
-        error = self._scan_error
-
-        async def gen():
-            if error is not None:
-                raise error
-            for key in keys:
-                yield key
-
-        return gen()
 
     async def aclose(self) -> None:
         self.closed = True
@@ -46,21 +32,28 @@ def _settings(workers_available: bool = True) -> MagicMock:
 
 
 class TestWorkerHealth:
-    def test_healthy_when_health_key_exists(self):
-        fake = FakeRedis(keys=["streaq:myproject:health:abc123"])
+    def test_healthy_when_a_worker_is_live(self):
+        fake = FakeRedis()
+        lookup = AsyncMock(return_value=True)
         with (
             patch("vibetuner.config.settings", _settings()),
             patch("redis.asyncio.from_url", return_value=fake),
+            patch("vibetuner.cli.health.has_live_worker", lookup),
         ):
             result = runner.invoke(app, ["worker-health"])
         assert result.exit_code == 0
+        lookup.assert_awaited_once_with(fake, "myproject")
         assert fake.closed is True
 
-    def test_unhealthy_when_no_health_key(self):
-        fake = FakeRedis(keys=[])
+    def test_unhealthy_when_no_worker_is_live(self):
+        fake = FakeRedis()
         with (
             patch("vibetuner.config.settings", _settings()),
             patch("redis.asyncio.from_url", return_value=fake),
+            patch(
+                "vibetuner.cli.health.has_live_worker",
+                AsyncMock(return_value=False),
+            ),
         ):
             result = runner.invoke(app, ["worker-health"])
         assert result.exit_code == 1
@@ -72,10 +65,14 @@ class TestWorkerHealth:
         assert result.exit_code == 1
 
     def test_unhealthy_when_redis_errors(self):
-        fake = FakeRedis(keys=[], scan_error=ConnectionError("boom"))
+        fake = FakeRedis()
         with (
             patch("vibetuner.config.settings", _settings()),
             patch("redis.asyncio.from_url", return_value=fake),
+            patch(
+                "vibetuner.cli.health.has_live_worker",
+                AsyncMock(side_effect=ConnectionError("boom")),
+            ),
         ):
             result = runner.invoke(app, ["worker-health"])
         assert result.exit_code == 1

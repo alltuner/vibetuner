@@ -1,8 +1,52 @@
 # ABOUTME: Lightweight worker healthcheck for container probes.
-# ABOUTME: Reads only the streaq health key; skips the full CLI/app bootstrap.
+# ABOUTME: Looks up streaq health keys by worker id; skips the full CLI/app bootstrap.
 import asyncio
+from typing import TYPE_CHECKING
 
 from vibetuner.logging import logger
+
+
+if TYPE_CHECKING:
+    from redis.asyncio import Redis
+
+
+# streaq names its default-priority stream, consumer group and per-worker health
+# keys this way. Every worker reads that stream as a consumer named after its id.
+_STREAM = "streaq:{queue}:queues:normal"
+_GROUP = "workers"
+_HEALTH_KEY = "streaq:{queue}:health:{worker_id}"
+
+
+async def has_live_worker(client: "Redis", queue_name: str) -> bool:
+    """Return whether any worker on ``queue_name`` has a fresh health key.
+
+    The worker ids come from the stream's consumer group, so the lookup costs
+    two round trips no matter how many unrelated keys the Redis holds. streaq
+    never removes consumers, so ids of stopped workers stay listed; their health
+    keys have expired and they don't count.
+    """
+    from redis.exceptions import ResponseError
+
+    try:
+        consumers = await client.xinfo_consumers(
+            _STREAM.format(queue=queue_name), _GROUP
+        )
+    except ResponseError as exc:
+        # No worker has started on this queue yet: no stream or no group.
+        if "NOGROUP" in str(exc) or "no such key" in str(exc):
+            return False
+        raise
+    if not consumers:
+        return False
+
+    async with client.pipeline(transaction=False) as pipe:
+        for consumer in consumers:
+            worker_id = consumer["name"]
+            if isinstance(worker_id, bytes):
+                worker_id = worker_id.decode()
+            pipe.exists(_HEALTH_KEY.format(queue=queue_name, worker_id=worker_id))
+        results: list[int] = await pipe.execute()
+    return any(results)
 
 
 async def check_worker() -> int:
@@ -22,15 +66,11 @@ async def check_worker() -> int:
     import redis.asyncio as aioredis
 
     queue_name = settings.redis_key_prefix.rstrip(":")
-    pattern = f"streaq:{queue_name}:health:*"
     client = aioredis.from_url(
         str(settings.redis_url), socket_timeout=3, socket_connect_timeout=3
     )
-    found = False
     try:
-        async for _key in client.scan_iter(match=pattern, count=100):
-            found = True
-            break
+        found = await has_live_worker(client, queue_name)
     except Exception as exc:  # noqa: BLE001
         logger.error("worker-health: Redis check failed: {}", exc)
         return 1
