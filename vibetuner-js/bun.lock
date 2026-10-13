@@ -5,17 +5,17 @@
     "": {
       "name": "vibetuner",
       "dependencies": {
-        "@alltuner/vibetuner-jinja": "11.1.0",
+        "@alltuner/vibetuner-jinja": "12.0.0",
         "@tailwindcss/cli": "^4.3.0",
         "@tailwindcss/typography": "^0.5.19",
         "daisyui": "^5.5.23",
-        "htmx.org": "4.0.0-beta5",
+        "htmx.org": "4.0.0",
         "tailwindcss": "^4.3.0",
       },
     },
   },
   "packages": {
-    "@alltuner/vibetuner-jinja": ["@alltuner/vibetuner-jinja@11.1.0", "", {}, "sha512-yfwk+fUSrN4IfTQNpGgqOk4lA7GSdUVpquRHFfeBJFWi7dpo8QPRGDo13PmUQaxmPgk7ygB2n/dgQG0fsr3SjA=="],
+    "@alltuner/vibetuner-jinja": ["@alltuner/vibetuner-jinja@12.0.0", "", {}, "sha512-fu4TOxnmpQmZzmksZ021pK+ZPzrqmUwH2Vc0N+gir59RL/+aevms6u5+M3j9fTEJB58mCRAIxoWWzdoKxz9Zqg=="],
 
     "@jridgewell/gen-mapping": ["@jridgewell/gen-mapping@0.3.13", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.0", "@jridgewell/trace-mapping": "^0.3.24" } }, "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA=="],
 
@@ -101,7 +101,7 @@
 
     "graceful-fs": ["graceful-fs@4.2.11", "", {}, "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ=="],
 
-    "htmx.org": ["htmx.org@4.0.0-beta5", "", { "bin": { "upgrade-check": "dist/scripts/upgrade-check.js" } }, "sha512-hIgrmD9GgLj0FRUZC5G9ZyUeGDca0Lk/QTqWQUmBsfbXxee3a3cTPmmkFzzVEEmtt7KZPGFJpRVJTH9FzP3pxQ=="],
+    "htmx.org": ["htmx.org@4.0.0", "", { "bin": { "upgrade-check": "dist/scripts/upgrade-check.js" } }, "sha512-T/171FUY93Kdfp8t+DnHdk45QvKRiBhVhhrwSzrXgUi4pHKvhp77dUA/qg8FAjsFWPIHNbmUuIdCrcVHuiZWng=="],
 
     "is-extglob": ["is-extglob@2.1.1", "", {}, "sha512-SbKbANkN603Vi4jEZv49LeVJMn4yGwsbzZworEoyEiutsN3nJYdbO36zfhGJ6QEDpOZIFkDtnq5JRxmvl3jsoQ=="],
 
