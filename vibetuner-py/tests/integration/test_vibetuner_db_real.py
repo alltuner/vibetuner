@@ -1,9 +1,9 @@
 # ABOUTME: Integration test for vibetuner_db against a Dockerised MongoDB.
-# ABOUTME: Verifies cross-test isolation, session DB reuse, and index persistence.
+# ABOUTME: Verifies cross-test isolation, session DB reuse, index persistence, and views.
 # ruff: noqa: S101
 import pytest
 import vibetuner.mongo as mongo_mod
-from beanie import Document
+from beanie import Document, View
 from pydantic import Field
 from pymongo import IndexModel
 from testcontainers.mongodb import MongoDbContainer
@@ -21,13 +21,24 @@ class FixtureProbe(Document):
         indexes = [IndexModel("label", unique=True, name="fixture_probe_label_unique")]
 
 
+class FixtureProbeLabels(View):
+    """Test-only view over ``FixtureProbe``; truncation must leave it alone."""
+
+    label: str
+
+    class Settings:
+        source = FixtureProbe
+        pipeline = [{"$project": {"label": 1}}]
+
+
 _original_get_all_models = get_all_models
 
 
 def _patched_get_all_models() -> list[type]:
     base = _original_get_all_models()
-    if FixtureProbe not in base:
-        base.append(FixtureProbe)
+    for model in (FixtureProbe, FixtureProbeLabels):
+        if model not in base:
+            base.append(model)
     return base
 
 
@@ -74,3 +85,8 @@ class TestVibetunerDbIsolation:
         await FixtureProbe(label="dup").insert()
         with pytest.raises(DuplicateKeyError):
             await FixtureProbe(label="dup").insert()
+
+    async def test_views_read_through_to_their_source(self, vibetuner_db):
+        await FixtureProbe(label="viewed").insert()
+        labels = [doc.label for doc in await FixtureProbeLabels.find_all().to_list()]
+        assert labels == ["viewed"]

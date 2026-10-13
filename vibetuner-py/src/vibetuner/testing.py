@@ -57,8 +57,12 @@ async def vibetuner_client(
 
 
 async def _truncate_collections(database: AsyncDatabase) -> None:
-    """Delete every document from every non-system collection."""
-    for name in await database.list_collection_names():
+    """Delete every document from every non-system collection.
+
+    Views are skipped: they hold no documents of their own, and MongoDB
+    rejects writes to them.
+    """
+    for name in await database.list_collection_names(filter={"type": "collection"}):
         if name.startswith("system."):
             continue
         await database[name].delete_many({})
@@ -171,14 +175,13 @@ async def vibetuner_db(_vibetuner_db_session: str) -> AsyncGenerator[str, None]:
         pytest.skip("MongoDB not configured (MONGODB_URL not set)")
 
     database = mongo_mod.mongo_client[test_db_name]
-    await init_beanie(
-        database=database,
-        document_models=get_all_models(),
-        skip_indexes=True,
-    )
-    await _truncate_collections(database)
-
     try:
+        await init_beanie(
+            database=database,
+            document_models=get_all_models(),
+            skip_indexes=True,
+        )
+        await _truncate_collections(database)
         yield test_db_name
     finally:
         try:
