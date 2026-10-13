@@ -62,7 +62,7 @@ async def _truncate_collections(database: AsyncDatabase) -> None:
     Views are skipped: they hold no documents of their own, and MongoDB
     rejects writes to them.
     """
-    for name in await database.list_collection_names(filter={"type": "collection"}):
+    for name in await database.list_collection_names(filter={"type": {"$ne": "view"}}):
         if name.startswith("system."):
             continue
         await database[name].delete_many({})

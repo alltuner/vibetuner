@@ -1,9 +1,11 @@
 # ABOUTME: Integration test for vibetuner_db against a Dockerised MongoDB.
-# ABOUTME: Verifies cross-test isolation, session DB reuse, index persistence, and views.
+# ABOUTME: Verifies isolation, session DB reuse, indexes, views, and time-series collections.
 # ruff: noqa: S101
+from datetime import UTC, datetime
+
 import pytest
 import vibetuner.mongo as mongo_mod
-from beanie import Document, View
+from beanie import Document, TimeSeriesConfig, View
 from pydantic import Field
 from pymongo import IndexModel
 from testcontainers.mongodb import MongoDbContainer
@@ -31,12 +33,23 @@ class FixtureProbeLabels(View):
         pipeline = [{"$project": {"label": 1}}]
 
 
+class FixtureProbeReading(Document):
+    """Test-only time-series document; truncation must still empty it."""
+
+    measured_at: datetime
+    label: str
+
+    class Settings:
+        name = "fixture_probe_readings"
+        timeseries = TimeSeriesConfig(time_field="measured_at")
+
+
 _original_get_all_models = get_all_models
 
 
 def _patched_get_all_models() -> list[type]:
     base = _original_get_all_models()
-    for model in (FixtureProbe, FixtureProbeLabels):
+    for model in (FixtureProbe, FixtureProbeLabels, FixtureProbeReading):
         if model not in base:
             base.append(model)
     return base
@@ -64,6 +77,9 @@ def mongo_container(docker_host):
 class TestVibetunerDbIsolation:
     async def test_first_test_inserts_a_row(self, vibetuner_db):
         await FixtureProbe(label="from-test-1").insert()
+        await FixtureProbeReading(
+            measured_at=datetime.now(UTC), label="from-test-1"
+        ).insert()
         assert (
             await FixtureProbe.find_one(FixtureProbe.label == "from-test-1") is not None
         )
@@ -71,6 +87,7 @@ class TestVibetunerDbIsolation:
     async def test_second_test_sees_clean_state(self, vibetuner_db):
         # If the per-test cleanup works, the row from test 1 is gone.
         assert await FixtureProbe.find_one(FixtureProbe.label == "from-test-1") is None
+        assert await FixtureProbeReading.find_all().count() == 0
         await FixtureProbe(label="from-test-2").insert()
         assert (
             await FixtureProbe.find_one(FixtureProbe.label == "from-test-2") is not None

@@ -52,4 +52,30 @@ def test_tests_that_use_the_shared_client_finish_cleanly(
 
     result = pytester.runpytest_subprocess("-p", "no:cacheprovider")
 
-    result.assert_outcomes(passed=test_count)
+    result.assert_outcomes(passed=test_count, warnings=0)
+
+
+@pytest.mark.integration
+def test_tests_that_do_not_use_redis_are_unaffected(
+    pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch, redis_url: str
+) -> None:
+    """The per-test Redis fixture is autouse, so it wraps sync tests and async
+    tests that never touch Redis too; those must run cleanly alongside one
+    that does.
+    """
+    monkeypatch.setenv("REDIS_URL", redis_url)
+    pytester.makepyfile(
+        "import pytest\n"
+        "from vibetuner.redis import get_redis_client\n"
+        "\n"
+        "def test_sync():\n"
+        "    assert True\n"
+        "\n"
+        "@pytest.mark.asyncio\n"
+        "async def test_async_without_redis():\n"
+        "    assert True\n" + _INNER_TEST.format(n=0)
+    )
+
+    result = pytester.runpytest_subprocess("-p", "no:cacheprovider")
+
+    result.assert_outcomes(passed=3, warnings=0)
