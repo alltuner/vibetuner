@@ -35,7 +35,7 @@ def open(
             from vibetuner.config import settings
 
             secret = settings.session_key.get_secret_value()
-        except Exception:
+        except Exception:  # noqa: BLE001
             console.print(
                 "[red]Could not read SESSION_KEY from project config. "
                 "Use --secret to provide it explicitly.[/red]"

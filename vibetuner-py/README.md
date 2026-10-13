@@ -134,6 +134,7 @@ from vibetuner.config import settings
 # Extend core routes
 from vibetuner.frontend import app
 
+
 # Add your routes
 @app.get("/api/hello")
 async def hello():

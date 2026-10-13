@@ -83,7 +83,7 @@ class SQLiteDsn(AnyUrl):
     )
 
 
-current_year: int = datetime.now().year
+current_year: int = datetime.now().year  # noqa: DTZ005 (local calendar year)
 
 UnprivilegedPort = Annotated[int, Field(ge=1024, le=65535)]
 

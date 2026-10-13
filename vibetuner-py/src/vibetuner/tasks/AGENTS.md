@@ -46,6 +46,7 @@ from vibetuner.tasks.worker import get_worker
 
 worker = get_worker()
 
+
 @worker.task()
 async def send_welcome_email(user_id: str) -> dict[str, str]:
     """Example background job."""
@@ -63,6 +64,7 @@ async def send_welcome_email(user_id: str) -> dict[str, str]:
 ```python
 # In your routes: src/app/frontend/routes/auth.py
 from app.tasks.emails import send_welcome_email
+
 
 @router.post("/signup")
 async def signup(email: str):

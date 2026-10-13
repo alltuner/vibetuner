@@ -8,7 +8,7 @@ import os
 from collections.abc import Callable, Coroutine
 from datetime import datetime, timedelta
 from functools import lru_cache, wraps
-from typing import Any, Literal, TypedDict
+from typing import Any, ClassVar, Literal, TypedDict
 
 from dotenv import dotenv_values
 
@@ -90,9 +90,9 @@ class RuntimeConfig:
     """
 
     # Class-level storage
-    _config_registry: dict[str, ConfigRegistryEntry] = {}
-    _runtime_overrides: dict[str, Any] = {}
-    _config_cache: dict[str, Any] = {}
+    _config_registry: ClassVar[dict[str, ConfigRegistryEntry]] = {}
+    _runtime_overrides: ClassVar[dict[str, Any]] = {}
+    _config_cache: ClassVar[dict[str, Any]] = {}
     _cache_last_refresh: datetime | None = None
     _refresh_lock: asyncio.Lock = asyncio.Lock()
 
@@ -128,7 +128,7 @@ class RuntimeConfig:
                 for entry in entries:
                     cls._config_cache[entry.key] = entry.effective_value
                 logger.debug(f"Config cache refreshed with {len(entries)} entries")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 logger.warning(f"Failed to refresh config cache from MongoDB: {e}")
 
             cls._cache_last_refresh = now()
@@ -270,7 +270,7 @@ class RuntimeConfig:
                 )
                 await entry.insert()
                 logger.debug(f"Created config entry: {key}")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             logger.warning(f"Failed to persist config {key} to MongoDB: {e}")
 
     @classmethod
@@ -291,7 +291,7 @@ class RuntimeConfig:
                 logger.debug(f"Deleted config entry: {key}")
                 return True
             return False
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             logger.warning(f"Failed to delete config {key} from MongoDB: {e}")
             return False
 

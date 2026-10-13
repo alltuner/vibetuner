@@ -28,7 +28,7 @@ provider is registered and ``base/theme.html.jinja`` renders nothing.
 """
 
 from collections.abc import Callable
-from typing import Any, Protocol, runtime_checkable
+from typing import Any
 
 from starlette.requests import Request
 
@@ -38,13 +38,6 @@ from vibetuner.rendering import register_context_provider
 
 
 __all__ = ["register_tenant_theme_provider"]
-
-
-@runtime_checkable
-class _ThemeBearer(Protocol):
-    """Anything exposing a ``.theme`` attribute that yields a TenantTheme."""
-
-    theme: TenantTheme
 
 
 TenantGetter = Callable[[Request], object | None]
@@ -78,7 +71,7 @@ def register_tenant_theme_provider(
     def tenant_theme_context(request: Request) -> dict[str, Any]:
         try:
             tenant = getter(request)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             logger.error(f"tenant_theme_context: getter raised {exc!r}")
             return {}
         if tenant is None:
@@ -94,7 +87,7 @@ def register_tenant_theme_provider(
             return {}
         try:
             overrides = theme.overrides()
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             logger.error(f"tenant_theme_context: .overrides() raised {exc!r}")
             return {}
         if not overrides:

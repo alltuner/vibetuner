@@ -25,7 +25,7 @@ def main() -> None:
 
 def __getattr__(name: str):
     if name in ("app", "AsyncTyper"):
-        import vibetuner.cli.root as root
+        from vibetuner.cli import root
 
         return getattr(root, name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

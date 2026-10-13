@@ -11,11 +11,9 @@ from .tenant_theme import TenantTheme as TenantTheme
 from .user import UserModel
 
 
-# NOTE: ``__all__`` is consumed at runtime by ``vibetuner.mongo.get_all_models``
-# as the registry of Beanie Documents/Views to initialise. Keep it limited to
-# Document/View subclasses; embedded models (TenantTheme) are exported via the
-# normal module-level import above.
-__all__: list[type[Document] | type[View]] = [
+# Registry of core Beanie Documents/Views that ``vibetuner.mongo.get_all_models``
+# initialises. Embedded models (TenantTheme) are not documents and stay out of it.
+CORE_MODELS: list[type[Document] | type[View]] = [
     DocumentWithSoftDelete,
     BlobModel,
     ConfigEntryModel,
@@ -24,4 +22,17 @@ __all__: list[type[Document] | type[View]] = [
     OAuthAccountModel,
     OAuthProviderAppModel,
     UserModel,
+]
+
+__all__ = [
+    "CORE_MODELS",
+    "BlobModel",
+    "ConfigEntryModel",
+    "DeadLetterModel",
+    "DocumentWithSoftDelete",
+    "EmailVerificationTokenModel",
+    "OAuthAccountModel",
+    "OAuthProviderAppModel",
+    "TenantTheme",
+    "UserModel",
 ]

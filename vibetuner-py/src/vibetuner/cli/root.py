@@ -61,7 +61,7 @@ def _get_app_help():
         name = get_project_name()
         if name:
             return f"{name.replace('_', ' ').title()} CLI"
-    except Exception:  # noqa: S110
+    except Exception:  # noqa: BLE001, S110
         pass
 
     return "Vibetuner CLI"
@@ -124,7 +124,7 @@ def version(
 
         settings = CoreConfiguration()
         table.add_row(f"{settings.project.project_name} settings", settings.version)
-    except Exception:
+    except Exception:  # noqa: BLE001
         if show_app:
             table.add_row("app settings", "not in project directory")
         # else: don't show app version if not in project and not requested

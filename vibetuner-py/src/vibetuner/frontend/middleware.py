@@ -1,7 +1,8 @@
 import asyncio
 import re
 import secrets
-from typing import Any, MutableMapping, cast
+from collections.abc import MutableMapping
+from typing import Any, cast
 
 from fastapi.middleware import Middleware
 from fastapi.requests import HTTPConnection
@@ -368,10 +369,9 @@ class LangPrefixMiddleware:
 
             if lang_code in self.supported_languages:
                 # Handle bare /xx without trailing slash -> redirect to /xx/
-                if len(parts) == 1 or parts[1] == "":
-                    if not path.endswith("/"):
-                        await self._redirect(scope, receive, send, f"/{lang_code}/")
-                        return
+                if (len(parts) == 1 or parts[1] == "") and not path.endswith("/"):
+                    await self._redirect(scope, receive, send, f"/{lang_code}/")
+                    return
 
                 # Valid language: strip prefix, store original path
                 new_path = "/" + parts[1] if len(parts) > 1 else "/"
@@ -434,9 +434,7 @@ def _wants_html(scope: Scope) -> bool:
             # XHR fetch with explicit JSON) should keep getting structured
             # output. Everything else (browsers, htmx, missing header) gets
             # the rendered page.
-            if "application/json" in accept and "text/html" not in accept:
-                return False
-            return True
+            return "application/json" not in accept or "text/html" in accept
     return True
 
 
@@ -487,7 +485,7 @@ class StreaqDebugTimeoutMiddleware:
                 self.app(scope, receive, send_tracking),
                 timeout=STREAQ_DEBUG_REQUEST_TIMEOUT_SECONDS,
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.warning(
                 "Streaq debug request timed out after "
                 f"{STREAQ_DEBUG_REQUEST_TIMEOUT_SECONDS}s: {path}"
@@ -542,7 +540,7 @@ class StreaqDebugTimeoutMiddleware:
                 status_code=504,
             )
             return bytes(response.body)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             logger.error(
                 "Failed to render Streaq timeout fallback template: {exc}",
                 exc=exc,
@@ -569,7 +567,7 @@ class AuthBackend(AuthenticationBackend):
                     AuthCredentials(["authenticated"]),
                     WebUser.model_validate(user),
                 )
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 logger.warning(
                     "Clearing invalid session user data: {exc}",
                     exc=exc,

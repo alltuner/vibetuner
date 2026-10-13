@@ -117,6 +117,7 @@ class TestWorkerHealthFastPath:
         result = subprocess.run(
             [sys.executable, "-c", script],
             capture_output=True,
+            check=False,
             text=True,
         )
         assert result.returncode == 0, result.stderr

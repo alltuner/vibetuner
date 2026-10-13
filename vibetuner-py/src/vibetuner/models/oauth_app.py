@@ -1,6 +1,6 @@
 # ABOUTME: MongoDB model for OAuth app credentials.
 # ABOUTME: Stores client_id/secret per provider, enabling multiple apps per provider.
-from typing import Any, Self
+from typing import Any, ClassVar, Self
 
 from beanie import Document
 from beanie.operators import Eq
@@ -49,7 +49,7 @@ class OAuthProviderAppModel(Document, TimeStampMixin, EncryptedFieldsMixin):
 
     class Settings:
         name = "oauth_provider_apps"
-        indexes = [
+        indexes: ClassVar[list[list[tuple[str, int]]]] = [
             [("provider", 1), ("name", 1)],
         ]
 

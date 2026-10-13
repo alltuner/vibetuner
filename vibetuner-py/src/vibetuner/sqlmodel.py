@@ -1,7 +1,8 @@
 # ABOUTME: SQLModel/SQLAlchemy async engine setup and session management.
 # ABOUTME: Provides database initialization, teardown, and FastAPI dependency injection.
 
-from typing import Any, AsyncGenerator
+from collections.abc import AsyncGenerator
+from typing import Any
 
 from vibetuner.logging import logger
 

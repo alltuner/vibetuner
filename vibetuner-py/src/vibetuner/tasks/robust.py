@@ -3,9 +3,10 @@
 
 import asyncio
 import threading
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from typing import Any, Callable
+from typing import Any, ClassVar
 
 from beanie import Document
 from pydantic import Field
@@ -25,7 +26,7 @@ class DeadLetterModel(Document):
 
     class Settings:
         name = "dead_letters"
-        indexes = ["task_name", "failed_at"]
+        indexes: ClassVar[list[str]] = ["task_name", "failed_at"]
 
 
 @dataclass
@@ -46,7 +47,7 @@ async def _handle_permanent_failure(
 ) -> None:
     """Save dead letter and invoke failure callback after all retries exhausted."""
     logger.error(
-        "Task %s[%s] failed permanently after %d tries: %s",
+        "Task {}[{}] failed permanently after {} tries: {}",
         ctx.fn_name,
         ctx.task_id,
         ctx.tries,
@@ -60,16 +61,16 @@ async def _handle_permanent_failure(
             error_type=type(exc).__qualname__,
             tries=ctx.tries,
         ).insert()
-    except Exception:
-        logger.exception("Failed to save dead letter for %s", ctx.fn_name)
+    except Exception:  # noqa: BLE001
+        logger.exception("Failed to save dead letter for {}", ctx.fn_name)
 
     if config.on_failure is not None:
         try:
             result = config.on_failure(ctx.fn_name, ctx.task_id, exc)
             if asyncio.iscoroutine(result) or asyncio.isfuture(result):
                 await result
-        except Exception:
-            logger.exception("on_failure callback raised for %s", ctx.fn_name)
+        except Exception:  # noqa: BLE001
+            logger.exception("on_failure callback raised for {}", ctx.fn_name)
 
 
 async def _run_with_retries(
@@ -86,7 +87,7 @@ async def _run_with_retries(
         if task_ctx.tries < config.max_retries:
             delay = min(config.backoff_base**task_ctx.tries, config.backoff_max)
             logger.warning(
-                "Task %s[%s] failed (try %d/%d), retrying in %.0fs: %s",
+                "Task {}[{}] failed (try {}/{}), retrying in {:.0f}s: {}",
                 task_ctx.fn_name,
                 task_ctx.task_id,
                 task_ctx.tries,

@@ -295,11 +295,13 @@ class TestResolveOAuthClient:
             assert result == _authlib_name_for_app("google", str(app_id))
 
     async def test_raises_when_app_not_found(self, registered_google):
-        with patch.object(
-            OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=None
+        with (
+            patch.object(
+                OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=None
+            ),
+            pytest.raises(ValueError, match="not found or inactive"),
         ):
-            with pytest.raises(ValueError, match="not found or inactive"):
-                await resolve_oauth_client("google", "nonexistent-id")
+            await resolve_oauth_client("google", "nonexistent-id")
 
     async def test_raises_when_app_inactive(self, registered_google):
         from bson import ObjectId
@@ -313,11 +315,13 @@ class TestResolveOAuthClient:
         )
         app.id = ObjectId()
 
-        with patch.object(
-            OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app
+        with (
+            patch.object(
+                OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app
+            ),
+            pytest.raises(ValueError, match="not found or inactive"),
         ):
-            with pytest.raises(ValueError, match="not found or inactive"):
-                await resolve_oauth_client("google", str(app.id))
+            await resolve_oauth_client("google", str(app.id))
 
     async def test_raises_when_provider_mismatch(self, registered_google):
         from bson import ObjectId
@@ -330,11 +334,13 @@ class TestResolveOAuthClient:
         )
         app.id = ObjectId()
 
-        with patch.object(
-            OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app
+        with (
+            patch.object(
+                OAuthProviderAppModel, "get", new_callable=AsyncMock, return_value=app
+            ),
+            pytest.raises(ValueError, match="provider 'github', not 'google'"),
         ):
-            with pytest.raises(ValueError, match="provider 'github', not 'google'"):
-                await resolve_oauth_client("google", str(app.id))
+            await resolve_oauth_client("google", str(app.id))
 
 
 class TestOAuthAppEncryption:

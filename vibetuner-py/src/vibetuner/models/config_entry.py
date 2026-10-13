@@ -2,7 +2,7 @@
 # ABOUTME: Stores key-value config that can be changed at runtime and persists to MongoDB.
 
 import json
-from typing import Any, Literal
+from typing import Any, ClassVar, Literal
 
 from beanie import Document, Indexed
 from pydantic import Field
@@ -59,4 +59,4 @@ class ConfigEntryModel(Document, TimeStampMixin, EncryptedFieldsMixin):
 
     class Settings:
         name = "config_entries"
-        indexes = ["category"]
+        indexes: ClassVar[list[str]] = ["category"]

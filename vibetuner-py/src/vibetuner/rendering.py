@@ -5,7 +5,7 @@ import inspect
 import threading
 import weakref
 from collections.abc import Callable
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
 from jinja2 import Template, nodes
@@ -22,6 +22,10 @@ from vibetuner.time import age_in_timedelta
 
 
 __all__ = [
+    "hreflang_tags",
+    "lang_url_for",
+    "register_context_provider",
+    "register_globals",
     "render",
     "render_static_template",
     "render_template",
@@ -29,11 +33,7 @@ __all__ = [
     "render_template_blocks",
     "render_template_stream",
     "render_template_string",
-    "register_globals",
-    "register_context_provider",
-    "lang_url_for",
     "url_for_language",
-    "hreflang_tags",
 ]
 
 
@@ -196,7 +196,7 @@ def _collect_provider_context(request: Request | None = None) -> dict[str, Any]:
                     f"Context provider '{provider_name}' returned "
                     f"{type(ctx).__name__} instead of dict, skipping"
                 )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             logger.error(f"Context provider '{provider_name}' failed: {e}")
     return result
 
@@ -884,8 +884,8 @@ def _top_level_imports(template_obj: Template) -> Template | None:
 def _datetime_context() -> dict[str, Any]:
     """Provide ``now`` and ``today`` in every template context."""
     return {
-        "now": datetime.now(timezone.utc),
-        "today": date.today().isoformat(),
+        "now": datetime.now(UTC),
+        "today": date.today().isoformat(),  # noqa: DTZ011 (local calendar date)
     }
 
 
@@ -932,7 +932,7 @@ def _project_context() -> dict[str, Any]:
 register_context_provider(_project_context)
 
 # Language picker (lazy import to avoid circular dependency on vibetuner.i18n)
-from vibetuner.i18n import language_picker as _language_picker  # noqa: E402
+from vibetuner.i18n import language_picker as _language_picker
 
 
 _extra_globals: dict[str, Any] = {
@@ -993,5 +993,5 @@ def _ensure_custom_filters() -> None:
                 continue
             jinja_env.filters[filter_name] = filter_func
             logger.debug(f"Registered custom filter: {filter_name}")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             logger.error(f"Failed to register template filter '{filter_name}': {e}")

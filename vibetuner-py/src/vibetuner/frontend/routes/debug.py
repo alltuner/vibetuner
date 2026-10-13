@@ -293,9 +293,6 @@ def _parse_array_type(field_info: dict, field_name: str = "") -> str:
         union_types = _parse_union_types(items, "oneOf", field_name)
         return f"array[{union_types}]"
     # Handle object references
-    elif items_type == "object" and "$ref" in items:
-        ref_name = _extract_ref_name(items["$ref"])
-        return f"array[{ref_name}]"
     elif "$ref" in items:
         ref_name = _extract_ref_name(items["$ref"])
         return f"array[{ref_name}]"

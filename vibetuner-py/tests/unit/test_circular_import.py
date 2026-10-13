@@ -38,6 +38,7 @@ class TestCircularImportPrevention:
         result = subprocess.run(
             [sys.executable, "-c", code],
             capture_output=True,
+            check=False,
             text=True,
             timeout=30,
         )
@@ -67,6 +68,7 @@ class TestCircularImportPrevention:
         result = subprocess.run(
             [sys.executable, "-c", code],
             capture_output=True,
+            check=False,
             text=True,
             timeout=30,
         )
@@ -104,6 +106,7 @@ class TestCircularImportPrevention:
         result = subprocess.run(
             [sys.executable, "-c", code],
             capture_output=True,
+            check=False,
             text=True,
             timeout=30,
         )
@@ -133,6 +136,7 @@ class TestCircularImportPrevention:
         result = subprocess.run(
             [sys.executable, "-c", code],
             capture_output=True,
+            check=False,
             text=True,
             timeout=30,
         )
@@ -179,6 +183,7 @@ class TestCircularImportPrevention:
         result = subprocess.run(
             [sys.executable, "-c", code],
             capture_output=True,
+            check=False,
             text=True,
             timeout=30,
         )

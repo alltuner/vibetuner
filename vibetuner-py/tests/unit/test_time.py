@@ -91,7 +91,7 @@ class TestAgeInDays:
         mock_now.return_value = current_time
 
         # Pass a naive datetime (no timezone)
-        five_days_ago_naive = datetime(2025, 1, 10, 12, 0, 0)
+        five_days_ago_naive = datetime(2025, 1, 10, 12, 0, 0)  # noqa: DTZ001
         result = age_in_days(five_days_ago_naive)
 
         assert result == 5
@@ -151,7 +151,7 @@ class TestAgeInMinutes:
         mock_now.return_value = current_time
 
         # Pass a naive datetime (no timezone)
-        ten_minutes_ago_naive = datetime(2025, 1, 15, 11, 50, 0)
+        ten_minutes_ago_naive = datetime(2025, 1, 15, 11, 50, 0)  # noqa: DTZ001
         result = age_in_minutes(ten_minutes_ago_naive)
 
         assert result == 10
@@ -200,7 +200,7 @@ class TestAgeInTimedelta:
         mock_now.return_value = current_time
 
         # Pass a naive datetime
-        two_days_ago_naive = datetime(2025, 1, 13, 12, 0, 0)
+        two_days_ago_naive = datetime(2025, 1, 13, 12, 0, 0)  # noqa: DTZ001
         result = age_in_timedelta(two_days_ago_naive)
 
         assert result == timedelta(days=2)

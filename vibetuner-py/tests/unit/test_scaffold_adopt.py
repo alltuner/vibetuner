@@ -33,10 +33,13 @@ class TestGetGitConfig:
             [
                 sys.executable,
                 "-c",
-                "import sys; sys.modules['git'] = None; "
-                "from vibetuner.cli.scaffold import _get_git_config",
+                (
+                    "import sys; sys.modules['git'] = None; "
+                    "from vibetuner.cli.scaffold import _get_git_config"
+                ),
             ],
             capture_output=True,
+            check=False,
             text=True,
         )
         assert result.returncode == 0, (

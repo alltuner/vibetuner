@@ -203,7 +203,7 @@ def combined_locale_selector(conn: HTTPConnection) -> str | None:
     for resolver in get_locale_resolvers():
         try:
             result = resolver(conn)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             logger.error(
                 f"locale resolver {getattr(resolver, '__name__', resolver)!r} raised {exc!r}"
             )
@@ -294,7 +294,7 @@ def language_picker(
     if display_locale is None:
         try:
             display = get_locale()
-        except Exception:
+        except Exception:  # noqa: BLE001 (no request locale)
             display = Locale.parse(ctx.default_language)
     elif isinstance(display_locale, Locale):
         display = display_locale
@@ -306,7 +306,7 @@ def language_picker(
         try:
             locale = Locale.parse(code)
             name = locale.get_display_name(display) or code
-        except Exception:
+        except Exception:  # noqa: BLE001 (unknown locale code)
             name = code
         entries.append({"code": code, "name": name})
 

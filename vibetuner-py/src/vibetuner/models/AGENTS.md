@@ -159,6 +159,7 @@ items: list[Link[Item]]
 ```python
 from pydantic import Field, validator
 
+
 class MyModel(Document):
     email: EmailStr = Field(..., description="User email")
 
@@ -216,9 +217,11 @@ print(user.oauth_accounts)  # List of OAuthAccount objects
 # BAD: Query without index
 await UserModel.find(MyModel.some_unindexed_field == "value").to_list()
 
+
 # GOOD: Add index first
 class MyModel(Document):
     some_field: str
+
     class Settings:
         indexes = ["some_field"]
 ```
@@ -231,6 +234,7 @@ When changing required fields:
 # BAD: Makes existing data invalid
 class UserModel(Document):
     new_required_field: str  # Breaks existing users!
+
 
 # GOOD: Make optional initially
 class UserModel(Document):

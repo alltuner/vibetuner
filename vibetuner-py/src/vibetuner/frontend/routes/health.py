@@ -80,7 +80,7 @@ def health_instance_id():
         )
     return {
         "app": settings.project.project_slug,
-        "port": int(os.environ.get("PORT", 8000)),
+        "port": int(os.environ.get("PORT", "8000")),
         "debug": settings.debug,
         "status": "healthy",
         "root_path": str(root_path.resolve()),
@@ -128,7 +128,7 @@ async def _check_mongodb() -> dict[str, Any]:
     except TimeoutError:
         logger.warning("MongoDB health check timed out")
         return {"status": "error", "error": "Health check timed out"}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.warning("MongoDB health check failed: {}", e)
         return {"status": "error", "error": _sanitize_error(e, service="mongodb")}
 
@@ -150,7 +150,7 @@ async def _check_redis() -> dict[str, Any]:
     except TimeoutError:
         logger.warning("Redis health check timed out")
         return {"status": "error", "error": "Health check timed out"}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.warning("Redis health check failed: {}", e)
         reset_redis_client()
         return {"status": "error", "error": _sanitize_error(e, service="redis")}

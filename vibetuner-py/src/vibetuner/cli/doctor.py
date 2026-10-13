@@ -26,7 +26,7 @@ _STATUS_ICONS: dict[CheckStatus, str] = {
 
 
 class CheckResult:
-    __slots__ = ("name", "status", "message")
+    __slots__ = ("message", "name", "status")
 
     def __init__(self, name: str, status: CheckStatus, message: str) -> None:
         self.name = name
@@ -107,7 +107,7 @@ def _check_tune_py(root: Path | None) -> list[CheckResult]:
         return [CheckResult("tune.py", "ok", "Loaded successfully")]
     except ConfigurationError as exc:
         return [CheckResult("tune.py", "error", str(exc))]
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         return [CheckResult("tune.py", "error", f"Import error: {exc}")]
 
 
@@ -121,7 +121,7 @@ def _check_env_vars() -> list[CheckResult]:
         )
 
         config = CoreConfiguration(project=ProjectConfiguration())
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         return [CheckResult("Configuration", "error", f"Failed to load: {exc}")]
 
     results.append(
@@ -159,7 +159,7 @@ def _check_service_connectivity() -> list[CheckResult]:
         from vibetuner.config import CoreConfiguration, ProjectConfiguration
 
         config = CoreConfiguration(project=ProjectConfiguration())
-    except Exception:
+    except Exception:  # noqa: BLE001
         return [CheckResult("Services", "skip", "Cannot load configuration")]
 
     # MongoDB
@@ -217,7 +217,7 @@ def _check_models() -> list[CheckResult]:
                 f"{len(models)} model(s): {', '.join(m.__name__ for m in models)}",
             )
         )
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         results.append(CheckResult("Beanie models", "warn", f"Cannot load: {exc}"))
 
     try:
@@ -234,7 +234,7 @@ def _check_models() -> list[CheckResult]:
             )
         else:
             results.append(CheckResult("SQL models", "skip", "None registered"))
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         results.append(CheckResult("SQL models", "warn", f"Cannot load: {exc}"))
 
     return results
@@ -268,7 +268,7 @@ def _check_templates(root: Path | None) -> list[CheckResult]:
             closes = content.count("%}")
             if opens != closes:
                 bad_files.append(tf.relative_to(root).as_posix())
-        except Exception:
+        except Exception:  # noqa: BLE001
             bad_files.append(tf.relative_to(root).as_posix())
 
     if bad_files:

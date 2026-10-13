@@ -48,9 +48,7 @@ def _wants_html(scope: Scope) -> bool:
     for header_name, header_value in scope.get("headers", []):
         if header_name == b"accept":
             accept = header_value.decode("latin-1", errors="replace").lower()
-            if "application/json" in accept and "text/html" not in accept:
-                return False
-            return True
+            return "application/json" not in accept or "text/html" in accept
     return True
 
 
@@ -83,7 +81,7 @@ class StreaqDebugTimeoutMiddleware:
             await asyncio.wait_for(
                 self.app(scope, receive, send_tracking), timeout=self.timeout
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             if response_started:
                 return
             if _wants_html(scope):

@@ -103,13 +103,13 @@ def _infer_project_data(path: Path) -> dict[str, str]:
     """
     data = _infer_from_pyproject(path)
 
-    if "author_name" not in data:
-        if git_name := _get_git_config("user.name", path):
-            data["author_name"] = git_name
+    if "author_name" not in data and (git_name := _get_git_config("user.name", path)):
+        data["author_name"] = git_name
 
-    if "author_email" not in data:
-        if git_email := _get_git_config("user.email", path):
-            data["author_email"] = git_email
+    if "author_email" not in data and (
+        git_email := _get_git_config("user.email", path)
+    ):
+        data["author_email"] = git_email
 
     if python_version := _infer_python_version(path):
         data["python_version"] = python_version

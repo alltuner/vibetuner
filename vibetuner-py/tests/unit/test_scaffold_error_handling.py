@@ -60,9 +60,11 @@ class TestHandleScaffoldError:
         try:
             raise e
         except RuntimeError:
-            with patch("vibetuner.cli.scaffold._console", return_value=mock_console):
-                with patch.dict(os.environ, {}, clear=True):
-                    _handle_scaffold_error(e, "creating project")
+            with (
+                patch("vibetuner.cli.scaffold._console", return_value=mock_console),
+                patch.dict(os.environ, {}, clear=True),
+            ):
+                _handle_scaffold_error(e, "creating project")
 
         mock_console.print.assert_called_once_with(
             "[red]Error creating project: copier exploded[/red]"
@@ -76,9 +78,11 @@ class TestHandleScaffoldError:
         try:
             raise e
         except RuntimeError:
-            with patch("vibetuner.cli.scaffold._console", return_value=mock_console):
-                with patch.dict(os.environ, {}, clear=True):
-                    _handle_scaffold_error(e, "updating project")
+            with (
+                patch("vibetuner.cli.scaffold._console", return_value=mock_console),
+                patch.dict(os.environ, {}, clear=True),
+            ):
+                _handle_scaffold_error(e, "updating project")
 
         mock_console.print_exception.assert_not_called()
 
@@ -90,9 +94,11 @@ class TestHandleScaffoldError:
         try:
             raise e
         except RuntimeError:
-            with patch("vibetuner.cli.scaffold._console", return_value=mock_console):
-                with patch.dict(os.environ, {"DEBUG": "1"}):
-                    _handle_scaffold_error(e, "adopting scaffolding")
+            with (
+                patch("vibetuner.cli.scaffold._console", return_value=mock_console),
+                patch.dict(os.environ, {"DEBUG": "1"}),
+            ):
+                _handle_scaffold_error(e, "adopting scaffolding")
 
         mock_console.print_exception.assert_called_once()
 
@@ -104,10 +110,12 @@ class TestExceptionChainPreservation:
         """scaffold new: the Exit's __cause__ is the original copier exception."""
         original = RuntimeError("network timeout")
 
-        with patch("copier.run_copy", side_effect=original):
-            with patch.dict(os.environ, {}, clear=True):
-                with pytest.raises(typer.Exit) as exc_info:
-                    new(destination=tmp_path / "proj")
+        with (
+            patch("copier.run_copy", side_effect=original),
+            patch.dict(os.environ, {}, clear=True),
+            pytest.raises(typer.Exit) as exc_info,
+        ):
+            new(destination=tmp_path / "proj")
 
         assert exc_info.value.__cause__ is original
 
@@ -117,10 +125,12 @@ class TestExceptionChainPreservation:
         (tmp_path / ".copier-answers.yml").write_text("project_slug: test\n")
         original = RuntimeError("git ref not found")
 
-        with patch("copier.run_update", side_effect=original):
-            with patch.dict(os.environ, {}, clear=True):
-                with pytest.raises(typer.Exit) as exc_info:
-                    update(path=tmp_path)
+        with (
+            patch("copier.run_update", side_effect=original),
+            patch.dict(os.environ, {}, clear=True),
+            pytest.raises(typer.Exit) as exc_info,
+        ):
+            update(path=tmp_path)
 
         assert exc_info.value.__cause__ is original
 
@@ -132,18 +142,22 @@ class TestExceptionChainPreservation:
         )
         original = RuntimeError("template parse error")
 
-        with patch("copier.run_copy", side_effect=original):
-            with patch.dict(os.environ, {}, clear=True):
-                with pytest.raises(typer.Exit) as exc_info:
-                    adopt(path=tmp_path)
+        with (
+            patch("copier.run_copy", side_effect=original),
+            patch.dict(os.environ, {}, clear=True),
+            pytest.raises(typer.Exit) as exc_info,
+        ):
+            adopt(path=tmp_path)
 
         assert exc_info.value.__cause__ is original
 
     def test_new_exit_code_is_1_on_failure(self, tmp_path: Path):
         """scaffold new: exit code is 1 when copier fails."""
-        with patch("copier.run_copy", side_effect=RuntimeError("oops")):
-            with patch.dict(os.environ, {}, clear=True):
-                with pytest.raises(typer.Exit) as exc_info:
-                    new(destination=tmp_path / "proj")
+        with (
+            patch("copier.run_copy", side_effect=RuntimeError("oops")),
+            patch.dict(os.environ, {}, clear=True),
+            pytest.raises(typer.Exit) as exc_info,
+        ):
+            new(destination=tmp_path / "proj")
 
         assert exc_info.value.exit_code == 1
