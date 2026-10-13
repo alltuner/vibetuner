@@ -175,6 +175,9 @@ Key commands: `just format` (all code), `just lint` (all code),
 > arrive with an empty `msgstr` (untranslated → English fallback), never a
 > wrong guess copied from a similar entry. Translate the blank entries;
 > `just i18n-fuzzy-audit` flags any stray `#, fuzzy` ones.
+>
+> Extraction scans `_`-prefixed directories such as
+> `templates/frontend/_macros/` (only dot-directories are skipped).
 
 `just dev` builds an all-in-one dev container (Python + bun + watchers)
 and brings up mongo/redis alongside. Edits to `src/`, `templates/`, or
@@ -189,6 +192,11 @@ the 14000–17999 band), so two scaffolded projects can run side-by-side.
 > input file. Edits to templates and other `@source`-listed
 > directories rebuild correctly without restart. Tracked upstream at
 > [tailwindlabs/tailwindcss#14726](https://github.com/tailwindlabs/tailwindcss/issues/14726).
+
+Tailwind scans `templates/` and `config.js` for class names, not the
+gitignored `bundle.js`. If `config.js` imports your own JS modules that
+build class names, add an `@source` for them in the custom section of
+`config.css` (e.g. `@source "js";`).
 
 ---
 

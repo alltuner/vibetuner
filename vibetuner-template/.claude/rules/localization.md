@@ -12,6 +12,9 @@ just i18n                    # Full workflow
 just new-locale LANG         # New language
 ```
 
+Extraction also scans `_`-prefixed directories such as
+`templates/frontend/_macros/`; only dot-directories are skipped.
+
 Templates: `{% trans %}Welcome{% endtrans %}`.
 Python: `from starlette_babel import gettext_lazy as _`.
 

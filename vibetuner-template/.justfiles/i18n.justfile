@@ -6,7 +6,7 @@ i18n: extract-translations update-locale-files compile-locales
 # Extracts translations from source files
 [group('localization')]
 extract-translations:
-    @uv run --frozen pybabel extract --no-wrap --add-location=file -F babel.cfg -o locales/messages.pot .
+    @uv run --frozen pybabel extract --no-wrap --add-location=file --ignore-dirs='.*' -F babel.cfg -o locales/messages.pot .
 
 # Creates a new language file for localization
 [group('localization')]

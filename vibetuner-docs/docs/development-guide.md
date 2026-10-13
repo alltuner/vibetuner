@@ -692,7 +692,7 @@ the project root and pulls everything in via the shipped core stylesheet:
 /* config.css */
 @import "@alltuner/vibetuner/core.css";
 @source "templates";
-@source "assets/statics/js";
+@source "config.js";
 
 /* Add your custom styles below: */
 ```
@@ -702,6 +702,12 @@ plugin, so you can use any DaisyUI component class and any Tailwind v4
 utility in your templates without further configuration. Define
 Tailwind tokens with `@theme { ... }` and write component classes
 with `@layer components { .btn-custom { @apply btn btn-primary; } }`.
+
+Tailwind scans `templates/` and the `config.js` entry point for class
+names. It does not scan the generated `assets/statics/js/bundle.js`
+(Tailwind skips gitignored files), so if `config.js` imports your own
+JavaScript modules that build class names, register them in the custom
+section of `config.css`, for example `@source "js";`.
 
 The build process compiles `config.css` to `assets/statics/css/bundle.css`
 on `just dev` / `just local-all` / `bun run build:css`.
@@ -714,7 +720,7 @@ override the `[data-theme="…"]` selectors below the `@import`:
 ```css
 @import "@alltuner/vibetuner/core.css";
 @source "templates";
-@source "assets/statics/js";
+@source "config.js";
 
 [data-theme="light"] {
   --color-primary: oklch(64% 0.21 24);
@@ -1319,6 +1325,10 @@ just extract-translations
 ```
 
 This scans your code and templates for `{% trans %}` blocks and `gettext()` calls.
+
+The recipe passes `--ignore-dirs='.*'`, so only dot-directories are skipped. Babel's default
+also skips directories whose names start with `_`, which would silently drop strings that only
+appear in shared macro directories such as `templates/frontend/_macros/`.
 
 Catalog references record the source **file** only (`#: templates/frontend/index.html.jinja`),
 not the line number. Moving a translatable string within a file therefore produces no catalog

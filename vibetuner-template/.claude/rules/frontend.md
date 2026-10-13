@@ -9,6 +9,13 @@ description: HTMX patterns, SSE, caching, block rendering, and Tailwind/DaisyUI
 
 # Frontend Patterns
 
+## Tailwind class sources
+
+Tailwind scans `templates/` and `config.js` for class names, not the
+gitignored `bundle.js`. If `config.js` imports your own JS modules that
+build class names, add an `@source` for them in the custom section of
+`config.css` (e.g. `@source "js";`).
+
 ## DaisyUI palette overrides
 
 To recolor the DaisyUI `light` / `dark` themes for the whole bundle,
