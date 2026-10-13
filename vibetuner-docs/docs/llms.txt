@@ -188,7 +188,8 @@ Important notes:
   idiomatic patterns and rough edges
 - **Core Meta Routes**: `/robots.txt`, `/sitemap.xml`, `/favicon.ico`, `/site.webmanifest`,
   `/browserconfig.xml`. An app `GET` route on the same path takes precedence, so an async
-  route can serve a database-backed sitemap (or a `<sitemapindex>`)
+  route can serve a database-backed sitemap (or a `<sitemapindex>`). In multi-language
+  projects the default sitemap lists `/` and `/{lang}/` with hreflang alternates plus `x-default`
 - **Health Checks**: `/health`, `/health/ping`, `/health/ready`, `/health/id` endpoints
   with service connectivity checks
 - **Robust Tasks**: `@robust_task()` decorator with exponential backoff retries and

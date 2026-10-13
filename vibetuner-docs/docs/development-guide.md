@@ -247,6 +247,14 @@ Pair it with your own `templates/frontend/meta/sitemap.xml.jinja` that loops ove
 (`fqdn` is available in the context). The same route can return a `<sitemapindex>` that points
 at child sitemaps you serve yourself.
 
+The default `/sitemap.xml` lists the home page. When the project supports more than one
+language, it lists the unprefixed home page plus one `/{lang}/` entry per language, and every
+entry carries `<xhtml:link rel="alternate" hreflang="...">` links for all languages plus an
+`x-default` pointing at the unprefixed URL (the same set `hreflang_tags` emits in page heads).
+Single-language projects get a plain one-entry sitemap. Your own `meta/sitemap.xml.jinja`
+replaces this output, so emit the alternates there yourself; `supported_languages` and
+`default_language` are in the context.
+
 ### Adding Database Models
 
 Create models in `src/app/models/`. Models are **automatically discovered** and initialized.

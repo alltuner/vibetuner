@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
+{%- if supported_languages | length > 1 %}
+{%- set languages = supported_languages | sort %}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    {%- for loc_lang in [""] + languages %}
+    <url>
+        <loc>https://{{ fqdn }}/{% if loc_lang %}{{ loc_lang }}/{% endif %}</loc>
+        {%- for lang in languages %}
+        <xhtml:link rel="alternate" hreflang="{{ lang }}" href="https://{{ fqdn }}/{{ lang }}/"/>
+        {%- endfor %}
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://{{ fqdn }}/"/>
+    </url>
+    {%- endfor %}
+</urlset>
+{%- else %}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://{{ fqdn }}/</loc>
     </url>
 </urlset>
+{%- endif %}
