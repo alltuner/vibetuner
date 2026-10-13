@@ -1172,6 +1172,11 @@ async def list_items(request: Request):
     return render_template("items/list.html.jinja", request, ctx)
 ```
 
+The block sees the template's top-level `{% import %}` and `{% from ... import %}`
+statements, so macros imported at the top of the page work in the partial
+response too. Other top-level statements such as `{% set %}` don't run for a
+block render, so pass those values through the context.
+
 For HTMX [out-of-band swaps](https://htmx.org/attributes/hx-swap-oob/) that update
 multiple page regions in one response, use `render_template_blocks()` (plural):
 

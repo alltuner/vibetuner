@@ -3,10 +3,12 @@
 import functools
 import inspect
 import threading
+import weakref
 from collections.abc import Callable
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
+from jinja2 import Template, nodes
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, Response, StreamingResponse
 from starlette.templating import Jinja2Templates
@@ -592,6 +594,7 @@ def render_template(
     merged_ctx = _build_merged_ctx(request, ctx)
 
     return templates.TemplateResponse(
+        request,
         template,
         merged_ctx,
         status_code=status_code,
@@ -765,16 +768,7 @@ def render_template_block(
     ctx = _resolve_render_ctx(ctx, context)
     merged_ctx = _build_merged_ctx(request, ctx)
     template_obj = templates.get_template(template)
-
-    if block_name not in template_obj.blocks:
-        raise ValueError(
-            f"Block '{block_name}' not found in template '{template}'. "
-            f"Available blocks: {list(template_obj.blocks.keys())}"
-        )
-
-    block_func = template_obj.blocks[block_name]
-    rendered = "".join(block_func(template_obj.new_context(merged_ctx)))
-    return HTMLResponse(rendered)
+    return HTMLResponse(_render_block(template_obj, block_name, merged_ctx))
 
 
 def render_template_blocks(
@@ -820,18 +814,70 @@ def render_template_blocks(
     ctx = _resolve_render_ctx(ctx, context)
     merged_ctx = _build_merged_ctx(request, ctx)
     template_obj = templates.get_template(template)
+    return HTMLResponse(
+        "".join(
+            _render_block(template_obj, block_name, merged_ctx)
+            for block_name in block_names
+        )
+    )
 
-    parts: list[str] = []
-    for block_name in block_names:
-        if block_name not in template_obj.blocks:
-            raise ValueError(
-                f"Block '{block_name}' not found in template '{template}'. "
-                f"Available blocks: {list(template_obj.blocks.keys())}"
-            )
-        block_func = template_obj.blocks[block_name]
-        parts.append("".join(block_func(template_obj.new_context(merged_ctx))))
 
-    return HTMLResponse("".join(parts))
+def _render_block(
+    template_obj: Template, block_name: str, merged_ctx: dict[str, Any]
+) -> str:
+    """Render one block of ``template_obj`` with its top-level imports in scope.
+
+    A block function only runs the block's own code, so names bound by the
+    template's top-level ``{% import %}`` / ``{% from ... import %}`` would be
+    undefined inside it. Running those imports into the block's context first
+    makes the block behave as it does in a full render.
+    """
+    if block_name not in template_obj.blocks:
+        raise ValueError(
+            f"Block '{block_name}' not found in template '{template_obj.name}'. "
+            f"Available blocks: {list(template_obj.blocks.keys())}"
+        )
+
+    context = template_obj.new_context(merged_ctx)
+    imports_template = _top_level_imports(template_obj)
+    if imports_template is not None:
+        for _ in imports_template.root_render_func(context):
+            pass
+
+    block_func = template_obj.blocks[block_name]
+    return "".join(block_func(context))
+
+
+_top_level_imports_cache: weakref.WeakKeyDictionary[Template, Template | None] = (
+    weakref.WeakKeyDictionary()
+)
+
+
+def _top_level_imports(template_obj: Template) -> Template | None:
+    """Compile a template made of only ``template_obj``'s top-level imports.
+
+    Returns ``None`` when the template has no top-level imports. Results are
+    cached per compiled template, so a template reloaded by Jinja's
+    ``auto_reload`` is parsed again.
+    """
+    if template_obj in _top_level_imports_cache:
+        return _top_level_imports_cache[template_obj]
+
+    env = template_obj.environment
+    imports_template: Template | None = None
+    if env.loader is not None and template_obj.name is not None:
+        source, _, _ = env.loader.get_source(env, template_obj.name)
+        tree = env.parse(source, template_obj.name)
+        imports = [
+            node
+            for node in tree.body
+            if isinstance(node, (nodes.Import, nodes.FromImport))
+        ]
+        if imports:
+            imports_template = env.from_string(nodes.Template(imports, lineno=1))
+
+    _top_level_imports_cache[template_obj] = imports_template
+    return imports_template
 
 
 # Built-in context provider for date/time template globals

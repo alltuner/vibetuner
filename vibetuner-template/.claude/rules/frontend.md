@@ -250,6 +250,8 @@ keyspace SCAN.
 `render_template_block("template.html.jinja", "block_name",
 request, ctx)` — renders a single `{% block %}`.
 `render_template_blocks(...)` (plural) for multi-block OOB swaps.
+Top-level macro imports are available inside the block; top-level
+`{% set %}` is not, so pass such values via the context.
 
 ## HTMX Request Detection
 
