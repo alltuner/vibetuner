@@ -1394,6 +1394,11 @@ keys, default None).
 Cache key is derived from path + sorted query params. Disabled in debug mode.
 No-op if Redis is unavailable.
 
+Streamed responses (`render_template_stream()`) are buffered on a cache miss and
+cached like any other response, so a miss is sent only after the template has
+fully rendered. Server-sent event streams are never cached. Exceptions raised by
+the handler (e.g. `HTTPException(404)`) propagate after a single call.
+
 **Request-dependent keys with `vary_on`:**
 
 ```python
