@@ -575,29 +575,6 @@ User is automatically available in templates:
 {% endif %}
 ```
 
-## Custom Authentication Logic
-
-### After Login Hook
-
-Customize what happens after successful authentication:
-
-```python
-# src/app/frontend/hooks.py
-async def on_user_login(user: User, request: Request):
-# Log login event
-# Update last_login timestamp
-# Send welcome email
-pass
-```
-
-Register in `src/app/frontend/__init__.py`:
-
-```python
-from vibetuner.frontend import events
-from app.frontend.hooks import on_user_login
-events.register("user_login", on_user_login)
-```
-
 ## Security Considerations
 
 ### HTTPS in Production
