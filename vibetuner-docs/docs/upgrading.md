@@ -95,6 +95,9 @@ What to check in your app:
 - Code that compares or subtracts loaded datetimes with naive ones (`datetime.utcnow()`, bare
   `datetime.now()`, `datetime(2026, 1, 1)`) now raises `TypeError`. Use `vibetuner.time.now()` or
   `datetime.now(UTC)` and build literals with `tzinfo=UTC`.
+- Equality is the quiet case: `==` / `!=` between aware and naive datetimes never raise, they just
+  return `False` / `True`. Code that matched loaded values against naively built ones (for example
+  in upsert or sync logic) stops matching without an error. Build the comparison side aware too.
 - Code that called `.replace(tzinfo=UTC)` on loaded values, or a `field_validator` that reattached
   UTC to naive values, is now redundant and can be removed.
 - No data migration is needed. BSON stores datetimes as UTC; only the decoded Python type changes.

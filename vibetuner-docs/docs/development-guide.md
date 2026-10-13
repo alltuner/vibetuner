@@ -332,9 +332,9 @@ if now() - post.db_insert_dt > timedelta(days=30):  # both sides are aware
     ...
 ```
 
-Avoid `datetime.utcnow()` and bare `datetime.now()`: they return naive values, and comparing or
-subtracting naive and aware datetimes raises `TypeError`. Naive values your code writes are stored
-as UTC and come back aware.
+Avoid `datetime.utcnow()` and bare `datetime.now()`: they return naive values. Ordering or
+subtracting naive and aware datetimes raises `TypeError`, and `==` between them is always `False`.
+Naive values your code writes are stored as UTC and come back aware.
 
 #### Soft Delete
 

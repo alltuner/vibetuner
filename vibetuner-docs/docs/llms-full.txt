@@ -335,6 +335,7 @@ post = await Post.get(post_id)
 now() - post.db_insert_dt > timedelta(days=30)        # OK
 post.db_insert_dt > datetime(2026, 1, 1, tzinfo=UTC)  # OK
 post.db_insert_dt > datetime.utcnow()                 # TypeError: naive vs aware
+post.db_insert_dt == datetime.utcnow()                # always False, no error
 ```
 
 Naive values your code writes are stored as UTC and come back aware.

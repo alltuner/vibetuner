@@ -290,7 +290,7 @@ HTTP-only, secure cookies with server-side validation:
 ```python
 session_data = {
 "user_id": str(user.id),
-"created_at": datetime.utcnow()
+"created_at": datetime.now(UTC).isoformat()
 }
 session_id = secrets.token_urlsafe(32)
 await redis.setex(f"session:{session_id}", SESSION_MAX_AGE, json.dumps(session_data))
