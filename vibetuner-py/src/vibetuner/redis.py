@@ -1,9 +1,21 @@
 # ABOUTME: Shared async Redis client for the vibetuner framework.
 # ABOUTME: Provides a lazy-initialized, reusable Redis connection with graceful degradation.
 import asyncio
+import contextlib
+
+import redis.exceptions
 
 from vibetuner.logging import logger
 
+
+# Errors meaning the Redis server is unreachable, after which the shared client
+# is reset. redis-py's ConnectionError and TimeoutError derive from RedisError,
+# not from the builtin OSError family, so they are listed explicitly.
+CONNECTION_ERRORS: tuple[type[Exception], ...] = (
+    OSError,
+    redis.exceptions.ConnectionError,
+    redis.exceptions.TimeoutError,
+)
 
 _client = None
 _lock = asyncio.Lock()
@@ -46,13 +58,20 @@ async def close_redis_client() -> None:
         logger.debug("Shared Redis client closed")
 
 
-def reset_redis_client() -> None:
-    """Reset the client reference after a connection error.
+async def reset_redis_client() -> None:
+    """Drop the shared client after a connection error and close it.
 
     The next call to :func:`get_redis_client` will create a fresh connection.
+    The reference is cleared before closing so concurrent resets close the old
+    client only once; errors from closing an already broken connection are
+    ignored.
     """
     global _client
-    _client = None
+    old_client, _client = _client, None
+    if old_client is None:
+        return
+    with contextlib.suppress(OSError, redis.exceptions.RedisError):
+        await old_client.aclose()
 
 
 def get_redis_url() -> str | None:

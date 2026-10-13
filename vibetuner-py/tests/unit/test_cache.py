@@ -7,6 +7,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from fastapi import HTTPException
 from fastapi.sse import EventSourceResponse
+from redis.exceptions import (
+    ConnectionError as RedisConnectionError,
+    TimeoutError as RedisTimeoutError,
+)
 from starlette.background import BackgroundTask
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, JSONResponse, StreamingResponse
@@ -916,3 +920,110 @@ class TestInvalidatePattern:
             patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
         ):
             assert await invalidate_pattern("/api/*") == 0
+
+
+_CONNECTION_FAILURES = [
+    pytest.param(RedisConnectionError("refused"), id="redis-connection-error"),
+    pytest.param(RedisTimeoutError("timed out"), id="redis-timeout-error"),
+    pytest.param(ConnectionError("refused"), id="builtin-connection-error"),
+]
+
+
+class TestConnectionFailuresResetClient:
+    """Connection failures from redis-py reset the shared client (#2214).
+
+    redis-py's ConnectionError and TimeoutError derive from RedisError, not
+    from the builtin OSError family, so they need catching explicitly.
+    """
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("error", _CONNECTION_FAILURES)
+    async def test_read_failure_resets_client(self, error: Exception):
+        client, _ = _mock_redis_client()
+        client.get = AsyncMock(side_effect=error)
+
+        @cache(expire=60)
+        async def handler(request: Request):
+            return JSONResponse({"fallback": True})
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH) as mock_reset,
+        ):
+            result = await handler(request=_make_request())
+
+        assert json.loads(result.body) == {"fallback": True}
+        mock_reset.assert_called_once()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("error", _CONNECTION_FAILURES)
+    async def test_write_failure_resets_client(self, error: Exception):
+        client, _ = _mock_redis_client()
+        client.get = AsyncMock(return_value=None)
+        client.set = AsyncMock(side_effect=error)
+
+        @cache(expire=60)
+        async def handler(request: Request):
+            return JSONResponse({"ok": True})
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH) as mock_reset,
+        ):
+            result = await handler(request=_make_request())
+
+        assert json.loads(result.body) == {"ok": True}
+        mock_reset.assert_called_once()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("error", _CONNECTION_FAILURES)
+    async def test_invalidate_failure_resets_client(self, error: Exception):
+        client, _ = _mock_redis_client()
+        client.delete = AsyncMock(side_effect=error)
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH) as mock_reset,
+        ):
+            assert await invalidate("/api/stats") is False
+
+        mock_reset.assert_called_once()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("error", _CONNECTION_FAILURES)
+    async def test_invalidate_pattern_failure_resets_client(self, error: Exception):
+        client, _ = _mock_redis_client()
+        client.smembers = AsyncMock(side_effect=error)
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH) as mock_reset,
+        ):
+            assert await invalidate_pattern("/api/*") == 0
+
+        mock_reset.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_other_redis_errors_keep_client(self):
+        """A non-connection error (e.g. a bad command) doesn't drop the client."""
+        from redis.exceptions import ResponseError
+
+        client, _ = _mock_redis_client()
+        client.get = AsyncMock(side_effect=ResponseError("WRONGTYPE"))
+
+        @cache(expire=60)
+        async def handler(request: Request):
+            return JSONResponse({"fallback": True})
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH) as mock_reset,
+        ):
+            await handler(request=_make_request())
+
+        mock_reset.assert_not_called()

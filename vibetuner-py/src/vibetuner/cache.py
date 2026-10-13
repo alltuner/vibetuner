@@ -9,6 +9,7 @@ from collections.abc import Callable
 from typing import Any
 
 from vibetuner.logging import logger
+from vibetuner.redis import CONNECTION_ERRORS
 
 
 _GLOB_CHARS = frozenset("*?[")
@@ -143,9 +144,9 @@ async def _cached_call(
             cached = await client.get(cache_key)
             if cached is not None:
                 return _restore_response(cached)
-    except (ConnectionError, OSError, TimeoutError):
+    except CONNECTION_ERRORS:
         logger.debug("Redis cache unavailable, executing handler directly")
-        reset_redis_client()
+        await reset_redis_client()
         client = None
     except Exception:  # noqa: BLE001
         logger.debug("Redis cache error, executing handler directly")
@@ -164,9 +165,9 @@ async def _cached_call(
             await _register_cache_key(
                 client, settings.redis_key_prefix, request.url.path, cache_key, expire
             )
-    except (ConnectionError, OSError, TimeoutError):
+    except CONNECTION_ERRORS:
         logger.debug("Redis cache unavailable, response not cached")
-        reset_redis_client()
+        await reset_redis_client()
     except Exception:  # noqa: BLE001
         logger.debug("Redis cache error, response not cached")
 
@@ -191,7 +192,7 @@ async def invalidate(
     """
     try:
         from vibetuner.config import settings
-        from vibetuner.redis import get_redis_client
+        from vibetuner.redis import get_redis_client, reset_redis_client
 
         client = await get_redis_client()
         if client is None:
@@ -202,8 +203,9 @@ async def invalidate(
         )
         deleted = await client.delete(cache_key)
         return deleted > 0
-    except (ConnectionError, OSError, TimeoutError):
+    except CONNECTION_ERRORS:
         logger.debug("Redis unavailable during cache invalidation")
+        await reset_redis_client()
         return False
     except Exception:  # noqa: BLE001
         logger.debug("Cache invalidation failed")
@@ -236,7 +238,7 @@ async def invalidate_pattern(pattern: str) -> int:
     """
     try:
         from vibetuner.config import settings
-        from vibetuner.redis import get_redis_client
+        from vibetuner.redis import get_redis_client, reset_redis_client
 
         client = await get_redis_client()
         if client is None:
@@ -262,8 +264,9 @@ async def invalidate_pattern(pattern: str) -> int:
             else:
                 await client.srem(registry, *matching)
         return deleted
-    except (ConnectionError, OSError, TimeoutError):
+    except CONNECTION_ERRORS:
         logger.debug("Redis unavailable during pattern invalidation")
+        await reset_redis_client()
         return 0
     except Exception:  # noqa: BLE001
         logger.debug("Pattern invalidation failed")

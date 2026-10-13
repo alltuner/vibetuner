@@ -152,7 +152,7 @@ async def _check_redis() -> dict[str, Any]:
         return {"status": "error", "error": "Health check timed out"}
     except Exception as e:  # noqa: BLE001
         logger.warning("Redis health check failed: {}", e)
-        reset_redis_client()
+        await reset_redis_client()
         return {"status": "error", "error": _sanitize_error(e, service="redis")}
 
 
