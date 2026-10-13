@@ -230,6 +230,8 @@ for handlers on dynamically-inserted elements. Full reference:
 `vary_on=lambda r: str(r.state.user.id)` for per-user/tenant keys.
 Disabled in debug mode (`force_caching=True` to override).
 No-op without Redis.
+Streamed responses are buffered and cached (no TTFB gain on a miss).
+Handler exceptions propagate after one call and are not cached.
 `invalidate(path, query_params=..., vary=...)` deletes one exact
 entry — pass `vary` to hit a `vary_on` variant.
 `invalidate_pattern(path)` removes every variant of a path (or a

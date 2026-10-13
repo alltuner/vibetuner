@@ -57,6 +57,11 @@ def cache(
     Respects the ``Cache-Control: no-cache`` request header: when present
     the cache is bypassed and the response is regenerated (and re-stored).
 
+    Streamed responses (e.g. from ``render_template_stream``) are buffered
+    in full and cached; a cache miss is sent once the stream has finished.
+    Server-sent event streams are never cached. Exceptions raised by the
+    handler propagate after a single call.
+
     Args:
         expire: Time-to-live in seconds for the cached response.
         force_caching: Enable caching even when ``DEBUG`` is ``True``.
@@ -134,32 +139,38 @@ async def _cached_call(
 
     try:
         client = await get_redis_client()
-        if client is None:
-            return await _call_handler(func, *args, **kwargs)
-
-        if not no_cache:
+        if client is not None and not no_cache:
             cached = await client.get(cache_key)
             if cached is not None:
                 return _restore_response(cached)
+    except (ConnectionError, OSError, TimeoutError):
+        logger.debug("Redis cache unavailable, executing handler directly")
+        reset_redis_client()
+        client = None
+    except Exception:
+        logger.debug("Redis cache error, executing handler directly")
+        client = None
 
-        response = await _call_handler(func, *args, **kwargs)
+    response = await _call_handler(func, *args, **kwargs)
+    if client is None:
+        return response
 
+    response = await _buffer_streaming_response(response)
+
+    try:
         serialized = _serialize_response(response)
         if serialized is not None:
             await client.set(cache_key, serialized, ex=expire)
             await _register_cache_key(
                 client, settings.redis_key_prefix, request.url.path, cache_key, expire
             )
-
-        return response
-
     except (ConnectionError, OSError, TimeoutError):
-        logger.debug("Redis cache unavailable, executing handler directly")
+        logger.debug("Redis cache unavailable, response not cached")
         reset_redis_client()
-        return await _call_handler(func, *args, **kwargs)
     except Exception:
-        logger.debug("Redis cache error, executing handler directly")
-        return await _call_handler(func, *args, **kwargs)
+        logger.debug("Redis cache error, response not cached")
+
+    return response
 
 
 async def invalidate(
@@ -319,6 +330,37 @@ def _extract_request(args: tuple, kwargs: dict, func: Callable):
         if isinstance(v, Request):
             return v
     return None
+
+
+async def _buffer_streaming_response(response: Any) -> Any:
+    """Drain a streamed response into a regular response so it can be cached.
+
+    The returned response carries the stream's status, headers and
+    background task. Server-sent event streams are long-lived and never
+    buffered.
+    """
+    from fastapi.sse import EventSourceResponse
+    from starlette.responses import Response, StreamingResponse
+
+    if not isinstance(response, StreamingResponse):
+        return response
+    if isinstance(response, EventSourceResponse):
+        logger.warning("@cache cannot cache server-sent event streams")
+        return response
+
+    chunks = [
+        chunk
+        if isinstance(chunk, bytes | memoryview)
+        else chunk.encode(response.charset)
+        async for chunk in response.body_iterator
+    ]
+    buffered = Response(
+        content=b"".join(chunks),
+        status_code=response.status_code,
+        background=response.background,
+    )
+    buffered.raw_headers = [*response.raw_headers, *buffered.raw_headers]
+    return buffered
 
 
 def _serialize_response(response: Any) -> bytes | None:

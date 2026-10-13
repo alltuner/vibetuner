@@ -58,6 +58,8 @@ Important notes:
   Key derived from path + query params. Use `vary_on=lambda r: str(r.state.user.id)`
   for request-dependent keys (per-user, per-tenant). Disabled in debug mode
   (override with `force_caching=True`). No-op if Redis unavailable.
+  Streamed responses are buffered and cached (no streaming TTFB on a miss);
+  handler exceptions propagate after a single call.
   `invalidate(path, query_params=..., vary=...)` deletes one exact entry
   (pass `vary` to hit a `vary_on` variant); `invalidate_pattern(path)` removes
   every variant of a path (or a glob match) via per-path key registries —

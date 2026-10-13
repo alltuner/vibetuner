@@ -5,8 +5,11 @@ import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException
+from fastapi.sse import EventSourceResponse
+from starlette.background import BackgroundTask
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, JSONResponse
+from starlette.responses import HTMLResponse, JSONResponse, StreamingResponse
 from vibetuner.cache import (
     _build_cache_key,
     _restore_response,
@@ -314,6 +317,230 @@ class TestCacheDecorator:
 
         body = json.loads(result.body)
         assert body["sync"] is True
+
+
+def _dict_backed_redis_client():
+    """Mock Redis client whose get/set read and write a real dict."""
+    client, _ = _mock_redis_client()
+    store: dict[str, bytes] = {}
+
+    async def _get(key: str) -> bytes | None:
+        return store.get(key)
+
+    async def _set(key: str, value: bytes, ex: int | None = None) -> None:
+        store[key] = value
+
+    client.get = AsyncMock(side_effect=_get)
+    client.set = AsyncMock(side_effect=_set)
+    return client, store
+
+
+async def _read_body(response) -> bytes:
+    """Collect the bytes a response would send to the client."""
+    sent: list[bytes] = []
+
+    async def _receive():
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    async def _send(message):
+        if message["type"] == "http.response.body":
+            sent.append(message.get("body", b""))
+
+    await response({"type": "http", "method": "GET"}, _receive, _send)
+    return b"".join(sent)
+
+
+class TestCacheHandlerErrors:
+    """Handler exceptions propagate after a single call."""
+
+    @pytest.mark.asyncio
+    async def test_handler_exception_runs_handler_once(self):
+        client, _ = _dict_backed_redis_client()
+        call_count = 0
+
+        @cache(expire=60)
+        async def handler(request: Request):
+            nonlocal call_count
+            call_count += 1
+            raise HTTPException(status_code=404)
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH),
+            pytest.raises(HTTPException) as exc_info,
+        ):
+            await handler(request=_make_request())
+
+        assert exc_info.value.status_code == 404
+        assert call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_cache_write_failure_does_not_rerun_handler(self):
+        client, _ = _dict_backed_redis_client()
+        client.set = AsyncMock(side_effect=RuntimeError("write failed"))
+        call_count = 0
+
+        @cache(expire=60)
+        async def handler(request: Request):
+            nonlocal call_count
+            call_count += 1
+            return JSONResponse({"ok": True})
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH),
+        ):
+            result = await handler(request=_make_request())
+
+        assert call_count == 1
+        assert json.loads(result.body) == {"ok": True}
+
+    @pytest.mark.asyncio
+    async def test_corrupt_cache_entry_falls_back_to_handler_once(self):
+        client, _ = _dict_backed_redis_client()
+        client.get = AsyncMock(return_value=b"not json")
+        call_count = 0
+
+        @cache(expire=60)
+        async def handler(request: Request):
+            nonlocal call_count
+            call_count += 1
+            return JSONResponse({"fresh": True})
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH),
+        ):
+            result = await handler(request=_make_request())
+
+        assert call_count == 1
+        assert json.loads(result.body) == {"fresh": True}
+
+
+class TestCacheStreamingResponses:
+    """Streamed responses are buffered, cached, and served from the cache."""
+
+    @staticmethod
+    def _sync_str_stream() -> StreamingResponse:
+        def _generate():
+            yield "<h1>"
+            yield "Trains</h1>"
+
+        return StreamingResponse(_generate(), media_type="text/html")
+
+    @staticmethod
+    def _async_bytes_stream() -> StreamingResponse:
+        async def _generate():
+            yield b"<h1>"
+            yield b"Trains</h1>"
+
+        return StreamingResponse(_generate(), media_type="text/html")
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("make_stream", ["_sync_str_stream", "_async_bytes_stream"])
+    async def test_streamed_response_is_cached(self, make_stream: str):
+        client, store = _dict_backed_redis_client()
+        call_count = 0
+
+        @cache(expire=60)
+        async def handler(request: Request):
+            nonlocal call_count
+            call_count += 1
+            return getattr(self, make_stream)()
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH),
+        ):
+            first = await handler(request=_make_request())
+            second = await handler(request=_make_request())
+
+        assert call_count == 1
+        assert len(store) == 1
+        assert await _read_body(first) == b"<h1>Trains</h1>"
+        assert await _read_body(second) == b"<h1>Trains</h1>"
+        assert first.headers["content-type"] == "text/html; charset=utf-8"
+        assert second.headers["content-type"] == "text/html; charset=utf-8"
+
+    @pytest.mark.asyncio
+    async def test_buffered_response_keeps_headers_and_background(self):
+        client, _ = _dict_backed_redis_client()
+        background = BackgroundTask(lambda: None)
+
+        @cache(expire=60)
+        async def handler(request: Request):
+            response = self._sync_str_stream()
+            response.set_cookie("a", "1")
+            response.set_cookie("b", "2")
+            response.background = background
+            return response
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH),
+        ):
+            result = await handler(request=_make_request())
+
+        assert len(result.headers.getlist("set-cookie")) == 2
+        assert len(result.headers.getlist("content-type")) == 1
+        assert result.headers["content-length"] == str(len(b"<h1>Trains</h1>"))
+        assert result.background is background
+
+    @pytest.mark.asyncio
+    async def test_stream_error_propagates_once(self):
+        client, store = _dict_backed_redis_client()
+        call_count = 0
+
+        @cache(expire=60)
+        async def handler(request: Request):
+            nonlocal call_count
+            call_count += 1
+
+            def _generate():
+                yield "<h1>"
+                raise RuntimeError("template failed")
+
+            return StreamingResponse(_generate(), media_type="text/html")
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH),
+            pytest.raises(RuntimeError, match="template failed"),
+        ):
+            await handler(request=_make_request())
+
+        assert call_count == 1
+        assert store == {}
+
+    @pytest.mark.asyncio
+    async def test_event_stream_is_not_buffered(self, log_sink: list[str]):
+        client, store = _dict_backed_redis_client()
+
+        async def _events():
+            yield "data: hi\n\n"
+
+        response = EventSourceResponse(_events())
+
+        @cache(expire=60)
+        async def handler(request: Request):
+            return response
+
+        with (
+            patch(_SETTINGS_PATH, _mock_settings()),
+            patch(_GET_CLIENT_PATH, AsyncMock(return_value=client)),
+            patch(_RESET_CLIENT_PATH),
+        ):
+            result = await handler(request=_make_request())
+
+        assert result is response
+        assert store == {}
+        assert any("cannot cache server-sent event streams" in m for m in log_sink)
 
 
 class TestVaryOn:

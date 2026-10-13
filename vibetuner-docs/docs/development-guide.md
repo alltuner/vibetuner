@@ -215,6 +215,9 @@ async def dashboard(request: Request):
 Context merging works identically to `render_template()`. Best suited for full page
 loads — HTMX partials are typically small and don't benefit from streaming.
 
+Combined with `@cache`, the streamed body is buffered on a cache miss and cached
+like any other response, so a miss is sent only after the template finishes rendering.
+
 ### Adding Database Models
 
 Create models in `src/app/models/`. Models are **automatically discovered** and initialized.
@@ -1033,6 +1036,11 @@ if you already have `REDIS_URL` configured.
 - Cache key derived from route path + sorted query parameters
 - Respects `Cache-Control: no-cache` request header (bypasses cache)
 - Works with JSON, HTML, and dict responses
+- Streamed responses (`render_template_stream()`) are buffered and cached. A cache
+  miss sends the page once it has fully rendered, so the streaming TTFB benefit only
+  applies to uncached routes. Server-sent event streams are never cached
+- Exceptions raised by the handler (e.g. `HTTPException(404)`) propagate after a
+  single call and are not cached
 - **Disabled by default in debug mode** — pass `force_caching=True` to override
 - If Redis is not configured or unavailable, the decorator is a transparent no-op
 
