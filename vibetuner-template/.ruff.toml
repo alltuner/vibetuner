@@ -6,6 +6,7 @@ extend-select = [
   'B',      # flake8-bugbear
   'C4',     # flake8-comprehensions
   'C90',    # mccabe
+  'DTZ',    # flake8-datetimez (most of it is outside ruff's defaults)
   'I',      # isort
   'N',      # pep8-naming
   'Q',      # flake8-quotes
