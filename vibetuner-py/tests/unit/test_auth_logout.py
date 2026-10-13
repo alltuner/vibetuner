@@ -113,7 +113,7 @@ class TestRouteRegistration:
                 for r in auth_routes.router.routes
                 if isinstance(r, APIRoute)
                 and r.path == "/auth/logout"
-                and "POST" in r.methods
+                and "POST" in (r.methods or set())
             ),
             None,
         )
@@ -128,7 +128,7 @@ class TestRouteRegistration:
                 for r in auth_routes.router.routes
                 if isinstance(r, APIRoute)
                 and r.path == "/auth/logout"
-                and "GET" in r.methods
+                and "GET" in (r.methods or set())
             ),
             None,
         )

@@ -453,7 +453,9 @@ def _build_update_schema(create_schema: type[BaseModel]) -> type[BaseModel]:
     """Build a partial update schema from a create schema with all fields Optional."""
     fields: dict[str, Any] = {}
     for name, field_info in create_schema.model_fields.items():
-        fields[name] = (field_info.annotation | None, None)
+        annotation = field_info.annotation if field_info.annotation is not None else Any
+        # ty can't model `|` on a runtime TypeForm; this builds the type at runtime.
+        fields[name] = (annotation | None, None)  # ty: ignore[unsupported-operator]
 
     return type(
         f"{create_schema.__name__.removesuffix('Create')}Update",
