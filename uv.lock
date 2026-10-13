@@ -3848,7 +3848,7 @@ requires-dist = [
     { name = "starlette-context", specifier = ">=0.5.1" },
     { name = "streaq", extras = ["web"], specifier = ">=7.2.0,<8.0.0" },
     { name = "taplo", marker = "extra == 'dev'", specifier = ">=0.9.3" },
-    { name = "testcontainers", extras = ["mongodb"], marker = "extra == 'dev'", specifier = ">=4.14.2" },
+    { name = "testcontainers", extras = ["mongodb"], marker = "extra == 'dev'", specifier = ">=4.15.0" },
     { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.44" },
     { name = "typer", specifier = ">=0.26.7" },
     { name = "types-aioboto3", extras = ["s3"], marker = "extra == 'dev'", specifier = ">=15.5.0" },
