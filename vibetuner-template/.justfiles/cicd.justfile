@@ -40,11 +40,12 @@ release: _check-clean _check-last-commit-tagged
     fi
     ENVIRONMENT=prod docker buildx bake -f compose.prod.yml --push
 
-# Deploys to a remote host, pulling from the configured registry.
+# Deploys the :latest image to a remote host, pulling from the configured registry.
+# Runs the floating :latest tag so Watchtower can roll out later releases.
 [group('CI/CD')]
 deploy-latest HOST:
     #!/usr/bin/env bash
     set -euo pipefail
     eval "$(just _project-vars)"
-    DOCKER_HOST="ssh://{{ HOST }}" ENVIRONMENT=prod \
+    DOCKER_HOST="ssh://{{ HOST }}" ENVIRONMENT=prod VERSION=latest \
     docker compose -f compose.prod.yml up -d --remove-orphans --pull always

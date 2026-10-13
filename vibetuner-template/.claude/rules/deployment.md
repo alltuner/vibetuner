@@ -30,8 +30,10 @@ central registry asynchronously, giving you fast local pushes.
 
 ## Deploying
 
-`deploy-latest` pulls and runs the image on a remote host via SSH.
+`deploy-latest` pulls and runs the `:latest` image on a remote host via SSH.
 It is decoupled from `release`, so you can push and deploy separately.
+Containers run the floating `:latest` tag, so Watchtower (when enabled)
+rolls out later releases on its own.
 
 ```bash
 just deploy-latest user@myhost

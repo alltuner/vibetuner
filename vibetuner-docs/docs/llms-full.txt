@@ -170,7 +170,7 @@ just build-dev               # Build development Docker image
 just test-build-prod         # Test production build locally
 just build-prod              # Build production image
 just release                 # Build and release production image
-just deploy-latest HOST      # Deploy to remote host
+just deploy-latest HOST      # Deploy :latest to remote host (Watchtower keeps it current)
 ```
 
 **Scaffolding:**
@@ -2636,7 +2636,9 @@ Worker healthcheck: `vibetuner worker-health` exits non-zero when no live
 worker is found (it checks for a fresh streaq health key in Redis, renewed from
 inside the worker's event loop). The scaffolded `compose.prod.yml` wires it as
 the worker service healthcheck for orchestrators / autoheal; recovery on plain
-Compose comes from the watchdog.
+Compose comes from the watchdog. Each probe starts a fresh Python process, so
+the scaffold uses `timeout: 60s` (interval and start period 120s); keep the
+timeout above the probe's real duration.
 
 #### Testing Tasks
 

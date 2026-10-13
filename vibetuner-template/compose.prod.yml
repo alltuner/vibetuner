@@ -8,10 +8,10 @@ services:
     command: ["prod", "worker"]
     healthcheck:
       test: ["CMD", "vibetuner", "worker-health"]
-      interval: 30s
-      timeout: 5s
+      interval: 120s
+      timeout: 60s
       retries: 3
-      start_period: 40s
+      start_period: 120s
     labels:
       com.centurylinklabs.watchtower.enable: "${ENABLE_WATCHTOWER:-false}"
   frontend:

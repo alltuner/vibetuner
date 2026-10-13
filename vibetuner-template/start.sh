@@ -1,9 +1,6 @@
 #!/bin/sh
 set -e
 
-echo "This is the environment:"
-env
-
 # Handle special container commands
 if [ "$1" = "shell" ]; then
     exec /bin/bash
