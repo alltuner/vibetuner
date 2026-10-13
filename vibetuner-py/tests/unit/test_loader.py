@@ -27,8 +27,8 @@ class TestLoadAppConfig:
             config = load_app_config()
 
         assert isinstance(config, VibetunerApp)
-        assert config.models == []
-        assert config.routes == []
+        assert config.models == ()
+        assert config.routes == ()
 
     def test_returns_default_when_no_tune_py(self):
         """When tune.py doesn't exist, returns empty VibetunerApp (zero-config)."""
@@ -42,7 +42,7 @@ class TestLoadAppConfig:
             config = load_app_config()
 
         assert isinstance(config, VibetunerApp)
-        assert config.models == []
+        assert config.models == ()
 
     def test_loads_valid_tune_py(self):
         """When tune.py exists with valid app, loads it."""
@@ -135,14 +135,14 @@ class TestVibetunerApp:
         """VibetunerApp has sensible defaults."""
         app = VibetunerApp()
 
-        assert app.models == []
-        assert app.routes == []
-        assert app.api_routes == []
-        assert app.middleware == []
+        assert app.models == ()
+        assert app.routes == ()
+        assert app.api_routes == ()
+        assert app.middleware == ()
         assert app.template_filters == {}
         assert app.frontend_lifespan is None
-        assert app.oauth_providers == []
-        assert app.tasks == []
+        assert app.oauth_providers == ()
+        assert app.tasks == ()
         assert app.worker_lifespan is None
         assert app.cli is None
 

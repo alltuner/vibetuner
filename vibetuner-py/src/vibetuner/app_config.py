@@ -1,6 +1,7 @@
 # ABOUTME: Defines VibetunerApp, the explicit configuration class for vibetuner applications.
 # ABOUTME: Users create tune.py with an `app = VibetunerApp(...)` to configure their app.
-from typing import Any, Callable
+from collections.abc import Callable, Mapping, Sequence
+from typing import Any
 
 from beanie import Document, UnionDoc, View
 from fastapi import APIRouter
@@ -33,30 +34,30 @@ class VibetunerApp(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     # Models (Beanie documents and views)
-    models: list[type[Document] | type[UnionDoc] | type[View]] = []
+    models: Sequence[type[Document] | type[UnionDoc] | type[View]] = ()
 
     # SQL Models (SQLModel table models)
-    sql_models: list[type] = []
+    sql_models: Sequence[type] = ()
 
     # Frontend
-    routes: list[APIRouter] = []
-    api_routes: list[APIRouter] = []
-    middleware: list[Middleware] = []
-    template_filters: dict[str, Callable[..., Any]] = {}
+    routes: Sequence[APIRouter] = ()
+    api_routes: Sequence[APIRouter] = ()
+    middleware: Sequence[Middleware] = ()
+    template_filters: Mapping[str, Callable[..., Any]] = {}
     frontend_lifespan: Callable[..., Any] | None = None
 
     # OAuth providers (e.g., ["google", "github"])
-    oauth_providers: list[str] = []
+    oauth_providers: Sequence[str] = ()
 
     # Custom OAuth providers (e.g., {"twitter": OauthProviderModel(...)})
-    custom_oauth_providers: dict[str, OauthProviderModel] = {}
+    custom_oauth_providers: Mapping[str, OauthProviderModel] = {}
 
     # Worker
-    tasks: list[Callable[..., Any]] = []
+    tasks: Sequence[Callable[..., Any]] = ()
     worker_lifespan: Callable[..., Any] | None = None
 
     # Runtime config entries to register during startup
-    runtime_config: dict[str, dict[str, Any]] = {}
+    runtime_config: Mapping[str, Mapping[str, Any]] = {}
 
     # CLI extensions
     cli: Typer | None = None

@@ -25,3 +25,11 @@ invalid-assignment = "ignore"
 unresolved-attribute = "ignore"
 not-subscriptable = "ignore"
 invalid-return-type = "ignore"
+
+# tests/type_checks/ holds app-side samples that exist to catch argument-type
+# regressions in the public API, so the relaxation above must not apply there.
+[[overrides]]
+include = ["tests/type_checks/**/*.py"]
+
+[overrides.rules]
+invalid-argument-type = "error"
