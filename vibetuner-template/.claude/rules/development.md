@@ -188,6 +188,8 @@ defaults.
 Core meta routes (`/sitemap.xml`, `/robots.txt`, `/favicon.ico`,
 `/site.webmanifest`, `/browserconfig.xml`) are replaced by any app `GET`
 route on the same path, e.g. an async `/sitemap.xml` listing database pages.
+In multi-language projects the default sitemap carries hreflang alternates
+(plus `x-default`); a custom `meta/sitemap.xml.jinja` must emit its own.
 
 ## Debugging
 

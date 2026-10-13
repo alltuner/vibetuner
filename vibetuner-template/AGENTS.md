@@ -243,6 +243,8 @@ list in `tune.py`.
 An app `GET` route on a core meta path (`/sitemap.xml`, `/robots.txt`,
 `/favicon.ico`, `/site.webmanifest`, `/browserconfig.xml`) replaces the
 framework's, e.g. an async `/sitemap.xml` that lists database-backed pages.
+In multi-language projects the default sitemap carries hreflang alternates
+(plus `x-default`); a custom `meta/sitemap.xml.jinja` must emit its own.
 
 ### Models
 
