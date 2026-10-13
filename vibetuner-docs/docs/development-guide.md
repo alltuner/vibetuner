@@ -153,8 +153,7 @@ just deps-scaffolding-pr     # Update deps + scaffolding in a worktree and open 
 
 ### Adding New Routes
 
-Create a new file in `src/app/frontend/routes/`. Routes are **automatically discovered**, no
-registration needed:
+Create a new file in `src/app/frontend/routes/` and register its router in `tune.py`:
 
 ```python
 # src/app/frontend/routes/blog.py
@@ -167,7 +166,18 @@ async def list_posts():
     return {"posts": []}
 ```
 
-The framework finds any `router` variable in route files and registers it automatically.
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.frontend.routes.blog import router as blog_router
+
+app = VibetunerApp(
+    routes=[blog_router],
+)
+```
+
+Routers in `routes` serve frontend/HTMX pages and are hidden from `/docs`. List JSON API
+routers in `api_routes` instead to keep them visible in `/docs`.
 
 #### `@render` Decorator
 
@@ -257,7 +267,8 @@ replaces this output, so emit the alternates there yourself; `supported_language
 
 ### Adding Database Models
 
-Create models in `src/app/models/`. Models are **automatically discovered** and initialized.
+Create models in `src/app/models/` and register them in `tune.py`. The framework initializes
+the registered models (plus its own core models) on startup.
 
 #### MongoDB (Beanie ODM)
 
@@ -275,7 +286,17 @@ class Post(Document):
         name = "posts"
 ```
 
-No `__init__.py` registration needed. The framework auto-discovers Beanie Documents.
+Register Beanie documents (and views) in `tune.py`:
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.models.post import Post
+
+app = VibetunerApp(
+    models=[Post],
+)
+```
 
 !!! note "Beanie class-level queries and `ty`"
     Beanie builds queries from class-level field access (`Post.title == "x"`,
@@ -669,8 +690,7 @@ Use in templates:
 
 ### Adding Background Jobs
 
-If you enabled background jobs, create tasks in `src/app/tasks/`. Task modules are
-**automatically discovered**:
+If you enabled background jobs, create tasks in `src/app/tasks/` and list them in `tune.py`:
 
 ```python
 # src/app/tasks/emails.py
@@ -692,6 +712,16 @@ async def send_welcome_email(user_id: str):
             text_body="Welcome!",
         )
     return {"status": "sent"}
+```
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.tasks.emails import send_welcome_email
+
+app = VibetunerApp(
+    tasks=[send_welcome_email],
+)
 ```
 
 Queue jobs from your routes:
@@ -735,6 +765,20 @@ names. It does not scan the generated `assets/statics/js/bundle.js`
 (Tailwind skips gitignored files), so if `config.js` imports your own
 JavaScript modules that build class names, register them in the custom
 section of `config.css`, for example `@source "js";`.
+
+The scaffolded `Dockerfile` only gives the frontend build `config.js`: the
+`frontend-build` stage bind-mounts it alone and the `dev-runtime` stage
+(used by `just dev`) copies only `config.css` and `config.js`. If
+`config.js` imports modules from your own directory, add that directory to
+both stages, or `bun build` fails with `Could not resolve` (and Tailwind
+can't scan it). For a `js/` directory:
+
+```dockerfile
+# frontend-build stage: add next to the config.js bind mount
+    --mount=type=bind,source=js,target=js \
+# dev-runtime stage: add after `COPY --link config.css config.js ./`
+COPY --link js/ js/
+```
 
 The build process compiles `config.css` to `assets/statics/css/bundle.css`
 on `just dev` / `just local-all` / `bun run build:css`.

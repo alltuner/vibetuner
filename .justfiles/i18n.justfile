@@ -18,6 +18,7 @@ extract-framework-translations:
     @cd vibetuner-py && uv run --frozen pybabel extract \
         --no-wrap \
         --add-location=file \
+        --ignore-dirs='.*' \
         -F babel.cfg \
         --project=vibetuner \
         --copyright-holder="All Tuner Labs, S.L." \

@@ -16,6 +16,12 @@ gitignored `bundle.js`. If `config.js` imports your own JS modules that
 build class names, add an `@source` for them in the custom section of
 `config.css` (e.g. `@source "js";`).
 
+The scaffolded `Dockerfile` only gives the frontend build `config.js`.
+If `config.js` imports modules from your own directory (e.g. `js/`), add
+`--mount=type=bind,source=js,target=js` to the `frontend-build` stage's
+`RUN` and `COPY --link js/ js/` after `COPY --link config.css config.js ./`
+in the `dev-runtime` stage, or `bun build` fails with `Could not resolve`.
+
 ## DaisyUI palette overrides
 
 To recolor the DaisyUI `light` / `dark` themes for the whole bundle,

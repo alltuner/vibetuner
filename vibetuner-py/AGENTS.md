@@ -142,17 +142,17 @@ FastAPI lifespan management. This sets up:
 - Streaq worker (if background jobs enabled)
 - Model registration
 
-Users can extend this via `src/app/frontend/lifespan.py` in their projects.
+Users replace it by passing `frontend_lifespan=` to `VibetunerApp` in their `tune.py`
+(typically wrapping `base_lifespan`).
 
 ### `tasks/lifespan.py`
 
 Task worker lifespan management. This provides:
 
 - `base_lifespan()` - Core worker lifecycle (DB initialization, context setup)
-- `lifespan` - Automatically imports from `app.tasks.lifespan` with graceful fallback
-- Fallback to `base_lifespan` if user implementation is missing or broken
+- `lifespan` - Uses `worker_lifespan` from the user's `tune.py`, falling back to `base_lifespan`
 
-Users extend this via `src/app/tasks/lifespan.py` in their projects:
+Users extend this by passing `worker_lifespan=` to `VibetunerApp` in their `tune.py`:
 
 ```python
 # User's src/app/tasks/lifespan.py
@@ -161,6 +161,9 @@ async def lifespan():
     async with base_lifespan() as worker_context:
         # Add custom startup/shutdown logic
         yield CustomContext(**worker_context.model_dump())
+
+# User's src/app/tune.py
+app = VibetunerApp(worker_lifespan=lifespan)
 ```
 
 ### `tasks/worker.py`

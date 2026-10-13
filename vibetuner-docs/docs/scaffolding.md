@@ -26,7 +26,7 @@ all the boilerplate:
 - Default templates and styles
 - Hot reload in development
 - CLI tools (`vibetuner run dev`, `vibetuner run prod`)
-- Auto-discovery of routes, models, tasks
+- Explicit app configuration in `tune.py` (routes, models, tasks, CLI)
 
 **What scaffolding adds**:
 
@@ -39,17 +39,12 @@ all the boilerplate:
 
 ### Flexible Project Structures
 
-The auto-discovery system supports multiple project layouts:
+The framework imports `<package>.tune`, where `<package>` is the `[project] name` from
+`pyproject.toml` with hyphens replaced by underscores. Routes, models, tasks and CLI commands
+are whatever that module's `app = VibetunerApp(...)` lists, so they can live in any importable
+layout. Without a `tune.py`, the app runs with the framework defaults (zero-config).
 
-| Structure | Example | When to use |
-|-----------|---------|-------------|
-| `src/app/` | `src/app/models/post.py` | Scaffolded projects (default) |
-| `src/{package}/` | `src/myapp/models/post.py` | Custom package name |
-| Flat | `models.py` | Simple projects, scripts |
-
-The framework tries these in order: `app.X` → `{package_name}.X` → `X`
-
-Scaffolded projects use `src/app/` by convention, configured in `pyproject.toml`.
+Scaffolded projects use `src/<package>/` (shown as `src/app/` in these docs).
 
 ## Template Prompts
 
