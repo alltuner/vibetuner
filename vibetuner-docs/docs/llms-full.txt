@@ -1483,6 +1483,29 @@ keyword cannot silently render with an empty context.
 `render_template()` additionally accepts the response-shaping kwargs forwarded
 to `TemplateResponse`: `status_code`, `headers`, `media_type`, `background`.
 
+#### Block rendering and top-level imports
+
+`render_template_block()` and `render_template_blocks()` run the template's
+top-level `{% import %}` and `{% from ... import %}` statements before rendering
+the block, so macros imported at the top of a page work inside the block just as
+they do in a full render:
+
+```html
+{% extends "base/skeleton.html.jinja" %}
+{% from "components/ui.html.jinja" import section_head %}
+{% block body %}
+  {% block feed %}{{ section_head("Latest") }}{% endblock feed %}
+{% endblock body %}
+```
+
+```python
+if request.state.htmx:
+    return render_template_block("feed.html.jinja", "feed", request, ctx)
+```
+
+Other top-level statements (such as `{% set %}`) still don't run for a block
+render; pass those values through the context instead.
+
 ### Build-time Brand Palette
 
 DaisyUI's `light` and `dark` themes are emitted by `@plugin "daisyui"`

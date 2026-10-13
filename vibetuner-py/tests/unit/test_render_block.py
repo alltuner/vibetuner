@@ -1,101 +1,131 @@
+# ABOUTME: Tests render_template_block() and render_template_blocks() against real Jinja templates,
+# ABOUTME: including that blocks see the template's top-level macro imports.
 # ruff: noqa: S101
-"""Tests for render_template_block() and render_template_blocks()."""
-
-from unittest.mock import MagicMock, patch
+from collections.abc import Iterator
+from typing import Any
+from unittest.mock import patch
 
 import pytest
+from jinja2 import DictLoader, Environment
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
+from starlette.templating import Jinja2Templates
 
 
-def _make_mock_template(blocks: dict[str, str]):
-    """Create a mock template with named blocks."""
-    mock = MagicMock()
-    block_funcs = {}
-    for name, content in blocks.items():
+TEMPLATES: dict[str, str] = {
+    "ui.html.jinja": "{% macro badge(label) %}<b>{{ label }}</b>{% endmacro %}",
+    "base.html.jinja": "<html>{% block content %}{% endblock %}</html>",
+    "items/list.html.jinja": (
+        '{% extends "base.html.jinja" %}'
+        "{% block content %}"
+        '{% block items_list %}<div id="items">Items</div>{% endblock %}'
+        '{% block badge %}<span id="count" hx-swap-oob="true">{{ count }}</span>'
+        "{% endblock %}"
+        "{% endblock %}"
+    ),
+    "page.html.jinja": (
+        '{% extends "base.html.jinja" %}'
+        '{% from "ui.html.jinja" import badge %}'
+        '{% import "ui.html.jinja" as ui %}'
+        "{% block content %}<main>{% block feed %}"
+        "{{ badge(title) }}{{ ui.badge(title) }}"
+        "{% endblock %}</main>{% endblock %}"
+        "{% block counter %}{{ badge(count) }}{% endblock %}"
+    ),
+    "standalone.html.jinja": (
+        "<p>intro</p>"
+        "{% block feed %}{{ badge(title) }}{% endblock %}"
+        '{% from "ui.html.jinja" import badge %}'
+    ),
+}
 
-        def make_func(c):
-            def block_func(context):
-                return iter([c])
 
-            return block_func
+def _build_ctx(request: Request, ctx: dict[str, Any] | None = None) -> dict[str, Any]:
+    return {"request": request, **(ctx or {})}
 
-        block_funcs[name] = make_func(content)
 
-    mock.blocks = block_funcs
-    mock.new_context.side_effect = lambda ctx: ctx
-    return mock
+@pytest.fixture(autouse=True)
+def real_templates() -> Iterator[Jinja2Templates]:
+    env = Environment(loader=DictLoader(TEMPLATES), autoescape=True)
+    templates = Jinja2Templates(env=env)
+    with (
+        patch("vibetuner.rendering.templates", templates),
+        patch("vibetuner.rendering._build_merged_ctx", side_effect=_build_ctx),
+    ):
+        yield templates
+
+
+@pytest.fixture
+def request_obj() -> Request:
+    return Request({"type": "http", "method": "GET", "path": "/", "headers": []})
 
 
 class TestRenderTemplateBlock:
     """Test single block rendering."""
 
-    @patch("vibetuner.rendering._build_merged_ctx", return_value={"key": "val"})
-    @patch("vibetuner.rendering.templates")
-    def test_renders_single_block(self, mock_templates, mock_build_ctx):
-        """Renders a single named block."""
+    def test_renders_single_block(self, request_obj: Request) -> None:
         from vibetuner.rendering import render_template_block
 
-        mock_templates.get_template.return_value = _make_mock_template(
-            {"items_list": "<div>Items</div>", "sidebar": "<aside>Side</aside>"}
-        )
-        request = MagicMock(spec=Request)
-
         result = render_template_block(
-            "items/list.html.jinja", "items_list", request, {"items": []}
+            "items/list.html.jinja", "items_list", request_obj, {"count": 5}
         )
 
         assert isinstance(result, HTMLResponse)
-        assert result.body == b"<div>Items</div>"
+        assert result.body == b'<div id="items">Items</div>'
 
-    @patch("vibetuner.rendering._build_merged_ctx", return_value={})
-    @patch("vibetuner.rendering.templates")
-    def test_missing_block_raises_value_error(self, mock_templates, mock_build_ctx):
-        """Missing block raises ValueError with available blocks."""
+    def test_missing_block_raises_value_error(self, request_obj: Request) -> None:
         from vibetuner.rendering import render_template_block
-
-        mock_templates.get_template.return_value = _make_mock_template(
-            {"body": "content"}
-        )
-        request = MagicMock(spec=Request)
 
         with pytest.raises(ValueError, match="Block 'missing' not found"):
-            render_template_block("t.html.jinja", "missing", request)
+            render_template_block("items/list.html.jinja", "missing", request_obj)
 
-    @patch("vibetuner.rendering._build_merged_ctx", return_value={})
-    @patch("vibetuner.rendering.templates")
-    def test_error_message_lists_available_blocks(self, mock_templates, mock_build_ctx):
-        """Error message includes available block names."""
+    def test_error_message_lists_available_blocks(self, request_obj: Request) -> None:
         from vibetuner.rendering import render_template_block
 
-        mock_templates.get_template.return_value = _make_mock_template(
-            {"header": "h", "body": "b", "footer": "f"}
-        )
-        request = MagicMock(spec=Request)
+        with pytest.raises(
+            ValueError,
+            match=r"Available blocks: \['content', 'items_list', 'badge'\]",
+        ):
+            render_template_block("items/list.html.jinja", "sidebar", request_obj)
 
-        with pytest.raises(ValueError, match="Available blocks:"):
-            render_template_block("t.html.jinja", "sidebar", request)
+    def test_block_sees_top_level_imports(self, request_obj: Request) -> None:
+        from vibetuner.rendering import render_template_block
+
+        result = render_template_block(
+            "page.html.jinja", "feed", request_obj, {"title": "Hi"}
+        )
+
+        assert result.body == b"<b>Hi</b><b>Hi</b>"
+
+    def test_nested_block_sees_top_level_imports(self, request_obj: Request) -> None:
+        from vibetuner.rendering import render_template_block
+
+        result = render_template_block(
+            "page.html.jinja", "content", request_obj, {"title": "Hi"}
+        )
+
+        assert result.body == b"<main><b>Hi</b><b>Hi</b></main>"
+
+    def test_import_after_block_in_template_without_parent(
+        self, request_obj: Request
+    ) -> None:
+        from vibetuner.rendering import render_template_block
+
+        result = render_template_block(
+            "standalone.html.jinja", "feed", request_obj, {"title": "Hi"}
+        )
+
+        assert result.body == b"<b>Hi</b>"
 
 
 class TestRenderTemplateBlocks:
     """Test multi-block rendering."""
 
-    @patch("vibetuner.rendering._build_merged_ctx", return_value={})
-    @patch("vibetuner.rendering.templates")
-    def test_renders_multiple_blocks_concatenated(self, mock_templates, mock_build_ctx):
-        """Renders multiple blocks concatenated."""
+    def test_renders_multiple_blocks_concatenated(self, request_obj: Request) -> None:
         from vibetuner.rendering import render_template_blocks
 
-        mock_templates.get_template.return_value = _make_mock_template(
-            {
-                "items_list": '<div id="items">Items</div>',
-                "badge": '<span id="count" hx-swap-oob="true">5</span>',
-            }
-        )
-        request = MagicMock(spec=Request)
-
         result = render_template_blocks(
-            "items/list.html.jinja", ["items_list", "badge"], request
+            "items/list.html.jinja", ["items_list", "badge"], request_obj, {"count": 5}
         )
 
         assert isinstance(result, HTMLResponse)
@@ -104,30 +134,31 @@ class TestRenderTemplateBlocks:
             b'<span id="count" hx-swap-oob="true">5</span>'
         )
 
-    @patch("vibetuner.rendering._build_merged_ctx", return_value={})
-    @patch("vibetuner.rendering.templates")
-    def test_missing_block_in_list_raises(self, mock_templates, mock_build_ctx):
-        """Missing block in list raises ValueError."""
+    def test_missing_block_in_list_raises(self, request_obj: Request) -> None:
         from vibetuner.rendering import render_template_blocks
 
-        mock_templates.get_template.return_value = _make_mock_template(
-            {"items_list": "items"}
-        )
-        request = MagicMock(spec=Request)
+        with pytest.raises(ValueError, match="Block 'sidebar' not found"):
+            render_template_blocks(
+                "items/list.html.jinja", ["items_list", "sidebar"], request_obj
+            )
 
-        with pytest.raises(ValueError, match="Block 'badge' not found"):
-            render_template_blocks("t.html.jinja", ["items_list", "badge"], request)
-
-    @patch("vibetuner.rendering._build_merged_ctx", return_value={})
-    @patch("vibetuner.rendering.templates")
-    def test_single_block_in_list(self, mock_templates, mock_build_ctx):
-        """Single block in list works."""
+    def test_single_block_in_list(self, request_obj: Request) -> None:
         from vibetuner.rendering import render_template_blocks
 
-        mock_templates.get_template.return_value = _make_mock_template(
-            {"body": "<main>Content</main>"}
+        result = render_template_blocks(
+            "items/list.html.jinja", ["items_list"], request_obj
         )
-        request = MagicMock(spec=Request)
 
-        result = render_template_blocks("t.html.jinja", ["body"], request)
-        assert result.body == b"<main>Content</main>"
+        assert result.body == b'<div id="items">Items</div>'
+
+    def test_blocks_see_top_level_imports(self, request_obj: Request) -> None:
+        from vibetuner.rendering import render_template_blocks
+
+        result = render_template_blocks(
+            "page.html.jinja",
+            ["feed", "counter"],
+            request_obj,
+            {"title": "Hi", "count": 3},
+        )
+
+        assert result.body == b"<b>Hi</b><b>Hi</b><b>3</b>"

@@ -19,6 +19,7 @@ The fix:
 from unittest.mock import MagicMock, patch
 
 import pytest
+from jinja2 import DictLoader, Environment
 from starlette.requests import Request
 
 
@@ -46,8 +47,7 @@ class TestContextAliasOnRenderTemplate:
         mock_build.assert_called_once_with(mock_request, {"hero": "h"})
         # And it actually reaches TemplateResponse as the merged context.
         args, _ = mock_templates.TemplateResponse.call_args
-        assert args[0] == "home.html.jinja"
-        assert args[1] == {"hero": "h"}
+        assert args == (mock_request, "home.html.jinja", {"hero": "h"})
 
     @patch("vibetuner.rendering.templates")
     @patch(
@@ -131,18 +131,20 @@ class TestContextAliasOnRenderTemplateBlock:
     ):
         from vibetuner.rendering import render_template_block
 
-        template_mock = MagicMock()
-        template_mock.blocks = {
-            "body": lambda ctx: iter(["<main>ok</main>"]),
-        }
-        template_mock.new_context.side_effect = lambda ctx: ctx
-        mock_templates.get_template.return_value = template_mock
+        env = Environment(
+            loader=DictLoader(
+                {"x.html.jinja": "{% block body %}{{ hero }}{% endblock %}"}
+            ),
+            autoescape=True,
+        )
+        mock_templates.get_template.side_effect = env.get_template
 
-        render_template_block(
+        result = render_template_block(
             "x.html.jinja", "body", mock_request, context={"hero": "h"}
         )
 
         mock_build.assert_called_once_with(mock_request, {"hero": "h"})
+        assert result.body == b"h"
 
     @patch("vibetuner.rendering.templates")
     @patch("vibetuner.rendering._build_merged_ctx", return_value={})
