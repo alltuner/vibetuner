@@ -177,6 +177,10 @@ automatically): `request`, `language`, `DEBUG`, `now` (UTC datetime),
 Create files in `templates/frontend/` or `templates/email/` to override
 defaults.
 
+Core meta routes (`/sitemap.xml`, `/robots.txt`, `/favicon.ico`,
+`/site.webmanifest`, `/browserconfig.xml`) are replaced by any app `GET`
+route on the same path, e.g. an async `/sitemap.xml` listing database pages.
+
 ## Debugging
 
 `uv run vibetuner doctor` — validates project structure, config, env

@@ -186,6 +186,9 @@ Important notes:
   reaching for Alpine.js or Stimulus.
   See `vibetuner-docs/docs/htmx-migration.md#live-reactivity-with-hx-live` for
   idiomatic patterns and rough edges
+- **Core Meta Routes**: `/robots.txt`, `/sitemap.xml`, `/favicon.ico`, `/site.webmanifest`,
+  `/browserconfig.xml`. An app `GET` route on the same path takes precedence, so an async
+  route can serve a database-backed sitemap (or a `<sitemapindex>`)
 - **Health Checks**: `/health`, `/health/ping`, `/health/ready`, `/health/id` endpoints
   with service connectivity checks
 - **Robust Tasks**: `@robust_task()` decorator with exponential backoff retries and
