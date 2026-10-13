@@ -74,6 +74,15 @@ For **MAJOR version upgrades**, read the relevant migration guide before running
 version bump. After upgrading, run `vibetuner doctor` to catch configuration issues
 early.
 
+### Stale `redis_health_check` cron entry
+
+Projects whose worker once ran streaq 6.0-6.2 may have a leftover `redis_health_check`
+cron entry in Redis. streaq 6.3 removed that built-in task but not its stored entry, so
+the worker logged `task redis_health_check ... skipped, missing function` at ERROR on
+every start. The worker now deletes that one entry on startup (unless your app registers
+a task with the same name) and logs an INFO line when it does. No action is needed; you
+may see the error one last time if a run was already queued before the upgrade.
+
 ## Version-Specific Migration Guides
 
 | Upgrading from | To | Guide |
