@@ -15,7 +15,7 @@ from vibetuner.cli.health import has_live_worker
 from vibetuner.config import settings
 
 
-IDLE_TIMEOUT = timedelta(seconds=1)
+IDLE_TIMEOUT = timedelta(seconds=2)
 UNRELATED_KEYS = 200_000
 
 

@@ -31,9 +31,11 @@ async def has_live_worker(client: "Redis", queue_name: str) -> bool:
         consumers = await client.xinfo_consumers(
             _STREAM.format(queue=queue_name), _GROUP
         )
-    except ResponseError:
+    except ResponseError as exc:
         # No worker has started on this queue yet: no stream or no group.
-        return False
+        if "NOGROUP" in str(exc) or "no such key" in str(exc):
+            return False
+        raise
     if not consumers:
         return False
 
