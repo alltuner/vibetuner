@@ -31,6 +31,8 @@ limiter, response cache, pub/sub, shared client) at `REDIS_URL` unless
 `TEST_REDIS_URL` is set. If `.env` points `REDIS_URL` at a remote/prod
 Redis, set `TEST_REDIS_URL=redis://localhost:6379/0` so the suite isn't
 paying remote round-trip latency on every rate-limit and cache lookup.
+A shared Redis client created inside a test is closed when that test
+ends, so don't add your own fixture that calls `close_redis_client()`.
 
 Dev server must be running (`just local-all`). Playwright MCP available
 at `http://localhost:8000`.

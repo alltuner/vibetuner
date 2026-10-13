@@ -2185,7 +2185,9 @@ Override `vibetuner_app` fixture to supply a custom FastAPI app instance.
 
 Creates a single MongoDB database for the whole test session, runs Beanie
 index registration once, and **truncates every non-system collection
-before and after each test** so each test starts with empty collections:
+before and after each test** so each test starts with empty collections.
+Views (Beanie `View` models) are left alone, since they hold no documents
+of their own:
 
 ```python
 async def test_create_post(vibetuner_db):
@@ -2227,7 +2229,8 @@ The test is skipped when neither variable is set.
 - Concurrent runs need `pytest-xdist`; the session DB name includes
   the worker id (`PYTEST_XDIST_WORKER`) so workers don't collide.
 - If a test crashes mid-run, the next test re-truncates on setup so
-  state is self-healing.
+  state is self-healing. If the fixture's own setup fails, it still
+  closes that test's Mongo client, so the failure stays with that test.
 
 #### `TEST_REDIS_URL` — Isolating the Test Redis
 
@@ -2253,6 +2256,12 @@ TEST_REDIS_URL=redis://localhost:6379/0 pytest
 
 When `TEST_REDIS_URL` is unset the fixtures fall back to `REDIS_URL`, so
 existing behavior is unchanged. This mirrors `TEST_MONGODB_URL` for Mongo.
+
+The shared Redis client binds to the event loop it is first used on. When a
+test creates it (for example, a request through `vibetuner_client` that hits
+`@cache`), an autouse fixture closes it when that test ends, on the test's own
+event loop. The next test gets a fresh client, so you don't need your own
+fixture that calls `close_redis_client()`.
 
 #### `mock_auth` — Authentication Mocking
 

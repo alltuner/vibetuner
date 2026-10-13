@@ -73,3 +73,39 @@ class TestVibetunerDbFixtureCleanup:
 
             mock_client.close.assert_awaited_once()
             assert mongo_mod.mongo_client is None
+
+    async def test_function_fixture_tears_down_client_when_setup_fails(self):
+        from pymongo.errors import WriteError
+
+        mock_collection = MagicMock()
+        mock_collection.delete_many = AsyncMock(
+            side_effect=WriteError("Namespace is a view, not a collection", 166)
+        )
+
+        mock_database = MagicMock()
+        mock_database.list_collection_names = AsyncMock(return_value=["users"])
+        mock_database.__getitem__ = MagicMock(return_value=mock_collection)
+
+        mock_client = MagicMock()
+        mock_client.__getitem__ = MagicMock(return_value=mock_database)
+        mock_client.close = AsyncMock()
+
+        with (
+            patch.object(mongo_mod, "mongo_client", None),
+            patch(
+                "vibetuner.mongo._ensure_client",
+                side_effect=lambda: setattr(mongo_mod, "mongo_client", mock_client),
+            ),
+            patch("beanie.init_beanie", AsyncMock()),
+            patch("vibetuner.mongo.get_all_models", return_value=[]),
+        ):
+            from vibetuner.testing import vibetuner_db
+
+            gen = vibetuner_db.__wrapped__("test_session_abcd1234")
+            with pytest.raises(WriteError):
+                await gen.__anext__()
+
+            # A client left behind stays bound to this test's event loop and
+            # breaks every later test that uses the fixture.
+            mock_client.close.assert_awaited_once()
+            assert mongo_mod.mongo_client is None

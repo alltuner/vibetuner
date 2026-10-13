@@ -2170,8 +2170,9 @@ auto-discovered.
 |---------|-------------|
 | `vibetuner_client` | Async HTTP test client with full middleware |
 | `vibetuner_app` | The FastAPI app instance (override for custom apps) |
-| `vibetuner_db` | Session-scoped MongoDB DB on `TEST_MONGODB_URL` (falls back to `MONGODB_URL`); collections truncated per test |
+| `vibetuner_db` | Session-scoped MongoDB DB on `TEST_MONGODB_URL` (falls back to `MONGODB_URL`); collections truncated per test (views are skipped) |
 | _(autouse)_ | Session-scoped fixture points Redis (rate limiter, cache, pub/sub) at `TEST_REDIS_URL` (falls back to `REDIS_URL`) |
+| _(autouse)_ | Per-test fixture closes the shared Redis client at the end of the test that created it, on that test's event loop |
 | `mock_auth` | Mock authentication without real sessions |
 | `mock_tasks` | Mock background tasks without Redis |
 | `override_config` | Override RuntimeConfig values with auto-cleanup |
