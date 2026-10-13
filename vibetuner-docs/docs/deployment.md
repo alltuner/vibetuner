@@ -428,7 +428,10 @@ clean git state and a tagged commit.
 just deploy-latest user@your-server
 ```
 
-Pulls the latest image on the remote host and restarts services via SSH.
+Pulls the `:latest` image on the remote host and restarts services via SSH.
+The containers run the floating `:latest` tag rather than the release version,
+so when `enable_watchtower` is on, Watchtower rolls out each later release
+without another manual deploy.
 
 ## Next Steps
 
