@@ -1,6 +1,6 @@
 services:
   mongo:
-    image: mongo:8.3.7
+    image: mongo:8.3.11
     restart: unless-stopped
     volumes:
       - mongo_data:/data/db
@@ -12,7 +12,7 @@ services:
       start_period: 10s
 
   redis:
-    image: redis:8.8-alpine
+    image: redis:8.10-alpine
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
