@@ -666,10 +666,13 @@ renews from inside its event loop, so a wedged or stopped worker reads as
 unhealthy. Plain Docker Compose does not restart on healthcheck status (the
 watchdog handles recovery), but the healthcheck surfaces a "live but hung"
 worker to `docker ps`, orchestrators (Kubernetes, Swarm), and autoheal
-sidecars. Each probe starts a fresh Python process, which can take tens of
-seconds on a busy host, so the scaffold uses a 60s timeout with a 120s
-interval and start period. Keep the timeout above the probe's real duration,
-or a working worker reads as unhealthy. Run it manually with:
+sidecars. The probe reads the queue's worker ids from its streaq consumer group
+and checks only their health keys, so it never scans the keyspace and costs the
+same on a Redis shared with other apps. Each probe is a fresh Python process
+that usually finishes in under a second; the scaffold gives it a 10s timeout,
+a 30s interval and a 40s start period. Keep the timeout above the probe's real
+duration on your hosts, or a working worker reads as unhealthy. Run it manually
+with:
 
 ```bash
 vibetuner worker-health && echo healthy || echo unhealthy
