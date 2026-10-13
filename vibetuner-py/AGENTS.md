@@ -162,6 +162,7 @@ async def lifespan():
         # Add custom startup/shutdown logic
         yield CustomContext(**worker_context.model_dump())
 
+
 # User's src/app/tune.py
 app = VibetunerApp(worker_lifespan=lifespan)
 ```
