@@ -16,10 +16,10 @@ from vibetuner.sqlmodel import init_sqlmodel, teardown_sqlmodel
 from vibetuner.tasks.watchdog import LoopWatchdog
 
 
-LEGACY_HEALTH_CHECK_CRON = "redis_health_check"
+ORPHANED_HEALTH_CHECK_CRON = "redis_health_check"
 
 
-async def remove_legacy_health_check_cron(worker: Worker[Any]) -> None:
+async def remove_orphaned_health_check_cron(worker: Worker[Any]) -> None:
     """Remove the Redis cron entry left behind by streaq's former built-in health check.
 
     streaq 6.0-6.2 persisted a `redis_health_check` cron; 6.3 dropped the task but
@@ -29,16 +29,16 @@ async def remove_legacy_health_check_cron(worker: Worker[Any]) -> None:
     """
     # Drop once streaq removes the entry itself (https://github.com/tastyware/streaq/issues/177)
     # or enough releases have passed that no deployment still carries it.
-    if LEGACY_HEALTH_CHECK_CRON in worker.registry:
+    if ORPHANED_HEALTH_CHECK_CRON in worker.registry:
         return
     if not await worker.redis.hexists(
-        worker.cron_registry_key, LEGACY_HEALTH_CHECK_CRON
+        worker.cron_registry_key, ORPHANED_HEALTH_CHECK_CRON
     ):
         return
-    await worker.unschedule_by_id(LEGACY_HEALTH_CHECK_CRON)
+    await worker.unschedule_by_id(ORPHANED_HEALTH_CHECK_CRON)
     logger.info(
         "Removed orphaned streaq cron entry '{}' left by streaq < 6.3",
-        LEGACY_HEALTH_CHECK_CRON,
+        ORPHANED_HEALTH_CHECK_CRON,
     )
 
 
@@ -82,7 +82,7 @@ async def lifespan() -> AsyncGenerator[Context, None]:
     """
     from vibetuner.tasks.worker import get_worker
 
-    await remove_legacy_health_check_cron(get_worker())
+    await remove_orphaned_health_check_cron(get_worker())
 
     app_config = load_app_config()
     actual_lifespan = app_config.worker_lifespan or base_lifespan
