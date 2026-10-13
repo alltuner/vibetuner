@@ -1,6 +1,8 @@
 # ABOUTME: Tests for OAuth app capability detection interface.
 # ABOUTME: Covers the CapabilityDetector ABC, ScopeCapabilityDetector, and detect_capabilities().
 # ruff: noqa: S101
+import inspect
+
 import pytest
 from vibetuner.frontend.oauth import (
     _PROVIDERS,
@@ -24,16 +26,15 @@ def clean_provider_registry():
 class TestCapabilityDetectorABC:
     """Tests for the CapabilityDetector abstract base class."""
 
-    def test_cannot_instantiate_directly(self):
-        with pytest.raises(TypeError):
-            CapabilityDetector()
+    def test_detect_is_abstract(self):
+        assert inspect.isabstract(CapabilityDetector)
+        assert CapabilityDetector.__abstractmethods__ == frozenset({"detect"})
 
     def test_subclass_must_implement_detect(self):
         class Incomplete(CapabilityDetector):
             pass
 
-        with pytest.raises(TypeError):
-            Incomplete()
+        assert inspect.isabstract(Incomplete)
 
     def test_subclass_with_detect_is_valid(self):
         class Valid(CapabilityDetector):

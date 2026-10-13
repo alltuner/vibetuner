@@ -95,7 +95,7 @@ class TestOAuthProviderAppModel:
 
     def test_missing_required_fields(self):
         with pytest.raises(ValidationError):
-            OAuthProviderAppModel(provider="google")
+            OAuthProviderAppModel.model_validate({"provider": "google"})
 
     def test_collection_name(self):
         assert OAuthProviderAppModel.Settings.name == "oauth_provider_apps"
