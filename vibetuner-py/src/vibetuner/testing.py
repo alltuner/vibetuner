@@ -222,6 +222,25 @@ async def _vibetuner_redis_session() -> AsyncGenerator[None, None]:
         settings.redis_url = original_url
 
 
+@pytest_asyncio.fixture(autouse=True)
+async def _vibetuner_redis_client() -> AsyncGenerator[None, None]:
+    """Close the shared Redis client at the end of the test that created it.
+
+    The shared client in ``vibetuner.redis`` is created lazily and binds to
+    the event loop it is first used on: for a client created inside a test,
+    that test's event loop, which pytest-asyncio closes when the test ends.
+    Closing the client here, on that same loop, keeps the next test from
+    reusing a client bound to a closed loop and keeps the session teardown in
+    ``_vibetuner_redis_session`` from trying to close it there.
+    """
+    import vibetuner.redis as redis_mod
+
+    client_before_test = redis_mod._client
+    yield
+    if redis_mod._client is not None and redis_mod._client is not client_before_test:
+        await redis_mod.close_redis_client()
+
+
 # ---------------------------------------------------------------------------
 # Authentication mocking
 # ---------------------------------------------------------------------------
