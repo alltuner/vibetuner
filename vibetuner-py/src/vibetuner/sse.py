@@ -337,7 +337,7 @@ async def _publish_to_redis(channel: str, payload: dict[str, str]) -> None:
 
         _redis_publish_client = None
         reset_redis_client()
-    except Exception:
+    except Exception:  # noqa: BLE001
         logger.debug("Redis SSE publish failed (local dispatch still succeeded)")
 
 
@@ -434,7 +434,7 @@ async def _stream_from_channel(
                     payload,
                     event_id=str(event_id) if event_id is not None else None,
                 )
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 yield _format_event({"comment": "keepalive"})
     except asyncio.CancelledError:
         pass

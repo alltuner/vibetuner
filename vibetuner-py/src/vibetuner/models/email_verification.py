@@ -6,7 +6,7 @@ Handles passwordless authentication via email verification tokens.
 
 import secrets
 from datetime import datetime, timedelta
-from typing import Optional, Self
+from typing import ClassVar, Self
 
 from beanie import Document
 from beanie.operators import Eq, Set
@@ -35,7 +35,7 @@ class EmailVerificationTokenModel(Document):
 
     class Settings:
         name = "email_verification_tokens"
-        indexes = [
+        indexes: ClassVar[list[list[tuple[str, int]]]] = [
             [("token", 1)],
             [("email", 1)],
             [("expires_at", 1)],
@@ -57,9 +57,9 @@ class EmailVerificationTokenModel(Document):
         return await verification_token.insert()
 
     @classmethod
-    async def verify_token(cls, token: str) -> Optional[Self]:
+    async def verify_token(cls, token: str) -> Self | None:
         """Verify and consume a token"""
-        verification_token: Optional[Self] = await cls.find_one(
+        verification_token: Self | None = await cls.find_one(
             Eq(cls.token, token), Eq(cls.used, False)
         )
 

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
@@ -22,8 +22,7 @@ def _autoescape_for_template(template_name: str | None) -> bool:
     if template_name is None:
         return True
     name = template_name
-    if name.endswith(".jinja"):
-        name = name[: -len(".jinja")]
+    name = name.removesuffix(".jinja")
     return name.rsplit(".", 1)[-1].lower() in _AUTOESCAPE_FORMATS
 
 
@@ -113,9 +112,9 @@ def render_static_template(
     template_name: str,
     *,
     template_path: Path | list[Path] | None = None,
-    namespace: Optional[str] = None,
-    context: Optional[Dict[str, Any]] = None,
-    lang: Optional[str] = None,
+    namespace: str | None = None,
+    context: dict[str, Any] | None = None,
+    lang: str | None = None,
 ) -> str:
     """Render a Jinja template with optional i18n and namespace support.
 

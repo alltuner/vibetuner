@@ -2,7 +2,8 @@
 # ABOUTME: Provides test client, mock auth, mock DB, mock tasks, and config overrides.
 import os
 import uuid
-from typing import Any, AsyncGenerator, Iterator
+from collections.abc import AsyncGenerator, Iterator
+from typing import Any
 from unittest.mock import AsyncMock, patch
 
 import pytest

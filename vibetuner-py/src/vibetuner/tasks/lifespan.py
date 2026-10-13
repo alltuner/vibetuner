@@ -1,7 +1,7 @@
 # ABOUTME: Task worker lifespan management.
 # ABOUTME: Handles startup/shutdown for MongoDB, SQLModel in worker context.
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from vibetuner.config import settings
 from vibetuner.context import Context, ctx

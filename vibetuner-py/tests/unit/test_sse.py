@@ -288,7 +288,7 @@ class TestRedisLoopbackDedup:
             async def publish(self, channel: str, data: str) -> None:
                 published.append((channel, data))
 
-        import vibetuner.sse as sse
+        from vibetuner import sse
 
         monkeypatch.setattr(sse, "_redis_publish_client", _Client())
         await _publish_to_redis("room", {"event": "update", "data": "1"})
@@ -375,7 +375,7 @@ def _enable_redis(monkeypatch) -> None:
 
 @pytest_asyncio.fixture
 async def sse_module():
-    import vibetuner.sse as sse
+    from vibetuner import sse
 
     sse._redis_listener_task = None
     yield sse

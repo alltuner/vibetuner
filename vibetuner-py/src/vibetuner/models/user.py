@@ -5,7 +5,7 @@ Extend functionality by creating custom models that reference or extend these mo
 """
 
 from functools import cached_property
-from typing import Any, List, Self
+from typing import Any, Self
 
 from beanie import Document
 from beanie.operators import Eq
@@ -57,7 +57,7 @@ class UserModel(Document, TimeStampMixin):
         default=None,
         description="URL to user's profile picture or avatar",
     )
-    oauth_accounts: List[Link[OAuthAccountModel]] = Field(
+    oauth_accounts: list[Link[OAuthAccountModel]] = Field(
         default_factory=list,
         description="Connected OAuth provider accounts (Google, GitHub, etc.)",
     )

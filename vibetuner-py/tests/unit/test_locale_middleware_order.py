@@ -21,6 +21,8 @@ the approach in ``test_lang_prefix_middleware.py`` and
 ``test_locale_selector_fn.py``.
 """
 
+from typing import ClassVar
+
 import pytest
 from starlette.requests import HTTPConnection
 from starlette.responses import Response as StarletteResponse
@@ -56,10 +58,9 @@ class LangPrefixMiddleware:
         if parts and len(parts[0]) == 2 and parts[0].isalpha() and parts[0].islower():
             lang_code = parts[0]
             if lang_code in self.supported_languages:
-                if len(parts) == 1 or parts[1] == "":
-                    if not path.endswith("/"):
-                        await self._redirect(scope, receive, send, f"/{lang_code}/")
-                        return
+                if (len(parts) == 1 or parts[1] == "") and not path.endswith("/"):
+                    await self._redirect(scope, receive, send, f"/{lang_code}/")
+                    return
 
                 new_path = "/" + parts[1] if len(parts) > 1 else "/"
                 if "state" not in scope:
@@ -161,7 +162,7 @@ class TestMiddlewareStackOrdering:
 class TestLangPrefixBeforeLocaleMiddleware:
     """End-to-end ordering checks for the fix to issue #1861."""
 
-    SUPPORTED = {"en", "es", "ca"}
+    SUPPORTED: ClassVar[set[str]] = {"en", "es", "ca"}
 
     @pytest.mark.asyncio
     async def test_es_prefix_yields_es_locale(self) -> None:

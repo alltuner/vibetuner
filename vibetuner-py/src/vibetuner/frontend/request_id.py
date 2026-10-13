@@ -15,7 +15,7 @@ def get_request_id() -> str:
     """
     try:
         return context.get(HeaderKeys.request_id, "")
-    except Exception:
+    except Exception:  # noqa: BLE001 (no request context)
         return ""
 
 

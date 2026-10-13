@@ -42,7 +42,7 @@ def _request_id_patcher(record):
         from starlette_context.header_keys import HeaderKeys
 
         record["extra"]["request_id"] = context.get(HeaderKeys.request_id, "")
-    except Exception:
+    except Exception:  # noqa: BLE001 (logging must never raise)
         record["extra"].setdefault("request_id", "")
 
 

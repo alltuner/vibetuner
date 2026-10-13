@@ -2,7 +2,7 @@
 # ABOUTME: Verifies that app-level context is merged into every render call
 # ruff: noqa: S101
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from typing import Any
 from unittest.mock import MagicMock
 
@@ -233,9 +233,9 @@ class TestBuiltinDatetimeContext:
     def test_now_is_close_to_current_time(self):
         from vibetuner.rendering import _datetime_context
 
-        before = datetime.now(timezone.utc)
+        before = datetime.now(UTC)
         result = _datetime_context()
-        after = datetime.now(timezone.utc)
+        after = datetime.now(UTC)
         assert before <= result["now"] <= after
 
     def test_today_is_iso_date_string(self):
@@ -250,7 +250,7 @@ class TestBuiltinDatetimeContext:
         from vibetuner.rendering import _datetime_context
 
         result = _datetime_context()
-        assert result["today"] == date.today().isoformat()
+        assert result["today"] == date.today().isoformat()  # noqa: DTZ011
 
     def test_user_context_can_override_now(self):
         """User-provided 'now' in render context takes precedence."""

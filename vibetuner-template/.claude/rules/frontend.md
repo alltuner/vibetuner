@@ -78,12 +78,15 @@ different logic.
 ```python
 from vibetuner.sse import sse_endpoint, broadcast
 
+
 @sse_endpoint(
     "/events/notifications",
     channel="notifications",
     router=router,
 )
-async def notifications_stream(request: Request): pass
+async def notifications_stream(request: Request):
+    pass
+
 
 # Dynamic: return channel name from function body
 # Broadcast: await broadcast("channel", "event",

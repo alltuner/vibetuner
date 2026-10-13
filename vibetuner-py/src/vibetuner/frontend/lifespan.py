@@ -1,7 +1,7 @@
 # ABOUTME: Frontend application lifespan management.
 # ABOUTME: Handles startup/shutdown for MongoDB, SQLModel, and user customizations.
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from fastapi import FastAPI
 

@@ -281,8 +281,6 @@ def _register_delete_route(
                     status_code=500, detail="Hook execution failed: post_delete"
                 ) from exc
 
-        return None
-
 
 # ────────────────────────────────────────────────────────────────
 #  Public API

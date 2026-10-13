@@ -56,9 +56,11 @@ locale chain. Returns a code or `None` to defer:
 ```python
 from vibetuner.i18n import register_locale_resolver
 
+
 def tenant_locale(conn):
     tenant = conn.scope.get("state", {}).get("tenant")
     return tenant.language if tenant else None
+
 
 register_locale_resolver(tenant_locale)
 ```

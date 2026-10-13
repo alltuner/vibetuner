@@ -69,9 +69,8 @@ class LocalizedRouter(APIRouter):
 
     def add_api_route(self, path, endpoint, **kwargs):
         # Mark endpoint with localization setting
-        if not hasattr(endpoint, "_localized"):
-            if self._localized is not None:
-                endpoint._localized = self._localized
+        if not hasattr(endpoint, "_localized") and self._localized is not None:
+            endpoint._localized = self._localized
 
         # Auto-add redirect dependency for localized routes
         if getattr(endpoint, "_localized", False):

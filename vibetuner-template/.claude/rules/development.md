@@ -17,6 +17,7 @@ from vibetuner.frontend.deps import get_current_user
 
 router = APIRouter()
 
+
 @router.get("/dashboard")
 async def dashboard(request: Request, user=Depends(get_current_user)):
     return render_template("dashboard.html.jinja", request, {"user": user})
@@ -42,10 +43,12 @@ from beanie import Document, Link
 from vibetuner.models import UserModel
 from vibetuner.models.mixins import TimeStampMixin
 
+
 class Post(Document, TimeStampMixin):
     title: str
     content: str
     author: Link[UserModel]
+
     class Settings:
         name = "posts"
         indexes = ["author", "db_insert_dt"]
@@ -102,6 +105,7 @@ Built-in, enabled by default.
 async def search(request: Request):  # request param required
     return {"results": []}
 
+
 @router.get("/health")
 @limiter.exempt
 async def health(request: Request): ...
@@ -129,8 +133,11 @@ nothing. Wrap with `base_lifespan(app)`.
 
 ```python
 from vibetuner.crud import create_crud_routes, Operation
+
 post_routes = create_crud_routes(
-    Post, prefix="/api/posts", tags=["posts"],
+    Post,
+    prefix="/api/posts",
+    tags=["posts"],
     sortable_fields=["created_at"],
     filterable_fields=["status"],
     searchable_fields=["title", "content"],
@@ -149,6 +156,7 @@ from vibetuner.rendering import register_globals
 from vibetuner.rendering import register_context_provider
 
 register_globals({"site_title": "My App"})
+
 
 @register_context_provider
 def dynamic_context() -> dict:

@@ -31,7 +31,7 @@ async def check_worker() -> int:
         async for _key in client.scan_iter(match=pattern, count=100):
             found = True
             break
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         logger.error("worker-health: Redis check failed: {}", exc)
         return 1
     finally:

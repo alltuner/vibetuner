@@ -2,9 +2,10 @@
 # ABOUTME: Verifies TaskContext access via streaq's context var and retry/dead-letter behavior.
 # ruff: noqa: S101
 
+from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import timedelta
-from typing import Iterator
+from io import StringIO
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -12,6 +13,7 @@ import vibetuner.tasks.robust as robust_mod
 from streaq import StreaqRetry
 from streaq.task import RegisteredMiddleware, _task_context
 from streaq.types import TaskContext
+from vibetuner.logging import logger
 from vibetuner.tasks.robust import (
     _configs,
     _ensure_middleware,
@@ -42,6 +44,17 @@ def _reset_middleware_state():
     yield
     robust_mod._middleware_registered = False
     _configs.clear()
+
+
+@pytest.fixture
+def log_output() -> Iterator[StringIO]:
+    """Capture loguru messages emitted while the test runs."""
+    sink = StringIO()
+    handler_id = logger.add(sink, format="{message}", level="DEBUG")
+    try:
+        yield sink
+    finally:
+        logger.remove(handler_id)
 
 
 def _make_task_context(
@@ -176,6 +189,24 @@ class TestMiddlewareContextExtraction:
             await wrapper()
 
     @pytest.mark.asyncio
+    async def test_retry_log_names_task_and_attempt(self, log_output: StringIO):
+        middleware_fn = self._register_and_get_wrapper()
+        _configs["my_task"] = _RobustConfig(
+            max_retries=3, backoff_base=2.0, backoff_max=300.0, on_failure=None
+        )
+        next_fn = AsyncMock(side_effect=ValueError("fail"))
+        ctx = _make_task_context(fn_name="my_task", tries=1)
+        wrapper = middleware_fn(next_fn)
+
+        with _active_context(ctx), pytest.raises(StreaqRetry):
+            await wrapper()
+
+        assert (
+            "Task my_task[task-123] failed (try 1/3), retrying in 2s: fail"
+            in log_output.getvalue()
+        )
+
+    @pytest.mark.asyncio
     async def test_propagates_streaq_retry_without_wrapping(self):
         """StreaqRetry from the task itself should pass through unchanged."""
         middleware_fn = self._register_and_get_wrapper()
@@ -254,3 +285,27 @@ class TestHandlePermanentFailure:
         await _handle_permanent_failure(ctx, config, exc)
 
         callback.assert_called_once_with("task1", "t-1", exc)
+
+    @pytest.mark.asyncio
+    @patch("vibetuner.tasks.robust.DeadLetterModel")
+    async def test_logs_permanent_failure_details(
+        self, mock_model_cls, log_output: StringIO
+    ):
+        mock_instance = MagicMock()
+        mock_instance.insert = AsyncMock(side_effect=RuntimeError("db down"))
+        mock_model_cls.return_value = mock_instance
+
+        callback = MagicMock(side_effect=RuntimeError("callback broke"))
+        ctx = _make_task_context(fn_name="broken_task", task_id="t-456", tries=5)
+        config = _RobustConfig(
+            max_retries=5, backoff_base=2.0, backoff_max=300.0, on_failure=callback
+        )
+
+        await _handle_permanent_failure(ctx, config, RuntimeError("kaboom"))
+
+        output = log_output.getvalue()
+        assert (
+            "Task broken_task[t-456] failed permanently after 5 tries: kaboom" in output
+        )
+        assert "Failed to save dead letter for broken_task" in output
+        assert "on_failure callback raised for broken_task" in output

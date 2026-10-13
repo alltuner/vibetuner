@@ -38,10 +38,9 @@ class LangPrefixMiddleware:
 
             if lang_code in self.supported_languages:
                 # Handle bare /xx without trailing slash -> redirect to /xx/
-                if len(parts) == 1 or parts[1] == "":
-                    if not path.endswith("/"):
-                        await self._redirect(scope, receive, send, f"/{lang_code}/")
-                        return
+                if (len(parts) == 1 or parts[1] == "") and not path.endswith("/"):
+                    await self._redirect(scope, receive, send, f"/{lang_code}/")
+                    return
 
                 # Valid language: strip prefix, store original path
                 new_path = "/" + parts[1] if len(parts) > 1 else "/"

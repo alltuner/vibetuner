@@ -2,9 +2,9 @@
 # ABOUTME: Provides common mocking utilities, time helpers, and temporary file fixtures
 
 import tempfile
+from collections.abc import Generator
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Generator
 from unittest.mock import MagicMock
 
 import pytest

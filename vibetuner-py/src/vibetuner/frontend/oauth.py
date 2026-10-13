@@ -1,7 +1,7 @@
 # ABOUTME: OAuth provider integration using Authlib.
 # ABOUTME: Handles provider registration, builtin configs, and auth flow handlers.
 from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from authlib.integrations.base_client.errors import OAuthError
@@ -43,13 +43,13 @@ def register_oauth_provider(name: str, provider: OauthProviderModel) -> None:
 
 class WebUser(BaseUser, BaseModel):
     id: str
-    name: Optional[str] = None
+    name: str | None = None
     email: str
-    picture: Optional[str] = Field(
+    picture: str | None = Field(
         default=DEFAULT_AVATAR_IMAGE,
         description="URL to the user's avatar image",
     )
-    language: Optional[LanguageAlpha2] = Field(
+    language: LanguageAlpha2 | None = Field(
         default=None,
         description="Preferred language for the user",
     )

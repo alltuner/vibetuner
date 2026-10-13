@@ -1,10 +1,12 @@
-from typing import Self
+from typing import ClassVar, Self
 
 from beanie import Document, PydanticObjectId
 from beanie.operators import Eq
 from pydantic import Field
 
-from vibetuner.provider import OauthProviderModel as OauthProviderModel  # re-export
+from vibetuner.provider import (
+    OauthProviderModel as OauthProviderModel,  # noqa: PLC0414 (re-export)
+)
 
 from .mixins import TimeStampMixin
 
@@ -37,7 +39,7 @@ class OAuthAccountModel(Document, TimeStampMixin):
 
     class Settings:
         name = "oauth_accounts"
-        indexes = [
+        indexes: ClassVar[list[list[tuple[str, int]]]] = [
             [("provider", 1), ("provider_user_id", 1)],
         ]
 

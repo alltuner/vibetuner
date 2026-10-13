@@ -99,8 +99,8 @@ from app.models import Post, Comment
 
 app = VibetunerApp(
     models=[Post, Comment],
-    routes=[app_router],          # frontend/HTMX (hidden from /docs)
-    api_routes=[api_router],      # JSON API (visible in /docs)
+    routes=[app_router],  # frontend/HTMX (hidden from /docs)
+    api_routes=[api_router],  # JSON API (visible in /docs)
     # Also supports: middleware, template_filters, frontend_lifespan,
     # worker_lifespan, oauth_providers, tasks, cli, runtime_config
 )
@@ -231,6 +231,7 @@ from vibetuner.frontend.deps import get_current_user
 
 router = APIRouter()
 
+
 @router.get("/dashboard")
 async def dashboard(request: Request, user=Depends(get_current_user)):
     return render_template("dashboard.html.jinja", request, {"user": user})
@@ -250,10 +251,12 @@ from beanie import Document, Link
 from vibetuner.models import UserModel
 from vibetuner.models.mixins import TimeStampMixin
 
+
 class Post(Document, TimeStampMixin):
     title: str
     content: str
     author: Link[UserModel]
+
     class Settings:
         name = "posts"
         indexes = ["author", "db_insert_dt"]

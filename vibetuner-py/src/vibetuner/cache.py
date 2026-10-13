@@ -147,7 +147,7 @@ async def _cached_call(
         logger.debug("Redis cache unavailable, executing handler directly")
         reset_redis_client()
         client = None
-    except Exception:
+    except Exception:  # noqa: BLE001
         logger.debug("Redis cache error, executing handler directly")
         client = None
 
@@ -167,7 +167,7 @@ async def _cached_call(
     except (ConnectionError, OSError, TimeoutError):
         logger.debug("Redis cache unavailable, response not cached")
         reset_redis_client()
-    except Exception:
+    except Exception:  # noqa: BLE001
         logger.debug("Redis cache error, response not cached")
 
     return response
@@ -205,7 +205,7 @@ async def invalidate(
     except (ConnectionError, OSError, TimeoutError):
         logger.debug("Redis unavailable during cache invalidation")
         return False
-    except Exception:
+    except Exception:  # noqa: BLE001
         logger.debug("Cache invalidation failed")
         return False
 
@@ -265,7 +265,7 @@ async def invalidate_pattern(pattern: str) -> int:
     except (ConnectionError, OSError, TimeoutError):
         logger.debug("Redis unavailable during pattern invalidation")
         return 0
-    except Exception:
+    except Exception:  # noqa: BLE001
         logger.debug("Pattern invalidation failed")
         return 0
 
@@ -307,7 +307,7 @@ async def _register_cache_key(
         pipe.expire(paths, expire, nx=True)
         pipe.expire(paths, expire, gt=True)
         await pipe.execute()
-    except Exception:
+    except Exception:  # noqa: BLE001
         logger.debug("Cache key registry update failed")
 
 

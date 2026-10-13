@@ -60,16 +60,14 @@ By accessing {{ project_name }}, you agree to these terms.
 from vibetuner.templates import render_static_template
 import markdown
 
+
 def get_terms_content(lang: str = "en") -> str:
     """Render terms of service as HTML."""
     md_content = render_static_template(
         "terms.md",
         namespace="markdown",
         lang=lang,
-        context={
-            "project_name": "My App",
-            "last_updated": "2024-01-01"
-        }
+        context={"project_name": "My App", "last_updated": "2024-01-01"},
     )
 
     # Convert markdown to HTML

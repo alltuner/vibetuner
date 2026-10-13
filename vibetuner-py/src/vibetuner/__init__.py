@@ -31,9 +31,9 @@ def __getattr__(name: str):
 
 
 __all__ = [
-    "__version__",
     "AsyncTyper",
     "VibetunerApp",
+    "__version__",
     "broadcast",
     "create_crud_routes",
     "register_context_provider",

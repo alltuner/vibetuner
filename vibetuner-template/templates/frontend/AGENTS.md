@@ -69,14 +69,16 @@ Copy package templates to override them:
 ```python
 from vibetuner import render_template
 
+
 @router.get("/dashboard")
 async def dashboard(request: Request):
     # Automatically uses templates/frontend/dashboard/home.html.jinja
     # if it exists, otherwise falls back to vibetuner/templates/frontend/
-    return render_template("dashboard/home.html.jinja", request, {
-        "user": current_user,
-        "stats": dashboard_stats
-    })
+    return render_template(
+        "dashboard/home.html.jinja",
+        request,
+        {"user": current_user, "stats": dashboard_stats},
+    )
 ```
 
 ## Linting Requirements

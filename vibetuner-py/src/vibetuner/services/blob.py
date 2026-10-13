@@ -97,7 +97,7 @@ class BlobService:
                 bucket=bucket,
             )
             blob.status = BlobStatus.UPLOADED
-        except Exception:
+        except Exception:  # noqa: BLE001 (recorded as ERROR status)
             blob.status = BlobStatus.ERROR
         finally:
             await blob.save()

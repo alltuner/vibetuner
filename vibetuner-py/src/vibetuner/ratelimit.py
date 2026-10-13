@@ -49,4 +49,4 @@ def auth_rate_limit() -> str:
     return settings.rate_limit.auth_limits
 
 
-__all__ = ["auth_rate_limit", "limiter", "SlowAPIASGIMiddleware"]
+__all__ = ["SlowAPIASGIMiddleware", "auth_rate_limit", "limiter"]

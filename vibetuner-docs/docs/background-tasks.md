@@ -496,8 +496,8 @@ custom lifespan and pass it to `tune.py`:
 
 ```python
 # src/app/tasks/lifespan.py
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from vibetuner.context import Context, ctx
 from vibetuner.tasks.lifespan import base_lifespan

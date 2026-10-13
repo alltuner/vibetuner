@@ -1,5 +1,5 @@
 import warnings
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request
 
@@ -9,7 +9,7 @@ async def require_htmx(request: Request) -> None:
         raise HTTPException(status_code=400, detail="HTMX header not found")
 
 
-async def enforce_lang(request: Request, lang: Optional[str] = None):
+async def enforce_lang(request: Request, lang: str | None = None):
     if lang is None or lang != request.state.language:
         redirect_url = request.url_for(
             request.scope["endpoint"].__name__,
