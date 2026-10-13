@@ -32,3 +32,21 @@ def test_ruff_check_hook_runs_the_locked_ruff() -> None:
     assert len(hooks) == 1
     assert hooks[0]["entry"].startswith("uv run --frozen ruff check")
     assert hooks[0]["language"] == "system"
+
+
+def test_djlint_is_not_pinned_through_djlint_repo() -> None:
+    urls = [repo["repo"] for repo in _repos()]
+    assert "https://github.com/djlint/djLint" not in urls
+
+
+def test_djlint_hook_runs_the_locked_djlint() -> None:
+    hooks = [
+        hook
+        for repo in _repos()
+        if repo["repo"] == "local"
+        for hook in repo["hooks"]
+        if hook["id"] == "djlint"
+    ]
+    assert len(hooks) == 1
+    assert hooks[0]["entry"].startswith("uv run --frozen djlint")
+    assert hooks[0]["language"] == "system"
