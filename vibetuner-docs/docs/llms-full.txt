@@ -156,6 +156,10 @@ just new-locale LANG         # Create new language (e.g., just new-locale es)
 just i18n-fuzzy-audit        # Report fuzzy-marked entries across catalogs
 ```
 
+`extract-translations` passes `--ignore-dirs='.*'` so Babel only skips
+dot-directories; its default also skips `_`-prefixed directories, which
+would drop strings that only live in e.g. `templates/frontend/_macros/`.
+
 `update-locale-files` runs `msgmerge --no-fuzzy-matching`: new strings
 land with an empty `msgstr` (honest untranslated → English fallback)
 instead of a wrong guess copied from a textually similar entry. The i18n
@@ -1511,6 +1515,15 @@ if request.state.htmx:
 Other top-level statements (such as `{% set %}`) still don't run for a block
 render; pass those values through the context instead.
 
+### Tailwind Class Sources
+
+The scaffolded `config.css` registers `@source "templates";` and
+`@source "config.js";`. The generated `assets/statics/js/bundle.js` is
+gitignored, and Tailwind v4 skips gitignored files, so it is never a
+class source. If `config.js` imports your own modules that build class
+names, add an `@source` for them in the custom section of `config.css`
+(e.g. `@source "js";`).
+
 ### Build-time Brand Palette
 
 DaisyUI's `light` and `dark` themes are emitted by `@plugin "daisyui"`
@@ -1521,7 +1534,7 @@ colors across the whole compiled `bundle.css`, override the
 ```css
 @import "@alltuner/vibetuner/core.css";
 @source "templates";
-@source "assets/statics/js";
+@source "config.js";
 
 [data-theme="light"] {
   --color-primary: oklch(64% 0.21 24);

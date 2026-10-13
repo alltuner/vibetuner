@@ -16,7 +16,7 @@ directly in your project's `config.css`:
 ```css
 @import "@alltuner/vibetuner/core.css";
 @source "templates";
-@source "assets/statics/js";
+@source "config.js";
 
 [data-theme="light"] {
   --color-primary: oklch(64% 0.21 24);

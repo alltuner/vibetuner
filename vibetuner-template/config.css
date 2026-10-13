@@ -2,7 +2,7 @@
 /* Do not change anything between this comment and the next comment */
 @import "@alltuner/vibetuner/core.css";
 @source "templates";
-@source "assets/statics/js";
+@source "config.js";
 /* Do not change anything between this comment and the one above */
 
 /* Add your custom styles below: */
