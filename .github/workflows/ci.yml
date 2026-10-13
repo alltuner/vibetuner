@@ -5,8 +5,9 @@ on:
   push:
     branches: [main]
 
-# Unit tests run on a Python version matrix; integration tests, lint and
-# type-check use the project's primary Python version (from root .python-version).
+# Unit tests run on a Python version matrix; lint and type-check use the
+# project's primary Python version (from root .python-version). Integration
+# tests run once, pinned to that same version.
 jobs:
   test:
     name: Test (Python ${{ matrix.python-version }})
@@ -38,9 +39,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # uv run in vibetuner-py does not see the root .python-version, so pin it
+      # here to keep the job off the runner's system Python.
       - name: Install uv
         uses: astral-sh/setup-uv@v10.3.0
         with:
+          python-version: "3.14"
           cache-dependency-glob: "vibetuner-py/uv.lock"
 
       # Real MongoDB and Redis via testcontainers on the runner's Docker. If
