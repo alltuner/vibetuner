@@ -381,8 +381,8 @@ class S3StorageService:
         ) as s3_client:
             response = await s3_client.get_bucket_location(Bucket=bucket)
             location = response.get("LocationConstraint")
-            # S3 returns None for us-east-1
-            return location if location else "us-east-1"
+            # S3 returns None for us-east-1, which the aiobotocore stub doesn't model.
+            return location if location else "us-east-1"  # ty: ignore[redundant-condition]
 
     # =========================================================================
     # Advanced Operations

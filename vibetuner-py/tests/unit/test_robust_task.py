@@ -2,7 +2,7 @@
 # ABOUTME: Verifies TaskContext access via streaq's context var and retry/dead-letter behavior.
 # ruff: noqa: S101
 
-from collections.abc import Iterator
+from collections.abc import Generator, Iterator
 from contextlib import contextmanager
 from datetime import timedelta
 from io import StringIO
@@ -23,7 +23,7 @@ from vibetuner.tasks.robust import (
 
 
 @contextmanager
-def _active_context(ctx: TaskContext) -> Iterator[None]:
+def _active_context(ctx: TaskContext) -> Generator[None, None, None]:
     """Set streaq's task context var for the duration of the block.
 
     Mirrors how the worker exposes the running task's context to middleware
