@@ -88,6 +88,7 @@ Get started: {{ dashboard_url }}
 from vibetuner.templates import render_static_template
 from vibetuner.services.email import EmailService
 
+
 async def send_welcome_email(user_email: str, user_name: str, lang: str = "en"):
     html_body = render_static_template(
         "welcome.html",
@@ -96,8 +97,8 @@ async def send_welcome_email(user_email: str, user_name: str, lang: str = "en"):
         context={
             "user_name": user_name,
             "project_name": "My App",
-            "dashboard_url": "https://example.com/dashboard"
-        }
+            "dashboard_url": "https://example.com/dashboard",
+        },
     )
 
     text_body = render_static_template(
@@ -107,8 +108,8 @@ async def send_welcome_email(user_email: str, user_name: str, lang: str = "en"):
         context={
             "user_name": user_name,
             "project_name": "My App",
-            "dashboard_url": "https://example.com/dashboard"
-        }
+            "dashboard_url": "https://example.com/dashboard",
+        },
     )
 
     email_service = EmailService()

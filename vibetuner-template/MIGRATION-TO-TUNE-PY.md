@@ -41,6 +41,7 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
+
 @router.get("/")
 def home():
     return {"message": "Hello"}
@@ -53,8 +54,8 @@ from myapp.frontend.routes.home import router as home_router
 from myapp.frontend.routes.api import router as api_router
 
 app = VibetunerApp(
-    routes=[home_router],          # frontend/HTMX (hidden from /docs)
-    api_routes=[api_router],       # JSON API (visible in /docs)
+    routes=[home_router],  # frontend/HTMX (hidden from /docs)
+    api_routes=[api_router],  # JSON API (visible in /docs)
 )
 ```
 
@@ -96,6 +97,7 @@ app = VibetunerApp(
 # src/myapp/frontend/templates.py
 def format_currency(value: float) -> str:
     return f"${value:,.2f}"
+
 
 def format_date(dt) -> str:
     return dt.strftime("%Y-%m-%d")
@@ -155,6 +157,7 @@ app = VibetunerApp(
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # startup
@@ -190,9 +193,9 @@ app = VibetunerApp(
 # src/myapp/tasks/emails.py
 from vibetuner.tasks import worker
 
+
 @worker.task()
-async def send_email(to: str, subject: str):
-    ...
+async def send_email(to: str, subject: str): ...
 ```
 
 ```python
@@ -218,6 +221,7 @@ app = VibetunerApp(
 from vibetuner import AsyncTyper
 
 cli = AsyncTyper()
+
 
 @cli.command()
 async def my_command():
@@ -285,7 +289,6 @@ from myapp.cli import admin_commands
 app = VibetunerApp(
     # Database models
     models=[User, Post, Comment],
-
     # Frontend
     routes=[app_router],
     middleware=[cors, rate_limiter],
@@ -294,13 +297,10 @@ app = VibetunerApp(
         "date": format_date,
     },
     frontend_lifespan=lifespan,
-
     # Auth
     oauth_providers=["google"],
-
     # Background tasks
     tasks=[send_welcome_email, send_notification],
-
     # CLI extensions
     cli=admin_commands,
 )

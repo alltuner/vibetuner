@@ -8,7 +8,9 @@ description: Background tasks, cron jobs, robust_task, and robust_cron patterns
 
 ```python
 from vibetuner.tasks.worker import get_worker
+
 worker = get_worker()
+
 
 @worker.task()
 async def send_digest_email(user_id: str): ...
