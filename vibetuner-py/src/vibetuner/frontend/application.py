@@ -118,7 +118,10 @@ auto_register_providers(_app_config.oauth_providers, _app_config.custom_oauth_pr
 register_oauth_routes()
 
 # Core routes (hidden from OpenAPI schema)
-app.include_router(meta.router, include_in_schema=False)
+app.include_router(
+    meta.core_router([*_app_config.routes, *_app_config.api_routes]),
+    include_in_schema=False,
+)
 app.include_router(auth.router, include_in_schema=False)
 app.include_router(user.router, include_in_schema=False)
 app.include_router(language.router, include_in_schema=False)

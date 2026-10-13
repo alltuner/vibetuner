@@ -231,6 +231,10 @@ async def dashboard(request: Request, user=Depends(get_current_user)):
 Register routes in `__init__.py` via `APIRouter.include_router()`, then
 list in `tune.py`.
 
+An app `GET` route on a core meta path (`/sitemap.xml`, `/robots.txt`,
+`/favicon.ico`, `/site.webmanifest`, `/browserconfig.xml`) replaces the
+framework's, e.g. an async `/sitemap.xml` that lists database-backed pages.
+
 ### Models
 
 ```python

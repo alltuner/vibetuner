@@ -218,6 +218,35 @@ loads — HTMX partials are typically small and don't benefit from streaming.
 Combined with `@cache`, the streamed body is buffered on a cache miss and cached
 like any other response, so a miss is sent only after the template finishes rendering.
 
+#### Overriding Core Meta Routes
+
+The framework serves `/robots.txt`, `/sitemap.xml`, `/favicon.ico`, `/site.webmanifest` and
+`/browserconfig.xml`. If one of your routers (in `routes` or `api_routes`) defines a `GET` route
+on the same path, yours handles it and the core route is skipped. Use this for a sitemap that
+lists database-backed pages:
+
+```python
+# src/app/frontend/routes/sitemap.py
+from fastapi import APIRouter, Request
+from fastapi.responses import HTMLResponse
+from vibetuner import render_template
+
+from app.models.post import Post
+
+router = APIRouter()
+
+@router.get("/sitemap.xml")
+async def sitemap(request: Request) -> HTMLResponse:
+    posts = await Post.find_all().to_list()
+    return render_template(
+        "meta/sitemap.xml.jinja", request, {"posts": posts}, media_type="application/xml"
+    )
+```
+
+Pair it with your own `templates/frontend/meta/sitemap.xml.jinja` that loops over `posts`
+(`fqdn` is available in the context). The same route can return a `<sitemapindex>` that points
+at child sitemaps you serve yourself.
+
 ### Adding Database Models
 
 Create models in `src/app/models/`. Models are **automatically discovered** and initialized.
