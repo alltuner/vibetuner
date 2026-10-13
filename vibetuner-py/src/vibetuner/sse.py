@@ -14,6 +14,7 @@ from fastapi import APIRouter, Request
 from fastapi.sse import EventSourceResponse, format_sse_event
 
 from vibetuner.logging import logger
+from vibetuner.redis import CONNECTION_ERRORS
 from vibetuner.rendering import render_template_string
 
 
@@ -149,7 +150,6 @@ def _dispatch_local(channel: str, payload: dict[str, str]) -> int | None:
 # ────────────────────────────────────────────────────────────────
 
 _redis_listener_task: asyncio.Task | None = None
-_redis_publish_client = None
 
 # Identifies this process among all workers sharing the Redis pub/sub bus. Every
 # published message carries it so the publishing worker's own listener can skip
@@ -289,38 +289,21 @@ async def start_redis_listener() -> None:
 
 
 async def stop_redis_listener() -> None:
-    """Cancel the Redis listener task and close the publish client."""
+    """Cancel the Redis listener task."""
     global _redis_listener_task
     if _redis_listener_task is not None:
         _redis_listener_task.cancel()
         with suppress(asyncio.CancelledError):
             await _redis_listener_task
         _redis_listener_task = None
-    await _close_redis_publish_client()
-
-
-async def _get_redis_publish_client():
-    """Get the shared Redis client for publishing."""
-    global _redis_publish_client
-    if _redis_publish_client is None:
-        from vibetuner.redis import get_redis_client
-
-        _redis_publish_client = await get_redis_client()
-    return _redis_publish_client
-
-
-async def _close_redis_publish_client() -> None:
-    """Release the local reference to the shared Redis publish client."""
-    global _redis_publish_client
-    # Don't close the shared client — just drop the local reference.
-    _redis_publish_client = None
 
 
 async def _publish_to_redis(channel: str, payload: dict[str, str]) -> None:
     """Publish a payload to Redis for multi-worker broadcasting (best-effort)."""
-    global _redis_publish_client
+    from vibetuner.redis import get_redis_client, reset_redis_client
+
     try:
-        client = await _get_redis_publish_client()
+        client = await get_redis_client()
         if client is None:
             return
 
@@ -329,13 +312,10 @@ async def _publish_to_redis(channel: str, payload: dict[str, str]) -> None:
         redis_channel = f"{settings.redis_key_prefix}sse:{channel}"
         message = {**payload, _ORIGIN_KEY: _WORKER_ID}
         await client.publish(redis_channel, json.dumps(message))
-    except (ConnectionError, OSError):
+    except CONNECTION_ERRORS:
         logger.debug(
             "Redis SSE publish failed due to connection error, resetting client"
         )
-        from vibetuner.redis import reset_redis_client
-
-        _redis_publish_client = None
         reset_redis_client()
     except Exception:  # noqa: BLE001
         logger.debug("Redis SSE publish failed (local dispatch still succeeded)")

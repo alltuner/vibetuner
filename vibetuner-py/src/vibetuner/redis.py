@@ -2,8 +2,19 @@
 # ABOUTME: Provides a lazy-initialized, reusable Redis connection with graceful degradation.
 import asyncio
 
+import redis.exceptions
+
 from vibetuner.logging import logger
 
+
+# Errors meaning the Redis server is unreachable, after which the shared client
+# is reset. redis-py's ConnectionError and TimeoutError derive from RedisError,
+# not from the builtin OSError family, so they are listed explicitly.
+CONNECTION_ERRORS: tuple[type[Exception], ...] = (
+    OSError,
+    redis.exceptions.ConnectionError,
+    redis.exceptions.TimeoutError,
+)
 
 _client = None
 _lock = asyncio.Lock()

@@ -10,6 +10,10 @@ from unittest.mock import patch
 import pytest
 import pytest_asyncio
 from fastapi import APIRouter, Request
+from redis.exceptions import (
+    ConnectionError as RedisConnectionError,
+    TimeoutError as RedisTimeoutError,
+)
 from starlette.requests import Request as StarletteRequest
 from vibetuner.sse import (
     _LISTENER_RECONNECT_CAP_DELAY,
@@ -288,9 +292,10 @@ class TestRedisLoopbackDedup:
             async def publish(self, channel: str, data: str) -> None:
                 published.append((channel, data))
 
-        from vibetuner import sse
+        async def _get_client() -> _Client:
+            return _Client()
 
-        monkeypatch.setattr(sse, "_redis_publish_client", _Client())
+        monkeypatch.setattr("vibetuner.redis.get_redis_client", _get_client)
         await _publish_to_redis("room", {"event": "update", "data": "1"})
 
         assert len(published) == 1
@@ -299,6 +304,66 @@ class TestRedisLoopbackDedup:
         assert sent["event"] == "update"
         assert sent["data"] == "1"
         assert sent["_origin"] == _WORKER_ID
+
+
+class _RecordingClient:
+    def __init__(self) -> None:
+        self.published: list[str] = []
+
+    async def publish(self, channel: str, data: str) -> None:
+        self.published.append(channel)
+
+
+class _FailingPublishClient:
+    def __init__(self, error: Exception) -> None:
+        self.error = error
+
+    async def publish(self, channel: str, data: str) -> None:
+        raise self.error
+
+
+class TestRedisPublishClient:
+    """SSE publishing goes through the shared client in ``vibetuner.redis``."""
+
+    @pytest.mark.asyncio
+    async def test_publish_uses_current_shared_client(self, monkeypatch):
+        """Recreating the shared client takes effect on the next publish (#2215)."""
+        first, second = _RecordingClient(), _RecordingClient()
+        clients = iter([first, second])
+
+        async def _get_client() -> _RecordingClient:
+            return next(clients)
+
+        monkeypatch.setattr("vibetuner.redis.get_redis_client", _get_client)
+        await _publish_to_redis("room", {"event": "update", "data": "1"})
+        await _publish_to_redis("room", {"event": "update", "data": "2"})
+
+        assert len(first.published) == 1
+        assert len(second.published) == 1
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "error",
+        [
+            pytest.param(RedisConnectionError("refused"), id="redis-connection-error"),
+            pytest.param(RedisTimeoutError("timed out"), id="redis-timeout-error"),
+            pytest.param(ConnectionError("refused"), id="builtin-connection-error"),
+        ],
+    )
+    async def test_connection_failure_resets_shared_client(self, monkeypatch, error):
+        """redis-py connection failures reset the shared client (#2214)."""
+        resets: list[None] = []
+
+        async def _get_client() -> _FailingPublishClient:
+            return _FailingPublishClient(error)
+
+        monkeypatch.setattr("vibetuner.redis.get_redis_client", _get_client)
+        monkeypatch.setattr(
+            "vibetuner.redis.reset_redis_client", lambda: resets.append(None)
+        )
+        await _publish_to_redis("room", {"event": "update", "data": "1"})
+
+        assert len(resets) == 1
 
 
 class _FakePubSub:
@@ -348,8 +413,6 @@ class _FlakyPubSub:
         pass
 
     async def listen(self):
-        from redis.exceptions import TimeoutError as RedisTimeoutError
-
         if self._fail:
             raise RedisTimeoutError("Timeout reading from localhost:6379")
         while True:
