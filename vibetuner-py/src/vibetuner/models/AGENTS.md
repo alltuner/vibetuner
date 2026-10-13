@@ -118,7 +118,7 @@ When adding models to the framework:
 2. **Use mixins**: Apply TimeStampMixin if appropriate
 3. **Add indexes**: Index frequently queried fields
 4. **Link properly**: Use `Link[]` for relationships
-5. **Register**: Models are auto-discovered from `models/__init__.py`
+5. **Register**: Add the model to `CORE_MODELS` in `models/__init__.py`
 
 ### Modifying Existing Models
 

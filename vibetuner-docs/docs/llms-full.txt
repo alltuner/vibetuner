@@ -236,11 +236,15 @@ async def list_posts():
     return {"posts": []}
 ```
 
-Register in `src/app/frontend/__init__.py`:
+Register the router in `tune.py` (`routes` for frontend/HTMX pages, hidden from `/docs`;
+`api_routes` for JSON API endpoints, visible in `/docs`):
 
 ```python
-from app.frontend.routes import blog
-app.include_router(blog.router)
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.frontend.routes.blog import router as blog_router
+
+app = VibetunerApp(routes=[blog_router])
 ```
 
 **`@render` decorator** — for simple routes, eliminate `render_template()` boilerplate:
@@ -308,7 +312,8 @@ replaces this output, so emit the alternates there yourself; `supported_language
 
 #### Adding Database Models
 
-Create models in `src/app/models/`. The approach depends on your database choice:
+Create models in `src/app/models/` and register them in `tune.py` (`models=[...]` for
+Beanie, `sql_models=[...]` for SQLModel). The approach depends on your database choice:
 
 ##### MongoDB (Beanie ODM)
 
@@ -324,6 +329,14 @@ class Post(Document):
 
     class Settings:
         name = "posts"
+```
+
+```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.models.post import Post
+
+app = VibetunerApp(models=[Post])
 ```
 
 Beanie builds queries from class-level field access (`Post.title == "x"`,
@@ -379,16 +392,17 @@ class Post(SQLModel, table=True):
     published: bool = Field(default=False)
 ```
 
-For SQL databases, create tables with: `vibetuner db create-schema`
-
-Register models in `src/app/models/__init__.py`:
+Register SQL models in `tune.py`:
 
 ```python
+# src/app/tune.py
+from vibetuner import VibetunerApp
 from app.models.post import Post
-__all__ = ["Post"]
+
+app = VibetunerApp(sql_models=[Post])
 ```
 
-The model will be automatically registered with the database on startup.
+For SQL databases, create tables with: `vibetuner db create-schema`
 
 ##### Soft Delete (MongoDB)
 
@@ -623,12 +637,14 @@ async def send_welcome_email(user_id: str):
     return {"status": "sent"}
 ```
 
-Register tasks in `src/app/tasks/__init__.py`:
+Register tasks in `tune.py`:
 
 ```python
-# src/app/tasks/__init__.py
-__all__ = ["emails"]
-from . import emails  # noqa: F401
+# src/app/tune.py
+from vibetuner import VibetunerApp
+from app.tasks.emails import send_welcome_email
+
+app = VibetunerApp(tasks=[send_welcome_email])
 ```
 
 Queue jobs from your routes:
@@ -1597,6 +1613,19 @@ gitignored, and Tailwind v4 skips gitignored files, so it is never a
 class source. If `config.js` imports your own modules that build class
 names, add an `@source` for them in the custom section of `config.css`
 (e.g. `@source "js";`).
+
+The scaffolded `Dockerfile` only gives the frontend build `config.js`
+(the `frontend-build` stage bind-mounts it alone; the `dev-runtime` stage
+used by `just dev` copies only `config.css` and `config.js`). If
+`config.js` imports modules from your own directory, add it to both
+stages, or `bun build` fails with `Could not resolve`. For `js/`:
+
+```dockerfile
+# frontend-build stage: add next to the config.js bind mount
+    --mount=type=bind,source=js,target=js \
+# dev-runtime stage: add after `COPY --link config.css config.js ./`
+COPY --link js/ js/
+```
 
 ### Build-time Brand Palette
 

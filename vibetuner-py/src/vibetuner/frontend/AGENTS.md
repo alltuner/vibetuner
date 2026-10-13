@@ -105,7 +105,8 @@ FastAPI lifespan management:
 - Streaq worker initialization (if background jobs enabled)
 - Model registration with Beanie
 
-Users can extend via `src/app/frontend/lifespan.py` using `extend_lifespan` decorator.
+Users replace it by passing `frontend_lifespan=` to `VibetunerApp` in their `tune.py`
+(typically wrapping `base_lifespan`).
 
 ### context.py
 

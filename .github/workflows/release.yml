@@ -601,7 +601,9 @@ jobs:
         env:
           NPM_CONFIG_PROVENANCE: true
         run: |
-          TARBALL=$(ls alltuner-vibetuner-*.tgz | grep -v '^alltuner-vibetuner-jinja-')
+          # The version digit after the prefix keeps alltuner-vibetuner-jinja-*.tgz out.
+          TARBALLS=(alltuner-vibetuner-[0-9]*.tgz)
+          TARBALL="${TARBALLS[0]}"
           # Look up the version from the tarball-internal package.json so the
           # idempotent skip applies to the exact target we'd otherwise publish.
           VERSION=$(tar -xOf "$TARBALL" package/package.json | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')

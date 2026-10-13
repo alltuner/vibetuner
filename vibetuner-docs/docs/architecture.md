@@ -256,10 +256,11 @@ await init_sqlmodel()
 await create_schema()
 ```
 
-Models are automatically discovered and registered from:
+Models are registered explicitly, not discovered:
 
-- `vibetuner.models` (core models: User, OAuth, etc.)
-- `app.models` (your application models)
+- `vibetuner.models.CORE_MODELS` (core Beanie models: User, OAuth, etc.), always included
+- `models=[...]` in your `tune.py` (your Beanie documents and views)
+- `sql_models=[...]` in your `tune.py` (your SQLModel table models)
 
 ### Authentication System
 
@@ -357,7 +358,7 @@ router = create_crud_routes(
     filterable_fields=["status", "author_id"],
     searchable_fields=["title", "body"],
 )
-app.include_router(router)
+# Register in tune.py: VibetunerApp(api_routes=[router])
 ```
 
 Features:

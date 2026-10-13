@@ -45,7 +45,7 @@ What you get out of the package alone:
 - OAuth + magic-link authentication.
 - Default templates and styles.
 - Hot reload in development.
-- Auto-discovery of routes, models, and tasks.
+- Explicit app configuration in `tune.py` (routes, models, tasks, CLI).
 
 What scaffolding adds:
 
@@ -127,13 +127,14 @@ The `vibetuner` package is installed as a dependency. Your application code live
 ```text
 my-app/
 ├── src/app/                # your application code (you create this)
+│   ├── tune.py             # registers routes, models, tasks, CLI (optional)
 │   ├── config.py           # app configuration (optional)
-│   ├── cli/                # your CLI commands (auto-discovered)
+│   ├── cli/                # your CLI commands
 │   ├── frontend/           # your web routes
-│   │   └── routes/         # (auto-discovered)
-│   ├── models/             # your database models (auto-discovered)
+│   │   └── routes/
+│   ├── models/             # your database models
 │   ├── services/           # your business logic
-│   └── tasks/              # your background jobs (auto-discovered)
+│   └── tasks/              # your background jobs
 ├── templates/              # Jinja2 templates
 │   ├── frontend/           # web templates (override defaults)
 │   ├── email/              # email templates
@@ -143,7 +144,7 @@ my-app/
 └── Dockerfile              # production deployment
 ```
 
-The framework auto-discovers code from your package directory. Scaffolded projects use `src/<project_slug>/`; non-scaffolded projects can use any structure.
+The framework loads `<package>/tune.py` and uses what its `app = VibetunerApp(...)` declares (routes, models, tasks, CLI, and so on); nothing is auto-discovered. Scaffolded projects use `src/<project_slug>/`; non-scaffolded projects can use any structure.
 
 ## Authentication
 
