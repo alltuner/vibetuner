@@ -99,8 +99,9 @@ After `vibetuner scaffold new`, Copier executes the commands listed in `copier.y
 - `just git-init {{ project_slug }}` – initializes a git repository and tags `v0.0.1`.
 - `uv sync` – installs Python dependencies defined by the scaffold.
 - `uv run prek install` – installs the repository's pre-commit (prek) hooks. The `ruff check`
-  hook runs `uv run --frozen ruff`, so it always lints with the ruff locked in your `uv.lock`
-  (via `vibetuner[dev]`), the same version `just lint` and CI use.
+  and `djlint` hooks run `uv run --frozen ruff` / `uv run --frozen djlint`, so they always lint
+  with the versions locked in your `uv.lock` (via `vibetuner[dev]`), the same ones `just lint`
+  and CI use.
 
 ## Updating Existing Projects
 

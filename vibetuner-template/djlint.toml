@@ -2,7 +2,12 @@ extension = "html.jinja"
 
 # Ignore J018: Debug pages can use hardcoded URLs
 # Ignore H006: img tag should have height and width attributes
-ignore = "H006,J018"
+# Ignore T041: a top-level {% set %} before {% extends %} is how a page passes
+#   values (e.g. BODY_CLASS) to its parent layout
+ignore = "H006,J018,T041"
+
+# Skip agent worktrees, scratch dirs and the generated vibetuner-jinja mirror
+extend_exclude = ".claude,.tmp,vibetuner-jinja"
 
 # Use 4 spaces for indentation
 indent = 4

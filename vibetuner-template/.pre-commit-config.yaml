@@ -24,15 +24,6 @@ repos:
     hooks:
       - id: taplo-format
         args: [--check]
-  - repo: https://github.com/djlint/djLint
-    rev: v1.39.0
-    hooks:
-      - id: djlint-jinja
-        files: \.(html\.jinja)$
-        # Mirror ignore list from djlint.toml: the djlint-jinja hook
-        # passes --profile=jinja, which causes djlint to skip the
-        # config file, so the ignore rules must be repeated here.
-        args: ["--ignore=H006,J018"]
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.4.0
     hooks:
@@ -61,6 +52,14 @@ repos:
         entry: uv run --frozen ruff check --force-exclude
         language: system
         types_or: [python, pyi]
+        require_serial: true
+      # Lint with the djlint locked in uv.lock (via vibetuner[dev]) and its
+      # djlint.toml, so the hook and `just lint-jinja` always agree.
+      - id: djlint
+        name: djlint
+        entry: uv run --frozen djlint --lint
+        language: system
+        files: \.html\.jinja$
         require_serial: true
       - id: lint-po
         name: lint-po
