@@ -15,7 +15,8 @@ extend-select = [
   'FA100',  # ban `from __future__ import annotations` (breaks FastAPI/Pydantic)
 ]
 ignore = [
-  'B008', # function call in default argument — intentional for FastAPI Depends() / Query()
+  'B008',   # function call in default argument — intentional for FastAPI Depends() / Query()
+  'RUF012', # mutable class attribute — Beanie's `class Settings: indexes = [...]` is plain config
 ]
 
 [lint.per-file-ignores]
