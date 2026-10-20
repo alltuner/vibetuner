@@ -1,5 +1,17 @@
 # Changelog
 
+## [13.0.1](https://github.com/alltuner/vibetuner/compare/v13.0.0...v13.0.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* **tasks:** detect a streaq Lua library replaced by another project ([#2234](https://github.com/alltuner/vibetuner/issues/2234)) ([c7fe45d](https://github.com/alltuner/vibetuner/commit/c7fe45d9d23fd5ae386e51662174fd16e6782f85))
+
+
+### CI/CD Changes
+
+* attach the docs site to the release that was just created ([#2236](https://github.com/alltuner/vibetuner/issues/2236)) ([d5f3ac2](https://github.com/alltuner/vibetuner/commit/d5f3ac2c5d78d859ab97d6e7ad737b88f48382ba))
+
 ## [13.0.0](https://github.com/alltuner/vibetuner/compare/v12.0.0...v13.0.0) (2026-10-13)
 
 
