@@ -274,19 +274,6 @@ wheels = [
 ]
 
 [[package]]
-name = "arel"
-version = "0.4.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "starlette" },
-    { name = "watchfiles" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/4e/46/a1a8634e7e6b8f0cd86021cc428127671c71457dc051da703b55ea8d90ec/arel-0.4.0.tar.gz", hash = "sha256:08b2f72f767a84825a649891eb30f20f89c0de6aa67134939691ee0012aafc73", size = 14065, upload-time = "2025-09-22T16:39:19.529Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/86/a3/a70c2c3bcb50254522f997298f90a44ba698a60a47efb40d9cceab31a4f5/arel-0.4.0-py3-none-any.whl", hash = "sha256:7b1fe5d10c06a6f231cfeec79e48888176931b86f0ae6e432196845edf818109", size = 8263, upload-time = "2025-09-22T16:39:18.277Z" },
-]
-
-[[package]]
 name = "async-timeout"
 version = "5.0.1"
 source = { registry = "https://pypi.org/simple" }
@@ -3425,15 +3412,15 @@ wheels = [
 
 [[package]]
 name = "starlette"
-version = "0.52.1"
+version = "1.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
     { name = "typing-extensions", marker = "python_full_version < '3.13'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c4/68/79977123bb7be889ad680d79a40f339082c1978b5cfcf62c2d8d196873ac/starlette-0.52.1.tar.gz", hash = "sha256:834edd1b0a23167694292e94f597773bc3f89f362be6effee198165a35d62933", size = 2653702, upload-time = "2026-01-18T13:34:11.062Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ad/eb/4e197bf26b023abafc5e9043ec8710d7de0fcb032d0969045236d72aa0b1/starlette-1.9.0.tar.gz", hash = "sha256:3d931de246ed870e35ce605974440816ef895e592f255d1396cfdf191d4c4318", size = 2732466, upload-time = "2026-10-18T15:50:33.189Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/81/0d/13d1d239a25cbfb19e740db83143e95c772a1fe10202dda4b76792b114dd/starlette-0.52.1-py3-none-any.whl", hash = "sha256:0029d43eb3d273bc4f83a08720b4912ea4b071087a3b48db01b7c839f7954d74", size = 74272, upload-time = "2026-01-18T13:34:09.188Z" },
+    { url = "https://files.pythonhosted.org/packages/f3/93/181df62699d9b5aca1d87e5cfda131dac87e3cdaebf668662f7206ca3470/starlette-1.9.0-py3-none-any.whl", hash = "sha256:fd3f159936e882d06c1108f84688f7cda2cf85fc6a592a50edbd175e882c2ddc", size = 80335, upload-time = "2026-10-18T15:50:31.526Z" },
 ]
 
 [[package]]
@@ -3745,7 +3732,7 @@ version = "13.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "aioboto3" },
-    { name = "arel" },
+    { name = "anyio" },
     { name = "asyncer" },
     { name = "authlib" },
     { name = "beanie", extra = ["zstd"] },
@@ -3772,10 +3759,12 @@ dependencies = [
     { name = "rich" },
     { name = "slowapi" },
     { name = "sqlmodel" },
+    { name = "starlette" },
     { name = "starlette-babel" },
     { name = "starlette-context" },
     { name = "streaq", extra = ["web"] },
     { name = "typer" },
+    { name = "watchfiles" },
 ]
 
 [package.optional-dependencies]
@@ -3800,7 +3789,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "aioboto3", specifier = ">=15.5.0" },
-    { name = "arel", specifier = ">=0.4.0" },
+    { name = "anyio", specifier = ">=4.0.0" },
     { name = "asyncer", specifier = ">=0.0.18" },
     { name = "authlib", specifier = ">=1.7.2" },
     { name = "babel", marker = "extra == 'dev'", specifier = ">=2.18.0" },
@@ -3835,6 +3824,7 @@ requires-dist = [
     { name = "semver", marker = "extra == 'dev'", specifier = ">=3.0.4" },
     { name = "slowapi", specifier = ">=0.1.9" },
     { name = "sqlmodel", specifier = ">=0.0.38" },
+    { name = "starlette", specifier = ">=1.3.1" },
     { name = "starlette-babel", specifier = ">=1.1.0" },
     { name = "starlette-context", specifier = ">=0.5.1" },
     { name = "streaq", extras = ["web"], specifier = ">=7.2.0,<7.3.0" },
@@ -3845,6 +3835,7 @@ requires-dist = [
     { name = "types-aioboto3", extras = ["s3"], marker = "extra == 'dev'", specifier = ">=15.5.0" },
     { name = "types-authlib", marker = "extra == 'dev'", specifier = ">=1.6.11.20260518" },
     { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.12.20260518" },
+    { name = "watchfiles", specifier = ">=0.18" },
 ]
 provides-extras = ["dev"]
 
