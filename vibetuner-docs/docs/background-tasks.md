@@ -623,6 +623,7 @@ vibetuner run prod worker --workers 4
 | Connect timeout | `REDIS_SOCKET_CONNECT_TIMEOUT` | `10` | Seconds before a Redis connect attempt gives up (0 disables) |
 | Keepalive | `REDIS_SOCKET_KEEPALIVE` | `true` | Enable TCP keepalive on the Redis connection |
 | Idle recycling | `REDIS_HEALTH_CHECK_INTERVAL` | `30` | Floor for idle connection recycling (0 disables) |
+| Loading timeout | `WORKER_REDIS_LOADING_TIMEOUT` | `30` | Seconds to wait out a Redis that replies `LOADING` (0 disables) |
 | Watchdog timeout | `WORKER_WATCHDOG_TIMEOUT` | `60` | Seconds of event-loop stall before the process force-exits (0 disables) |
 | Watchdog interval | `WORKER_WATCHDOG_INTERVAL` | `5` | Seconds between watchdog heartbeats/checks |
 
@@ -645,6 +646,28 @@ threshold are therefore derived as `max(REDIS_SOCKET_TIMEOUT, WORKER_IDLE_TIMEOU
 × 1.5)`, so coredis never interrupts a healthy blocking wait. `REDIS_SOCKET_TIMEOUT`
 acts as a floor — raise it if your network has high latency, or set it to `0` to
 disable stream timeout enforcement entirely.
+
+### Waiting out a Redis restart
+
+A Redis that restarts with a dataset to read back answers `LOADING` to every
+command until it has finished reading it, which can take minutes on a large
+dataset. The worker waits that out: it retries with exponential backoff (jittered,
+up to 5s apart) for up to `WORKER_REDIS_LOADING_TIMEOUT` seconds, logging
+`Redis is loading its dataset in memory; waiting to retry` on every attempt.
+Without it the worker exits on the first `LOADING` reply and crash-loops for as
+long as Redis keeps loading.
+
+The wait is bounded so a Redis stuck in `LOADING` cannot keep a useless worker
+alive forever, and it only covers `LOADING`: an unreachable Redis still fails
+fast, so the process is restarted by its `restart` policy. Set
+`WORKER_REDIS_LOADING_TIMEOUT=0` to fail fast on `LOADING` too.
+
+The frontend shares this client to enqueue tasks, so the same wait applies
+there, where it would hold a request open instead of failing it. That is why
+the framework default is a modest 30s while the scaffolded `worker` service in
+`compose.prod.yml` raises it to 300s: a worker has nothing to do but wait for
+the Redis it exists to serve, a web request does. Raise the default only if
+your routes can afford to block for that long.
 
 ### Liveness watchdog
 

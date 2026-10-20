@@ -125,6 +125,19 @@ for background.
 
 See [Background Tasks — Connection Resilience](background-tasks.md#connection-resilience).
 
+### Worker restarts in a loop after a Redis restart
+
+**Symptoms:** Worker logs `Redis is loading its dataset in memory; waiting to retry`,
+or (with the wait disabled) `BusyLoadingError` followed by a container restart.
+
+A Redis that restarts with a dataset to read back answers `LOADING` until it has
+finished. The worker waits that out for up to `WORKER_REDIS_LOADING_TIMEOUT`
+seconds; if it keeps exiting, Redis is taking longer than that to load. Check
+Redis's own logs for its loading progress and raise the timeout if the dataset
+is large.
+
+See [Background Tasks — Waiting Out a Redis Restart](background-tasks.md#waiting-out-a-redis-restart).
+
 ### "Redis not configured" error
 
 Add `REDIS_URL` to your `.env`:

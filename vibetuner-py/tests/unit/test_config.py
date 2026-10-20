@@ -306,19 +306,37 @@ class TestWorkerRedisKwargs:
         assert kwargs["stream_timeout"] > config.worker_idle_timeout
         assert kwargs["max_idle_time"] > config.worker_idle_timeout
 
-    def test_kwargs_accepted_by_coredis_connection(self):
-        """The kwargs must construct a coredis connection without raising.
+    def test_kwargs_accepted_by_coredis_client(self):
+        """The kwargs must construct a coredis client without raising.
 
         Regression for the 10.19.0 startup crash: redis-py kwarg names
         (health_check_interval, socket_timeout) reached streaq's coredis client
         and coredis rejected them with a TypeError during lifespan startup.
         """
-        from coredis.connection import TCPConnection, TCPLocation
+        from coredis import Redis
 
         config = CoreConfiguration(project=ProjectConfiguration())
-        location = TCPLocation(host="localhost", port=6379)
-        # Constructs the connection object (does not open a socket).
-        TCPConnection(location, **config.worker_redis_kwargs)
+        # streaq's own call, which builds the client but opens no socket.
+        Redis.from_url(
+            "redis://localhost:6379",
+            decode_responses=True,
+            **config.worker_redis_kwargs,
+        )
+
+    def test_loading_reply_is_waited_out(self):
+        """A Redis replying LOADING after a restart is retried, not fatal."""
+        from coredis.exceptions import BusyLoadingError
+
+        config = CoreConfiguration(project=ProjectConfiguration())
+        policy = config.worker_redis_kwargs["retry_policy"]
+        assert BusyLoadingError.__name__ in repr(policy)
+
+    def test_loading_retries_disabled_when_zero(self):
+        """A zero loading timeout omits the policy, so coredis's default applies."""
+        config = CoreConfiguration(
+            project=ProjectConfiguration(), worker_redis_loading_timeout=0
+        )
+        assert "retry_policy" not in config.worker_redis_kwargs
 
     def test_stream_timeout_disabled_when_zero(self):
         """A zero socket_timeout is omitted so coredis treats it as no timeout."""
