@@ -26,15 +26,19 @@ def create_schema_cmd() -> None:
     # Import project models to register SQLModel tables before schema creation
     package_name = get_project_name()
     if package_name is not None:
+        models_module = f"{package_name}.models"
         try:
-            import_module(f"{package_name}.models")
-        except ModuleNotFoundError:
-            logger.warning(
-                "{}.models not found. Only core models will be created.",
-                package_name,
-            )
+            import_module(models_module)
         except ImportError as e:
-            logger.warning("Failed to import {}.models: {}", package_name, e)
+            # Only the models module being absent is routine; anything else,
+            # a dependency of its own included, is a real import failure.
+            if isinstance(e, ModuleNotFoundError) and e.name == models_module:
+                logger.warning(
+                    "{} not found. Only core models will be created.",
+                    models_module,
+                )
+            else:
+                logger.warning("Failed to import {}: {}", models_module, e)
 
     async def _create() -> None:
         from vibetuner.sqlmodel import create_schema

@@ -1,6 +1,8 @@
 # ABOUTME: Shared pytest fixtures and configuration for all tests
 # ABOUTME: Provides common mocking utilities, time helpers, and temporary file fixtures
 
+import logging
+import sys
 import tempfile
 from collections.abc import Generator
 from datetime import UTC, datetime, timedelta
@@ -9,6 +11,26 @@ from unittest.mock import MagicMock
 
 import pytest
 from loguru import logger
+
+
+@pytest.fixture(autouse=True)
+def restore_logging() -> Generator[None, None, None]:
+    """Hand the next test a logger that still works.
+
+    ``setup_logging()`` runs on every root CLI invocation and rebuilds the
+    process-wide logging config, binding loguru to the ``sys.stderr`` of the
+    moment. ``CliRunner`` replaces that stream and closes it when the command
+    returns, so without this every later log record in the session raises
+    inside the handler.
+    """
+    root_handlers = logging.root.handlers[:]
+    root_level = logging.root.level
+
+    yield
+
+    logger.configure(handlers=[{"sink": sys.stderr}])
+    logging.root.handlers[:] = root_handlers
+    logging.root.setLevel(root_level)
 
 
 @pytest.fixture()
