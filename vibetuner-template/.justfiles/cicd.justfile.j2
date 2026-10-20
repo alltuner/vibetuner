@@ -42,10 +42,24 @@ release: _check-clean _check-last-commit-tagged
 
 # Deploys the :latest image to a remote host, pulling from the configured registry.
 # Runs the floating :latest tag so Watchtower can roll out later releases.
+{%- if age_recipient %}
+# Secrets are decrypted here, at deploy time, and never reach the host or a
+# plaintext file. --env-file /dev/null stops Compose interpolating a local
+# .env, so a deploy outside `fnox exec` fails loudly rather than using stale
+# values. They live in compose.secrets.yml and not compose.prod.yml because
+# `buildx bake` interpolates the whole file it builds from, with no secrets set.
+{%- endif %}
 [group('CI/CD')]
 deploy-latest HOST:
     #!/usr/bin/env bash
     set -euo pipefail
     eval "$(just _project-vars)"
-    DOCKER_HOST="ssh://{{ HOST }}" ENVIRONMENT=prod VERSION=latest \
+{%- if age_recipient %}
+    DOCKER_HOST="ssh://{{ '{{ HOST }}' }}" ENVIRONMENT=prod VERSION=latest \
+    fnox exec -- docker compose --env-file /dev/null \
+      -f compose.prod.yml -f compose.secrets.yml \
+      up -d --remove-orphans --pull always
+{%- else %}
+    DOCKER_HOST="ssh://{{ '{{ HOST }}' }}" ENVIRONMENT=prod VERSION=latest \
     docker compose -f compose.prod.yml up -d --remove-orphans --pull always
+{%- endif %}
