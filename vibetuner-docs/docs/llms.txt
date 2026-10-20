@@ -204,7 +204,8 @@ Important notes:
   Import from `vibetuner.tasks.robust`
 - **Worker Redis Resilience**: the worker waits out a restarted Redis that
   replies `LOADING` while it reads its dataset back, backing off for up to
-  `WORKER_REDIS_LOADING_TIMEOUT` seconds (default 300, 0 disables) instead of
+  `WORKER_REDIS_LOADING_TIMEOUT` seconds (default 30, raised to 300 for the
+  scaffolded worker service, 0 disables) instead of
   crash-looping. An unreachable Redis still fails fast so the process is
   restarted
 - **Streaq UI**: Task queue monitoring dashboard at `/debug/tasks`. `/queue`

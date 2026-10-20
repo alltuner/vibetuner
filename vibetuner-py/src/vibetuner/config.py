@@ -373,11 +373,16 @@ class CoreConfiguration(BaseSettings):
     redis_socket_keepalive: bool = True
     redis_health_check_interval: float = 30.0
 
-    # How long (seconds) the worker keeps retrying while a restarted Redis
+    # How long (seconds) a process keeps retrying while a restarted Redis
     # replies LOADING because it is still reading its dataset back. Bounded so
     # a Redis that never finishes loading does not keep a useless worker alive
     # forever. Set to 0 to fail fast and let the process be restarted instead.
-    worker_redis_loading_timeout: float = 300.0
+    #
+    # The default is modest because the frontend shares this client to enqueue
+    # tasks, where a long wait would hang a request instead of failing it. The
+    # scaffolded worker service raises it, having nothing else to do than wait
+    # for the Redis it exists to serve.
+    worker_redis_loading_timeout: float = 30.0
 
     # Liveness watchdog: a thread force-exits the worker if the event loop
     # stops ticking for longer than the timeout, so a stalled (but not crashed)

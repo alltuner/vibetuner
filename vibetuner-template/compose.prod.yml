@@ -6,6 +6,12 @@ services:
       - path: .env
         required: false
     command: ["prod", "worker"]
+    environment:
+      # A worker has nothing to do but wait for Redis, so it waits out a long
+      # restart instead of crash-looping. The framework default is lower,
+      # because the frontend shares the client to enqueue tasks and a request
+      # should fail rather than hang.
+      WORKER_REDIS_LOADING_TIMEOUT: "${WORKER_REDIS_LOADING_TIMEOUT:-300}"
     healthcheck:
       test: ["CMD", "vibetuner", "worker-health"]
       interval: 30s

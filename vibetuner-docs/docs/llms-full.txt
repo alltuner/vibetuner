@@ -2774,7 +2774,7 @@ passed to the streaq Worker so the two stay in sync.
 Waiting out a Redis restart: a Redis that restarts with a dataset to read back
 answers `LOADING` to every command until it has finished reading it. The worker
 retries that with jittered exponential backoff (up to 5s apart) for up to
-`WORKER_REDIS_LOADING_TIMEOUT` seconds (default 300, 0 disables), logging
+`WORKER_REDIS_LOADING_TIMEOUT` seconds (default 30, 0 disables), logging
 `Redis is loading its dataset in memory; waiting to retry` on every attempt,
 instead of exiting on the first `LOADING` reply and crash-looping until Redis
 finishes. The wait is bounded, and covers only `LOADING`: an unreachable Redis
