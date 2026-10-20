@@ -88,6 +88,29 @@ jobs:
           git commit -m "chore: regenerate uv.lock files"
           git push
 
+  # Release Please drops a commit whose message its conventional-commits parser
+  # cannot read and still exits 0, so the release pull request looks complete
+  # while an entry is missing (issue #2241). Compare the pending release notes
+  # against the history they claim to describe, while the release pull request
+  # is still open and the release has not been created.
+  verify-release-notes:
+    needs: [create-releases]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Verify the pending release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/check_release_notes.py
+
   # Determine what needs to be released
   plan-release:
     needs: [create-releases]

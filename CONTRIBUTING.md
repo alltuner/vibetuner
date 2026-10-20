@@ -200,6 +200,41 @@ We have automated PR title validation that will:
 - ❌ Block titles that don't follow conventional commit format
 - 💡 Provide helpful error messages to fix issues
 
+### PR Bodies Become the Commit Message
+
+Squash merges use the PR body as the commit message body, and Release Please
+parses the whole message. Its conventional-commits parser throws on a body line
+that **starts** with a bare word followed by `(` whose parentheses do not close
+as a simple scope, and Release Please then drops the entire commit from the
+changelog without failing the run
+([conventional-commits/parser#54](https://github.com/conventional-commits/parser/issues/54)).
+Markdown code fences give no protection, and GitHub rewraps the body at 72
+columns on merge, so a long call can land at column one on its own.
+
+```text
+`ConstantRetryPolicy((ConnectionError, TimeoutError), retries=2,   <- dropped
+ `ConstantRetryPolicy((ConnectionError, TimeoutError), retries=2,  <- fine, indented
+see `ConstantRetryPolicy((ConnectionError, TimeoutError))`         <- fine, not first
+```
+
+Indenting such a line by one space is enough to avoid it.
+
+The `verify-release-notes` job in `release.yml` checks every releasable commit
+since the last release against the open release PR, so a dropped entry fails the
+release workflow instead of shipping quietly. To recover a commit it reports,
+edit the body of **that commit's** merged PR and add:
+
+```text
+BEGIN_COMMIT_OVERRIDE
+fix: the subject you want in the changelog
+END_COMMIT_OVERRIDE
+```
+
+Release Please parses that block instead of the squash commit message on its next
+run. Editing `CHANGELOG.md` on the release branch is not enough: the GitHub
+release body comes from the release PR body, and Release Please force-pushes that
+branch on every push to `main`.
+
 ## Testing
 
 Before submitting:
