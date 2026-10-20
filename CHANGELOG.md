@@ -17,6 +17,7 @@
 ### CI/CD Changes
 
 * make Python interpreter bumps need explicit approval ([#2242](https://github.com/alltuner/vibetuner/issues/2242)) ([7f996e4](https://github.com/alltuner/vibetuner/commit/7f996e45a3d52090c354c078a752598c82590340))
+* fail the release when a changelog entry goes missing ([#2247](https://github.com/alltuner/vibetuner/issues/2247)) ([6dee616](https://github.com/alltuner/vibetuner/commit/6dee6168f34654de283611a22334132571dadc0d))
 * pin vibetuner-py's interpreter so a fresh checkout matches CI ([#2245](https://github.com/alltuner/vibetuner/issues/2245)) ([8a49038](https://github.com/alltuner/vibetuner/commit/8a4903808e4a03b6f353e966031d736060f577b4))
 
 ## [14.0.0](https://github.com/alltuner/vibetuner/compare/v13.0.1...v14.0.0) (2026-10-20)
