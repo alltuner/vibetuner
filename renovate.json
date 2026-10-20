@@ -8,5 +8,18 @@
   "internalChecksFilter": "strict",
   "lockFileMaintenance": {
     "enabled": true
-  }
+  },
+  "packageRules": [
+    {
+      "description": "Interpreter bumps are deliberate: the CI matrix, the pre-commit stack and every wheel we depend on have to support the version first. Python 3.15 arrived grouped with patch updates and broke the lint job, because pyyaml ships no cp315 wheel.",
+      "matchDepNames": [
+        "python"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ],
+      "dependencyDashboardApproval": true
+    }
+  ]
 }
