@@ -39,8 +39,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      # uv run in vibetuner-py does not see the root .python-version, so pin it
-      # here to keep the job off the runner's system Python.
+      # Pinned as well as vibetuner-py/.python-version: setup-uv reads the
+      # repository root, and uv ignores .python-version under --no-config.
       - name: Install uv
         uses: astral-sh/setup-uv@v10.3.0
         with:
