@@ -657,13 +657,49 @@ wedges a socket timeout can't, such as a blocking call in a task. Set
 longest legitimate loop-blocking work; CPU-bound tasks should use streaq's sync
 task support so they run off the event loop.
 
+### Sharing one Redis server between projects
+
+streaq registers its Lua helpers as [Redis functions](https://redis.io/docs/latest/develop/programmability/functions-intro/),
+which are **global to a Redis server**: they are not scoped per database, per
+key prefix or per client. Every worker installs them at startup with
+`REPLACE`, so the last worker to start owns the library that every project on
+that server then calls.
+
+Two projects on different streaq minor versions therefore cannot share a Redis
+server. `publish_delayed_tasks` changed its arguments in streaq 7.2.0 (shipped
+in vibetuner 13), and a library from the other side of that change **reports
+success while promoting nothing**: delayed and cron tasks stop running with no
+exception, no log line and no failed Redis command. Which project works is
+decided by restart order, so an unrelated Redis restart can silently move the
+breakage from one project to another.
+
+What this means in practice:
+
+- All projects on one Redis server must run the same vibetuner major (so the
+  same streaq minor). Upgrade them together.
+- **A separate database number does not help** (`redis://host:6379/1`), because
+  functions live on the server, not in a database. Projects that cannot upgrade
+  together need separate Redis *servers* (separate containers or ports).
+- `vibetuner worker-health` detects the mismatch: it promotes one sentinel task
+  through dedicated probe keys and fails when the promotion does not happen, so
+  a container healthcheck reports unhealthy instead of the worker quietly doing
+  nothing.
+- To see which version's library a server currently holds:
+  `redis-cli FUNCTION LIST LIBRARYNAME streaq WITHCODE`. A project whose
+  delayed queue grows without bound (`ZCARD <prefix>:queues:delayed:normal`) is
+  the one that lost the race.
+
 ### Worker healthcheck
 
 The scaffolded `compose.prod.yml` gives the `worker` service a healthcheck that
 runs `vibetuner worker-health`. The command exits non-zero when no live worker
 is found — it checks for a fresh streaq health key in Redis, which the worker
 renews from inside its event loop, so a wedged or stopped worker reads as
-unhealthy. Plain Docker Compose does not restart on healthcheck status (the
+unhealthy. It then promotes a sentinel task through its own probe keys to
+check that streaq's shared Lua library still honours this streaq's calling
+convention (see [Sharing one Redis server between projects](#sharing-one-redis-server-between-projects)),
+since a worker whose library was replaced by another project looks healthy
+while running nothing. Plain Docker Compose does not restart on healthcheck status (the
 watchdog handles recovery), but the healthcheck surfaces a "live but hung"
 worker to `docker ps`, orchestrators (Kubernetes, Swarm), and autoheal
 sidecars. The probe reads the queue's worker ids from its streaq consumer group

@@ -55,6 +55,11 @@ Important notes:
 - **Context kwarg**: `render_template*` accepts the user context positionally, as
   `ctx=`, or as `context=` (alias for `ctx=`). Passing both, or any unknown kwarg,
   raises `TypeError` — typos cannot silently render with an empty context
+- **Shared Redis safety**: streaq's Lua functions are global to a Redis server,
+  so all projects on one server must run the same vibetuner major; a separate
+  database number does not isolate them. `vibetuner worker-health` fails when
+  another project's streaq replaced the library, which otherwise stops delayed
+  and cron tasks silently.
 - **`@cache` Decorator**: `@cache(expire=60)` caches route responses in Redis.
   Key derived from path + query params. Use `vary_on=lambda r: str(r.state.user.id)`
   for request-dependent keys (per-user, per-tenant). Disabled in debug mode

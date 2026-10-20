@@ -49,13 +49,31 @@ async def has_live_worker(client: "Redis", queue_name: str) -> bool:
     return any(results)
 
 
+async def library_promotes_delayed_tasks(redis_url: str, prefix: str) -> bool:
+    """Probe the streaq Lua library this Redis server has installed.
+
+    Opens its own coredis client, since streaq's Lua wrappers are coredis
+    commands while the rest of this probe speaks redis-py.
+    """
+    import coredis
+
+    from vibetuner.tasks.lua_library import promotes_delayed_tasks
+
+    async with coredis.Redis.from_url(
+        redis_url, decode_responses=True, connect_timeout=3, stream_timeout=3
+    ) as client:
+        return await promotes_delayed_tasks(client, prefix)
+
+
 async def check_worker() -> int:
-    """Return 0 if a live worker is found, 1 otherwise.
+    """Return 0 if a live worker can actually run delayed work, 1 otherwise.
 
     The streaq worker renews a health key in Redis from inside its event loop,
-    so a wedged loop lets the key expire. This checks for a fresh key while
-    importing only the config and Redis client, keeping the probe well under a
-    container healthcheck timeout.
+    so a wedged loop lets the key expire. A live worker is still useless when
+    another project's streaq has replaced the server-global Lua library, so
+    this also checks that a due task really is promoted. Both checks import
+    only the config and Redis clients, keeping the probe well under a container
+    healthcheck timeout.
     """
     from vibetuner.config import settings
 
@@ -79,6 +97,25 @@ async def check_worker() -> int:
 
     if not found:
         logger.error("worker-health: no live worker found for queue {}", queue_name)
+        return 1
+
+    try:
+        promotes = await library_promotes_delayed_tasks(
+            str(settings.redis_url), settings.redis_key_prefix
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.error("worker-health: Lua library check failed: {}", exc)
+        return 1
+
+    if not promotes:
+        logger.error(
+            "worker-health: streaq's Lua library on this Redis server does not "
+            "promote delayed tasks, so no delayed or cron task runs. Another "
+            "project sharing this Redis server installed a different streaq "
+            "version's library; every project on one server must run the same "
+            "streaq minor version, and a separate database number does not "
+            "isolate Redis functions."
+        )
         return 1
     return 0
 

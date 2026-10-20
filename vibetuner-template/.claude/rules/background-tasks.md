@@ -27,3 +27,9 @@ Both support `backoff_base`, `backoff_max`, `timeout`, `on_failure`
 callback. Failed tasks stored in `dead_letters` MongoDB collection.
 
 **Cron** (no retries): `@worker.cron("0 9 * * *")`.
+
+**Shared Redis server**: streaq's Lua functions are global to a Redis server,
+not per database or key prefix, and the last worker to start installs them for
+everyone. Projects on one Redis server must run the same vibetuner major, or
+their delayed and cron tasks silently stop (a different database number does
+not isolate them). `vibetuner worker-health` fails when that happens.
