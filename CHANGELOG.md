@@ -8,6 +8,10 @@
 * **template:** optional fnox-encrypted production secrets ([#2114](https://github.com/alltuner/vibetuner/issues/2114)) ([a2de64a](https://github.com/alltuner/vibetuner/commit/a2de64a5bd497073feb33d7b4fd94e167803bad6))
 
 
+### Documentation Updates
+
+* correct how to repair a dropped changelog entry ([#2249](https://github.com/alltuner/vibetuner/issues/2249)) ([18afcc3](https://github.com/alltuner/vibetuner/commit/18afcc36c0a6530012ab064b9818fcd84a3b479f))
+
 ### CI/CD Changes
 
 * rebuild the released tag when republishing ([#2250](https://github.com/alltuner/vibetuner/issues/2250)) ([c5ef9f1](https://github.com/alltuner/vibetuner/commit/c5ef9f1f5a560436fbfb1ef7824aef705eaa84f9))
