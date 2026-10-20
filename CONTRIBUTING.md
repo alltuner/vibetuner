@@ -223,21 +223,26 @@ at column one on a wrapped line.
 
 The `verify-release-notes` job in `release.yml` checks every releasable commit
 since the last release against the open release PR, so a dropped entry fails the
-release workflow instead of shipping quietly. To recover a commit it reports,
-edit the body of **that commit's** merged PR and add:
+release workflow instead of shipping quietly.
 
-```text
-BEGIN_COMMIT_OVERRIDE
-fix: the subject you want in the changelog (#1234)
-END_COMMIT_OVERRIDE
-```
+To recover a commit it reports, edit **both** of the release pull request's
+artifacts by hand and then merge it:
 
-Release Please parses that block instead of the squash commit message on its next
-run. Keep the `(#1234)` so the changelog entry still links back to the PR.
+1. Add the entry to the release PR's **body**, under the right section. The
+   GitHub release notes are generated from this, not from the file.
+2. Add the same entry to `CHANGELOG.md` on the `release-please--branches--main`
+   branch, so the committed changelog matches.
 
-Editing `CHANGELOG.md` on the release branch is not enough: the GitHub release
-body comes from the release PR body, and Release Please force-pushes that branch
-on every push to `main`.
+Then merge the release PR promptly. Release Please force-pushes that branch on
+every push to `main`, so another merge in between discards both edits. Running
+`.github/scripts/check_release_notes.py --head origin/main` locally confirms the
+repair before you merge.
+
+`BEGIN_COMMIT_OVERRIDE` in the merged PR's body is the mechanism Release Please
+documents for this, but it did not work here: added to #2247's body and with the
+workflow re-run on the same push event, Release Please still logged `commit could
+not be parsed` and left the entry out. Treat it as worth one attempt, not as the
+fix.
 
 ## Testing
 

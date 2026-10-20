@@ -74,7 +74,7 @@ to stay on one line:
  `Policy((Connection, Timeout), retries=2)`
 ```
 
-`CONTRIBUTING.md` has the details and the `BEGIN_COMMIT_OVERRIDE` recovery.
+`CONTRIBUTING.md` has the details and how to repair a dropped entry.
 
 ### Release Workflow
 
