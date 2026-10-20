@@ -1,5 +1,16 @@
 # Changelog
 
+## [14.0.0](https://github.com/alltuner/vibetuner/compare/v13.0.1...v14.0.0) (2026-10-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** take starlette 1.x by vendoring the hot reload ([#2239](https://github.com/alltuner/vibetuner/issues/2239))
+
+### Bug Fixes
+
+* **deps:** take starlette 1.x by vendoring the hot reload ([#2239](https://github.com/alltuner/vibetuner/issues/2239)) ([2768436](https://github.com/alltuner/vibetuner/commit/2768436c19c3a239deb9f6a5e635497998eb53b6))
+
 ## [13.0.1](https://github.com/alltuner/vibetuner/compare/v13.0.0...v13.0.1) (2026-10-20)
 
 
