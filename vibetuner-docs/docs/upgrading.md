@@ -91,6 +91,17 @@ may see the error one last time if a run was already queued before the upgrade.
 
 ### Past breaking changes
 
+#### v12 → v13: projects sharing a Redis server must upgrade together
+
+vibetuner 13 requires streaq 7.2, which changed the arguments of streaq's
+`publish_delayed_tasks` Lua function. Those functions are global to a Redis
+server, so a v13 project and a v12 project on the same Redis **silently stop
+running each other's delayed and cron tasks**, with the loser decided by
+whichever worker started last. A separate database number does not isolate
+them. Upgrade every project on a shared Redis server at the same time, or give
+them separate Redis servers. See
+[Sharing one Redis server between projects](background-tasks.md#sharing-one-redis-server-between-projects).
+
 #### v12 → v13: MongoDB datetimes load as timezone-aware UTC
 
 The framework's MongoDB client now uses `tz_aware=True`. Every `datetime` loaded from MongoDB

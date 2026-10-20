@@ -2786,6 +2786,21 @@ healthcheck for orchestrators / autoheal; recovery on plain Compose comes from
 the watchdog. Each probe is a fresh Python process that usually finishes in
 under a second; the scaffold uses `interval: 30s`, `timeout: 10s`,
 `start_period: 40s`. Keep the timeout above the probe's real duration.
+It then promotes a sentinel task through dedicated probe keys
+(`<prefix>lua-probe:*`, TTL 60s) and fails if the promotion does not happen,
+which catches a replaced streaq Lua library.
+
+Shared Redis server across projects: streaq registers its Lua helpers as Redis
+functions, which are global to a Redis *server* (not per database, prefix or
+client), and every worker installs them with REPLACE, so the last worker to
+start owns the library all projects then call. streaq 7.2.0 (vibetuner 13)
+changed `publish_delayed_tasks`' arguments, and a library from the other side
+of that change reports success while promoting nothing: delayed and cron tasks
+stop with no error, and restart order decides which project works. All projects
+on one Redis server must run the same vibetuner major; a separate database
+number does not isolate functions, so otherwise use separate Redis servers.
+Diagnose with `FUNCTION LIST LIBRARYNAME streaq WITHCODE` and a growing
+`ZCARD <prefix>:queues:delayed:normal`.
 
 #### Testing Tasks
 

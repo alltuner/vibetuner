@@ -1,5 +1,5 @@
 # ABOUTME: Tests for the `vibetuner worker-health` CLI command.
-# ABOUTME: Verifies exit codes and Redis client cleanup around the live-worker lookup.
+# ABOUTME: Covers exit codes, client cleanup, and the streaq Lua library contract probe.
 # ruff: noqa: S101, S603
 import subprocess
 import sys
@@ -32,21 +32,58 @@ def _settings(workers_available: bool = True) -> MagicMock:
 
 
 class TestWorkerHealth:
-    def test_healthy_when_a_worker_is_live(self):
+    def test_healthy_when_a_worker_is_live_and_the_library_matches(self):
         fake = FakeRedis()
         lookup = AsyncMock(return_value=True)
+        probe = AsyncMock(return_value=True)
         with (
             patch("vibetuner.config.settings", _settings()),
             patch("redis.asyncio.from_url", return_value=fake),
             patch("vibetuner.cli.health.has_live_worker", lookup),
+            patch("vibetuner.cli.health.library_promotes_delayed_tasks", probe),
         ):
             result = runner.invoke(app, ["worker-health"])
         assert result.exit_code == 0
         lookup.assert_awaited_once_with(fake, "myproject")
+        probe.assert_awaited_once()
+        assert fake.closed is True
+
+    def test_unhealthy_when_another_streaq_owns_the_lua_library(self):
+        """A replaced library promotes nothing, so the worker does no work."""
+        fake = FakeRedis()
+        with (
+            patch("vibetuner.config.settings", _settings()),
+            patch("redis.asyncio.from_url", return_value=fake),
+            patch("vibetuner.cli.health.has_live_worker", AsyncMock(return_value=True)),
+            patch(
+                "vibetuner.cli.health.library_promotes_delayed_tasks",
+                AsyncMock(return_value=False),
+            ),
+        ):
+            result = runner.invoke(app, ["worker-health"])
+        assert result.exit_code == 1
+        assert fake.closed is True
+
+    def test_unhealthy_when_the_library_probe_errors(self):
+        fake = FakeRedis()
+        with (
+            patch("vibetuner.config.settings", _settings()),
+            patch("redis.asyncio.from_url", return_value=fake),
+            patch("vibetuner.cli.health.has_live_worker", AsyncMock(return_value=True)),
+            patch(
+                "vibetuner.cli.health.library_promotes_delayed_tasks",
+                AsyncMock(side_effect=ConnectionError("boom")),
+            ),
+        ):
+            result = runner.invoke(app, ["worker-health"])
+        assert result.exit_code == 1
         assert fake.closed is True
 
     def test_unhealthy_when_no_worker_is_live(self):
+        """With no worker running, report that and skip the library probe,
+        which would otherwise write probe keys for a queue nobody serves."""
         fake = FakeRedis()
+        probe = AsyncMock(return_value=True)
         with (
             patch("vibetuner.config.settings", _settings()),
             patch("redis.asyncio.from_url", return_value=fake),
@@ -54,9 +91,11 @@ class TestWorkerHealth:
                 "vibetuner.cli.health.has_live_worker",
                 AsyncMock(return_value=False),
             ),
+            patch("vibetuner.cli.health.library_promotes_delayed_tasks", probe),
         ):
             result = runner.invoke(app, ["worker-health"])
         assert result.exit_code == 1
+        probe.assert_not_awaited()
         assert fake.closed is True
 
     def test_unhealthy_when_redis_not_configured(self):
