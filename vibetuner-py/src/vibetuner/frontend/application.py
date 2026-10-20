@@ -103,12 +103,14 @@ def js_redirect(request: Request, subpath: str):
 
 
 if ctx.DEBUG:
+    from starlette.routing import WebSocketRoute
+
     from .hotreload import hotreload
 
-    app.add_websocket_route(
-        "/hot-reload",
-        route=hotreload,  # type: ignore
-        name="hot-reload",
+    # starlette 1.0 removed add_websocket_route; hotreload is a raw ASGI app,
+    # so it is mounted as a route rather than a FastAPI endpoint function.
+    app.router.routes.append(
+        WebSocketRoute("/hot-reload", hotreload, name="hot-reload")
     )
 
 # Auto-register OAuth providers from config + env vars

@@ -91,6 +91,48 @@ may see the error one last time if a run was already queued before the upgrade.
 
 ### Past breaking changes
 
+#### v13 → v14: Starlette 1.x in the blessed stack
+
+The framework now requires Starlette 1.3.1 or later (it ships 1.9). Starlette
+0.x had four open security advisories, two of them high severity, including
+[CVE-2026-54283](https://github.com/advisories/GHSA-82w8-qh3p-5jfq), where
+`request.form()`'s `max_fields` and `max_part_size` limits were silently
+ignored for `application/x-www-form-urlencoded` bodies, so any ordinary form
+post could exhaust memory. The fix was only ever released in 1.x.
+
+Most apps need no change: FastAPI 0.143 already supports Starlette 1.x, and
+`@app.on_event` still works because FastAPI implements it itself. What to check
+in your app:
+
+- **Removed Starlette APIs**, if you use them directly: `on_startup` /
+  `on_shutdown` arguments, `add_event_handler()`, `@app.route()`,
+  `@app.websocket_route()`, `@app.exception_handler()`, `@app.middleware()`,
+  `run_until_first_complete()`, `Jinja2Templates(**env_options)` and
+  `FileResponse(method=...)`. Use `lifespan`, the `routes` / `middleware` /
+  `exception_handlers` arguments, or a preconfigured Jinja `Environment`.
+- **Form limits are now enforced** for urlencoded bodies as well as multipart:
+  at most 1000 fields, 1000 files and 1MB per part by default. A route that
+  accepts a very large form must pass higher limits to `request.form()`
+  explicitly.
+- **URL building changed** (1.3.0, 1.7.0, 1.9.0): `request.url` is assembled
+  from structured components, malformed `Host` headers and IPv6 authorities are
+  handled consistently, and paths containing `?`, `#`, `\` or a leading `//`
+  are percent-encoded. Re-test anything that builds URLs or redirects from
+  user-supplied paths, especially behind a proxy.
+- **Host matching is case-insensitive** (1.9.0), so `TrustedHostMiddleware`
+  allows `Example.com` where `example.com` is configured.
+- **GZip excludes more content types by default** (1.5.0, 1.8.0), so a response
+  that used to be compressed may not be.
+- **TestClient**: `client.stream()` now returns before the app finishes, and
+  closing an unfinished stream cancels the app (1.9.0). Starlette also prefers
+  `httpx2`; with only `httpx` installed it warns.
+
+Hot reload no longer depends on `arel`. The code is vendored into
+`vibetuner.frontend.hotreload` (MIT, Florimond Manca), because arel's released
+version pins `starlette==0.*` and its fix for 1.x is merged upstream but
+unreleased. `hotreload.startup()`, `hotreload.shutdown()` and
+`hotreload.script(url)` keep working, and the template global is unchanged.
+
 #### v12 → v13: projects sharing a Redis server must upgrade together
 
 vibetuner 13 requires streaq 7.2, which changed the arguments of streaq's

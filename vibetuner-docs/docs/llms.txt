@@ -55,6 +55,10 @@ Important notes:
 - **Context kwarg**: `render_template*` accepts the user context positionally, as
   `ctx=`, or as `context=` (alias for `ctx=`). Passing both, or any unknown kwarg,
   raises `TypeError` — typos cannot silently render with an empty context
+- **Starlette 1.x**: requires `starlette>=1.3.1` (CVE-2026-54283 and three more
+  advisories affect 0.x). Dev hot reload is vendored in
+  `vibetuner.frontend.hotreload` rather than depending on `arel`, whose release
+  pins `starlette==0.*`.
 - **Shared Redis safety**: streaq's Lua functions are global to a Redis server,
   so all projects on one server must run the same vibetuner major; a separate
   database number does not isolate them. `vibetuner worker-health` fails when

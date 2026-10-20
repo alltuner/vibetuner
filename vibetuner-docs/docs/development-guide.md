@@ -595,7 +595,7 @@ Vibetuner provides these variables in every template automatically:
 | `project` | `ProjectConfiguration` | `settings.project` — `project_name`, `company_name`, `copyright`, `fqdn`, … |
 | `brand` | `BrandSettings` | `settings.brand` — see [Brand Configuration](#brand-configuration) |
 | `csp_nonce` | `str` | Per-request CSP nonce (see [Security Headers and CSP Nonce](#security-headers-and-csp-nonce)) |
-| `hotreload` | `callable` | Dev-mode hot-reload helper |
+| `hotreload` | `callable` | Dev-mode hot-reload helper (`hotreload.script(url_for('hot-reload'))`) |
 
 ```html
 <p>Page rendered at {{ now | format_datetime }}</p>
