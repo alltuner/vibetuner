@@ -8,6 +8,10 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+  # release.yml calls this after Release Please has created the release, since
+  # a release created with GITHUB_TOKEN raises no `release` event and the push
+  # that merged the release PR runs before the new tag exists.
+  workflow_call:
 
 permissions:
   contents: write
