@@ -1,5 +1,25 @@
 # Changelog
 
+## [14.0.1](https://github.com/alltuner/vibetuner/compare/v14.0.0...v14.0.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* **cli:** distinguish a missing models module from a broken one ([#2246](https://github.com/alltuner/vibetuner/issues/2246)) ([009b144](https://github.com/alltuner/vibetuner/commit/009b144b68638febbc10a324a2f40de6dcebc346)), closes [#2233](https://github.com/alltuner/vibetuner/issues/2233)
+
+
+### Miscellaneous Chores
+
+* **deps:** lock file maintenance ([#2231](https://github.com/alltuner/vibetuner/issues/2231)) ([659b491](https://github.com/alltuner/vibetuner/commit/659b491833eb813f51963f402a7e276b492aafb2))
+* **deps:** update all non-major dependencies ([#2229](https://github.com/alltuner/vibetuner/issues/2229)) ([2ef0462](https://github.com/alltuner/vibetuner/commit/2ef046204b3c17d257a2ca603209747cc758dd6c))
+
+
+### CI/CD Changes
+
+* make Python interpreter bumps need explicit approval ([#2242](https://github.com/alltuner/vibetuner/issues/2242)) ([7f996e4](https://github.com/alltuner/vibetuner/commit/7f996e45a3d52090c354c078a752598c82590340))
+* fail the release when a changelog entry goes missing ([#2247](https://github.com/alltuner/vibetuner/issues/2247)) ([6dee616](https://github.com/alltuner/vibetuner/commit/6dee6168f34654de283611a22334132571dadc0d))
+* pin vibetuner-py's interpreter so a fresh checkout matches CI ([#2245](https://github.com/alltuner/vibetuner/issues/2245)) ([8a49038](https://github.com/alltuner/vibetuner/commit/8a4903808e4a03b6f353e966031d736060f577b4))
+
 ## [14.0.0](https://github.com/alltuner/vibetuner/compare/v13.0.1...v14.0.0) (2026-10-20)
 
 
