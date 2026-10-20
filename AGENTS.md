@@ -59,6 +59,23 @@ feat!: remove deprecated authentication system
 - Automatic changelog generation from PR titles
 - Professional release notes for users
 
+### PR Bodies Reach Release Please Too
+
+The PR body becomes the squash commit body, and Release Please parses it. A body
+line that **starts** with a bare word followed by `(` whose parentheses do not
+close on that line makes Release Please drop the whole commit from the changelog
+without failing anything. Code fences do not help.
+
+Squash commits here come out wrapped at about 72 columns, and a line that gets
+rewrapped loses its indent, so a nested call needs both a leading space and room
+to stay on one line:
+
+```text
+ `Policy((Connection, Timeout), retries=2)`
+```
+
+`CONTRIBUTING.md` has the details and the `BEGIN_COMMIT_OVERRIDE` recovery.
+
 ### Release Workflow
 
 1. Merge any PR → Release Please creates/updates a release PR

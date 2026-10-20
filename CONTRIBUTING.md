@@ -200,6 +200,45 @@ We have automated PR title validation that will:
 - ❌ Block titles that don't follow conventional commit format
 - 💡 Provide helpful error messages to fix issues
 
+### PR Bodies Become the Commit Message
+
+Squash merges use the PR body as the commit message body, and Release Please
+parses the whole message. Its conventional-commits parser throws on a body line
+that **starts** with a bare word followed by `(` whose parentheses do not close
+as a simple scope, and Release Please then drops the entire commit from the
+changelog without failing the run
+([conventional-commits/parser#54](https://github.com/conventional-commits/parser/issues/54)).
+Markdown code fences give no protection.
+
+```text
+`Policy((Connection, Timeout), retries=2)`       <- dropped
+ `Policy((Connection, Timeout), retries=2)`      <- fine, indented
+see `Policy((Connection, Timeout), retries=2)`   <- fine, not first
+```
+
+Squash commits in this repository come out wrapped at about 72 columns, and a
+line long enough to be rewrapped loses its indent, so the leading space only
+helps while the line stays short. That is how #2238 lost its entry: the call sat
+at column one on a wrapped line.
+
+The `verify-release-notes` job in `release.yml` checks every releasable commit
+since the last release against the open release PR, so a dropped entry fails the
+release workflow instead of shipping quietly. To recover a commit it reports,
+edit the body of **that commit's** merged PR and add:
+
+```text
+BEGIN_COMMIT_OVERRIDE
+fix: the subject you want in the changelog (#1234)
+END_COMMIT_OVERRIDE
+```
+
+Release Please parses that block instead of the squash commit message on its next
+run. Keep the `(#1234)` so the changelog entry still links back to the PR.
+
+Editing `CHANGELOG.md` on the release branch is not enough: the GitHub release
+body comes from the release PR body, and Release Please force-pushes that branch
+on every push to `main`.
+
 ## Testing
 
 Before submitting:
