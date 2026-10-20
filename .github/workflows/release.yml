@@ -440,6 +440,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          # Rebuild the commit that was released, not whatever main has moved
+          # on to since. A re-run otherwise produces different bytes for an
+          # already-published version, which PyPI then rejects.
+          ref: ${{ github.event_name == 'push' && github.sha || format('v{0}', needs.plan-release.outputs.version) }}
 
       - name: Download version files
         uses: actions/download-artifact@v8
@@ -494,6 +499,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          # Rebuild the commit that was released, not whatever main has moved
+          # on to since. A re-run otherwise produces different bytes for an
+          # already-published version, which PyPI then rejects.
+          ref: ${{ github.event_name == 'push' && github.sha || format('v{0}', needs.plan-release.outputs.version) }}
 
       - name: Download version files
         uses: actions/download-artifact@v8
@@ -540,6 +550,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          # Rebuild the commit that was released, not whatever main has moved
+          # on to since. A re-run otherwise produces different bytes for an
+          # already-published version, which PyPI then rejects.
+          ref: ${{ github.event_name == 'push' && github.sha || format('v{0}', needs.plan-release.outputs.version) }}
 
       - name: Download version files
         uses: actions/download-artifact@v8
