@@ -202,6 +202,11 @@ Important notes:
 - **Robust Cron**: `@robust_cron("*/15 * * * *")` decorator combines scheduled
   execution with the same retry/dead letter support as `@robust_task()`.
   Import from `vibetuner.tasks.robust`
+- **Worker Redis Resilience**: the worker waits out a restarted Redis that
+  replies `LOADING` while it reads its dataset back, backing off for up to
+  `WORKER_REDIS_LOADING_TIMEOUT` seconds (default 300, 0 disables) instead of
+  crash-looping. An unreachable Redis still fails fast so the process is
+  restarted
 - **Streaq UI**: Task queue monitoring dashboard at `/debug/tasks`. `/queue`
   and `/workers` carry a 5s request timeout (Redis SCAN can be slow on shared
   instances); on expiry the server renders a "Task queue unavailable" page

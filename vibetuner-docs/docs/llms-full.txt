@@ -2771,6 +2771,15 @@ coredis stream timeout and idle-recycling threshold are derived as
 interrupts a healthy blocking wait. `WORKER_IDLE_TIMEOUT` must be set here and
 passed to the streaq Worker so the two stay in sync.
 
+Waiting out a Redis restart: a Redis that restarts with a dataset to read back
+answers `LOADING` to every command until it has finished reading it. The worker
+retries that with jittered exponential backoff (up to 5s apart) for up to
+`WORKER_REDIS_LOADING_TIMEOUT` seconds (default 300, 0 disables), logging
+`Redis is loading its dataset in memory; waiting to retry` on every attempt,
+instead of exiting on the first `LOADING` reply and crash-looping until Redis
+finishes. The wait is bounded, and covers only `LOADING`: an unreachable Redis
+still fails fast so the process is restarted.
+
 Liveness watchdog: as a backstop for any event-loop stall (not just Redis), the
 worker runs a daemon thread that force-exits the process if the loop stops
 ticking for `WORKER_WATCHDOG_TIMEOUT` seconds (default 60, 0 disables;

@@ -373,6 +373,12 @@ class CoreConfiguration(BaseSettings):
     redis_socket_keepalive: bool = True
     redis_health_check_interval: float = 30.0
 
+    # How long (seconds) the worker keeps retrying while a restarted Redis
+    # replies LOADING because it is still reading its dataset back. Bounded so
+    # a Redis that never finishes loading does not keep a useless worker alive
+    # forever. Set to 0 to fail fast and let the process be restarted instead.
+    worker_redis_loading_timeout: float = 300.0
+
     # Liveness watchdog: a thread force-exits the worker if the event loop
     # stops ticking for longer than the timeout, so a stalled (but not crashed)
     # process is restarted by its `restart` policy. Set the timeout to 0 to
@@ -477,6 +483,12 @@ class CoreConfiguration(BaseSettings):
         ``worker_idle_timeout``: streaq calls ``XREADGROUP BLOCK idle_timeout``
         on the Redis server, and coredis would otherwise time out during that
         legitimate blocking wait and raise a premature timeout error.
+
+        ``retry_policy`` waits out a restarted Redis that replies LOADING while
+        it reads its dataset back, for up to ``worker_redis_loading_timeout``
+        seconds. It leaves the blocking read above alone: it keeps coredis's
+        own handling of connection and timeout errors, and only a LOADING reply
+        gets the long backoff.
         """
         kwargs: dict[str, Any] = {
             "socket_keepalive": self.redis_socket_keepalive,
@@ -491,6 +503,12 @@ class CoreConfiguration(BaseSettings):
                 self.redis_health_check_interval, self.worker_idle_timeout * 1.5
             )
             kwargs["max_idle_time"] = int(safe_idle)
+        if self.worker_redis_loading_timeout > 0:
+            from vibetuner.worker_retry import worker_retry_policy
+
+            kwargs["retry_policy"] = worker_retry_policy(
+                self.worker_redis_loading_timeout
+            )
         return kwargs
 
     @property
