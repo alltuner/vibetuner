@@ -27,7 +27,7 @@ simple scope, which squash-merged pull request bodies containing code hit easily
 To recover a dropped commit, edit the body of its merged pull request and add:
 
     BEGIN_COMMIT_OVERRIDE
-    <type>: <subject>
+    <type>: <subject> (#<pull request>)
     END_COMMIT_OVERRIDE
 
 Release Please parses that block instead of the squash commit message on its next
@@ -35,8 +35,9 @@ run, and rebuilds the release pull request from it. Editing CHANGELOG.md on the
 release branch is not enough: the release notes come from the pull request body,
 and Release Please force-pushes that branch on every push to main.
 
-To avoid the trigger in the first place, indent the offending body line by one
-space so it no longer starts at column one.
+To avoid the trigger, indent such a body line by one space and keep it short
+enough to survive the roughly 72-column wrap squash commits get here, since a
+rewrapped line loses its indent. CONTRIBUTING.md has the details.
 """
 
 

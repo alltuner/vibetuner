@@ -109,7 +109,9 @@ jobs:
       - name: Verify the pending release notes
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 .github/scripts/check_release_notes.py
+        # -u keeps the report in order: Actions block-buffers stdout but not
+        # stderr, so the failures would otherwise print before their context.
+        run: python3 -u .github/scripts/check_release_notes.py
 
   # Determine what needs to be released
   plan-release:

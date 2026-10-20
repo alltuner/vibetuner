@@ -64,15 +64,17 @@ feat!: remove deprecated authentication system
 The PR body becomes the squash commit body, and Release Please parses it. A body
 line that **starts** with a bare word followed by `(` whose parentheses do not
 close on that line makes Release Please drop the whole commit from the changelog
-without failing anything, so write
+without failing anything. Code fences do not help.
+
+Squash commits here come out wrapped at about 72 columns, and a line that gets
+rewrapped loses its indent, so a nested call needs both a leading space and room
+to stay on one line:
 
 ```text
- `ConstantRetryPolicy((ConnectionError, TimeoutError), retries=2, delay=0.01)`
+ `Policy((Connection, Timeout), retries=2)`
 ```
 
-with a leading space rather than at column one. Code fences do not help, and
-GitHub rewraps the body at 72 columns on merge. `CONTRIBUTING.md` has the
-details and the `BEGIN_COMMIT_OVERRIDE` recovery.
+`CONTRIBUTING.md` has the details and the `BEGIN_COMMIT_OVERRIDE` recovery.
 
 ### Release Workflow
 
