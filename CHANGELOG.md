@@ -1,5 +1,12 @@
 # Changelog
 
+## [14.1.1](https://github.com/alltuner/vibetuner/compare/v14.1.0...v14.1.1) (2026-10-22)
+
+
+### Documentation Updates
+
+* link the sponsor page by its trailing-slash URL ([#2252](https://github.com/alltuner/vibetuner/issues/2252)) ([6fe2dd1](https://github.com/alltuner/vibetuner/commit/6fe2dd159144153cb4c55f32a9860a425d8dca52))
+
 ## [14.1.0](https://github.com/alltuner/vibetuner/compare/v14.0.1...v14.1.0) (2026-10-20)
 
 
