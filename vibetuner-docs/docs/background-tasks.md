@@ -712,9 +712,11 @@ What this means in practice:
   `streaq_v7`. It also shares `streaq_v7` cleanly with projects on a future
   streaq release that includes #179.
 - **Plain streaq 7.2.x from PyPI, without vibetuner's shim, must not run on a
-  shared server** next to streaq 7.1 or older. That covers vibetuner 13.0
-  through 14.1.0, and any other app using streaq 7.2 directly. Upgrade those
-  projects to vibetuner 14.1.1 or later, or give them separate Redis servers.
+  shared server.** Any streaq 7.1 or older project that starts on the same
+  server, now or later, breaks it and is broken by it. That covers vibetuner
+  13.0 through 14.1.0, and any other app using streaq 7.2 directly. Upgrade
+  those projects to vibetuner 14.1.1 or later, or give them their own Redis
+  server.
 - **A separate database number does not help** (`redis://host:6379/1`), because
   functions live on the server, not in a database.
 - `vibetuner worker-health` promotes one sentinel task through dedicated probe

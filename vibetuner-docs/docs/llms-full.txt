@@ -2824,7 +2824,8 @@ the worker, frontend enqueueing, CLIs and the streaq web UI all use it; it is a
 no-op once the installed streaq already versions its names, and raises at
 startup if streaq's internals moved. A project on 14.1.1+ is safe on a shared
 Redis server next to any other version. Plain streaq 7.2.x without the shim
-(vibetuner 13.0 to 14.1.0) must not share a server with streaq <= 7.1. A
+(vibetuner 13.0 to 14.1.0) must not run on a shared server, since any streaq
+<= 7.1 project on it breaks it. A
 separate database number never isolates functions. Diagnose with
 `redis-cli FUNCTION LIST` (expect `streaq_v7`) and a growing
 `ZCARD <prefix>:queues:delayed:normal`.

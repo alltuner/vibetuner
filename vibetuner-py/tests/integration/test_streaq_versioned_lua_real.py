@@ -112,13 +112,17 @@ async def test_tasks_run_next_to_an_unversioned_library(
                 await _load_unversioned_stub(flushed)
 
             immediate = await double.enqueue(21)
+            dependent = await double.enqueue(1).start(after=immediate.id)
             delayed = await double.enqueue(4).start(delay=1)
             immediate_result = await immediate.result(timeout=10)
+            dependent_result = await dependent.result(timeout=10)
             delayed_result = await delayed.result(timeout=10)
             tg.cancel_scope.cancel()
 
     assert immediate_result.success, immediate_result.exception
     assert immediate_result.result == 42
+    assert dependent_result.success, dependent_result.exception
+    assert dependent_result.result == 2
     assert delayed_result.success, delayed_result.exception
     assert delayed_result.result == 8
     libraries = await _libraries(flushed)

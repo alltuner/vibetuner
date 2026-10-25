@@ -81,8 +81,9 @@ From vibetuner 14.1.1, workers load streaq's Lua library under versioned names
 on 14.1.1 or later is safe on a Redis server shared with projects on any other
 vibetuner or streaq version. No code change is needed; the old `streaq`
 library stays on the server for projects that still use it. Projects on
-vibetuner 13.0 through 14.1.0 (plain streaq 7.2.x) must not share a Redis
-server with streaq 7.1 or older; upgrade them. See
+vibetuner 13.0 through 14.1.0 (plain streaq 7.2.x) must not run on a shared
+Redis server at all, since any streaq 7.1 or older project that joins it later
+breaks them; upgrade them. See
 [Sharing one Redis server between projects](background-tasks.md#sharing-one-redis-server-between-projects).
 
 ### Stale `redis_health_check` cron entry
