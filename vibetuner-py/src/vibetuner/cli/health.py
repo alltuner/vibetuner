@@ -109,12 +109,11 @@ async def check_worker() -> int:
 
     if not promotes:
         logger.error(
-            "worker-health: streaq's Lua library on this Redis server does not "
-            "promote delayed tasks, so no delayed or cron task runs. Another "
-            "project sharing this Redis server installed a different streaq "
-            "version's library; every project on one server must run the same "
-            "streaq minor version, and a separate database number does not "
-            "isolate Redis functions."
+            "worker-health: streaq's versioned Lua library on this Redis server "
+            "does not promote delayed tasks, so no delayed or cron task runs. "
+            "Another project sharing this Redis server loaded the same versioned "
+            "library from an incompatible streaq release, or no worker has loaded "
+            "it yet. A separate database number does not isolate Redis functions."
         )
         return 1
     return 0

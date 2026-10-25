@@ -59,11 +59,12 @@ Important notes:
   advisories affect 0.x). Dev hot reload is vendored in
   `vibetuner.frontend.hotreload` rather than depending on `arel`, whose release
   pins `starlette==0.*`.
-- **Shared Redis safety**: streaq's Lua functions are global to a Redis server,
-  so all projects on one server must run the same vibetuner major; a separate
-  database number does not isolate them. `vibetuner worker-health` fails when
-  another project's streaq replaced the library, which otherwise stops delayed
-  and cron tasks silently.
+- **Shared Redis safety**: streaq's Lua functions are global to a Redis server
+  (a separate database number does not isolate them). Since 14.1.1 vibetuner
+  loads them under versioned names (`streaq_v7`, as tastyware/streaq#179), so a
+  project is safe next to any other streaq version; plain streaq 7.2.x without
+  this shim must not share a server with streaq <= 7.1. `vibetuner
+  worker-health` fails when the versioned library stops promoting delayed tasks.
 - **`@cache` Decorator**: `@cache(expire=60)` caches route responses in Redis.
   Key derived from path + query params. Use `vary_on=lambda r: str(r.state.user.id)`
   for request-dependent keys (per-user, per-tenant). Disabled in debug mode

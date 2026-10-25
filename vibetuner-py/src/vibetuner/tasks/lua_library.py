@@ -28,9 +28,17 @@ async def promotes_delayed_tasks(client: "Redis[str]", prefix: str) -> bool:
     that change reports success while promoting nothing, which stops all
     delayed and cron work with no error anywhere. Promoting one sentinel task
     through dedicated keys is the only way to tell the two apart.
+
+    The probe calls the versioned ``streaq_v<major>`` functions this project
+    loads (see ``vibetuner.tasks.lua_names``), so a server where only an
+    unversioned library is installed fails it too.
     """
+    import streaq.types
     from coredis.exceptions import ResponseError
-    from streaq.types import Streaq
+
+    from vibetuner.tasks.lua_names import use_versioned_names
+
+    use_versioned_names()
 
     delayed_key = _PROBE_KEYS.format(prefix=prefix, name="delayed")
     stream_key = _PROBE_KEYS.format(prefix=prefix, name="stream")
@@ -38,7 +46,9 @@ async def promotes_delayed_tasks(client: "Redis[str]", prefix: str) -> bool:
     try:
         await client.zadd(delayed_key, {"probe": due - 1000})
         await client.expire(delayed_key, _PROBE_TTL)
-        await Streaq(client).publish_delayed_tasks(delayed_key, stream_key, due)
+        await streaq.types.Streaq(client).publish_delayed_tasks(
+            delayed_key, stream_key, due
+        )
         await client.expire(stream_key, _PROBE_TTL)
         return await client.xlen(stream_key) == 1
     except ResponseError as exc:

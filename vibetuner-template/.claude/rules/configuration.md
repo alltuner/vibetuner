@@ -11,10 +11,9 @@ description: Environment variables, settings, security headers, and request ID
 **Env vars** (`.env`, not committed): `DATABASE_URL`, `REDIS_URL`,
 `SESSION_KEY`, `DEBUG`.
 
-`REDIS_URL` may point at a Redis server shared with other projects only if
-they all run the same vibetuner major: streaq's Lua functions are server-global
-and a separate database number does not isolate them. See the background-tasks
-rule.
+`REDIS_URL` may point at a Redis server shared with other projects: vibetuner
+loads streaq's server-global Lua functions under versioned names, so other
+streaq versions cannot break this project. See the background-tasks rule.
 
 `SESSION_KEY` signs sessions. The shipped placeholder makes startup **fail**
 when `ENVIRONMENT=prod` (and warn otherwise) — generate a real value with

@@ -5,7 +5,12 @@ from streaq import Worker
 from vibetuner.config import settings
 from vibetuner.context import Context
 from vibetuner.tasks.lifespan import lifespan
+from vibetuner.tasks.lua_names import use_versioned_names
 
+
+# Every process that builds or enters a worker imports it from here: the
+# worker, the frontend that enqueues, the CLIs and the streaq web UI.
+use_versioned_names()
 
 worker: Worker[Context] | None = (
     Worker(
