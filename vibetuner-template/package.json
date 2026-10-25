@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@alltuner/vibetuner": "14.1.0"
+    "@alltuner/vibetuner": "14.1.1"
   },
   "dependencies": {},
   "scripts": {

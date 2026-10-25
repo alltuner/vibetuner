@@ -1,5 +1,17 @@
 # Changelog
 
+## [14.1.1](https://github.com/alltuner/vibetuner/compare/v14.1.0...v14.1.1) (2026-10-25)
+
+
+### Bug Fixes
+
+* **tasks:** load streaq's Lua library under versioned names ([#2257](https://github.com/alltuner/vibetuner/issues/2257)) ([6f477ac](https://github.com/alltuner/vibetuner/commit/6f477ac074bae582f0ddb5ecbb53f8949da3e90e))
+
+
+### Documentation Updates
+
+* link the sponsor page by its trailing-slash URL ([#2252](https://github.com/alltuner/vibetuner/issues/2252)) ([6fe2dd1](https://github.com/alltuner/vibetuner/commit/6fe2dd159144153cb4c55f32a9860a425d8dca52))
+
 ## [14.1.0](https://github.com/alltuner/vibetuner/compare/v14.0.1...v14.1.0) (2026-10-20)
 
 
