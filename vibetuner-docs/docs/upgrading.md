@@ -74,6 +74,18 @@ For **MAJOR version upgrades**, read the relevant migration guide before running
 version bump. After upgrading, run `vibetuner doctor` to catch configuration issues
 early.
 
+### Redis servers shared with other streaq projects
+
+From vibetuner 14.1.1, workers load streaq's Lua library under versioned names
+(`streaq_v7`) instead of streaq's server-global `streaq` names, so a project
+on 14.1.1 or later is safe on a Redis server shared with projects on any other
+vibetuner or streaq version. No code change is needed; the old `streaq`
+library stays on the server for projects that still use it. Projects on
+vibetuner 13.0 through 14.1.0 (plain streaq 7.2.x) must not run on a shared
+Redis server at all, since any streaq 7.1 or older project that joins it later
+breaks them; upgrade them. See
+[Sharing one Redis server between projects](background-tasks.md#sharing-one-redis-server-between-projects).
+
 ### Stale `redis_health_check` cron entry
 
 Projects whose worker once ran streaq 6.0-6.2 may have a leftover `redis_health_check`
@@ -140,8 +152,9 @@ vibetuner 13 requires streaq 7.2, which changed the arguments of streaq's
 server, so a v13 project and a v12 project on the same Redis **silently stop
 running each other's delayed and cron tasks**, with the loser decided by
 whichever worker started last. A separate database number does not isolate
-them. Upgrade every project on a shared Redis server at the same time, or give
-them separate Redis servers. See
+them. Upgrade every project on a shared Redis server at the same time, give
+them separate Redis servers, or move them to vibetuner 14.1.1 or later, which
+loads streaq's library under versioned names that cannot clash. See
 [Sharing one Redis server between projects](background-tasks.md#sharing-one-redis-server-between-projects).
 
 #### v12 → v13: MongoDB datetimes load as timezone-aware UTC

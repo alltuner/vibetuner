@@ -2797,7 +2797,7 @@ under a second; the scaffold uses `interval: 30s`, `timeout: 10s`,
 `start_period: 40s`. Keep the timeout above the probe's real duration.
 It then promotes a sentinel task through dedicated probe keys
 (`<prefix>lua-probe:*`, TTL 60s) and fails if the promotion does not happen,
-which catches a replaced streaq Lua library.
+which catches an incompatible or missing versioned streaq Lua library.
 
 Starlette 1.x: the framework requires starlette>=1.3.1 (ships 1.9). starlette
 0.x had four open advisories, two high, including CVE-2026-54283 (request.form()
@@ -2810,14 +2810,24 @@ matching changed. Dev hot reload is vendored into `vibetuner.frontend.hotreload`
 
 Shared Redis server across projects: streaq registers its Lua helpers as Redis
 functions, which are global to a Redis *server* (not per database, prefix or
-client), and every worker installs them with REPLACE, so the last worker to
-start owns the library all projects then call. streaq 7.2.0 (vibetuner 13)
-changed `publish_delayed_tasks`' arguments, and a library from the other side
-of that change reports success while promoting nothing: delayed and cron tasks
-stop with no error, and restart order decides which project works. All projects
-on one Redis server must run the same vibetuner major; a separate database
-number does not isolate functions, so otherwise use separate Redis servers.
-Diagnose with `FUNCTION LIST LIBRARYNAME streaq WITHCODE` and a growing
+client), and every worker or enqueueing frontend installs them with REPLACE, so
+the last process to start owns the library for every project using that name.
+streaq 7.2.0 changed `publish_task` and `publish_delayed_tasks`; released streaq
+names its library plain `streaq`, so 7.2 and <= 7.1 projects on one server park
+tasks forever, raise `ResponseError` on enqueue, or silently stop delayed and
+cron promotion, depending on restart order.
+
+Since vibetuner 14.1.1, `vibetuner.tasks.lua_names` loads the library as
+`streaq_v7` with functions `streaq_v7_<name>`, the names tastyware/streaq#179
+gives streaq upstream. It is applied on import of `vibetuner.tasks.worker`, so
+the worker, frontend enqueueing, CLIs and the streaq web UI all use it; it is a
+no-op once the installed streaq already versions its names, and raises at
+startup if streaq's internals moved. A project on 14.1.1+ is safe on a shared
+Redis server next to any other version. Plain streaq 7.2.x without the shim
+(vibetuner 13.0 to 14.1.0) must not run on a shared server, since any streaq
+<= 7.1 project on it breaks it. A
+separate database number never isolates functions. Diagnose with
+`redis-cli FUNCTION LIST` (expect `streaq_v7`) and a growing
 `ZCARD <prefix>:queues:delayed:normal`.
 
 #### Testing Tasks

@@ -684,33 +684,50 @@ task support so they run off the event loop.
 
 streaq registers its Lua helpers as [Redis functions](https://redis.io/docs/latest/develop/programmability/functions-intro/),
 which are **global to a Redis server**: they are not scoped per database, per
-key prefix or per client. Every worker installs them at startup with
-`REPLACE`, so the last worker to start owns the library that every project on
-that server then calls.
+key prefix or per client. Every worker, and every frontend that enqueues,
+installs them at startup with `REPLACE`, so the last process to start owns the
+library that every project using the same library name then calls.
 
-Two projects on different streaq minor versions therefore cannot share a Redis
-server. `publish_delayed_tasks` changed its arguments in streaq 7.2.0 (shipped
-in vibetuner 13), and a library from the other side of that change **reports
-success while promoting nothing**: delayed and cron tasks stop running with no
-exception, no log line and no failed Redis command. Which project works is
-decided by restart order, so an unrelated Redis restart can silently move the
-breakage from one project to another.
+streaq 7.2.0 changed the calling convention of `publish_task` and
+`publish_delayed_tasks`. Released streaq names its library plain `streaq`, so a
+streaq 7.2 project and a streaq 7.1 (or older) project on one server break each
+other: tasks enqueued against the wrong library are silently parked forever or
+fail with `ResponseError`, and delayed and cron tasks stop being promoted with
+no error at all. Which project works is decided by restart order.
+
+Since vibetuner 14.1.1, workers load the library under **versioned names**:
+library `streaq_v7`, functions `streaq_v7_<name>` (for example
+`streaq_v7_publish_task`). These are the names
+[tastyware/streaq#179](https://github.com/tastyware/streaq/pull/179) gives
+streaq upstream; vibetuner applies them to the installed streaq until a streaq
+release includes that change (`vibetuner.tasks.lua_names`). The shim applies
+wherever vibetuner hands out its worker, so the worker, enqueueing from the
+frontend, the CLIs and the streaq web UI all use the same names.
 
 What this means in practice:
 
-- All projects on one Redis server must run the same vibetuner major (so the
-  same streaq minor). Upgrade them together.
+- **A project on vibetuner 14.1.1 or later is safe on a shared Redis server**,
+  whatever streaq or vibetuner version the other projects run: they keep
+  fighting over the unversioned `streaq` library, but never touch
+  `streaq_v7`. It also shares `streaq_v7` cleanly with projects on a future
+  streaq release that includes #179.
+- **Plain streaq 7.2.x from PyPI, without vibetuner's shim, must not run on a
+  shared server.** Any streaq 7.1 or older project that starts on the same
+  server, now or later, breaks it and is broken by it. That covers vibetuner
+  13.0 through 14.1.0, and any other app using streaq 7.2 directly. Upgrade
+  those projects to vibetuner 14.1.1 or later, or give them their own Redis
+  server.
 - **A separate database number does not help** (`redis://host:6379/1`), because
-  functions live on the server, not in a database. Projects that cannot upgrade
-  together need separate Redis *servers* (separate containers or ports).
-- `vibetuner worker-health` detects the mismatch: it promotes one sentinel task
-  through dedicated probe keys and fails when the promotion does not happen, so
-  a container healthcheck reports unhealthy instead of the worker quietly doing
-  nothing.
-- To see which version's library a server currently holds:
-  `redis-cli FUNCTION LIST LIBRARYNAME streaq WITHCODE`. A project whose
-  delayed queue grows without bound (`ZCARD <prefix>:queues:delayed:normal`) is
-  the one that lost the race.
+  functions live on the server, not in a database.
+- `vibetuner worker-health` promotes one sentinel task through dedicated probe
+  keys using the versioned functions, and fails when the promotion does not
+  happen, so a container healthcheck reports unhealthy instead of the worker
+  quietly doing nothing.
+- To see which libraries a server holds: `redis-cli FUNCTION LIST`. After
+  upgrading, `streaq_v7` appears next to any `streaq` library older projects
+  still load. A project whose delayed queue grows without bound
+  (`ZCARD <prefix>:queues:delayed:normal`) is one still losing the race on the
+  unversioned library.
 
 ### Worker healthcheck
 
@@ -719,7 +736,7 @@ runs `vibetuner worker-health`. The command exits non-zero when no live worker
 is found — it checks for a fresh streaq health key in Redis, which the worker
 renews from inside its event loop, so a wedged or stopped worker reads as
 unhealthy. It then promotes a sentinel task through its own probe keys to
-check that streaq's shared Lua library still honours this streaq's calling
+check that streaq's versioned Lua library still honours this streaq's calling
 convention (see [Sharing one Redis server between projects](#sharing-one-redis-server-between-projects)),
 since a worker whose library was replaced by another project looks healthy
 while running nothing. Plain Docker Compose does not restart on healthcheck status (the

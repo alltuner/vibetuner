@@ -13,15 +13,16 @@ import streaq
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.wait_strategies import LogMessageWaitStrategy
 from vibetuner.tasks.lua_library import promotes_delayed_tasks
+from vibetuner.tasks.lua_names import versioned_code
 
 
-# A stand-in for the library streaq <= 7.1.0 installs: same library and function
-# names, but the pre-7.2 calling convention, where keys[1] is a prefix and the
-# priorities arrive in argv. Called the 7.2 way it promotes nothing and still
+# A stand-in for a streaq 7 library with the pre-7.2 calling convention, where
+# keys[1] is a prefix and the priorities arrive in argv, under the versioned
+# names this project calls. Called the 7.2 way it promotes nothing and still
 # reports success, which is the silent failure this probe exists to catch.
-OLD_CONVENTION_LIBRARY = """#!lua name=streaq
+OLD_CONVENTION_LIBRARY = """#!lua name=streaq_v7
 
-redis.register_function('publish_delayed_tasks', function(keys, argv)
+redis.register_function('streaq_v7_publish_delayed_tasks', function(keys, argv)
   local queue_key = keys[1]
   local stream_key = keys[2]
   local current_time = argv[1]
@@ -55,6 +56,12 @@ def redis_url(docker_host: None) -> Iterator[str]:
 
 
 def _shipped_library() -> str:
+    """Return streaq's Lua library as this project loads it, under versioned names."""
+    return versioned_code(_unshimmed_library())
+
+
+def _unshimmed_library() -> str:
+    """Return streaq's Lua library as an unshimmed streaq 7.2 loads it."""
     return (Path(inspect.getfile(streaq)).parent / "lua" / "streaq.lua").read_text()
 
 
@@ -89,6 +96,21 @@ class TestLuaLibraryProbe:
             await _load_library(client, OLD_CONVENTION_LIBRARY)
 
             assert await promotes_delayed_tasks(client, "probe-old:") is False
+
+    async def test_passes_next_to_an_unversioned_library(self, redis_url: str) -> None:
+        async with _client(redis_url) as client:
+            await _load_library(client, _shipped_library())
+            await client.function_load(_unshimmed_library(), replace=True)
+
+            assert await promotes_delayed_tasks(client, "probe-shared:") is True
+
+    async def test_fails_when_only_an_unversioned_library_is_installed(
+        self, redis_url: str
+    ) -> None:
+        async with _client(redis_url) as client:
+            await _load_library(client, _unshimmed_library())
+
+            assert await promotes_delayed_tasks(client, "probe-unversioned:") is False
 
     async def test_fails_when_no_library_is_installed(self, redis_url: str) -> None:
         async with _client(redis_url) as client:

@@ -29,7 +29,8 @@ callback. Failed tasks stored in `dead_letters` MongoDB collection.
 **Cron** (no retries): `@worker.cron("0 9 * * *")`.
 
 **Shared Redis server**: streaq's Lua functions are global to a Redis server,
-not per database or key prefix, and the last worker to start installs them for
-everyone. Projects on one Redis server must run the same vibetuner major, or
-their delayed and cron tasks silently stop (a different database number does
-not isolate them). `vibetuner worker-health` fails when that happens.
+not per database or key prefix. vibetuner loads them under versioned names
+(`streaq_v7`), so this project is safe next to other projects on any streaq
+version. Never build a streaq `Worker` yourself; use `get_worker()`, which
+applies the versioned names. `vibetuner worker-health` fails if delayed tasks
+stop being promoted.
