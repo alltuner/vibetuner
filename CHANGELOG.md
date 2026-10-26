@@ -1,5 +1,12 @@
 # Changelog
 
+## [14.1.2](https://github.com/alltuner/vibetuner/compare/v14.1.1...v14.1.2) (2026-10-26)
+
+
+### CI/CD Changes
+
+* build the docs with just site and deploy with Wrangler ([#2268](https://github.com/alltuner/vibetuner/issues/2268)) ([a671034](https://github.com/alltuner/vibetuner/commit/a671034dff270c89ae1a5c8ef2ad3e52b7954320))
+
 ## [14.1.1](https://github.com/alltuner/vibetuner/compare/v14.1.0...v14.1.1) (2026-10-25)
 
 
