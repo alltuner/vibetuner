@@ -691,13 +691,3 @@ jobs:
           fi
           echo "Publishing $TARBALL with trusted publishing"
           npm publish "./$TARBALL" --access public
-
-  # Attach the docs site to the release Release Please just created. The
-  # push-triggered run of this workflow fires before the release exists, so it
-  # would otherwise leave the new release without its site asset.
-  publish-site:
-    needs: [create-releases]
-    if: needs.create-releases.outputs.releases_created == 'true'
-    permissions:
-      contents: write
-    uses: ./.github/workflows/publish-site.yml

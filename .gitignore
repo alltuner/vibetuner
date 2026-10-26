@@ -76,3 +76,5 @@ vibetuner-template/bun.lock
 # Documentation
 ############################################################
 _site/
+
+.wrangler/
