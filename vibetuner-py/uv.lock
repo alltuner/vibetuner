@@ -3567,7 +3567,7 @@ wheels = [
 
 [[package]]
 name = "streaq"
-version = "7.2.0"
+version = "8.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -3576,9 +3576,9 @@ dependencies = [
     { name = "typer" },
     { name = "watchfiles" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6d/4d/d8081b30f38fad8b69c6c86328a4e5f04aa0e556cb2629521ffb82eea26f/streaq-7.2.0.tar.gz", hash = "sha256:d34a1419b7d19a0c99c64e8925eff818a394a8abc25d3604aa7a389b08b6dff4", size = 36545, upload-time = "2026-09-03T17:49:51.972Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b8/5c/8b5222a9868724b79167b610b67a41b5f527df1e2c6e8a04eae405f4fa5b/streaq-8.0.0.tar.gz", hash = "sha256:2c69b0e56263adf2b39f8e44d9ae92f2ddff352b6a1742b919232763c7351b7e", size = 40487, upload-time = "2026-11-05T19:46:00.463Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/85/db/c2e865fd75e6f49be5766ab02d604ebc0767c0938b961423cb248108202c/streaq-7.2.0-py3-none-any.whl", hash = "sha256:9d246bc0a75960c089feb341ae49c3ce629ce9efa6748b3749a2ae5ca682f997", size = 43732, upload-time = "2026-09-03T17:49:50.866Z" },
+    { url = "https://files.pythonhosted.org/packages/df/3e/49cae560a96c95a5d2afc53912327a1a4fe458058654ec34f98937f7f9ee/streaq-8.0.0-py3-none-any.whl", hash = "sha256:44780a41278c38025b6a7fd1a69c5180cc409c999436e339e569872cf8839014", size = 47999, upload-time = "2026-11-05T19:45:59.151Z" },
 ]
 
 [package.optional-dependencies]
@@ -3953,7 +3953,7 @@ requires-dist = [
     { name = "starlette", specifier = ">=1.3.1" },
     { name = "starlette-babel", specifier = ">=1.1.0" },
     { name = "starlette-context", specifier = ">=0.5.1" },
-    { name = "streaq", extras = ["web"], specifier = ">=7.2.0,<7.3.0" },
+    { name = "streaq", extras = ["web"], specifier = ">=8.0.0,<8.1.0" },
     { name = "taplo", marker = "extra == 'dev'", specifier = ">=0.9.3" },
     { name = "testcontainers", extras = ["mongodb"], marker = "extra == 'dev'", specifier = ">=4.15.0" },
     { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.86" },
